@@ -57,8 +57,9 @@ import br.com.digilabs.jqplot.elements.Serie;
 /**
  * @author Nacho Barrientos <nacho@igalia.com>
  * @author Diego Pino García <dpino@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  *
- *         Controller for dashboardfororder view
+ * Controller for dashboardfororder view
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -91,13 +92,13 @@ public class DashboardController extends GenericForwardComposer {
         BufferedReader reader;
         StringBuilder sb = new StringBuilder();
         try {
-           reader = new BufferedReader(new InputStreamReader(res.getInputStream()));
-           String line;
+            reader = new BufferedReader(new InputStreamReader(res.getInputStream()));
+            String line;
 
-           while ((line = reader.readLine()) != null) {
-              sb.append(line);
-              sb.append(newline);
-           }
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+                sb.append(newline);
+            }
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -105,20 +106,19 @@ public class DashboardController extends GenericForwardComposer {
     }
 
     public void setCurrentOrder(PlanningState planningState, List<TaskElement> criticalPath) {
-        final Order order = planningState.getOrder();
 
         dashboardModel.setCurrentOrder(planningState, criticalPath);
-        if (dashboardModel.tasksAvailable()) {
-            if (self != null) {
+        if ( dashboardModel.tasksAvailable() ) {
+            if ( self != null ) {
                 renderGlobalProgress();
                 renderTaskStatus();
                 renderTaskCompletationLag();
-                renderDeadlineViolation();
-                renderMarginWithDeadline();
-                renderEstimationAccuracy();
-                renderCostStatus(order);
-                renderOvertimeRatio();
-                renderAvailabilityRatio();
+                //renderDeadlineViolation();
+                //renderMarginWithDeadline();
+                //renderEstimationAccuracy();
+                //renderCostStatus(order);
+                //renderOvertimeRatio();
+                //renderAvailabilityRatio();
             }
             showCharts();
         } else {
@@ -129,20 +129,16 @@ public class DashboardController extends GenericForwardComposer {
     private void renderOvertimeRatio() {
         BigDecimal overtimeRatio = dashboardModel.getOvertimeRatio();
         lblOvertimeRatio.setValue(showAsPercentage(overtimeRatio));
-        String valueMeaning = (overtimeRatio.compareTo(BigDecimal.ZERO) == 0) ? "positive"
-                : "negative";
+        String valueMeaning = (overtimeRatio.compareTo(BigDecimal.ZERO) == 0) ? "positive" : "negative";
         lblOvertimeRatio.setSclass("dashboard-label-remarked " + valueMeaning);
     }
 
     private String showAsPercentage(BigDecimal overtimeRatio) {
-        return overtimeRatio.multiply(BigDecimal.valueOf(100)).setScale(0,
-                RoundingMode.HALF_UP)
-                + " %";
+        return overtimeRatio.multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP) + " %";
     }
 
     private void renderAvailabilityRatio() {
-        lblAvailabilityRatio.setValue(showAsPercentage(dashboardModel
-                .getAvailabilityRatio()));
+        lblAvailabilityRatio.setValue(showAsPercentage(dashboardModel.getAvailabilityRatio()));
     }
 
     private void renderCostStatus(Order order) {
@@ -160,12 +156,10 @@ public class DashboardController extends GenericForwardComposer {
         Integer absoluteMargin = dashboardModel.getAbsoluteMarginWithDeadLine();
         BigDecimal relativeMargin = dashboardModel.getMarginWithDeadLine();
 
-        if ((lblAbsolute != null) && (absoluteMargin != null)) {
-            lblAbsolute
-                    .setValue(_(
-                            "There is a margin of {0} days with the project global deadline ({1}%).",
-                            absoluteMargin, (new DecimalFormat("#.##"))
-                                    .format(relativeMargin.doubleValue() * 100)));
+        if ( (lblAbsolute != null) && (absoluteMargin != null) ) {
+            lblAbsolute.setValue(
+                    _("There is a margin of {0} days with the project global deadline ({1}%).",
+                            absoluteMargin, (new DecimalFormat("#.##")).format(relativeMargin.doubleValue() * 100)));
         } else {
             lblAbsolute.setValue(_("No project deadline defined"));
         }
@@ -175,14 +169,10 @@ public class DashboardController extends GenericForwardComposer {
     private void renderDeadlineViolation() {
         final String divId = "deadline-violation";
 
-        PieChart<Number> pieChart = new PieChart<Number>(
-                _("Task deadline violations"));
-        pieChart.addValue(_("On schedule"),
-                dashboardModel.getPercentageOfOnScheduleTasks());
-        pieChart.addValue(_("Violated deadline"),
-                dashboardModel.getPercentageOfTasksWithViolatedDeadline());
-        pieChart.addValue(_("No deadline"),
-                dashboardModel.getPercentageOfTasksWithNoDeadline());
+        PieChart<Number> pieChart = new PieChart<>(_("Task deadline violations"));
+        pieChart.addValue(_("On schedule"), dashboardModel.getPercentageOfOnScheduleTasks());
+        pieChart.addValue(_("Violated deadline"), dashboardModel.getPercentageOfTasksWithViolatedDeadline());
+        pieChart.addValue(_("No deadline"), dashboardModel.getPercentageOfTasksWithNoDeadline());
 
         pieChart.addIntervalColors("#8fbe86", "#eb6b71", "#cfcfcf");
 
@@ -215,8 +205,15 @@ public class DashboardController extends GenericForwardComposer {
     private void renderTaskCompletationLag() {
         final String divId = "task-completation-lag";
 
-        BarChart<Integer> barChart;
-        barChart = new BarChart<Integer>(_("Task Completation Lead/Lag"));
+        BarChart<Integer> barChart = new BarChart<>(_("Task Completion Lead/Lag"), "label X", "label Y");
+
+
+        // 1.2.3
+        /*ChartConfiguration chartConfiguration = this.getChartConfiguration();
+        chartConfiguration.getSeriesDefaults().getRendererOptions().setFillZero(fillZero);*/
+
+        // 1.3.1
+        /*getChartConfiguration().seriesDefaultsInstance().getRendererOptions().setFillZero(fillZero);*/
 
         barChart.setFillZero(true);
         barChart.setHighlightMouseDown(true);
@@ -225,15 +222,20 @@ public class DashboardController extends GenericForwardComposer {
 
         barChart.addSeries(new Serie("Tasks"));
 
-        TaskCompletationData taskCompletationData = TaskCompletationData
-                .create(dashboardModel);
-        barChart.setTicks(taskCompletationData.getTicks());
+        TaskCompletationData taskCompletationData = TaskCompletationData.create(dashboardModel);
+
+        // Before
+        //barChart.setTicks(taskCompletationData.getTicks());
+
+        // After
+        barChart.getChartConfiguration().xAxisInstance().setTicks(taskCompletationData.getTicks());
+        // TODO download js files
         barChart.addValues(taskCompletationData.getValues());
 
         barChart.getAxes()
                 .getXaxis()
-                .setLabel(
-                        _("Days Interval (Calculated as task completion end date minus estimated end date)"));
+                .setLabel(_("Days Interval (Calculated as task completion end date minus estimated end date)"));
+
         barChart.getAxes().getYaxis().setLabel(_("Number of tasks"));
 
         renderChart(barChart, divId);
@@ -243,8 +245,7 @@ public class DashboardController extends GenericForwardComposer {
         final String divId = "estimation-accuracy";
 
         BarChart<Integer> barChart;
-        barChart = new BarChart<Integer>(
-                _("Estimation deviation on completed tasks"));
+        barChart = new BarChart<>(_("Estimation deviation on completed tasks"));
 
         barChart.setFillZero(true);
         barChart.setHighlightMouseDown(true);
@@ -253,48 +254,50 @@ public class DashboardController extends GenericForwardComposer {
 
         barChart.addSeries(new Serie("Tasks"));
 
-        EstimationAccuracy estimationAccuracyData = EstimationAccuracy
-                .create(dashboardModel);
-        barChart.setTicks(estimationAccuracyData.getTicks());
+        EstimationAccuracy estimationAccuracyData = EstimationAccuracy.create(dashboardModel);
+
+        // Before
+        //barChart.setTicks(estimationAccuracyData.getTicks());
+
+        // After
+        barChart.getChartConfiguration().xAxisInstance().setTicks(estimationAccuracyData.getTicks());
+
         barChart.addValues(estimationAccuracyData.getValues());
 
-        barChart.getAxes().getXaxis()
-                .setLabel(
-                        _("% Deviation interval (difference % between consumed and estimated hours)"));
+        barChart.getAxes().getXaxis().setLabel(
+                _("% Deviation interval (difference % between consumed and estimated hours)"));
+
         barChart.getAxes().getYaxis().setLabel(_("Number of tasks"));
 
         renderChart(barChart, divId);
     }
 
-    private String statusLegend(TaskStatusEnum status,
-            Map<TaskStatusEnum, Integer> taskStatus) {
-        return _(status.toString())
-                + String.format(_(" (%d tasks)"), taskStatus.get(status));
+    private String statusLegend(TaskStatusEnum status, Map<TaskStatusEnum, Integer> taskStatus) {
+        return _(status.toString()) + String.format(_(" (%d tasks)"), taskStatus.get(status));
     }
 
     private void renderTaskStatus() {
         final String divId = "task-status";
 
-        Map<TaskStatusEnum, Integer> taskStatus = dashboardModel
-                .calculateTaskStatus();
-        PieChart<Number> taskStatusPieChart = new PieChart<Number>(
-                _("Task Status"));
+        Map<TaskStatusEnum, Integer> taskStatus = dashboardModel.calculateTaskStatus();
 
-        taskStatusPieChart.addValue(
-                statusLegend(TaskStatusEnum.FINISHED, taskStatus),
+        PieChart<Number> taskStatusPieChart = new PieChart<>(_("Task Status"));
+
+        // TODO getRendererOptions are set here already
+
+        taskStatusPieChart.addValue(statusLegend(TaskStatusEnum.FINISHED, taskStatus),
                 dashboardModel.getPercentageOfFinishedTasks());
-        taskStatusPieChart.addValue(
-                statusLegend(TaskStatusEnum.IN_PROGRESS, taskStatus),
+
+        taskStatusPieChart.addValue(statusLegend(TaskStatusEnum.IN_PROGRESS, taskStatus),
                 dashboardModel.getPercentageOfInProgressTasks());
-        taskStatusPieChart.addValue(
-                statusLegend(TaskStatusEnum.READY_TO_START, taskStatus),
+
+        taskStatusPieChart.addValue(statusLegend(TaskStatusEnum.READY_TO_START, taskStatus),
                 dashboardModel.getPercentageOfReadyToStartTasks());
-        taskStatusPieChart.addValue(
-                statusLegend(TaskStatusEnum.BLOCKED, taskStatus),
+
+        taskStatusPieChart.addValue(statusLegend(TaskStatusEnum.BLOCKED, taskStatus),
                 dashboardModel.getPercentageOfBlockedTasks());
 
-        taskStatusPieChart.addIntervalColors("#d599e8", "#4c99e8", "#8fbe86",
-                "#ffbb6b");
+        taskStatusPieChart.addIntervalColors("#d599e8", "#4c99e8", "#8fbe86", "#ffbb6b");
 
         renderPieChart(taskStatusPieChart, divId);
     }
@@ -305,21 +308,26 @@ public class DashboardController extends GenericForwardComposer {
         // Current values
         globalProgressChart.current(GlobalProgressChart.CRITICAL_PATH_DURATION,
                 dashboardModel.getCriticalPathProgressByDuration());
+
         globalProgressChart.current(GlobalProgressChart.CRITICAL_PATH_HOURS,
                 dashboardModel.getCriticalPathProgressByNumHours());
+
         globalProgressChart.current(GlobalProgressChart.ALL_TASKS_HOURS,
                 dashboardModel.getAdvancePercentageByHours());
+
         globalProgressChart.current(GlobalProgressChart.SPREAD_PROGRESS,
                 dashboardModel.getSpreadProgress());
 
         // Expected values
-        globalProgressChart.expected(
-                GlobalProgressChart.CRITICAL_PATH_DURATION,
+        globalProgressChart.expected(GlobalProgressChart.CRITICAL_PATH_DURATION,
                 dashboardModel.getExpectedCriticalPathProgressByDuration());
+
         globalProgressChart.expected(GlobalProgressChart.CRITICAL_PATH_HOURS,
                 dashboardModel.getExpectedCriticalPathProgressByNumHours());
+
         globalProgressChart.expected(GlobalProgressChart.ALL_TASKS_HOURS,
                 dashboardModel.getExpectedAdvancePercentageByHours());
+
         globalProgressChart.expected(GlobalProgressChart.SPREAD_PROGRESS,
                 BigDecimal.ZERO);
 
@@ -356,9 +364,8 @@ public class DashboardController extends GenericForwardComposer {
         }
 
         private Map<Interval, Integer> getData() {
-            if (taskCompletationData == null) {
-                taskCompletationData = dashboardModel
-                        .calculateTaskCompletion();
+            if ( taskCompletationData == null ) {
+                taskCompletationData = dashboardModel.calculateTaskCompletion();
             }
             return taskCompletationData;
         }
@@ -400,9 +407,8 @@ public class DashboardController extends GenericForwardComposer {
         }
 
         private Map<Interval, Integer> getData() {
-            if (estimationAccuracyData == null) {
-                estimationAccuracyData = dashboardModel
-                        .calculateEstimationAccuracy();
+            if ( estimationAccuracyData == null ) {
+                estimationAccuracyData = dashboardModel.calculateEstimationAccuracy();
             }
             return estimationAccuracyData;
         }

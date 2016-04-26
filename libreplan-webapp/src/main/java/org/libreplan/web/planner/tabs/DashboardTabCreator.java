@@ -54,12 +54,12 @@ import org.zkoss.zul.Label;
 public class DashboardTabCreator {
 
     public static ITab create(Mode mode,
-            PlanningStateCreator planningStateCreator,
-            DashboardController dashboardController,
-            DashboardControllerGlobal dashboardControllerGlobal,
-            OrderPlanningController orderPlanningController,
-            Component breadcrumbs,
-            IResourcesSearcher resourcesSearcher) {
+                              PlanningStateCreator planningStateCreator,
+                              DashboardController dashboardController,
+                              DashboardControllerGlobal dashboardControllerGlobal,
+                              OrderPlanningController orderPlanningController,
+                              Component breadcrumbs,
+                              IResourcesSearcher resourcesSearcher) {
         return new DashboardTabCreator(mode, planningStateCreator,
                 dashboardController, dashboardControllerGlobal, orderPlanningController,
                 breadcrumbs, resourcesSearcher).build();
@@ -74,12 +74,12 @@ public class DashboardTabCreator {
     private final IResourcesSearcher resourcesSearcher;
 
     private DashboardTabCreator(Mode mode,
-            PlanningStateCreator planningStateCreator,
-            DashboardController dashboardController,
-            DashboardControllerGlobal dashboardControllerGlobal,
-            OrderPlanningController orderPlanningController,
-            Component breadcrumbs,
-            IResourcesSearcher resourcesSearcher) {
+                                PlanningStateCreator planningStateCreator,
+                                DashboardController dashboardController,
+                                DashboardControllerGlobal dashboardControllerGlobal,
+                                OrderPlanningController orderPlanningController,
+                                Component breadcrumbs,
+                                IResourcesSearcher resourcesSearcher) {
         this.mode = mode;
         this.planningStateCreator = planningStateCreator;
         this.dashboardController = dashboardController;
@@ -91,39 +91,33 @@ public class DashboardTabCreator {
 
     private ITab build() {
         return TabOnModeType.forMode(mode)
-            .forType(ModeType.GLOBAL, createDashboardGlobalTab())
-            .forType(ModeType.ORDER, createDashboardTab())
-            .create();
+                .forType(ModeType.GLOBAL, createDashboardGlobalTab())
+                .forType(ModeType.ORDER, createDashboardTab())
+                .create();
     }
 
     private ITab createDashboardTab() {
         IComponentCreator componentCreator = new IComponentCreator() {
 
             @Override
-            public org.zkoss.zk.ui.Component create(
-                    org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<String, Object>();
+            public org.zkoss.zk.ui.Component create(org.zkoss.zk.ui.Component parent) {
+                Map<String, Object> arguments = new HashMap<>();
                 arguments.put("dashboardController", dashboardController);
-                return Executions.createComponents(
-                        "/dashboard/_dashboardfororder.zul", parent,
-                        arguments);
+                return Executions.createComponents("/dashboard/_dashboardfororder.zul", parent, arguments);
             }
 
         };
-        return new CreatedOnDemandTab(_("Dashboard"), "order-dashboard",
-                componentCreator) {
+        return new CreatedOnDemandTab(_("Dashboard"), "order-dashboard", componentCreator) {
 
             @Override
             protected void afterShowAction() {
                 List<TaskElement> criticalPath = orderPlanningController.getCriticalPath();
-                if (criticalPath == null) {
-                    criticalPath = getCriticalPath(mode.getOrder(),
-                            getDesktop());
+                if ( criticalPath == null ) {
+                    criticalPath = getCriticalPath(mode.getOrder(), getDesktop());
                 }
                 PlanningState planningState = getPlanningState(mode.getOrder(), getDesktop());
                 Order currentOrder = planningState.getOrder();
-                dashboardController.setCurrentOrder(planningState,
-                        criticalPath);
+                dashboardController.setCurrentOrder(planningState, criticalPath);
                 breadcrumbs.getChildren().clear();
                 breadcrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
                 breadcrumbs.appendChild(new Label(getSchedulingLabel()));
@@ -138,18 +132,14 @@ public class DashboardTabCreator {
         IComponentCreator componentCreator = new IComponentCreator() {
 
             @Override
-            public org.zkoss.zk.ui.Component create(
-                    org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<String, Object>();
+            public org.zkoss.zk.ui.Component create(org.zkoss.zk.ui.Component parent) {
+                Map<String, Object> arguments = new HashMap<>();
                 arguments.put("dashboardControllerGlobal", dashboardControllerGlobal);
-                return Executions.createComponents(
-                        "/dashboard/_dashboardforglobal.zul", parent,
-                        arguments);
+                return Executions.createComponents("/dashboard/_dashboardforglobal.zul", parent, arguments);
             }
 
         };
-        return new CreatedOnDemandTab(_("Dashboard"), "global-dashboard",
-                componentCreator) {
+        return new CreatedOnDemandTab(_("Dashboard"), "global-dashboard", componentCreator) {
 
             @Override
             protected void afterShowAction() {
@@ -164,21 +154,17 @@ public class DashboardTabCreator {
     }
 
     private List<TaskElement> getCriticalPath(final Order order, final Desktop desktop) {
-        CriticalPathBuilder builder = CriticalPathBuilder.create(
-                planningStateCreator, resourcesSearcher);
+        CriticalPathBuilder builder = CriticalPathBuilder.create(planningStateCreator, resourcesSearcher);
         return builder.getCriticalPath(order, desktop);
     }
 
     PlanningState getPlanningState(final Order order, final Desktop desktop) {
-        IAdHocTransactionService transactionService = Registry
-                .getTransactionService();
-        return transactionService
-                .runOnReadOnlyTransaction(new IOnTransaction<PlanningState>() {
-                    @Override
-                    public PlanningState execute() {
-                        return planningStateCreator.retrieveOrCreate(desktop,
-                                order);
-                    }
-                });
+        IAdHocTransactionService transactionService = Registry.getTransactionService();
+        return transactionService.runOnReadOnlyTransaction(new IOnTransaction<PlanningState>() {
+            @Override
+            public PlanningState execute() {
+                return planningStateCreator.retrieveOrCreate(desktop, order);
+            }
+        });
     }
 }
