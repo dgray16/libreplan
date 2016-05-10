@@ -50,13 +50,14 @@ import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.ListModel;
 import org.zkoss.zul.Separator;
 import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.api.Combobox;
-import org.zkoss.zul.api.Listbox;
-import org.zkoss.zul.api.South;
+import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.South;
 
 public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     public interface IToolbarCommand {
+
         void doAction();
 
         String getLabel();
@@ -87,14 +88,20 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     private Listbox listZoomLevels;
 
     private final String FILTER_RESOURCES = _("Resources");
+
     private final String FILTER_CRITERIA = _("Generic allocation criteria");
+
     private String feedBackMessage;
+
     private Boolean filterbyResources;
 
     private boolean refreshNameFilter = true;
     private int filterByNamePosition = 0;
+
     private int numberOfGroupsByName = 10;
+
     private int lastSelectedName = 0;
+
     private final PaginationType paginationType;
 
     private WeakReferencedListeners<IPaginationFilterChangedListener> nameFilterListener =
@@ -141,10 +148,10 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         return timeTracker;
     }
 
-    public ListModel getFilters() {
+    public ListModel<String> getFilters() {
         String[] filters = new String[] { FILTER_RESOURCES, FILTER_CRITERIA };
 
-        return new SimpleListModel(filters);
+        return new SimpleListModel<>(filters);
     }
 
     public void setFilter(String filterby) {
@@ -196,7 +203,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         zoomListeners.addListener(listener);
     }
 
-    public ListModel getZoomLevels() {
+    public ListModel<ZoomLevel> getZoomLevels() {
         ZoomLevel[] selectableZoomlevels = {
                 ZoomLevel.DETAIL_ONE,
                 ZoomLevel.DETAIL_TWO,
@@ -204,7 +211,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
                 ZoomLevel.DETAIL_FOUR,
                 ZoomLevel.DETAIL_FIVE };
 
-        return new SimpleListModel(selectableZoomlevels);
+        return new SimpleListModel<>(selectableZoomlevels);
     }
 
     public void setZoomLevel(final ZoomLevel zoomLevel) {
@@ -297,6 +304,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     private MutableTreeModel<LoadTimeLine> createModelForTree() {
         MutableTreeModel<LoadTimeLine> result = MutableTreeModel.create(LoadTimeLine.class);
+
         for (LoadTimeLine loadTimeLine : this.getGroupsToShow()) {
             result.addToRoot(loadTimeLine);
             result = addNodes(result, loadTimeLine);
@@ -392,7 +400,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         savePreviousData();
     }
 
-    public Component getFirstOptionalFilter() {
+    Component getFirstOptionalFilter() {
         return firstOptionalFilter;
     }
 
@@ -400,7 +408,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         this.firstOptionalFilter = firstOptionalFilter;
     }
 
-    public Component getSecondOptionalFilter() {
+    Component getSecondOptionalFilter() {
         return secondOptionalFilter;
     }
 
@@ -408,7 +416,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         this.secondOptionalFilter = secondOptionalFilter;
     }
 
-    public void clearComponents() {
+    void clearComponents() {
         getFellow("insertionPointLeftPanel").getChildren().clear();
         getFellow("insertionPointRightPanel").getChildren().clear();
         getFellow("insertionPointTimetracker").getChildren().clear();
@@ -469,7 +477,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         Comboitem lastItem = new Comboitem();
         lastItem.setLabel(_("All"));
         lastItem.setDescription(_("Show all elements"));
-        lastItem.setValue(new Integer(-1));
+        lastItem.setValue(-1);
         filterByNameCombo.appendChild(lastItem);
 
         filterByNameCombo.setSelectedIndex(0);
@@ -493,10 +501,10 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     public void onSelectFilterByName(Combobox comboByName) {
-        if ( comboByName.getSelectedItemApi() == null ) {
+        if ( comboByName.getSelectedItem() == null ) {
             resetComboByName(comboByName);
         } else {
-            Integer filterByNamePosition = (Integer) comboByName.getSelectedItemApi().getValue();
+            Integer filterByNamePosition = comboByName.getSelectedItem().getValue();
 
             if ( paginationType != PaginationType.NONE ) {
                 this.filterByNamePosition = filterByNamePosition;
@@ -551,7 +559,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     public void setInternalPaginationDisabled(boolean disabled) {
         Combobox combo = ((Combobox) getFellow("filterByNameCombo"));
         if ( combo != null && combo.isDisabled() != disabled ) {
-            filterByNamePosition = disabled? -1 : (Integer) combo.getSelectedItemApi().getValue();
+            filterByNamePosition = disabled? -1 : (Integer) combo.getSelectedItem().getValue();
             combo.setDisabled(disabled);
         }
     }

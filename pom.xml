@@ -445,17 +445,17 @@
             <dependency>
                 <groupId>org.zkoss.zk</groupId>
                 <artifactId>zul</artifactId>
-                <version>5.0.11</version>
+                <version>8.0.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.zkoss.zk</groupId>
                 <artifactId>zkplus</artifactId>
-                <version>5.0.11</version>
+                <version>8.0.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.zkoss.zk</groupId>
                 <artifactId>zk</artifactId>
-                <version>5.0.11</version>
+                <version>8.0.1.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.jruby</groupId>

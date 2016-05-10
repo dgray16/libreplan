@@ -420,7 +420,8 @@ public class MutableTreeModelTest {
 
         model.remove(prueba2);
 
-        assertThat(getLast(removeEventsFired).getParent(), equalTo((Object) model.getRoot()));
+        //TODO CHECK THIS CODE ?
+        assertThat(getLast(removeEventsFired).getPath(), equalTo((Object) model.getRoot()));
 
         checkIsValid(getLast(removeEventsFired), TreeDataEvent.INTERVAL_REMOVED, model.getRoot(), 1);
 
@@ -571,10 +572,13 @@ public class MutableTreeModelTest {
         checkIsValid(event, type, expectedParent, expectedPosition, expectedPosition);
     }
 
-    private void checkIsValid(
-            TreeDataEvent event, int type, Prueba expectedParent, int expectedFromPosition, int expectedToPosition) {
+    private void checkIsValid(TreeDataEvent event,
+                              int type, Prueba expectedParent,
+                              int expectedFromPosition,
+                              int expectedToPosition) {
 
-        assertEquals(expectedParent, event.getParent());
+        //TODO CHECK THIS CODE ?
+        assertEquals(expectedParent, event.getPath());
         assertThat(event.getIndexFrom(), equalTo(expectedFromPosition));
         assertThat(event.getIndexTo(), equalTo(expectedToPosition));
         assertThat(event.getType(), equalTo(type));

@@ -73,68 +73,67 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.South;
-import org.zkoss.zul.api.Combobox;
+import org.zkoss.zul.Combobox;
 
 public class Planner extends HtmlMacroComponent  {
 
-    private static final Log PROFILING_LOG = ProfilingLogFactory
-            .getLog(Planner.class);
+    private static final Log PROFILING_LOG = ProfilingLogFactory.getLog(Planner.class);
 
-    public static boolean guessContainersExpandedByDefaultGivenPrintParameters(
-            Map<String, String> printParameters) {
+    public static boolean guessContainersExpandedByDefaultGivenPrintParameters(Map<String, String> printParameters) {
         return guessContainersExpandedByDefault(convertToURLParameters(printParameters));
     }
 
-    private static Map<String, String[]> convertToURLParameters(
-            Map<String, String> printParameters) {
-        Map<String, String[]> result = new HashMap<String, String[]>();
+    private static Map<String, String[]> convertToURLParameters(Map<String, String> printParameters) {
+        Map<String, String[]> result = new HashMap<>();
         for (Entry<String, String> each : printParameters.entrySet()) {
             result.put(each.getKey(), new String[] { each.getValue() });
         }
+
         return result;
     }
 
-    public static boolean guessContainersExpandedByDefault(
-            Map<String, String[]> queryURLParameters) {
+    public static boolean guessContainersExpandedByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("expanded");
-        if (values == null) {
+        if ( values == null ) {
             return false;
         }
+
         return toLowercaseSet(values).contains("all");
     }
 
-    public static boolean guessShowAdvancesByDefault(
-            Map<String, String[]> queryURLParameters) {
+    public static boolean guessShowAdvancesByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("advances");
-        if (values == null) {
+        if ( values == null ) {
             return false;
         }
+
         return toLowercaseSet(values).contains("all");
     }
 
-    public static boolean guessShowReportedHoursByDefault(
-            Map<String, String[]> queryURLParameters) {
+    public static boolean guessShowReportedHoursByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("reportedHours");
-        if (values == null) {
+        if ( values == null ) {
             return false;
         }
+
         return toLowercaseSet(values).contains("all");
     }
 
-    public static boolean guessShowMoneyCostBarByDefault(
-            Map<String, String[]> queryURLParameters) {
+    public static boolean guessShowMoneyCostBarByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("moneyCostBar");
-        if (values == null) {
+        if ( values == null ) {
             return false;
         }
+
         return toLowercaseSet(values).contains("all");
     }
 
     private static Set<String> toLowercaseSet(String[] values) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (String each : values) {
             result.add(each.toLowerCase());
         }
+
         return result;
     }
 
@@ -186,7 +185,7 @@ public class Planner extends HtmlMacroComponent  {
         if (ganttPanel == null) {
             return null;
         }
-        List<Object> children = ganttPanel.getChildren();
+        List<Component> children = ganttPanel.getChildren();
         return ComponentsFinder.findComponentsOfType(TaskList.class, children).get(0);
     }
 
@@ -202,20 +201,22 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     private int calculateMinimumWidthForTaskNameColumn(boolean expand, List<Task> tasks) {
+
         IDomainAndBeansMapper<?> mapper = getContext().getMapper();
         int widest = 0;
+
         for(Task task : tasks) {
-            int numberOfAncestors =
-                mapper.findPositionFor(task).getAncestors().size();
+            int numberOfAncestors = mapper.findPositionFor(task).getAncestors().size();
             int numberOfCharacters = task.getName().length();
             widest = Math.max(widest,
                     numberOfCharacters * PIXELS_PER_CHARACTER +
                     numberOfAncestors * PIXELS_PER_TASK_LEVEL);
-            if(expand && !task.isLeaf()) {
-                widest = Math.max(widest,
-                        calculateMinimumWidthForTaskNameColumn(expand, task.getTasks()));
+
+            if( expand && !task.isLeaf() ) {
+                widest = Math.max(widest, calculateMinimumWidthForTaskNameColumn(expand, task.getTasks()));
             }
         }
+
         return widest;
     }
 
@@ -228,21 +229,24 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public DependencyList getDependencyList() {
-        if (ganttPanel == null) {
+        if ( ganttPanel == null ) {
             return null;
         }
-        List<Object> children = ganttPanel.getChildren();
-        List<DependencyList> found = ComponentsFinder.findComponentsOfType(DependencyList.class,
-                children);
-        if (found.isEmpty()) {
+
+        List<Component> children = ganttPanel.getChildren();
+        List<DependencyList> found = ComponentsFinder.findComponentsOfType(DependencyList.class, children);
+
+        if ( found.isEmpty() ) {
             return null;
         }
+
         return found.get(0);
     }
 
     public void addTasks(Position position, Collection<? extends Task> newTasks) {
         TaskList taskList = getTaskList();
-        if (taskList != null && leftPane != null) {
+
+        if ( taskList != null && leftPane != null ) {
             taskList.addTasks(position, newTasks);
             leftPane.addTasks(position, newTasks);
         }
@@ -254,11 +258,12 @@ public class Planner extends HtmlMacroComponent  {
 
     void addDependencies(Collection<? extends Dependency> dependencies) {
         DependencyList dependencyList = getDependencyList();
-        if (dependencyList == null) {
+
+        if ( dependencyList == null ) {
             return;
         }
-        for (DependencyComponent d : getTaskList().asDependencyComponents(
-                dependencies)) {
+
+        for (DependencyComponent d : getTaskList().asDependencyComponents(dependencies)) {
             dependencyList.addDependencyComponent(d);
         }
     }
@@ -267,19 +272,21 @@ public class Planner extends HtmlMacroComponent  {
         ZoomLevel[] selectableZoomlevels = { ZoomLevel.DETAIL_ONE,
                 ZoomLevel.DETAIL_TWO, ZoomLevel.DETAIL_THREE,
                 ZoomLevel.DETAIL_FOUR, ZoomLevel.DETAIL_FIVE };
+
         return new SimpleListModel(selectableZoomlevels);
     }
 
     public void setZoomLevel(final ZoomLevel zoomLevel, int scrollLeft) {
-        if (ganttPanel == null) {
+        if ( ganttPanel == null ) {
             return;
         }
+
         this.zoomLevel = zoomLevel;
         ganttPanel.setZoomLevel(zoomLevel, scrollLeft);
     }
 
     public void zoomIncrease() {
-        if (ganttPanel == null) {
+        if ( ganttPanel == null ) {
             return;
         }
         LongOperationFeedback.execute(ganttPanel, new ILongOperation() {
@@ -297,7 +304,7 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public void zoomDecrease() {
-        if (ganttPanel == null) {
+        if ( ganttPanel == null ) {
             return;
         }
         LongOperationFeedback.execute(ganttPanel, new ILongOperation() {
@@ -314,13 +321,13 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public <T> void setConfiguration(PlannerConfiguration<T> configuration) {
-        if (configuration == null) {
+        if ( configuration == null ) {
             return;
         }
 
-        if (isShowingLabels)
+        if ( isShowingLabels )
             Clients.evalJavaScript("ganttz.TaskList.getInstance().showAllTaskLabels()");
-        if (isShowingResources)
+        if ( isShowingResources )
             Clients.evalJavaScript("ganttz.TaskList.getInstance().showResourceTooltips()");
 
         this.diagramGraph = GanttDiagramGraph.create(
@@ -330,22 +337,25 @@ public class Planner extends HtmlMacroComponent  {
                 configuration.isDependenciesConstraintsHavePriority());
         FunctionalityExposedForExtensions<T> newContext = new FunctionalityExposedForExtensions<T>(
                 this, configuration, diagramGraph);
+
         addGraphChangeListenersFromConfiguration(configuration);
-        this.contextualizedGlobalCommands = contextualize(newContext,
-                configuration.getGlobalCommands());
-        this.commandsOnTasksContextualized = contextualize(newContext,
-                configuration.getCommandsOnTasks());
-        goingDownInLastArrowCommand = contextualize(newContext, configuration
-                .getGoingDownInLastArrowCommand());
-        doubleClickCommand = contextualize(newContext, configuration
-                .getDoubleClickCommand());
+
+        this.contextualizedGlobalCommands = contextualize(newContext, configuration.getGlobalCommands());
+
+        this.commandsOnTasksContextualized = contextualize(newContext, configuration.getCommandsOnTasks());
+
+        goingDownInLastArrowCommand = contextualize(newContext, configuration.getGoingDownInLastArrowCommand());
+
+        doubleClickCommand = contextualize(newContext, configuration.getDoubleClickCommand());
+
         this.context = newContext;
         this.disabilityConfiguration = configuration;
+
         resettingPreviousComponentsToNull();
         long timeAddingData = System.currentTimeMillis();
         newContext.add(configuration.getData());
-        PROFILING_LOG.debug("It took to add data: "
-                + (System.currentTimeMillis() - timeAddingData) + " ms");
+
+        PROFILING_LOG.debug("It took to add data: " + (System.currentTimeMillis() - timeAddingData) + " ms");
         long timeSetupingAndAddingComponents = System.currentTimeMillis();
         setupComponents();
         setAt("insertionPointLeftPanel", leftPane);
@@ -361,15 +371,16 @@ public class Planner extends HtmlMacroComponent  {
         timetrackerheader.afterCompose();
 
         Component chartComponent = configuration.getChartComponent();
-        if (chartComponent != null) {
+
+        if ( chartComponent != null ) {
             setAt("insertionPointChart", chartComponent);
         }
 
-        if (!configuration.isCriticalPathEnabled()) {
+        if ( !configuration.isCriticalPathEnabled() ) {
             Button showCriticalPathButton = (Button) getFellow("showCriticalPath");
             showCriticalPathButton.setVisible(false);
         }
-        if (!configuration.isExpandAllEnabled()) {
+        if ( !configuration.isExpandAllEnabled() ) {
             Button expandAllButton = (Button) getFellow("expandAll");
             expandAllButton.setVisible(false);
         }
@@ -377,11 +388,11 @@ public class Planner extends HtmlMacroComponent  {
             Button flattenTree = (Button) getFellow("flattenTree");
             flattenTree.setVisible(false);
         }
-        if (!configuration.isShowAllResourcesEnabled()) {
+        if ( !configuration.isShowAllResourcesEnabled() ) {
             Button showAllResources = (Button) getFellow("showAllResources");
             showAllResources.setVisible(false);
         }
-        if (!configuration.isMoneyCostBarEnabled()) {
+        if ( !configuration.isMoneyCostBarEnabled() ) {
             Button showMoneyCostBarButton = (Button) getFellow("showMoneyCostBar");
             showMoneyCostBarButton.setVisible(false);
         }
@@ -393,17 +404,15 @@ public class Planner extends HtmlMacroComponent  {
 
         PROFILING_LOG
                 .debug("it took doing the setup of components and adding them: "
-                        + (System.currentTimeMillis() - timeSetupingAndAddingComponents)
-                        + " ms");
+                        + (System.currentTimeMillis() - timeSetupingAndAddingComponents) + " ms");
 
         setAuService(new AuService(){
             public boolean service(AuRequest request, boolean everError){
                 String command = request.getCommand();
-                String[] requestData;
                 int zoomindex;
                 int scrollLeft;
 
-                if (command.equals("onZoomLevelChange")){
+                if ( command.equals("onZoomLevelChange") ){
                     zoomindex=  (Integer) retrieveData(request, "zoomindex");
                     scrollLeft = (Integer) retrieveData(request, "scrollLeft");
 
@@ -412,14 +421,14 @@ public class Planner extends HtmlMacroComponent  {
                             scrollLeft);
                     return true;
                 }
+
                 return false;
             }
 
             private Object retrieveData(AuRequest request, String key){
                 Object value = request.getData().get(key);
-                if ( value == null)
-                    throw new UiException(MZk.ILLEGAL_REQUEST_WRONG_DATA,
-                            new Object[] { key, this });
+                if ( value == null )
+                    throw new UiException(MZk.ILLEGAL_REQUEST_WRONG_DATA, new Object[] { key, this });
 
                 return value;
             }
@@ -437,37 +446,37 @@ public class Planner extends HtmlMacroComponent  {
         insertionPoint.appendChild(component);
     }
 
-    private <T> List<CommandOnTaskContextualized<T>> contextualize(
-            FunctionalityExposedForExtensions<T> context,
-            List<ICommandOnTask<T>> commands) {
-        List<CommandOnTaskContextualized<T>> result = new ArrayList<CommandOnTaskContextualized<T>>();
+    private <T> List<CommandOnTaskContextualized<T>> contextualize(FunctionalityExposedForExtensions<T> context,
+                                                                   List<ICommandOnTask<T>> commands) {
+        List<CommandOnTaskContextualized<T>> result = new ArrayList<>();
         for (ICommandOnTask<T> c : commands) {
             result.add(contextualize(context, c));
         }
+
         return result;
     }
 
-    private <T> CommandOnTaskContextualized<T> contextualize(
-            FunctionalityExposedForExtensions<T> context,
-            ICommandOnTask<T> commandOnTask) {
-        return CommandOnTaskContextualized.create(commandOnTask, context
-                .getMapper(), context);
+    private <T> CommandOnTaskContextualized<T> contextualize(FunctionalityExposedForExtensions<T> context,
+                                                             ICommandOnTask<T> commandOnTask) {
+
+        return CommandOnTaskContextualized.create(commandOnTask, context.getMapper(), context);
     }
 
-    private <T> CommandContextualized<T> contextualize(IContext<T> context,
-            ICommand<T> command) {
-        if (command == null) {
+    private <T> CommandContextualized<T> contextualize(IContext<T> context, ICommand<T> command) {
+        if ( command == null ) {
             return null;
         }
+
         return CommandContextualized.create(command, context);
     }
 
     private <T> List<CommandContextualized<T>> contextualize(
             IContext<T> context, Collection<? extends ICommand<T>> commands) {
-        ArrayList<CommandContextualized<T>> result = new ArrayList<CommandContextualized<T>>();
+        ArrayList<CommandContextualized<T>> result = new ArrayList<>();
         for (ICommand<T> command : commands) {
             result.add(contextualize(context, command));
         }
+
         return result;
     }
 
@@ -482,8 +491,7 @@ public class Planner extends HtmlMacroComponent  {
             }
         };
         this.leftPane = new LeftPane(disabilityConfiguration, this, predicate);
-        this.ganttPanel = new GanttPanel(this,
-                commandsOnTasksContextualized, doubleClickCommand,
+        this.ganttPanel = new GanttPanel(this, commandsOnTasksContextualized, doubleClickCommand,
                 disabilityConfiguration, predicate);
 
         Button button = (Button) getFellow("btnPrint");
@@ -502,16 +510,18 @@ public class Planner extends HtmlMacroComponent  {
     private void insertGlobalCommands() {
         Component commontoolbar = getCommonCommandsInsertionPoint();
         Component plannerToolbar = getSpecificCommandsInsertionPoint();
-        if (!contextualizedGlobalCommands.isEmpty()) {
+
+        if ( !contextualizedGlobalCommands.isEmpty() ) {
             commontoolbar.getChildren().removeAll(commontoolbar.getChildren());
         }
+
         for (CommandContextualized<?> c : contextualizedGlobalCommands) {
             // Comparison through icon as name is internationalized
-            if (c.getCommand().isPlannerCommand()) {
+            if ( c.getCommand().isPlannerCommand() ) {
                 // FIXME Avoid hard-coding the number of planner commands
                 // At this moment we have 2 planner commands: reassign and adapt
                 // planning
-                if (plannerToolbar.getChildren().size() < 2) {
+                if ( plannerToolbar.getChildren().size() < 2 ) {
                     plannerToolbar.appendChild(c.toButton());
                 }
             } else {
@@ -522,13 +532,14 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     private Component getCommonCommandsInsertionPoint() {
-        Component insertionPoint = getPage().getFellow(
-                "perspectiveButtonsInsertionPoint");
+        Component insertionPoint = getPage().getFellow("perspectiveButtonsInsertionPoint");
+
         return insertionPoint;
     }
 
     private Component getSpecificCommandsInsertionPoint() {
         Component insertionPoint = getFellow("plannerButtonsInsertionPoint");
+
         return insertionPoint;
     }
 
@@ -609,8 +620,8 @@ public class Planner extends HtmlMacroComponent  {
 
     public void showCriticalPath() {
         Button showCriticalPathButton = (Button) getFellow("showCriticalPath");
-        if (disabilityConfiguration.isCriticalPathEnabled()) {
-            if (isShowingCriticalPath) {
+        if ( disabilityConfiguration.isCriticalPathEnabled() ) {
+            if ( isShowingCriticalPath ) {
                 context.hideCriticalPath();
                 diagramGraph.removePostGraphChangeListener(showCriticalPathOnChange);
                 showCriticalPathButton.setSclass("planner-command");
@@ -621,26 +632,29 @@ public class Planner extends HtmlMacroComponent  {
                 showCriticalPathButton.setSclass("planner-command clicked");
                 showCriticalPathButton.setTooltiptext(_("Hide critical path"));
             }
+
             isShowingCriticalPath = !isShowingCriticalPath;
         }
     }
 
     public void forcedShowAdvances() {
-        if (!isShowingAdvances) {
+        if ( !isShowingAdvances ) {
             showAdvances();
         }
     }
 
     public void showAdvances() {
         Button showAdvancesButton = (Button) getFellow("showAdvances");
-        if (disabilityConfiguration.isAdvancesEnabled()) {
+        if ( disabilityConfiguration.isAdvancesEnabled() ) {
             Combobox progressTypesCombo = (Combobox) getFellow("cbProgressTypes");
-            if (isShowingAdvances) {
+
+            if ( isShowingAdvances ) {
                 context.hideAdvances();
                 diagramGraph.removePostGraphChangeListener(showAdvanceOnChange);
                 showAdvancesButton.setSclass("planner-command");
                 showAdvancesButton.setTooltiptext(_("Show progress"));
-                if (progressTypesCombo.getItemCount() > 0) {
+
+                if ( progressTypesCombo.getItemCount() > 0 ) {
                     progressTypesCombo.setSelectedIndex(0);
                 }
             } else {
@@ -649,75 +663,73 @@ public class Planner extends HtmlMacroComponent  {
                 showAdvancesButton.setSclass("planner-command clicked");
                 showAdvancesButton.setTooltiptext(_("Hide progress"));
             }
+
             isShowingAdvances = !isShowingAdvances;
         }
     }
 
     public void showReportedHours() {
         Button showReportedHoursButton = (Button) getFellow("showReportedHours");
-        if (disabilityConfiguration.isReportedHoursEnabled()) {
-            if (isShowingReportedHours) {
+        if ( disabilityConfiguration.isReportedHoursEnabled() ) {
+
+            if ( isShowingReportedHours ) {
                 context.hideReportedHours();
-                diagramGraph
-                        .removePostGraphChangeListener(showReportedHoursOnChange);
+                diagramGraph.removePostGraphChangeListener(showReportedHoursOnChange);
                 showReportedHoursButton.setSclass("planner-command");
-                showReportedHoursButton
-                        .setTooltiptext(_("Show reported hours"));
+                showReportedHoursButton.setTooltiptext(_("Show reported hours"));
             } else {
                 context.showReportedHours();
-                diagramGraph
-                        .addPostGraphChangeListener(showReportedHoursOnChange);
+                diagramGraph.addPostGraphChangeListener(showReportedHoursOnChange);
                 showReportedHoursButton.setSclass("planner-command clicked");
-                showReportedHoursButton
-                        .setTooltiptext(_("Hide reported hours"));
+                showReportedHoursButton.setTooltiptext(_("Hide reported hours"));
             }
+
             isShowingReportedHours = !isShowingReportedHours;
         }
     }
 
     public void showMoneyCostBar() {
         Button showMoneyCostBarButton = (Button) getFellow("showMoneyCostBar");
-        if (disabilityConfiguration.isMoneyCostBarEnabled()) {
-            if (isShowingMoneyCostBar) {
+        if ( disabilityConfiguration.isMoneyCostBarEnabled() ) {
+            if ( isShowingMoneyCostBar ) {
                 context.hideMoneyCostBar();
-                diagramGraph
-                        .removePostGraphChangeListener(showMoneyCostBarOnChange);
+                diagramGraph.removePostGraphChangeListener(showMoneyCostBarOnChange);
                 showMoneyCostBarButton.setSclass("planner-command");
                 showMoneyCostBarButton.setTooltiptext(_("Show money cost bar"));
             } else {
                 context.showMoneyCostBar();
-                diagramGraph
-                        .addPostGraphChangeListener(showMoneyCostBarOnChange);
+                diagramGraph.addPostGraphChangeListener(showMoneyCostBarOnChange);
                 showMoneyCostBarButton.setSclass("planner-command clicked");
                 showMoneyCostBarButton.setTooltiptext(_("Hide money cost bar"));
             }
+
             isShowingMoneyCostBar = !isShowingMoneyCostBar;
         }
     }
 
     public void showAllLabels() {
         Button showAllLabelsButton = (Button) getFellow("showAllLabels");
-        if (isShowingLabels) {
+        if ( isShowingLabels ) {
             Clients.evalJavaScript("ganttz.TaskList.getInstance().hideAllTaskLabels()");
             showAllLabelsButton.setSclass("planner-command show-labels");
         } else {
             Clients.evalJavaScript("ganttz.TaskList.getInstance().showAllTaskLabels()");
-            showAllLabelsButton
-                    .setSclass("planner-command show-labels clicked");
+            showAllLabelsButton.setSclass("planner-command show-labels clicked");
         }
+
         isShowingLabels = !isShowingLabels;
     }
 
     public void showAllResources() {
         Button showAllLabelsButton = (Button) getFellow("showAllResources");
-        if (isShowingResources) {
+        if ( isShowingResources ) {
             Clients.evalJavaScript("ganttz.TaskList.getInstance().hideResourceTooltips()");
             showAllLabelsButton.setSclass("planner-command show-resources");
         } else {
             Clients.evalJavaScript("ganttz.TaskList.getInstance().showResourceTooltips()");
-            showAllLabelsButton
-            .setSclass("planner-command show-resources clicked");
+            showAllLabelsButton.setSclass("planner-command show-resources clicked");
         }
+
         isShowingResources = !isShowingResources;
     }
 
@@ -728,10 +740,10 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public ZoomLevel getZoomLevel() {
-        if (ganttPanel == null) {
-            return zoomLevel != null ? zoomLevel
-                    : ZoomLevel.DETAIL_ONE;
+        if ( ganttPanel == null ) {
+            return zoomLevel != null ? zoomLevel : ZoomLevel.DETAIL_ONE;
         }
+
         return ganttPanel.getTimeTracker().getDetailLevel();
     }
 
@@ -743,8 +755,7 @@ public class Planner extends HtmlMacroComponent  {
         return containersExpandedByDefault;
     }
 
-    public void setAreContainersExpandedByDefault(
-            boolean containersExpandedByDefault) {
+    public void setAreContainersExpandedByDefault(boolean containersExpandedByDefault) {
         this.containersExpandedByDefault = containersExpandedByDefault;
     }
 
@@ -761,8 +772,7 @@ public class Planner extends HtmlMacroComponent  {
         this.isShowingAdvances = shownAdvanceByDefault;
     }
 
-    public void setAreShownReportedHoursByDefault(
-            boolean shownReportedHoursByDefault) {
+    public void setAreShownReportedHoursByDefault(boolean shownReportedHoursByDefault) {
         this.shownReportedHoursByDefault = shownReportedHoursByDefault;
     }
 
@@ -774,8 +784,7 @@ public class Planner extends HtmlMacroComponent  {
         return (areShownReportedHoursByDefault() || isShowingReportedHours);
     }
 
-    public void setAreShownMoneyCostBarByDefault(
-            boolean shownMoneyCostBarByDefault) {
+    public void setAreShownMoneyCostBarByDefault(boolean shownMoneyCostBarByDefault) {
         this.shownMoneyCostBarByDefault = shownMoneyCostBarByDefault;
     }
 
@@ -789,8 +798,9 @@ public class Planner extends HtmlMacroComponent  {
 
     public void expandAll() {
         Button expandAllButton = (Button) getFellow("expandAll");
-        if (disabilityConfiguration.isExpandAllEnabled()) {
-            if (isExpandAll) {
+        if ( disabilityConfiguration.isExpandAllEnabled() ) {
+
+            if ( isExpandAll ) {
                 context.collapseAll();
                 expandAllButton.setSclass("planner-command");
             } else {
@@ -798,12 +808,13 @@ public class Planner extends HtmlMacroComponent  {
                 expandAllButton.setSclass("planner-command clicked");
             }
         }
+
         isExpandAll = !isExpandAll;
     }
 
     public void expandAllAlways() {
         Button expandAllButton = (Button) getFellow("expandAll");
-        if (disabilityConfiguration.isExpandAllEnabled()) {
+        if ( disabilityConfiguration.isExpandAllEnabled() ) {
                 context.expandAll();
                 expandAllButton.setSclass("planner-command clicked");
         }
@@ -811,8 +822,7 @@ public class Planner extends HtmlMacroComponent  {
 
     public void updateSelectedZoomLevel() {
         ganttPanel.getTimeTracker().setZoomLevel(zoomLevel);
-        Listitem selectedItem = (Listitem) listZoomLevels.getItems().get(
-                zoomLevel.ordinal());
+        Listitem selectedItem = listZoomLevels.getItems().get(zoomLevel.ordinal());
         listZoomLevels.setSelectedItem(selectedItem);
         listZoomLevels.invalidate();
     }
@@ -827,18 +837,18 @@ public class Planner extends HtmlMacroComponent  {
         getTaskList().setPredicate(predicate);
         getDependencyList().redrawDependencies();
 
-        if (isShowingLabels) {
+        if ( isShowingLabels ) {
             Clients.evalJavaScript("ganttz.TaskList.getInstance().showAllTaskLabels();");
         }
 
-        if (isShowingResources) {
+        if ( isShowingResources ) {
             Clients.evalJavaScript("ganttz.TaskList.getInstance().showResourceTooltips();");
         }
     }
 
     public void flattenTree() {
         Button flattenTreeButton = (Button) getFellow("flattenTree");
-        if (disabilityConfiguration.isFlattenTreeEnabled()) {
+        if ( disabilityConfiguration.isFlattenTreeEnabled() ) {
             if (isFlattenTree) {
                 predicate.setFilterContainers(false);
                 flattenTreeButton.setSclass("planner-command");
@@ -846,8 +856,10 @@ public class Planner extends HtmlMacroComponent  {
                 predicate.setFilterContainers(true);
                 flattenTreeButton.setSclass("planner-command clicked");
             }
+
             setTaskListPredicate(predicate);
         }
+
         isFlattenTree = !isFlattenTree;
         Clients.evalJavaScript("ganttz.Planner.getInstance().adjustScrollableDimensions()");
     }
@@ -872,17 +884,13 @@ public class Planner extends HtmlMacroComponent  {
         return visibleChart;
     }
 
-    public void addChartVisibilityListener(
-            IChartVisibilityChangedListener chartVisibilityChangedListener) {
+    public void addChartVisibilityListener(IChartVisibilityChangedListener chartVisibilityChangedListener) {
         chartVisibilityListeners.addListener(chartVisibilityChangedListener);
     }
 
-    public void addGraphChangeListenersFromConfiguration(
-            PlannerConfiguration<?> configuration) {
-        diagramGraph.addPreChangeListeners(configuration
-                .getPreChangeListeners());
-        diagramGraph.addPostChangeListeners(configuration
-                .getPostChangeListeners());
+    public void addGraphChangeListenersFromConfiguration(PlannerConfiguration<?> configuration) {
+        diagramGraph.addPreChangeListeners(configuration.getPreChangeListeners());
+        diagramGraph.addPostChangeListeners(configuration.getPostChangeListeners());
     }
 
     public boolean isShowingCriticalPath() {
@@ -911,15 +919,16 @@ public class Planner extends HtmlMacroComponent  {
 
     public Button findCommandComponent(String name) {
         for (CommandContextualized<?> c : contextualizedGlobalCommands) {
-            if (c.getCommand().getName().equals(name)) {
+            if ( c.getCommand().getName().equals(name) ) {
                 return c.toButton();
             }
         }
+
         return null;
     }
 
     public String getWidgetClass(){
-        return getDefinition().getDefaultWidgetClass();
+        return getDefinition().getDefaultWidgetClass(this);
     }
 
     public List getCriticalPath() {
@@ -928,7 +937,7 @@ public class Planner extends HtmlMacroComponent  {
 
     public void updateCompletion(String progressType) {
         TaskList taskList = getTaskList();
-        if (taskList != null) {
+        if ( taskList != null ) {
             taskList.updateCompletion(progressType);
             // FIXME Bug #1270
             for (TaskComponent each : taskList.getTaskComponents()) {
@@ -937,12 +946,13 @@ public class Planner extends HtmlMacroComponent  {
         }
     }
 
-    public TaskComponent getTaskComponentRelatedTo(
-            org.zkoss.ganttz.data.Task task) {
+    public TaskComponent getTaskComponentRelatedTo(Task task) {
         TaskList taskList = getTaskList();
-        if (taskList != null) {
+        if ( taskList != null ) {
+
             for (TaskComponent each : taskList.getTaskComponents()) {
-                if (each.getTask().equals(task)) {
+
+                if ( each.getTask().equals(task) ) {
                     return each;
                 }
             }

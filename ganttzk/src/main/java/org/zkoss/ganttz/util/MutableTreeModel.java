@@ -45,14 +45,14 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
     public interface IChildrenExtractor<T> {
 
-        public List<? extends T> getChildren(T parent);
+        List<? extends T> getChildren(T parent);
 
     }
 
     private static class Node<T> {
         private T value;
 
-        private List<Node<T>> children = new LinkedList<Node<T>>();
+        private List<Node<T>> children = new LinkedList<>();
 
         private Node<T> parentNode;
 
@@ -64,7 +64,8 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
             for (Node<T> n : nodes) {
                 n.parentNode = this;
             }
-            if (position == null) {
+
+            if ( position == null ) {
                 children.addAll(nodes);
             } else {
                 children.addAll(position, nodes);
@@ -73,44 +74,51 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
         public int[] down(Node<T> node) {
             ListIterator<Node<T>> listIterator = children.listIterator();
+
             while (listIterator.hasNext()) {
                 Node<T> current = listIterator.next();
-                if (current == node && listIterator.hasNext()) {
+
+                if ( current == node && listIterator.hasNext() ) {
                     int nextIndex = listIterator.nextIndex();
                     listIterator.remove();
                     listIterator.next();
                     listIterator.add(node);
+
                     return new int[] { nextIndex - 1, nextIndex };
                 }
             }
+
             return new int[] {};
         }
 
         public int[] up(Node<T> node) {
-            ListIterator<Node<T>> listIterator = children.listIterator(children
-                    .size());
+            ListIterator<Node<T>> listIterator = children.listIterator(children.size());
+
             while (listIterator.hasPrevious()) {
                 Node<T> current = listIterator.previous();
-                if (current == node && listIterator.hasPrevious()) {
+
+                if ( current == node && listIterator.hasPrevious() ) {
                     listIterator.remove();
                     int previousIndex = listIterator.previousIndex();
                     listIterator.previous();
                     listIterator.add(current);
+
                     return new int[] { previousIndex, previousIndex + 1 };
                 }
             }
+
             return new int[] {};
         }
 
         private void until(LinkedList<Integer> result, Node<T> parent) {
-            if (parent.equals(this)) {
-                return;
-            } else if (isRoot()) {
-                // final reached, but parent not found
-                result.clear();
-            } else {
-                result.add(0, this.parentNode.getIndexOf(this));
-                this.parentNode.until(result, parent);
+            if (!parent.equals(this)) {
+                if (isRoot()) {
+                    // final reached, but parent not found
+                    result.clear();
+                } else {
+                    result.add(0, this.parentNode.getIndexOf(this));
+                    this.parentNode.until(result, parent);
+                }
             }
 
         }
@@ -124,14 +132,16 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         }
 
         public LinkedList<Integer> until(Node<T> parent) {
-            LinkedList<Integer> result = new LinkedList<Integer>();
+            LinkedList<Integer> result = new LinkedList<>();
             until(result, parent);
+
             return result;
         }
 
         public int remove() {
             int positionInParent = parentNode.getIndexOf(this);
             parentNode.children.remove(positionInParent);
+
             return positionInParent;
         }
 
@@ -143,10 +153,10 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
     private final Node<T> root;
 
-    private transient Map<T, Node<T>> nodesByDomainObject = new WeakHashMap<T, Node<T>>();
+    private transient Map<T, Node<T>> nodesByDomainObject = new WeakHashMap<>();
 
     private static <T> Node<T> wrapOne(T object) {
-        return new Node<T>(object);
+        return new Node<>(object);
     }
 
     private static <T> List<Node<T>> wrap(T... objects) {
@@ -154,10 +164,12 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private static <T> List<Node<T>> wrap(Collection<? extends T> objects) {
-        List<Node<T>> result = new ArrayList<Node<T>>();
+        List<Node<T>> result = new ArrayList<>();
+
         for (T o : objects) {
             result.add(wrapOne(o));
         }
+
         return result;
     }
 
@@ -170,33 +182,37 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     public static <T> MutableTreeModel<T> create(Class<T> type) {
-        return new MutableTreeModel<T>(type, new Node<T>(null));
+        return new MutableTreeModel<>(type, new Node<T>(null));
     }
 
     public static <T> MutableTreeModel<T> create(Class<T> type, T root) {
-        return new MutableTreeModel<T>(type, wrapOne(root));
+        return new MutableTreeModel<>(type, wrapOne(root));
     }
 
     private MutableTreeModel(Class<T> type, Node<T> root) {
         super(root);
-        if (type == null) {
+
+        if ( type == null ) {
             throw new IllegalArgumentException("type cannot be null");
         }
         nodesByDomainObject.put(unwrap(root), root);
         this.root = root;
     }
 
-    @Override
+
     public int[] getPath(Object parent, Object last) {
         Node<T> parentNode = find(parent);
         Node<T> lastNode = find(last);
-        if (parentNode == null || lastNode == null) {
+
+        if ( parentNode == null || lastNode == null)  {
             return new int[0];
         }
         List<Integer> path = lastNode.until(parentNode);
+
         return asIntArray(path);
     }
 
+    @Override
     public int[] getPath(Object last) {
         return getPath(getRoot(), last);
     }
@@ -205,30 +221,32 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         T current = getRoot();
         for (int i = 0; i < path.length; i++) {
             int position = path[i];
-            if (position >= getChildCount(current)) {
-                throw new IllegalArgumentException(
-                        "Failure acessing the path at: "
-                                + stringRepresentationUntil(path, i));
+
+            if ( position >= getChildCount(current) ) {
+                throw new IllegalArgumentException("Failure acessing the path at: "
+                        + stringRepresentationUntil(path, i));
             }
             current = getChild(current, position);
         }
+
         return current;
     }
 
     private static String stringRepresentationUntil(int[] path, int endExclusive) {
-        String valid = Arrays.toString(Arrays
-                .copyOfRange(path, 0, endExclusive));
-        String invalid = Arrays.toString(Arrays.copyOfRange(path, endExclusive,
-                path.length));
+        String valid = Arrays.toString(Arrays.copyOfRange(path, 0, endExclusive));
+        String invalid = Arrays.toString(Arrays.copyOfRange(path, endExclusive, path.length));
+
         return valid + "^" + invalid;
     }
 
     private int[] asIntArray(List<Integer> path) {
         int[] result = new int[path.size()];
         int i = 0;
+
         for (Integer integer : path) {
             result[i++] = integer;
         }
+
         return result;
     }
 
@@ -240,18 +258,21 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     @Override
     public T getChild(Object parent, int index) {
         Node<T> node = find(parent);
+
         return unwrap(node.children.get(index));
     }
 
     @Override
     public int getChildCount(Object parent) {
         Node<T> node = find(parent);
+
         return node.children.size();
     }
 
     @Override
     public boolean isLeaf(Object object) {
         Node<T> node = find(object);
+
         return node.children.isEmpty();
     }
 
@@ -274,26 +295,28 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         };
     }
 
-    private void add(Node<T> parent, Integer position, List<Node<T>> children,
-            IChildrenExtractor<T> extractor) {
-        if (children.isEmpty()) {
+    private void add(Node<T> parent, Integer position, List<Node<T>> children, IChildrenExtractor<T> extractor) {
+        if ( children.isEmpty() ) {
             return;
         }
+
         int indexFrom = position == null ? parent.children.size() : position;
         int indexTo = indexFrom + children.size() - 1;
         addWithoutSendingEvents(parent, position, children, extractor);
-        fireEvent(unwrap(parent), indexFrom, indexTo,
-                TreeDataEvent.INTERVAL_ADDED);
+        fireEvent(TreeDataEvent.INTERVAL_ADDED, getPath(parent),indexFrom, indexTo);
     }
 
-    private void addWithoutSendingEvents(Node<T> parent, Integer position,
-            List<Node<T>> children, IChildrenExtractor<T> extractor) {
+    private void addWithoutSendingEvents(Node<T> parent,
+                                         Integer position,
+                                         List<Node<T>> children,
+                                         IChildrenExtractor<T> extractor) {
+
         parent.addAll(position, children);
         addToNodesAndDomainMapping(children);
+
         for (Node<T> each : children) {
             T value = each.value;
-            addWithoutSendingEvents(each, 0,
-                    wrap(extractor.getChildren(value)), extractor);
+            addWithoutSendingEvents(each, 0, wrap(extractor.getChildren(value)), extractor);
         }
     }
 
@@ -304,7 +327,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     public void add(T parent, T child) {
-        ArrayList<T> children = new ArrayList<T>();
+        ArrayList<T> children = new ArrayList<>();
         children.add(child);
         add(parent, children);
     }
@@ -314,7 +337,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         T parent = getParent(object);
         Node<T> parentNode = find(parent);
         int position = parentNode.getIndexOf(node);
-        fireEvent(parent, position, position, TreeDataEvent.CONTENTS_CHANGED);
+        fireEvent(TreeDataEvent.CONTENTS_CHANGED,getPath(parent), position, position);
     }
 
     public void add(T parent, int position, Collection<? extends T> children) {
@@ -326,64 +349,67 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         add(parentNode, null, wrap(children));
     }
 
-    public void add(T parent, int position, Collection<? extends T> children,
-            IChildrenExtractor<T> childrenExtractor) {
+    public void add(T parent, int position, Collection<? extends T> children, IChildrenExtractor<T> childrenExtractor) {
         add(find(parent), position, wrap(children), childrenExtractor);
     }
 
-    public void add(T parent, Collection<? extends T> children,
-            IChildrenExtractor<T> childrenExtractor) {
+    public void add(T parent, Collection<? extends T> children, IChildrenExtractor<T> childrenExtractor) {
         add(find(parent), null, wrap(children), childrenExtractor);
     }
 
     public void remove(T node) {
         Node<T> found = find(node);
-        if (found.isRoot()) {
+
+        if ( found.isRoot() ) {
             throw new IllegalArgumentException(node
                     + " is root. It can't be removed");
         }
+
         int positionInParent = found.remove();
         nodesByDomainObject.remove(node);
-        fireEvent(unwrap(found.parentNode), positionInParent, positionInParent,
-                TreeDataEvent.INTERVAL_REMOVED);
+        fireEvent(TreeDataEvent.INTERVAL_REMOVED, getPath(found.parentNode), positionInParent, positionInParent);
     }
 
     public T getParent(T node) {
         Node<T> associatedNode = find(node);
-        if (associatedNode.equals(root)) {
+        if ( associatedNode.equals(root) ) {
             throw new IllegalArgumentException(node + " is root");
         }
+
         return unwrap(associatedNode.getParent());
     }
 
     public List<T> getParents(T node) {
-        ArrayList<T> result = new ArrayList<T>();
+        ArrayList<T> result = new ArrayList<>();
+
         try {
             T current = node;
-            while (!isRoot(current)) {
+
+            while ( !isRoot(current) ) {
                 current = getParent(current);
                 result.add(current);
             }
         } catch (Exception e) {
             LOG.error("Trying to get the parent of a removed node", e);
         }
+
         return result;
     }
 
     public boolean isRoot(T node) {
         Node<T> associatedNode = find(node);
+
         return associatedNode.isRoot();
     }
 
-    public void replace(T nodeToRemove, T nodeToAdd,
-            IChildrenExtractor<T> childrenExtractor) {
+    public void replace(T nodeToRemove, T nodeToAdd, IChildrenExtractor<T> childrenExtractor) {
         T parent = getParent(nodeToRemove);
         Node<T> parentNode = find(parent);
         final int insertionPosition = parentNode.getIndexOf(find(nodeToRemove));
         remove(nodeToRemove);
-        if (childrenExtractor != null) {
-            add(parent, insertionPosition,
-                    Collections.singletonList(nodeToAdd), childrenExtractor);
+
+        if ( childrenExtractor != null ) {
+            add(parent, insertionPosition, Collections.singletonList(nodeToAdd), childrenExtractor);
         } else {
             add(parent, insertionPosition, Collections.singletonList(nodeToAdd));
         }
@@ -397,7 +423,8 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         T parent = getParent(node);
         Node<T> parentNode = find(parent);
         int[] changed = parentNode.down(find(node));
-        if (changed.length != 0) {
+
+        if ( changed.length != 0 ) {
             fireRecreationOfInterval(parentNode, changed[0], changed[1]);
         }
     }
@@ -406,17 +433,15 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         T parent = getParent(node);
         Node<T> parentNode = find(parent);
         int[] changed = parentNode.up(find(node));
-        if (changed.length != 0) {
+
+        if ( changed.length != 0 ) {
             fireRecreationOfInterval(parentNode, changed[0], changed[1]);
         }
     }
 
-    private void fireRecreationOfInterval(Node<T> parentNode, int start,
-            int endInclusive) {
-        fireEvent(parentNode.value, start, endInclusive,
-                TreeDataEvent.INTERVAL_REMOVED);
-        fireEvent(parentNode.value, start, endInclusive,
-                TreeDataEvent.INTERVAL_ADDED);
+    private void fireRecreationOfInterval(Node<T> parentNode, int start, int endInclusive) {
+        fireEvent(TreeDataEvent.INTERVAL_REMOVED,getPath(parentNode.value), start, endInclusive);
+        fireEvent(TreeDataEvent.INTERVAL_ADDED, getPath(parentNode.value), start, endInclusive);
     }
 
     public boolean isEmpty() {
@@ -435,21 +460,23 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         Node<T> parentNode = find(parent);
         Node<T> childNode = find(child);
 
-        return parentNode != null && childNode != null
-                && childNode.getParent() != null
-                && childNode.getParent().equals(parentNode);
+        return parentNode != null && childNode != null &&
+                childNode.getParent() != null && childNode.getParent().equals(parentNode);
     }
 
     public List<T> asList() {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         asList(getRoot(), result);
+
         return result;
     }
 
     private void asList(T root, List<T> result) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
+
         for (int i = 0; i < getChildCount(root); i++) {
             final T child = getChild(root, i);
+
             list.add(child);
             result.add(child);
         }

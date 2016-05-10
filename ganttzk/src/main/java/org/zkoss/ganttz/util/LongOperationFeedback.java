@@ -176,7 +176,7 @@ public class LongOperationFeedback {
      * {@link IDesktopUpdatesEmitter} that handle these objects is necessary.
      * Trying to update the components in any other way would fail.
      */
-    public static <T> void progressive(
+    private static <T> void progressive(
             final Desktop desktop,
             final IBackGroundOperation<T> operation,
             final IDesktopUpdatesEmitter<T> emitter) {

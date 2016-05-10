@@ -119,15 +119,16 @@ public class OnColumnsRowRenderer<C, T> implements RowRenderer {
     }
 
     @Override
-    public void render(Row row, Object data) {
-        if ( !type.isInstance(data) ) {
-            throw new IllegalArgumentException(data + " is not instance of " + type);
+    public void render(Row row, Object o, int i) throws Exception {
+        if ( !type.isInstance(o) ) {
+            throw new IllegalArgumentException(o + " is not instance of " + type);
         }
 
         for (C item : columns) {
-            Component child = cellRenderer.cellFor(item, type.cast(data));
+            Component child = cellRenderer.cellFor(item, type.cast(o));
             child.setParent(row);
         }
     }
+
 
 }

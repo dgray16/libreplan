@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
 import org.zkoss.ganttz.adapters.IDisabilityConfiguration;
 import org.zkoss.ganttz.data.GanttDate;
@@ -50,10 +48,10 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Treecell;
-import org.zkoss.zul.api.Div;
-import org.zkoss.zul.api.Hlayout;
-import org.zkoss.zul.api.Label;
-import org.zkoss.zul.api.Treerow;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Hlayout;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Treerow;
 
 /**
  * Row composer for Tasks details Tree <br />
@@ -63,9 +61,10 @@ import org.zkoss.zul.api.Treerow;
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  * @author Jeroen Baten <jeroen@jeroenbaten.nl>
  */
-public class LeftTasksTreeRow extends GenericForwardComposer {
+class LeftTasksTreeRow extends GenericForwardComposer {
 
-    public interface ILeftTasksTreeNavigator {
+    interface ILeftTasksTreeNavigator {
+
         LeftTasksTreeRow getBelowRow();
 
         LeftTasksTreeRow getAboveRow();
@@ -178,7 +177,11 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
     }
 
     private enum Navigation {
-        LEFT, UP, RIGHT, DOWN;
+        LEFT,
+        UP,
+        RIGHT,
+        DOWN;
+
         public static Navigation getIntentFrom(KeyEvent keyEvent) {
             return values()[keyEvent.getKeyCode() - 37];
         }
@@ -278,7 +281,7 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
     }
 
     private void findComponents(Treerow row) {
-        List<Object> rowChildren = row.getChildren();
+        List<Component> rowChildren = row.getChildren();
         List<Treecell> treeCells = ComponentsFinder.findComponentsOfType(Treecell.class, rowChildren);
         assert treeCells.size() == 4;
 
@@ -289,7 +292,7 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
     }
 
     private static Textbox findTextBoxOfCell(Treecell treecell) {
-        List<Object> children = treecell.getChildren();
+        List<Component> children = treecell.getChildren();
         return ComponentsFinder.findComponentsOfType(Textbox.class, children).get(0);
     }
 
@@ -369,7 +372,7 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
     }
 
     private void findComponentsForStatusCell(Treecell treecell) {
-        List<Object> children = treecell.getChildren();
+        List<Component> children = treecell.getChildren();
 
         Hlayout hlayout = ComponentsFinder.findComponentsOfType(Hlayout.class, children).get(0);
 

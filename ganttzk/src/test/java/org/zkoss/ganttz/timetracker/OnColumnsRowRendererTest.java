@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.zkoss.ganttz.timetracker.zoom.DetailItem;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zul.Row;
-import org.zkoss.zul.api.Label;
+import org.zkoss.zul.Label;
 
 public class OnColumnsRowRendererTest {
 
@@ -147,9 +147,10 @@ public class OnColumnsRowRendererTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void cantRenderObjectsOfOtherType() {
+    public void cantRenderObjectsOfOtherType() throws Exception {
         givenOnDetailItemsRowRenderer(createStub());
-        rowRenderer.render(new Row(), "");
+        // TODO CHECK THIS CODE ?
+        rowRenderer.render(new Row(), new Object(), 1);
     }
 
     private ICellForDetailItemRenderer<DetailItem, Data> createStub() {
@@ -170,7 +171,12 @@ public class OnColumnsRowRendererTest {
 
     private void renderingTheData() {
         for (Data d : data) {
-            rowRenderer.render(new Row(), d);
+            // TODO CHECK THIS CODE ?
+            try {
+                rowRenderer.render(new Row(), d, 1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -202,8 +208,8 @@ public class OnColumnsRowRendererTest {
 
     private Label expectTheCreatedLabelIsAddedToTheRow(ICellForDetailItemRenderer<DetailItem, Data> mock) {
         Label labelMock = createStrictMock(Label.class);
-        for (Data ignored1 : data) {
-            for (DetailItem ignored2 : detailItems) {
+        for (Data ignored : data) {
+            for (DetailItem ignored1 : detailItems) {
                 expect(mock.cellFor(isA(DetailItem.class), isA(Data.class))).andReturn(labelMock);
                 labelMock.setParent(isA(Row.class));
             }
