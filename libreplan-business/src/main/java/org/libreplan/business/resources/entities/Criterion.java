@@ -165,8 +165,7 @@ public class Criterion extends IntegrationEntity implements ICriterion,
         return getCaptionFor(ResourceEnum.WORKER, criteria);
     }
 
-    public static String getCaptionFor(
-            GenericResourceAllocation allocation) {
+    public static String getCaptionFor(GenericResourceAllocation allocation) {
         return getCaptionFor(allocation.getResourceType(),
                 allocation.getCriterions());
     }

@@ -73,7 +73,7 @@ import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Window;
-import org.zkoss.zul.api.Rows;
+import org.zkoss.zul.Rows;
 
 /**
  * Controller for limiting resources view
@@ -92,7 +92,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
     @Autowired
     private IAdHocTransactionService transactionService;
 
-    private List<IToolbarCommand> commands = new ArrayList<IToolbarCommand>();
+    private List<IToolbarCommand> commands = new ArrayList<>();
 
     private LimitingResourcesPanel limitingResourcesPanel;
 
@@ -146,8 +146,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
                 self.appendChild(limitingResourcesPanel);
                 limitingResourcesPanel.afterCompose();
 
-                cbSelectAll = (Checkbox) limitingResourcesPanel
-                        .getFellowIfAny("cbSelectAll");
+                cbSelectAll = (Checkbox) limitingResourcesPanel.getFellowIfAny("cbSelectAll");
 
                 initGridUnassignedLimitingResourceQueueElements();
                 initManualAllocationWindow();
@@ -162,7 +161,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
         gridUnassignedLimitingResourceQueueElements = (Grid) limitingResourcesPanel
                 .getFellowIfAny("gridUnassignedLimitingResourceQueueElements");
         gridUnassignedLimitingResourceQueueElements
-                .setModel(new SimpleListModel(
+                .setModel(new SimpleListModel<LimitingResourceQueueElementDTO>(
                         getUnassignedLimitingResourceQueueElements()));
         gridUnassignedLimitingResourceQueueElements
                 .setRowRenderer(getLimitingResourceQueueElementsRenderer());
@@ -182,28 +181,27 @@ public class LimitingResourcesController extends GenericForwardComposer {
     }
 
     private ManualAllocationController getManualAllocationController() {
-        return (ManualAllocationController) manualAllocationWindow.getVariable(
-                "manualAllocationController", true);
+        return (ManualAllocationController) manualAllocationWindow.getAttribute("manualAllocationController", true);
     }
 
     private void initEditTaskWindow() {
         editTaskWindow = (Window) limitingResourcesPanel.getFellowIfAny("editTaskWindow");
     }
 
-    public ILimitingResourceQueueModel getLimitingResourceQueueModel() {
+    ILimitingResourceQueueModel getLimitingResourceQueueModel() {
         return limitingResourceQueueModel;
     }
 
     private void addCommands(LimitingResourcesPanel limitingResourcesPanel) {
-        limitingResourcesPanel.add(commands
-                .toArray(new IToolbarCommand[commands.size()]));
+        limitingResourcesPanel.add(commands.toArray(new IToolbarCommand[commands.size()]));
     }
 
     private TimeTracker buildTimeTracker() {
-        return timeTracker = new TimeTracker(limitingResourceQueueModel
-                .getViewInterval(), ZoomLevel.DETAIL_THREE,
+        return timeTracker = new TimeTracker(limitingResourceQueueModel.getViewInterval(),
+                ZoomLevel.DETAIL_THREE,
                 SeveralModificators.create(),
-                SeveralModificators.create(BankHolidaysMarker.create(getDefaultCalendar())),self);
+                SeveralModificators.create(BankHolidaysMarker.create(getDefaultCalendar())),
+                self);
     }
 
     private BaseCalendar getDefaultCalendar() {
@@ -224,34 +222,37 @@ public class LimitingResourcesController extends GenericForwardComposer {
      *
      * @return
      */
-    public List<LimitingResourceQueueElementDTO> getUnassignedLimitingResourceQueueElements() {
-        List<LimitingResourceQueueElementDTO> result = new ArrayList<LimitingResourceQueueElementDTO>();
+    private List<LimitingResourceQueueElementDTO> getUnassignedLimitingResourceQueueElements() {
+        List<LimitingResourceQueueElementDTO> result = new ArrayList<>();
         for (LimitingResourceQueueElement each : limitingResourceQueueModel
                 .getUnassignedLimitingResourceQueueElements()) {
             result.add(toLimitingResourceQueueElementDTO(each));
         }
+
         return result;
     }
 
-    private LimitingResourceQueueElementDTO toLimitingResourceQueueElementDTO(
-            LimitingResourceQueueElement element) {
+    private LimitingResourceQueueElementDTO toLimitingResourceQueueElementDTO(LimitingResourceQueueElement element) {
         final Task task = element.getResourceAllocation().getTask();
         final Order order = limitingResourceQueueModel.getOrderByTask(task);
-        return new LimitingResourceQueueElementDTO(element, order
-                .getName(), task.getName(), element
-                .getEarliestStartDateBecauseOfGantt());
+
+        return new LimitingResourceQueueElementDTO(element,
+                order.getName(),
+                task.getName(),
+                element.getEarliestStartDateBecauseOfGantt());
     }
 
-    public static String getResourceOrCriteria(
-            ResourceAllocation<?> resourceAllocation) {
-        if (resourceAllocation instanceof SpecificResourceAllocation) {
-            final Resource resource = ((SpecificResourceAllocation) resourceAllocation)
-                    .getResource();
+    static String getResourceOrCriteria(ResourceAllocation<?> resourceAllocation) {
+        if ( resourceAllocation instanceof SpecificResourceAllocation ) {
+            final Resource resource = ((SpecificResourceAllocation) resourceAllocation).getResource();
+
             return (resource != null) ? resource.getName() : "";
-        } else if (resourceAllocation instanceof GenericResourceAllocation) {
+        } else if ( resourceAllocation instanceof GenericResourceAllocation ) {
             GenericResourceAllocation genericAllocation = (GenericResourceAllocation) resourceAllocation;
+
             return Criterion.getCaptionFor(genericAllocation);
         }
+
         return StringUtils.EMPTY;
     }
 
@@ -263,8 +264,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
      * @author Diego Pino Garcia <dpino@igalia.com>
      *
      */
-    public static class LimitingResourceQueueElementDTO implements
-            Comparable<LimitingResourceQueueElementDTO> {
+    static class LimitingResourceQueueElementDTO implements Comparable<LimitingResourceQueueElementDTO> {
 
         private LimitingResourceQueueElement original;
 
@@ -278,9 +278,11 @@ public class LimitingResourcesController extends GenericForwardComposer {
 
         private String resourceOrCriteria;
 
-        public LimitingResourceQueueElementDTO(
-                LimitingResourceQueueElement element, String orderName,
-                String taskName, Date date) {
+        LimitingResourceQueueElementDTO(LimitingResourceQueueElement element,
+                                        String orderName,
+                                        String taskName,
+                                        Date date) {
+
             this.original = element;
             this.orderName = orderName;
             this.taskName = taskName;
@@ -298,7 +300,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
             return orderName;
         }
 
-        public String getTaskName() {
+        String getTaskName() {
             return taskName;
         }
 
@@ -306,11 +308,11 @@ public class LimitingResourcesController extends GenericForwardComposer {
             return date;
         }
 
-        public Integer getHoursToAllocate() {
+        Integer getHoursToAllocate() {
             return (hoursToAllocate != null) ? hoursToAllocate : 0;
         }
 
-        public String getResourceOrCriteria() {
+        String getResourceOrCriteria() {
             return resourceOrCriteria;
         }
 
@@ -327,16 +329,10 @@ public class LimitingResourcesController extends GenericForwardComposer {
     }
 
     private void notifyUserThatSavingIsDone() {
-        try {
-            Messagebox.show(_("Scheduling saved"), _("Information"), Messagebox.OK,
-                    Messagebox.INFORMATION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Messagebox.show(_("Scheduling saved"), _("Information"), Messagebox.OK, Messagebox.INFORMATION);
     }
 
-    public void editResourceAllocation(
-            LimitingResourceQueueElement oldElement) {
+    void editResourceAllocation(LimitingResourceQueueElement oldElement) {
 
         try {
             Task task = oldElement.getTask();
@@ -345,24 +341,23 @@ public class LimitingResourcesController extends GenericForwardComposer {
             editTaskController.showEditFormResourceAllocationFromLimitingResources(task);
 
             // New resource allocation or resource allocation modified ?
-            if (editTaskController.getStatus() == Messagebox.OK) {
+            if ( editTaskController.getStatus() == Messagebox.OK ) {
 
                 // Update resource allocation for element
-                LimitingResourceQueueElement newElement = copyFrom(oldElement,
-                        getQueueElementFrom(task));
+                LimitingResourceQueueElement newElement = copyFrom(oldElement, getQueueElementFrom(task));
 
                 // Replace old limiting resource with new one
                 LimitingResourceQueue oldQueue = oldElement.getLimitingResourceQueue();
                 List<LimitingResourceQueueElement> modified = limitingResourceQueueModel
-                        .replaceLimitingResourceQueueElement(oldElement,
-                                newElement);
+                        .replaceLimitingResourceQueueElement(oldElement, newElement);
 
                 // Refresh modified queues
-                Set<LimitingResourceQueue> toRefreshQueues = new HashSet<LimitingResourceQueue>();
+                Set<LimitingResourceQueue> toRefreshQueues = new HashSet<>();
                 toRefreshQueues.addAll(LimitingResourceQueue.queuesOf(modified));
-                if (oldQueue != null) {
+                if ( oldQueue != null ) {
                     toRefreshQueues.add(oldQueue);
                 }
+
                 limitingResourcesPanel.refreshQueues(toRefreshQueues);
             }
         } catch (SuspendNotAllowedException e) {
@@ -381,20 +376,16 @@ public class LimitingResourcesController extends GenericForwardComposer {
      * @param dest
      * @return
      */
-    private LimitingResourceQueueElement copyFrom(
-            LimitingResourceQueueElement source,
-            LimitingResourceQueueElement dest) {
+    private LimitingResourceQueueElement copyFrom(LimitingResourceQueueElement source,
+                                                  LimitingResourceQueueElement dest) {
 
-        dest.setEarlierStartDateBecauseOfGantt(source
-                .getEarliestStartDateBecauseOfGantt());
+        dest.setEarlierStartDateBecauseOfGantt(source.getEarliestStartDateBecauseOfGantt());
 
-        for (LimitingResourceQueueDependency each : source
-                .getDependenciesAsOrigin()) {
+        for (LimitingResourceQueueDependency each : source.getDependenciesAsOrigin()) {
             each.setOrigin(dest);
             dest.add(each);
         }
-        for (LimitingResourceQueueDependency each : source
-                .getDependenciesAsDestiny()) {
+        for (LimitingResourceQueueDependency each : source.getDependenciesAsDestiny()) {
             each.setDestiny(dest);
             dest.add(each);
         }
@@ -403,20 +394,20 @@ public class LimitingResourcesController extends GenericForwardComposer {
     }
 
     private EditTaskController getEditController(Window window) {
-        return (EditTaskController) editTaskWindow.getVariable("editController", true);
+        return (EditTaskController) editTaskWindow.getAttribute("editController", true);
     }
 
-    public LimitingResourceQueueElementsRenderer getLimitingResourceQueueElementsRenderer() {
+    private LimitingResourceQueueElementsRenderer getLimitingResourceQueueElementsRenderer() {
         return limitingResourceQueueElementsRenderer;
     }
 
     private class LimitingResourceQueueElementsRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-            LimitingResourceQueueElementDTO element = (LimitingResourceQueueElementDTO) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            LimitingResourceQueueElementDTO element = (LimitingResourceQueueElementDTO) o;
 
-            row.setValue(data);
+            row.setValue(o);
 
             row.appendChild(automaticQueueing(element));
             row.appendChild(label(element.getOrderName()));
@@ -433,6 +424,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
             hbox.appendChild(automaticButton(element));
             hbox.appendChild(manualButton(element));
             hbox.appendChild(removeButton(element));
+
             return hbox;
         }
 
@@ -441,6 +433,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
             result.setHoverImage("/common/img/ico_editar.png");
             result.setSclass("icono");
             result.setTooltiptext(_("Edit queue-based resource element"));
+
             result.addEventListener(Events.ON_CLICK, new EventListener() {
 
                 @Override
@@ -448,11 +441,12 @@ public class LimitingResourcesController extends GenericForwardComposer {
                     LimitingResourceQueueElement queueElement = element.getOriginal();
 
                     editResourceAllocation(queueElement);
-                    if (queueElement.getLimitingResourceQueue() == null) {
+                    if ( queueElement.getLimitingResourceQueue() == null ) {
                         reloadUnassignedLimitingResourceQueueElements();
                     }
                 }
             });
+
             return result;
         }
 
@@ -460,6 +454,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
             Button result = new Button();
             result.setLabel(_("Manual"));
             result.setTooltiptext(_("Assign element to queue manually"));
+
             result.addEventListener(Events.ON_CLICK, new EventListener() {
 
                 @Override
@@ -467,6 +462,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
                     showManualAllocationWindow(element.getOriginal());
                 }
             });
+
             return result;
         }
 
@@ -475,6 +471,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
             result.setHoverImage("/common/img/ico_borrar.png");
             result.setSclass("icono");
             result.setTooltiptext(_("Remove queue-based resource element"));
+
             result.addEventListener(Events.ON_CLICK, new EventListener() {
 
                 @Override
@@ -482,23 +479,21 @@ public class LimitingResourcesController extends GenericForwardComposer {
                     removeUnassignedLimitingResourceQueueElement(element);
                 }
             });
+
             return result;
         }
 
-        private void removeUnassignedLimitingResourceQueueElement(
-                LimitingResourceQueueElementDTO dto) {
-
+        private void removeUnassignedLimitingResourceQueueElement(LimitingResourceQueueElementDTO dto) {
             LimitingResourceQueueElement element = dto.getOriginal();
-            limitingResourceQueueModel
-                    .removeUnassignedLimitingResourceQueueElement(element);
+            limitingResourceQueueModel.removeUnassignedLimitingResourceQueueElement(element);
             reloadUnassignedLimitingResourceQueueElements();
         }
 
-        private Button automaticButton(
-                final LimitingResourceQueueElementDTO element) {
+        private Button automaticButton(final LimitingResourceQueueElementDTO element) {
             Button result = new Button();
             result.setLabel(_("Automatic"));
             result.setTooltiptext(_("Assign element to queue automatically"));
+
             result.addEventListener(Events.ON_CLICK, new EventListener() {
 
                 @Override
@@ -506,38 +501,37 @@ public class LimitingResourcesController extends GenericForwardComposer {
                     assignLimitingResourceQueueElement(element);
                 }
             });
+
             return result;
         }
 
-        private void assignLimitingResourceQueueElement(
-                LimitingResourceQueueElementDTO dto) {
-
+        private void assignLimitingResourceQueueElement(LimitingResourceQueueElementDTO dto) {
             List<LimitingResourceQueueElement> inserted = limitingResourceQueueModel
                     .assignLimitingResourceQueueElement(dto.getOriginal());
 
-            if (inserted.isEmpty()) {
+            if ( inserted.isEmpty() ) {
                 showErrorMessage(_("Cannot allocate selected element. There is not any queue "
                         + "that matches resource allocation criteria at any interval of time"));
                 return;
             }
+
             limitingResourcesPanel.refreshQueues((LimitingResourceQueue.queuesOf(inserted)));
             reloadUnassignedLimitingResourceQueueElements();
         }
 
-        private Checkbox automaticQueueing(
-                final LimitingResourceQueueElementDTO element) {
+        private Checkbox automaticQueueing(final LimitingResourceQueueElementDTO element) {
             Checkbox result = new Checkbox();
             result.setTooltiptext(_("Select for automatic queuing"));
+
             return result;
         }
 
         private Label label(String value) {
             return new Label(value);
         }
-
     }
 
-    public List<LimitingResourceQueue> getLimitingResourceQueues() {
+    List<LimitingResourceQueue> getLimitingResourceQueues() {
         return limitingResourceQueueModel.getLimitingResourceQueues();
     }
 
@@ -550,7 +544,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
         reloadUnassignedLimitingResourceQueueElements();
     }
 
-    public boolean moveTask(LimitingResourceQueueElement element) {
+    boolean moveTask(LimitingResourceQueueElement element) {
         showManualAllocationWindow(element);
         return getManualAllocationWindowStatus() == Messagebox.OK;
     }
@@ -559,20 +553,21 @@ public class LimitingResourcesController extends GenericForwardComposer {
         getManualAllocationController().show(element);
     }
 
-    public int getManualAllocationWindowStatus() {
+    private int getManualAllocationWindowStatus() {
         Integer status = getManualAllocationController().getStatus();
-        return (status != null) ? status.intValue() : -1;
+        return (status != null) ? status : -1;
     }
 
-    public void reloadUnassignedLimitingResourceQueueElements() {
+    void reloadUnassignedLimitingResourceQueueElements() {
         gridUnassignedLimitingResourceQueueElements
-                .setModel(new SimpleListModel(getUnassignedLimitingResourceQueueElements()));
+                .setModel(new SimpleListModel<>(getUnassignedLimitingResourceQueueElements()));
     }
 
     public void selectedAllUnassignedQueueElements() {
         final boolean value = cbSelectAll.isChecked();
 
         final Rows rows = gridUnassignedLimitingResourceQueueElements.getRows();
+
         for (Object each: rows.getChildren()) {
             final Row row = (Row) each;
             Checkbox cbAutoQueueing = getAutoQueueing(row);
@@ -582,22 +577,26 @@ public class LimitingResourcesController extends GenericForwardComposer {
 
     @SuppressWarnings("unchecked")
     private Checkbox getAutoQueueing(Row row) {
-        List<Component> children = row.getChildren();
+        List<org.zkoss.zk.ui.Component> children = row.getChildren();
+
         return (Checkbox) children.get(0);
     }
 
     public void assignAllSelectedElements() {
         List<LimitingResourceQueueElement> elements = getAllSelectedQueueElements();
-        if (!elements.isEmpty()) {
-            Set<LimitingResourceQueueElement> inserted = limitingResourceQueueModel
-                    .assignLimitingResourceQueueElements(elements);
+
+        if ( !elements.isEmpty() ) {
+            Set<LimitingResourceQueueElement> inserted =
+                    limitingResourceQueueModel.assignLimitingResourceQueueElements(elements);
+
             clearSelectAllCheckbox();
 
-            if (inserted.isEmpty()) {
+            if ( inserted.isEmpty() ) {
                 showErrorMessage(_("Cannot allocate selected element. There is not any queue "
                         + "that matches resource allocation criteria at any interval of time"));
                 return;
             }
+
             limitingResourcesPanel.refreshQueues(LimitingResourceQueue.queuesOf(inserted));
             reloadUnassignedLimitingResourceQueueElements();
         }
@@ -608,27 +607,24 @@ public class LimitingResourcesController extends GenericForwardComposer {
     }
 
     private List<LimitingResourceQueueElement> getAllSelectedQueueElements() {
-        List<LimitingResourceQueueElement> result = new ArrayList<LimitingResourceQueueElement>();
+        List<LimitingResourceQueueElement> result = new ArrayList<>();
 
         final Rows rows = gridUnassignedLimitingResourceQueueElements.getRows();
+
         for (Object each : rows.getChildren()) {
             final Row row = (Row) each;
             Checkbox cbAutoQueueing = getAutoQueueing(row);
-            if (cbAutoQueueing.isChecked()) {
-                LimitingResourceQueueElementDTO dto = (LimitingResourceQueueElementDTO) row
-                        .getValue();
-                result.add((LimitingResourceQueueElement) dto.getOriginal());
+            if ( cbAutoQueueing.isChecked() ) {
+                LimitingResourceQueueElementDTO dto = row.getValue();
+                result.add(dto.getOriginal());
             }
         }
+
         return result;
     }
 
     private void showErrorMessage(String error) {
-        try {
-            Messagebox.show(error, _("Error"), Messagebox.OK, Messagebox.ERROR);
-        } catch (InterruptedException e) {
-
-        }
+        Messagebox.show(error, _("Error"), Messagebox.OK, Messagebox.ERROR);
     }
 
 }

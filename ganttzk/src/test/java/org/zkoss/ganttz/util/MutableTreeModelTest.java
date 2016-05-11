@@ -45,7 +45,7 @@ import org.zkoss.zul.event.TreeDataListener;
  */
 public class MutableTreeModelTest {
 
-    public static class Prueba {
+    private static class Prueba {
     }
 
     @Test
@@ -227,10 +227,15 @@ public class MutableTreeModelTest {
         Prueba granChildren1 = new Prueba();
         model.add(model.getRoot(), child1);
         checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, model.getRoot(), 0);
+       // checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, model.getPath() ,0);
+
         model.add(model.getRoot(), child2);
         checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, model.getRoot(), 1);
+       // checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, model.getPath(model.getRoot()) ,1);
+
         model.add(child1, granChildren1);
-        checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, child1, 0);
+        checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, model.getParent(child1), 0);
+        //checkIsValid(getLast(eventsFired), TreeDataEvent.INTERVAL_ADDED, model.getPath(child1), 0);
 
         assertThat(eventsFired.size(), equalTo(3));
     }
@@ -416,12 +421,12 @@ public class MutableTreeModelTest {
 
         assertThat(removeEventsFired.size(), equalTo(1));
 
-        checkIsValid(getLast(removeEventsFired), TreeDataEvent.INTERVAL_REMOVED, prueba1, 0);
+        checkIsValid(getLast(removeEventsFired), TreeDataEvent.INTERVAL_REMOVED, model.getParent(prueba1), 0);
 
         model.remove(prueba2);
 
         //TODO CHECK THIS CODE ?
-        assertThat(getLast(removeEventsFired).getPath(), equalTo((Object) model.getRoot()));
+        assertThat(getLast(removeEventsFired).getModel().getRoot(), equalTo((Object) model.getRoot()));
 
         checkIsValid(getLast(removeEventsFired), TreeDataEvent.INTERVAL_REMOVED, model.getRoot(), 1);
 
@@ -572,13 +577,31 @@ public class MutableTreeModelTest {
         checkIsValid(event, type, expectedParent, expectedPosition, expectedPosition);
     }
 
+    private void checkIsValid(TreeDataEvent event, int type, int[] expectedPath, int expectedPosition) {
+        checkIsValid(event, type, expectedPath, expectedPosition, expectedPosition);
+    }
+
     private void checkIsValid(TreeDataEvent event,
-                              int type, Prueba expectedParent,
+                              int type,
+                              Prueba expectedParent,
                               int expectedFromPosition,
                               int expectedToPosition) {
 
         //TODO CHECK THIS CODE ?
-        assertEquals(expectedParent, event.getPath());
+        assertEquals(event.getModel().getRoot(), expectedParent);
+        assertThat(event.getIndexFrom(), equalTo(expectedFromPosition));
+        assertThat(event.getIndexTo(), equalTo(expectedToPosition));
+        assertThat(event.getType(), equalTo(type));
+    }
+
+    private void checkIsValid(TreeDataEvent event,
+                              int type,
+                              int[] expectedPath,
+                              int expectedFromPosition,
+                              int expectedToPosition) {
+
+        //TODO CHECK THIS CODE ?
+        assertEquals(event.getPath(), expectedPath);
         assertThat(event.getIndexFrom(), equalTo(expectedFromPosition));
         assertThat(event.getIndexTo(), equalTo(expectedToPosition));
         assertThat(event.getType(), equalTo(type));

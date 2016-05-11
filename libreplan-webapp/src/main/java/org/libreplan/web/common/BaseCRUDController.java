@@ -29,8 +29,8 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.api.Caption;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Caption;
+import org.zkoss.zul.Window;
 
 /**
  * Abstract class defining common behavior for controllers of CRUD screens. <br />
@@ -46,8 +46,7 @@ import org.zkoss.zul.api.Window;
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  */
 @SuppressWarnings("serial")
-public abstract class BaseCRUDController<T extends IHumanIdentifiable> extends
-        GenericForwardComposer {
+public abstract class BaseCRUDController<T extends IHumanIdentifiable> extends GenericForwardComposer {
 
     private OnlyOneVisible visibility;
 
@@ -61,7 +60,7 @@ public abstract class BaseCRUDController<T extends IHumanIdentifiable> extends
 
     public enum CRUDControllerState {
         LIST, CREATE, EDIT
-    };
+    }
 
     protected CRUDControllerState state = CRUDControllerState.LIST;
 
@@ -320,8 +319,6 @@ public abstract class BaseCRUDController<T extends IHumanIdentifiable> extends
                                 entity.getHumanId()));
                 Util.reloadBindings(listWindow);
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } catch (InstanceNotFoundException ie) {
             messagesForUser.showMessage(
                     Level.ERROR,

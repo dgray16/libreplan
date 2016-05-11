@@ -39,6 +39,8 @@ import org.zkoss.zul.event.TreeDataEvent;
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
+
+//TODO Check this class ?
 public class MutableTreeModel<T> extends AbstractTreeModel {
 
     private static final Log LOG = LogFactory.getLog(MutableTreeModel.class);

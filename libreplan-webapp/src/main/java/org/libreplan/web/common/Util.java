@@ -45,6 +45,7 @@ import org.libreplan.business.common.BaseEntity;
 import org.libreplan.business.common.Configuration;
 import org.libreplan.business.common.IOnTransaction;
 import org.libreplan.business.common.Registry;
+import org.zkoss.bind.DefaultBinder;
 import org.zkoss.ganttz.util.ComponentsFinder;
 import org.zkoss.util.Locales;
 import org.zkoss.zk.ui.Component;
@@ -70,7 +71,7 @@ import org.zkoss.zul.Radio;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Timebox;
-import org.zkoss.zul.api.Column;
+import org.zkoss.zul.Column;
 
 /**
  * Utilities class. <br />
@@ -96,7 +97,7 @@ public class Util {
 
     /**
      * Forces to reload the bindings of the provided components if there is an
-     * associated {@link DataBinder}.
+     * associated {@link DefaultBinder}.
      *
      * @param toReload
      *            the components to reload
@@ -107,7 +108,7 @@ public class Util {
 
     public enum ReloadStrategy {
         /**
-         * If the {@link DataBinder} exists the bindings are reloaded no matter
+         * If the {@link DefaultBinder} exists the bindings are reloaded no matter
          * what.
          */
         FORCE,
@@ -125,7 +126,7 @@ public class Util {
 
     /**
      * Reload the bindings of the provided components if there is an associated
-     * {@link DataBinder} and the {@link ReloadStrategy} allows it.
+     * {@link DefaultBinder} and the {@link ReloadStrategy} allows it.
      *
      * @param toReload
      *            the components to reload
@@ -195,7 +196,7 @@ public class Util {
     }
 
     public static DataBinder getBinder(Component component) {
-        return (DataBinder) component.getVariable("binder", false);
+        return (DataBinder) component.getAttribute("binder", false);
     }
 
     private static final ThreadLocal<Boolean> ignoreCreateBindings = new ThreadLocal<Boolean>() {
@@ -218,7 +219,7 @@ public class Util {
             return;
         }
         AnnotateDataBinder binder = new AnnotateDataBinder(result, true);
-        result.setVariable("binder", binder, true);
+        result.setAttribute("binder", binder, true);
         markAsNotReloadedForThisRequest(result);
     }
 

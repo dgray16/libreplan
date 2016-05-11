@@ -55,8 +55,8 @@ import org.zkoss.zul.Hbox;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.api.Datebox;
-import org.zkoss.zul.api.Tabpanel;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Tabpanel;
 
 /**
  * Controller for subcontract a task.
@@ -92,8 +92,10 @@ public class SubcontractController extends GenericForwardComposer {
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
-    public void init(Task task, IContextWithPlannerTask<TaskElement> context,
-            TaskEditFormComposer taskEditFormComposer) {
+    public void init(Task task,
+                     IContextWithPlannerTask<TaskElement> context,
+                     TaskEditFormComposer taskEditFormComposer) {
+
         this.currentContext = context;
         subcontractModel.init(task, context.getTask());
         this.taskEditFormComposer = taskEditFormComposer;
@@ -117,9 +119,8 @@ public class SubcontractController extends GenericForwardComposer {
     }
 
     public void setExternalCompany(Comboitem comboitem) {
-        if (comboitem != null && comboitem.getValue() != null) {
-            ExternalCompany externalCompany = (ExternalCompany) comboitem
-                    .getValue();
+        if ( comboitem != null && comboitem.getValue() != null ) {
+            ExternalCompany externalCompany = comboitem.getValue();
             subcontractModel.setExternalCompany(externalCompany);
         } else {
             subcontractModel.setExternalCompany(null);
@@ -135,25 +136,26 @@ public class SubcontractController extends GenericForwardComposer {
     }
 
     public void addDeliverDate(Datebox newDeliverDate){
-        if (newDeliverDate == null || newDeliverDate.getValue() == null) {
+        if ( newDeliverDate == null || newDeliverDate.getValue() == null ) {
             messagesForUser.showMessage(Level.ERROR,
                     _("You must select a valid date. "));
             return;
         }
-        if (thereIsSomeCommunicationDateEmpty()) {
+        if ( thereIsSomeCommunicationDateEmpty() ) {
             messagesForUser
-            .showMessage(
+                    .showMessage(
                     Level.ERROR,
                     _("It will only be possible to add a Deliver Date if all the deliver date exiting in the table have a CommunicationDate not empty. "));
             return;
         }
-        if(subcontractModel.alreadyExistsRepeatedDeliverDate(newDeliverDate.getValue())){
+        if( subcontractModel.alreadyExistsRepeatedDeliverDate(newDeliverDate.getValue()) ){
             messagesForUser
-            .showMessage(
+                    .showMessage(
                     Level.ERROR,
                     _("It already exists a deliver date with the same date. "));
             return;
         }
+
         subcontractModel.addDeliverDate(newDeliverDate.getValue());
         Util.reloadBindings(gridDeliverDate);
         gridDeliverDate.invalidate();
@@ -161,10 +163,11 @@ public class SubcontractController extends GenericForwardComposer {
 
     private boolean thereIsSomeCommunicationDateEmpty(){
         for(SubcontractorDeliverDate subDeliverDate : subcontractModel.getDeliverDates()){
-            if(subDeliverDate.getCommunicationDate() == null){
+            if( subDeliverDate.getCommunicationDate() == null ){
                 return true;
             }
         }
+
         return false;
     }
 
@@ -175,16 +178,13 @@ public class SubcontractController extends GenericForwardComposer {
     private class DeliverDatesRenderer implements RowRenderer{
 
         @Override
-        public void render(Row row, Object data) throws Exception {
-            SubcontractorDeliverDate subcontractorDeliverDate = (SubcontractorDeliverDate) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            SubcontractorDeliverDate subcontractorDeliverDate = (SubcontractorDeliverDate) o;
             row.setValue(subcontractorDeliverDate);
 
-            appendLabel(row,
-                    Util.formatDateTime(subcontractorDeliverDate.getSaveDate()));
-            appendLabel(row, Util.formatDate(subcontractorDeliverDate
-                    .getSubcontractorDeliverDate()));
-            appendLabel(row, Util.formatDateTime(subcontractorDeliverDate
-                    .getCommunicationDate()));
+            appendLabel(row, Util.formatDateTime(subcontractorDeliverDate.getSaveDate()));
+            appendLabel(row, Util.formatDate(subcontractorDeliverDate.getSubcontractorDeliverDate()));
+            appendLabel(row, Util.formatDateTime(subcontractorDeliverDate.getCommunicationDate()));
             appendOperations(row, subcontractorDeliverDate);
         }
 
@@ -192,15 +192,13 @@ public class SubcontractController extends GenericForwardComposer {
             row.appendChild(new Label(label));
         }
 
-        private void appendOperations(Row row,
-                SubcontractorDeliverDate subcontractorDeliverDate) {
+        private void appendOperations(Row row, SubcontractorDeliverDate subcontractorDeliverDate) {
             Hbox hbox = new Hbox();
             hbox.appendChild(getDeleteButton(subcontractorDeliverDate));
             row.appendChild(hbox);
         }
 
-        private Button getDeleteButton(
-                final SubcontractorDeliverDate subcontractorDeliverDate) {
+        private Button getDeleteButton(final SubcontractorDeliverDate subcontractorDeliverDate) {
 
             Button deleteButton = new Button();
             deleteButton.setDisabled(isNotUpdate(subcontractorDeliverDate));
@@ -208,6 +206,7 @@ public class SubcontractController extends GenericForwardComposer {
             deleteButton.setImage("/common/img/ico_borrar1.png");
             deleteButton.setHoverImage("/common/img/ico_borrar.png");
             deleteButton.setTooltiptext(_("Delete"));
+
             deleteButton.addEventListener(Events.ON_CLICK, new EventListener() {
                 @Override
                 public void onEvent(Event event) {
@@ -218,17 +217,15 @@ public class SubcontractController extends GenericForwardComposer {
             return deleteButton;
         }
 
-        private boolean isNotUpdate(final SubcontractorDeliverDate subDeliverDate){
+        private boolean isNotUpdate(final SubcontractorDeliverDate subDeliverDate) {
             SubcontractorDeliverDate lastDeliverDate = getSubcontractedTaskData()
                     .getRequiredDeliveringDates().first();
-            if ((lastDeliverDate != null) && (lastDeliverDate.equals(subDeliverDate))) {
-                return (lastDeliverDate.getCommunicationDate() != null);
-            }
-            return true;
+            return !((lastDeliverDate != null) && (lastDeliverDate.equals(subDeliverDate))) ||
+                    (lastDeliverDate.getCommunicationDate() != null);
         }
     }
 
-    public void removeRequiredDeliverDate(SubcontractorDeliverDate subcontractorDeliverDate){
+    private void removeRequiredDeliverDate(SubcontractorDeliverDate subcontractorDeliverDate){
         subcontractModel.removeRequiredDeliverDate(subcontractorDeliverDate);
         Util.reloadBindings(gridDeliverDate);
     }
@@ -237,7 +234,7 @@ public class SubcontractController extends GenericForwardComposer {
         return !isNotSent();
     }
 
-    public boolean isNotSent() {
+    private boolean isNotSent() {
         if (this.getSubcontractedTaskData() != null && this.getSubcontractedTaskData().getState() != null) {
             return ((this.getSubcontractedTaskData().getState()
                     .equals(SubcontractState.PENDING_INITIAL_SEND)) || (this
@@ -258,25 +255,20 @@ public class SubcontractController extends GenericForwardComposer {
     private class EndDatesRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) throws Exception {
-            EndDateCommunication endDateFromSubcontractor = (EndDateCommunication) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            EndDateCommunication endDateFromSubcontractor = (EndDateCommunication) o;
             row.setValue(endDateFromSubcontractor);
 
-            appendLabel(row,
-                    Util.formatDate(endDateFromSubcontractor.getEndDate()));
-            appendLabel(row, Util.formatDateTime(endDateFromSubcontractor
-                    .getCommunicationDate()));
+            appendLabel(row, Util.formatDate(endDateFromSubcontractor.getEndDate()));
+            appendLabel(row, Util.formatDateTime(endDateFromSubcontractor.getCommunicationDate()));
             appendOperations(row, endDateFromSubcontractor);
         }
-
-
 
         private void appendLabel(Row row, String label) {
             row.appendChild(new Label(label));
         }
 
-        private void appendOperations(Row row,
-                EndDateCommunication endDateFromSubcontractor) {
+        private void appendOperations(Row row, EndDateCommunication endDateFromSubcontractor) {
             Hbox hbox = new Hbox();
             hbox.appendChild(getUpdateButton(endDateFromSubcontractor));
             row.appendChild(hbox);
@@ -288,6 +280,7 @@ public class SubcontractController extends GenericForwardComposer {
             updateButton.setDisabled(!isUpgradeable(endDateFromSubcontractor));
 
             updateButton.setTooltiptext(_("Update task end"));
+
             updateButton.addEventListener(Events.ON_CLICK, new EventListener() {
                 @Override
                 public void onEvent(Event event) {
@@ -301,30 +294,30 @@ public class SubcontractController extends GenericForwardComposer {
         private boolean isUpgradeable(EndDateCommunication endDateFromSubcontractor) {
             EndDateCommunication lastEndDateReported = getSubcontractedTaskData()
                     .getLastEndDatesCommunicatedFromSubcontractor();
-            if (lastEndDateReported != null) {
-                if (lastEndDateReported.equals(endDateFromSubcontractor)) {
+            if ( lastEndDateReported != null ) {
+
+                if ( lastEndDateReported.equals(endDateFromSubcontractor) ) {
                     Date newEndDate = lastEndDateReported.getEndDate();
                     Date endDateTask = taskEditFormComposer.getTaskDTO().endDate;
-                    if (endDateTask != null) {
-                        return (newEndDate.compareTo(endDateTask) != 0);
-                    }
-                    return true;
+
+                    return endDateTask == null || (newEndDate.compareTo(endDateTask) != 0);
                 }
             }
+
             return false;
         }
-
     }
 
-    public void updateTaskEnd(Date date) {
+    private void updateTaskEnd(Date date) {
         this.subcontractModel.setEndDate(date);
-        if (taskEditFormComposer != null) {
+        if ( taskEditFormComposer != null ) {
             taskEditFormComposer.getTaskDTO().endDate = date;
         }
+
         refressGridEndDates();
     }
 
-    public void refressGridEndDates() {
+    private void refressGridEndDates() {
         Util.reloadBindings(gridEndDates);
     }
 

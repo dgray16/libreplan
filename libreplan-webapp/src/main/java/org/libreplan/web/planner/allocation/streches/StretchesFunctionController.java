@@ -51,21 +51,19 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.XYModel;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 
 public class StretchesFunctionController extends GenericForwardComposer {
 
     private static final String EXIT_STATUS = "EXIT_STATUS";
 
-    public interface IGraphicGenerator {
+    interface IGraphicGenerator {
 
-        public boolean areChartsEnabled(IStretchesFunctionModel model);
+        boolean areChartsEnabled(IStretchesFunctionModel model);
 
-        XYModel getDedicationChart(
-                IStretchesFunctionModel stretchesFunctionModel);
+        XYModel getDedicationChart(IStretchesFunctionModel stretchesFunctionModel);
 
-        XYModel getAccumulatedHoursChartData(
-                IStretchesFunctionModel stretchesFunctionModel);
+        XYModel getAccumulatedHoursChartData(IStretchesFunctionModel stretchesFunctionModel);
 
     }
     private Window window;
@@ -89,26 +87,21 @@ public class StretchesFunctionController extends GenericForwardComposer {
         window = (Window) comp;
     }
 
-    public AssignmentFunction getAssignmentFunction() {
+    AssignmentFunction getAssignmentFunction() {
         return stretchesFunctionModel.getStretchesFunction();
     }
 
-    public void setResourceAllocation(ResourceAllocation<?> resourceAllocation,
-            StretchesFunctionTypeEnum type) {
-        AssignmentFunction assignmentFunction = resourceAllocation
-                .getAssignmentFunction();
-        stretchesFunctionModel.init((StretchesFunction) assignmentFunction,
-                resourceAllocation, type);
+    void setResourceAllocation(ResourceAllocation<?> resourceAllocation, StretchesFunctionTypeEnum type) {
+        AssignmentFunction assignmentFunction = resourceAllocation.getAssignmentFunction();
+        stretchesFunctionModel.init((StretchesFunction) assignmentFunction, resourceAllocation, type);
         reloadStretchesListAndCharts();
     }
 
     public int showWindow() {
         try {
             window.doModal();
-            return (Integer) window.getVariable("EXIT_STATUS", true);
+            return (Integer) window.getAttribute("EXIT_STATUS", true);
         } catch (SuspendNotAllowedException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -118,29 +111,26 @@ public class StretchesFunctionController extends GenericForwardComposer {
             stretchesFunctionModel.confirm();
             exit();
         } catch (ValidationException e) {
-            Messagebox.show(e.getMessage(), _("Error"), Messagebox.OK,
-                    Messagebox.ERROR);
+            Messagebox.show(e.getMessage(), _("Error"), Messagebox.OK, Messagebox.ERROR);
         }
     }
 
     public void cancel() throws InterruptedException {
-        int status = Messagebox.show(
-                _("All changes will be lost. Are you sure?"),
-                _("Confirm cancel"), Messagebox.YES | Messagebox.NO,
-                Messagebox.QUESTION);
-        if (Messagebox.YES == status) {
+        int status = Messagebox.show(_("All changes will be lost. Are you sure?"),
+                _("Confirm cancel"), Messagebox.YES | Messagebox.NO, Messagebox.QUESTION);
+        if ( Messagebox.YES == status ) {
             stretchesFunctionModel.cancel();
             close();
         }
     }
 
     private void close() {
-        window.setVariable(EXIT_STATUS, Messagebox.CANCEL, true);
+        window.setAttribute(EXIT_STATUS, Messagebox.CANCEL, true);
         window.setVisible(false);
     }
 
     private void exit() {
-        window.setVariable(EXIT_STATUS, Messagebox.OK, true);
+        window.setAttribute(EXIT_STATUS, Messagebox.OK, true);
         window.setVisible(false);
     }
 
@@ -157,11 +147,9 @@ public class StretchesFunctionController extends GenericForwardComposer {
     }
 
     private interface IFocusApplycability {
-        public abstract boolean focusIfApplycableOnLength(Stretch strech,
-                Decimalbox lenghtPercentage);
+        boolean focusIfApplycableOnLength(Stretch strech, Decimalbox lenghtPercentage);
 
-        public abstract boolean focusIfApplycableOnAmountWork(Stretch strech,
-                Decimalbox amountWork);
+        boolean focusIfApplycableOnAmountWork(Stretch strech, Decimalbox amountWork);
     }
 
     private static class FocusState implements IFocusApplycability {
@@ -179,28 +167,26 @@ public class StretchesFunctionController extends GenericForwardComposer {
         }
 
         @Override
-        public boolean focusIfApplycableOnAmountWork(Stretch strech,
-                Decimalbox amountWork) {
-            boolean result = currentFocus.focusIfApplycableOnAmountWork(strech,
-                    amountWork);
-            if (result) {
+        public boolean focusIfApplycableOnAmountWork(Stretch strech, Decimalbox amountWork) {
+            boolean result = currentFocus.focusIfApplycableOnAmountWork(strech, amountWork);
+            if ( result ) {
                 currentFocus = NO_FOCUS;
             }
+
             return result;
         }
 
         @Override
-        public boolean focusIfApplycableOnLength(Stretch strech,
-                Decimalbox lenghtPercentage) {
-            boolean result = currentFocus.focusIfApplycableOnLength(strech,
-                    lenghtPercentage);
-            if (result) {
+        public boolean focusIfApplycableOnLength(Stretch strech, Decimalbox lenghtPercentage) {
+            boolean result = currentFocus.focusIfApplycableOnLength(strech, lenghtPercentage);
+            if ( result ) {
                 currentFocus = NO_FOCUS;
             }
+
             return result;
         }
 
-        public void focusOn(Stretch stretch, Field field) {
+        void focusOn(Stretch stretch, Field field) {
             this.currentFocus = new FocusOnStrech(stretch, field);
         }
 
@@ -231,7 +217,7 @@ public class StretchesFunctionController extends GenericForwardComposer {
 
         private final Field field;
 
-        public FocusOnStrech(Stretch stretch, Field field) {
+        FocusOnStrech(Stretch stretch, Field field) {
             this.stretch = stretch;
             this.field = field;
         }
@@ -239,20 +225,22 @@ public class StretchesFunctionController extends GenericForwardComposer {
         @Override
         public boolean focusIfApplycableOnAmountWork(Stretch stretch,
                 Decimalbox amountWork) {
-            if (field == Field.AMOUNT_WORK && this.stretch.equals(stretch)) {
+            if ( field == Field.AMOUNT_WORK && this.stretch.equals(stretch) ) {
                 amountWork.focus();
                 return true;
             }
+
             return false;
         }
 
         @Override
         public boolean focusIfApplycableOnLength(Stretch stretch,
                 Decimalbox lenghtPercentage) {
-            if (field == Field.LENGTH && this.stretch.equals(stretch)) {
+            if ( field == Field.LENGTH && this.stretch.equals(stretch) ) {
                 lenghtPercentage.focus();
                 return true;
             }
+
             return false;
         }
 
@@ -270,16 +258,17 @@ public class StretchesFunctionController extends GenericForwardComposer {
         private final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
         @Override
-        public void render(Listitem item, Object data) {
-            Stretch stretch = (Stretch) data;
+        public void render(Listitem listitem, Object o, int i) throws Exception {
+            Stretch stretch = (Stretch) o;
 
-            item.setValue(stretch);
-            item.setDisabled(stretch.isReadOnly());
+            listitem.setValue(stretch);
+            listitem.setDisabled(stretch.isReadOnly());
 
-            appendDate(item, stretch);
-            appendLengthPercentage(item, stretch);
-            appendAmountWorkPercentage(item, stretch);
-            appendOperations(item, stretch);
+            appendDate(listitem, stretch);
+            appendLengthPercentage(listitem, stretch);
+
+            appendAmountWorkPercentage(listitem, stretch);
+            appendOperations(listitem, stretch);
         }
 
         private void appendChild(Listitem item, Component component) {
@@ -290,6 +279,7 @@ public class StretchesFunctionController extends GenericForwardComposer {
 
         private void appendDate(Listitem item, final Stretch stretch) {
             final Datebox tempDatebox = new Datebox();
+
             Datebox datebox = Util.bind(tempDatebox, new Util.Getter<Date>() {
                 @Override
                 public Date get() {
@@ -310,6 +300,7 @@ public class StretchesFunctionController extends GenericForwardComposer {
                     }
                 }
             });
+
             appendChild(item, datebox);
         }
 
@@ -417,7 +408,6 @@ public class StretchesFunctionController extends GenericForwardComposer {
             }
             appendChild(item, button);
         }
-
     }
 
     public void addStretch() {
@@ -435,8 +425,7 @@ public class StretchesFunctionController extends GenericForwardComposer {
     }
 
     public XYModel getAccumulatedHoursChartData() {
-        return graphicGenerator
-                .getAccumulatedHoursChartData(stretchesFunctionModel);
+        return graphicGenerator.getAccumulatedHoursChartData(stretchesFunctionModel);
     }
 
     public String getTitle() {
@@ -447,7 +436,7 @@ public class StretchesFunctionController extends GenericForwardComposer {
         this.title = title;
     }
 
-    public boolean isChartsEnabled() {
+    private boolean isChartsEnabled() {
         return graphicGenerator.areChartsEnabled(stretchesFunctionModel);
     }
 

@@ -74,10 +74,10 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.api.Combobox;
-import org.zkoss.zul.api.Datebox;
-import org.zkoss.zul.api.Row;
-import org.zkoss.zul.api.Tabpanel;
+import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.Tabpanel;
 
 /**
  * Controller for edit {@link Task} popup.
@@ -138,14 +138,15 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
 
     public void init(final EditTaskController editTaskController,
-            IContextWithPlannerTask<TaskElement> context,
-            TaskElement taskElement) {
+                     IContextWithPlannerTask<TaskElement> context,
+                     TaskElement taskElement) {
+
         this.editTaskController = editTaskController;
         this.currentContext = context;
         this.currentTaskElement = taskElement;
 
-        Order order = null;
-        if (context != null) {
+        Order order;
+        if ( context != null ) {
             order = findOrderIn(context);
         } else {
             order = taskElement.getOrderElement().getOrder();
@@ -156,34 +157,34 @@ public class TaskPropertiesController extends GenericForwardComposer {
         originalState = getResourceAllocationType(currentTaskElement);
         setOldState(originalState);
 
-        disabledConstraintsAndAllocations = currentTaskElement
-                .isSubcontractedAndWasAlreadySent()
-                || currentTaskElement.isLimitingAndHasDayAssignments()
-                || currentTaskElement.isUpdatedFromTimesheets();
-        if (!disabledConstraintsAndAllocations && (currentTaskElement.isTask())) {
-            disabledConstraintsAndAllocations = ((Task) currentTaskElement)
-                    .isManualAnyAllocation();
+        disabledConstraintsAndAllocations = currentTaskElement.isSubcontractedAndWasAlreadySent() ||
+                currentTaskElement.isLimitingAndHasDayAssignments() ||
+                currentTaskElement.isUpdatedFromTimesheets();
+
+        if ( !disabledConstraintsAndAllocations && (currentTaskElement.isTask()) ) {
+            disabledConstraintsAndAllocations = ((Task) currentTaskElement).isManualAnyAllocation();
         }
+
         startConstraintTypes.setDisabled(disabledConstraintsAndAllocations);
         startConstraintDate.setDisabled(disabledConstraintsAndAllocations);
         lbResourceAllocationType.setDisabled(disabledConstraintsAndAllocations);
         deadLineDateBox.setDisabled(currentTaskElement.isSubcontracted());
 
-        if (context != null) {
+        if ( context != null ) {
             taskEditFormComposer.init(context.getRelativeTo(), context.getTask());
         }
+
         updateComponentValuesForTask();
     }
 
     private void setItemsStartConstraintTypesCombo(Order order) {
         startConstraintTypes.getChildren().clear();
         for (PositionConstraintType type : PositionConstraintType.values()) {
-            if ((type != PositionConstraintType.AS_LATE_AS_POSSIBLE &&
-                        type != PositionConstraintType.AS_SOON_AS_POSSIBLE) ||
-                    (type == PositionConstraintType.AS_LATE_AS_POSSIBLE &&
-                        order.getDeadline() != null) ||
-                    (type == PositionConstraintType.AS_SOON_AS_POSSIBLE &&
-                        order.getInitDate() != null)) {
+            if ( (type != PositionConstraintType.AS_LATE_AS_POSSIBLE &&
+                    type != PositionConstraintType.AS_SOON_AS_POSSIBLE) ||
+                    (type == PositionConstraintType.AS_LATE_AS_POSSIBLE && order.getDeadline() != null) ||
+                    (type == PositionConstraintType.AS_SOON_AS_POSSIBLE && order.getInitDate() != null) ) {
+
                 Comboitem comboitem = new Comboitem(_(type.getName()));
                 comboitem.setValue(type);
                 startConstraintTypes.appendChild(comboitem);
@@ -192,32 +193,29 @@ public class TaskPropertiesController extends GenericForwardComposer {
     }
 
     private Order findOrderIn(IContextWithPlannerTask<TaskElement> context) {
-        TaskElement topTask = context.getMapper().findAssociatedDomainObject(
-                findTopMostTask(context));
+        TaskElement topTask = context.getMapper().findAssociatedDomainObject(findTopMostTask(context));
+
         return topTask.getParent().getOrderElement().getOrder();
     }
 
     private OrderElement findOrderElementIn(IContextWithPlannerTask<TaskElement> context) {
-        TaskElement topTask = context.getMapper().findAssociatedDomainObject(
-                findTopMostTask(context));
+        TaskElement topTask = context.getMapper().findAssociatedDomainObject(findTopMostTask(context));
+
         return topTask.getOrderElement();
     }
 
-    private org.zkoss.ganttz.data.Task findTopMostTask(
-            IContextWithPlannerTask<TaskElement> context) {
-        List<? extends TaskContainer> parents = context.getMapper().getParents(
-                context.getTask());
-        return parents.isEmpty() ? context.getTask() : parents.get(parents
-                .size() - 1);
+    private org.zkoss.ganttz.data.Task findTopMostTask(IContextWithPlannerTask<TaskElement> context) {
+        List<? extends TaskContainer> parents = context.getMapper().getParents(context.getTask());
+
+        return parents.isEmpty() ? context.getTask() : parents.get(parents.size() - 1);
     }
 
     private void setOldState(ResourceAllocationTypeEnum state) {
-        lbResourceAllocationType.setVariable("oldState", state, true);
+        lbResourceAllocationType.setAttribute("oldState", state, true);
     }
 
     private ResourceAllocationTypeEnum getOldState() {
-        return (ResourceAllocationTypeEnum) lbResourceAllocationType
-                .getVariable("oldState", true);
+        return (ResourceAllocationTypeEnum) lbResourceAllocationType.getAttribute("oldState", true);
     }
 
     private void setResourceAllocationType(Listbox listbox, ResourceAllocationTypeEnum value) {
@@ -225,30 +223,32 @@ public class TaskPropertiesController extends GenericForwardComposer {
     }
 
     private void setResourceAllocationType(Listbox listbox, String label) {
-        for (Iterator i = listbox.getChildren().iterator(); i.hasNext(); ) {
-            Listitem item = (Listitem) i.next();
+        for (Component component : listbox.getChildren()) {
+            Listitem item = (Listitem) component;
             Listcell cell = (Listcell) item.getFirstChild();
-            if (cell.getLabel() != null && cell.getLabel().equals(label)) {
+
+            if ( cell.getLabel() != null && cell.getLabel().equals(label) ) {
                 item.setSelected(true);
             }
         }
     }
 
     private void updateComponentValuesForTask() {
-        if (currentTaskElement instanceof Task) {
+        if ( currentTaskElement instanceof Task ) {
             Task task = (Task) currentTaskElement;
             showDurationRow(task);
             showStartConstraintRow(task);
             showResourceAllocationTypeRow(task);
         } else {
             hideDurationRow();
-            if (currentTaskElement instanceof ITaskPositionConstrained) {
+            if ( currentTaskElement instanceof ITaskPositionConstrained ) {
                 showStartConstraintRow((ITaskPositionConstrained) currentTaskElement);
             } else {
                 hideStartConstraintRow();
             }
             hideResourceAllocationTypeRow();
         }
+
         hours.setValue(currentTaskElement.getWorkHours());
         budget.setValue(currentTaskElement.getBudget());
         Util.reloadBindings(tabpanel);
@@ -268,21 +268,21 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
     private void showStartConstraintRow(ITaskPositionConstrained task) {
         startConstraint.setVisible(true);
-        PositionConstraintType type = task.getPositionConstraint()
-                .getConstraintType();
-        startConstraintTypes.setSelectedItemApi(findComboWithType(type));
+        PositionConstraintType type = task.getPositionConstraint().getConstraintType();
+        startConstraintTypes.setSelectedItem(findComboWithType(type));
         updateStartConstraint(type);
     }
 
     private Comboitem findComboWithType(PositionConstraintType type) {
         for (Object component : startConstraintTypes.getChildren()) {
-            if (component instanceof Comboitem) {
+            if ( component instanceof Comboitem ) {
                 Comboitem item = (Comboitem) component;
-                if (((PositionConstraintType) item.getValue()) == type) {
+                if ( (item.getValue()) == type ) {
                     return item;
                 }
             }
         }
+
         return null;
     }
 
@@ -292,24 +292,22 @@ public class TaskPropertiesController extends GenericForwardComposer {
     }
 
     private void updateStartConstraint(PositionConstraintType type) {
-        TaskPositionConstraint taskStartConstraint = currentTaskElementAsTaskLeafConstraint()
-                .getPositionConstraint();
+        TaskPositionConstraint taskStartConstraint = currentTaskElementAsTaskLeafConstraint().getPositionConstraint();
         startConstraintDate.setVisible(type.isAssociatedDateRequired());
-        if (taskStartConstraint.getConstraintDateAsDate() != null) {
-            startConstraintDate.setValue(taskStartConstraint
-                    .getConstraintDateAsDate());
+        if ( taskStartConstraint.getConstraintDateAsDate() != null ) {
+            startConstraintDate.setValue(taskStartConstraint.getConstraintDateAsDate());
         }
     }
 
     private boolean saveConstraintChanges() {
-        TaskPositionConstraint taskConstraint = currentTaskElementAsTaskLeafConstraint()
-                .getPositionConstraint();
-        PositionConstraintType type = (PositionConstraintType) startConstraintTypes
-                .getSelectedItemApi().getValue();
-        IntraDayDate inputDate = type.isAssociatedDateRequired() ? IntraDayDate
-                .startOfDay(LocalDate.fromDateFields(startConstraintDate
-                        .getValue())) : null;
-        if (taskConstraint.isValid(type, inputDate)) {
+        TaskPositionConstraint taskConstraint = currentTaskElementAsTaskLeafConstraint().getPositionConstraint();
+        PositionConstraintType type = startConstraintTypes.getSelectedItem().getValue();
+
+        IntraDayDate inputDate = type.isAssociatedDateRequired() ?
+                IntraDayDate.startOfDay(LocalDate.fromDateFields(startConstraintDate.getValue()))
+                : null;
+
+        if ( taskConstraint.isValid(type, inputDate) ) {
             taskConstraint.update(type, inputDate);
             //at this point we could call currentContext.recalculatePosition(currentTaskElement)
             //to trigger the scheduling algorithm, but we don't do it because
@@ -344,8 +342,7 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
                     @Override
                     public void onEvent(Event event) {
-                        PositionConstraintType constraint = (PositionConstraintType) startConstraintTypes
-                                .getSelectedItemApi().getValue();
+                        PositionConstraintType constraint = startConstraintTypes.getSelectedItem().getValue();
                         constraintTypeChoosen(constraint);
                     }
                 });
@@ -358,35 +355,32 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
                 final ResourceAllocationTypeEnum oldState = getOldState();
                 ResourceAllocationTypeEnum newState = getSelectedValue(new ArrayList(se.getSelectedItems()));
-                if (thereIsTransition(newState)) {
-                    if (isConsolidatedTask()) {
+                if ( thereIsTransition(newState) ) {
+                    if ( isConsolidatedTask() ) {
                         restoreOldState();
                         editTaskController.showNonPermitChangeResourceAllocationType();
                     } else {
-                        if(newState.equals(ResourceAllocationTypeEnum.SUBCONTRACT)
+                        if( newState.equals(ResourceAllocationTypeEnum.SUBCONTRACT )
                                 && !checkCompatibleAllocation()){
-                            try {
-                                restoreOldState();
-                                Messagebox.show(_("This resource allocation type is incompatible. The task has an associated order element which has a progress that is of type subcontractor. "),
-                                        _("Error"), Messagebox.OK , Messagebox.ERROR);
-                            } catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
+                            restoreOldState();
+                            Messagebox.show(_("This resource allocation type is incompatible. The task has " +
+                                    "an associated order element which has a progress that is of type subcontractor. "),
+                                    _("Error"), Messagebox.OK , Messagebox.ERROR);
                         }else{
                             changeResourceAllocationType(oldState,newState);
                             editTaskController.selectAssignmentTab(lbResourceAllocationType.getSelectedIndex() + 1);
                         }
                     }
                 }
-                if (oldState == null) {
+                if ( oldState == null ) {
                     setOldState(newState);
                 }
             }
 
             private ResourceAllocationTypeEnum getSelectedValue(List<Listitem> selectedItems) {
-                final Listitem item = (Listitem) selectedItems.get(0);
+                final Listitem item = selectedItems.get(0);
                 final Listcell cell = (Listcell) item.getChildren().get(0);
+
                 return ResourceAllocationTypeEnum.asEnum(cell.getLabel());
             }
 
@@ -399,26 +393,28 @@ public class TaskPropertiesController extends GenericForwardComposer {
     }
 
     private boolean checkCompatibleAllocation(){
-        OrderElement orderElement = null;
+        OrderElement orderElement;
         AdvanceType advanceType = PredefinedAdvancedTypes.SUBCONTRACTOR.getType();
 
-        if (this.currentContext  != null) {
+        if ( this.currentContext  != null ) {
             orderElement = findOrderElementIn(this.currentContext );
         } else {
             orderElement = this.currentTaskElement.getOrderElement();
         }
-        if(orderElement.getAdvanceAssignmentByType(advanceType) != null){
+
+        if( orderElement.getAdvanceAssignmentByType(advanceType) != null ){
                 return false;
         }
+
         try {
-            DirectAdvanceAssignment newAdvanceAssignment = DirectAdvanceAssignment
-                    .create();
+            DirectAdvanceAssignment newAdvanceAssignment = DirectAdvanceAssignment.create();
             newAdvanceAssignment.setAdvanceType(advanceType);
             orderElement.checkAncestorsNoOtherAssignmentWithSameAdvanceType(
                     orderElement.getParent(), newAdvanceAssignment);
         } catch (DuplicateAdvanceAssignmentForOrderElementException e) {
             return false;
         }
+
         return true;
     }
 
@@ -426,10 +422,11 @@ public class TaskPropertiesController extends GenericForwardComposer {
         return getOldState() != null && !getOldState().equals(newState);
     }
 
-    public TaskDTO getGanttTaskDTO() {
-        if (taskEditFormComposer == null) {
+    private TaskDTO getGanttTaskDTO() {
+        if ( taskEditFormComposer == null ) {
             return null;
         }
+
         return taskEditFormComposer.getTaskDTO();
     }
 
@@ -439,11 +436,12 @@ public class TaskPropertiesController extends GenericForwardComposer {
         SaveCommandBuilder.taskPropertiesController = getObject();
 
         boolean ok = true;
-        if (currentTaskElement instanceof ITaskPositionConstrained) {
+
+        if ( currentTaskElement instanceof ITaskPositionConstrained ) {
             ok = saveConstraintChanges();
         }
-        if (ok) {
-            if (disabledConstraintsAndAllocations) {
+        if ( ok ) {
+            if ( disabledConstraintsAndAllocations)  {
                 taskEditFormComposer.accept();
             } else {
                 taskEditFormComposer.acceptWithoutCopyingDates();
@@ -461,7 +459,7 @@ public class TaskPropertiesController extends GenericForwardComposer {
      * @author Diego Pino Garcia <dpino@igalia.com>
      *
      */
-    public enum ResourceAllocationTypeEnum {
+    enum ResourceAllocationTypeEnum {
         NON_LIMITING_RESOURCES(_("Normal resource assignment")),
         LIMITING_RESOURCES(_("Queue-based resource assignation")),
         SUBCONTRACT(_("Subcontract"));
@@ -482,7 +480,7 @@ public class TaskPropertiesController extends GenericForwardComposer {
             }
         };
 
-        private ResourceAllocationTypeEnum(String option) {
+        ResourceAllocationTypeEnum(String option) {
             this.option = option;
         }
 
@@ -503,20 +501,21 @@ public class TaskPropertiesController extends GenericForwardComposer {
         }
 
         public static ResourceAllocationTypeEnum asEnum(String label) {
-            if (NON_LIMITING_RESOURCES.toString().equals(label)) {
+            if ( NON_LIMITING_RESOURCES.toString().equals(label) ) {
                 return NON_LIMITING_RESOURCES;
-            } else if (LIMITING_RESOURCES.toString().equals(label)) {
+            } else if ( LIMITING_RESOURCES.toString().equals(label) ) {
                 return LIMITING_RESOURCES;
-            } else if (SUBCONTRACT.toString().equals(label)) {
+            } else if ( SUBCONTRACT.toString().equals(label) ) {
                 return SUBCONTRACT;
             }
+
             return getDefault();
         }
 
     }
 
     public List<ResourceAllocationTypeEnum> getResourceAllocationTypeOptionList() {
-        if (scenarioManager.getCurrent().isMaster()) {
+        if ( scenarioManager.getCurrent().isMaster() ) {
             return ResourceAllocationTypeEnum.getOptionList();
         } else {
             return ResourceAllocationTypeEnum.getOptionListForNonMasterBranch();
@@ -536,10 +535,11 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
     }
 
-    public ResourceAllocationTypeEnum getResourceAllocationType(TaskElement taskElement) {
+    ResourceAllocationTypeEnum getResourceAllocationType(TaskElement taskElement) {
         if ( taskElement == null || !isTask(taskElement) ) {
             return null;
         }
+
         return getResourceAllocationType(asTask(currentTaskElement));
     }
 
@@ -552,15 +552,16 @@ public class TaskPropertiesController extends GenericForwardComposer {
      *
      * @return
      */
-    public ResourceAllocationTypeEnum getResourceAllocationType(Task task) {
+    private ResourceAllocationTypeEnum getResourceAllocationType(Task task) {
         ResourceAllocationTypeEnum result = ResourceAllocationTypeEnum.NON_LIMITING_RESOURCES;
 
-        if (task.isSubcontracted()) {
+        if ( task.isSubcontracted() ) {
             result = ResourceAllocationTypeEnum.SUBCONTRACT;
         }
-        if (task.isLimiting()) {
+        if ( task.isLimiting() ) {
             result = ResourceAllocationTypeEnum.LIMITING_RESOURCES;
         }
+
         return result;
     }
 
@@ -573,11 +574,11 @@ public class TaskPropertiesController extends GenericForwardComposer {
     }
 
     private void changeResourceAllocationType(ResourceAllocationTypeEnum from, ResourceAllocationTypeEnum to) {
-        if (from.equals(ResourceAllocationTypeEnum.NON_LIMITING_RESOURCES)) {
+        if ( from.equals(ResourceAllocationTypeEnum.NON_LIMITING_RESOURCES) ) {
             fromNonLimitingResource(to);
-        } else if (from.equals(ResourceAllocationTypeEnum.LIMITING_RESOURCES)) {
+        } else if ( from.equals(ResourceAllocationTypeEnum.LIMITING_RESOURCES) ) {
             fromLimitingResource(to);
-        } else if (from.equals(ResourceAllocationTypeEnum.SUBCONTRACT)) {
+        } else if ( from.equals(ResourceAllocationTypeEnum.SUBCONTRACT) ) {
             fromSubcontract(to);
         }
     }
@@ -588,25 +589,22 @@ public class TaskPropertiesController extends GenericForwardComposer {
      * @param newState
      */
     private void fromNonLimitingResource(ResourceAllocationTypeEnum newState) {
-        if (!isTask(currentTaskElement)) {
+        if ( !isTask(currentTaskElement) ) {
             return;
         }
 
         Task task = asTask(currentTaskElement);
-        if (task.hasResourceAllocations()) {
-            try {
-                if (Messagebox.show(_("Assigned resources for this task will be deleted. Are you sure?"),
-                        _("Warning"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
-                    task.removeAllResourceAllocations();
-                    setStateTo(newState);
-                } else {
-                    resetStateTo(ResourceAllocationTypeEnum.NON_LIMITING_RESOURCES);
-                }
-                return;
-            } catch (InterruptedException e) {
-
+        if ( task.hasResourceAllocations() ) {
+            if ( Messagebox.show(_("Assigned resources for this task will be deleted. Are you sure?"),
+                    _("Warning"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
+                task.removeAllResourceAllocations();
+                setStateTo(newState);
+            } else {
+                resetStateTo(ResourceAllocationTypeEnum.NON_LIMITING_RESOURCES);
             }
+            return;
         }
+
         setStateTo(newState);
     }
 
@@ -632,19 +630,16 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
         Task task = asTask(currentTaskElement);
         if (task.hasResourceAllocations()) {
-            try {
-                if (Messagebox.show(_("Assigned resources for this task will be deleted. Are you sure?"),
-                        _("Warning"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
-                    task.removeAllResourceAllocations();
-                    setStateTo(newState);
-                } else {
-                    resetStateTo(ResourceAllocationTypeEnum.LIMITING_RESOURCES);
-                }
-                return;
-            } catch (InterruptedException e) {
-
+            if (Messagebox.show(_("Assigned resources for this task will be deleted. Are you sure?"),
+                    _("Warning"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK ) {
+                task.removeAllResourceAllocations();
+                setStateTo(newState);
+            } else {
+                resetStateTo(ResourceAllocationTypeEnum.LIMITING_RESOURCES);
             }
+            return;
         }
+
         setStateTo(newState);
     }
 
@@ -656,58 +651,53 @@ public class TaskPropertiesController extends GenericForwardComposer {
     private void fromSubcontract(ResourceAllocationTypeEnum newState) {
         Task task = asTask(currentTaskElement);
 
-        if (task.isSubcontracted()) {
+        if ( task.isSubcontracted() ) {
             final Date communicationDate = (task.getSubcontractedTaskData() != null) ?
                     task.getSubcontractedTaskData().getSubcontractCommunicationDate()
                     : null;
 
             // Notification has been sent
-            if (communicationDate != null) {
-                try {
-                    if (Messagebox.show(_("IMPORTANT: Don't forget to communicate to subcontractor that his contract has been cancelled"),
-                            _("Warning"), Messagebox.OK, Messagebox.EXCLAMATION) == Messagebox.OK) {
-                        setStateTo(newState);
-                    } else {
-                        resetStateTo(ResourceAllocationTypeEnum.SUBCONTRACT);
-                    }
-                    return;
-                } catch (InterruptedException e) {
-
+            if ( communicationDate != null ) {
+                if ( Messagebox.show(_("IMPORTANT: Don't forget to communicate to subcontractor that " +
+                        "his contract has been cancelled"), _("Warning"),
+                        Messagebox.OK, Messagebox.EXCLAMATION) == Messagebox.OK ) {
+                    setStateTo(newState);
+                } else {
+                    resetStateTo(ResourceAllocationTypeEnum.SUBCONTRACT);
                 }
+                return;
             }
         }
         setStateTo(newState);
     }
 
-    public boolean stateHasChanged() {
+    boolean stateHasChanged() {
         final ResourceAllocationTypeEnum currentState = getCurrentState();
         return currentState != null && !currentState.equals(getOriginalState());
     }
 
-    public ResourceAllocationTypeEnum getOriginalState() {
+    ResourceAllocationTypeEnum getOriginalState() {
         return originalState;
     }
 
-    public ResourceAllocationTypeEnum getCurrentState() {
+    ResourceAllocationTypeEnum getCurrentState() {
         return getSelectedResourceAllocationType();
     }
 
     private ResourceAllocationTypeEnum getSelectedResourceAllocationType() {
         final Listitem item = lbResourceAllocationType.getSelectedItem();
-        if (item == null) {
+        if ( item == null ) {
             return null;
         }
 
         final Listcell cell = (Listcell) item.getChildren().get(0);
+
         return ResourceAllocationTypeEnum.asEnum(cell.getLabel());
     }
 
-    public boolean isConsolidatedTask() {
+    private boolean isConsolidatedTask() {
         Task task = asTask(currentTaskElement);
-        if (task != null) {
-            return task.hasConsolidations();
-        }
-        return false;
+        return task != null && task.hasConsolidations();
     }
 
     public void updateTaskEndDate(LocalDate endDate) {
@@ -716,12 +706,11 @@ public class TaskPropertiesController extends GenericForwardComposer {
     }
 
     public void updateTaskStartDate(LocalDate newStart) {
-        getGanttTaskDTO().beginDate = newStart.toDateTimeAtStartOfDay()
-                .toDate();
+        getGanttTaskDTO().beginDate = newStart.toDateTimeAtStartOfDay().toDate();
         Util.reloadBindings(startDateBox);
     }
 
-    public TaskEditFormComposer getTaskEditFormComposer() {
+    TaskEditFormComposer getTaskEditFormComposer() {
         return taskEditFormComposer;
     }
 
@@ -733,8 +722,9 @@ public class TaskPropertiesController extends GenericForwardComposer {
         return Util.getMoneyFormat();
     }
 
-    public List<Resource> listToDelete = new ArrayList<Resource>();
-    public List<Resource> listToAdd = new ArrayList<Resource>();
+    private List<Resource> listToDelete = new ArrayList<>();
+
+    public List<Resource> listToAdd = new ArrayList<>();
 
     public void emailNotificationAddNew(){
 
@@ -756,21 +746,21 @@ public class TaskPropertiesController extends GenericForwardComposer {
             Worker currentWorker;
             Resource currentResource;
 
-            for (int i = 0; i < workersList.size(); i++)
+            for (Worker aWorkersList : workersList)
+                for (Resource aList : list) {
 
-                for (int j = 0; j < list.size(); j++){
+                    currentWorker = aWorkersList;
+                    currentResource = aList;
 
-                    currentWorker = workersList.get(i);
-                    currentResource = list.get(j);
+                    if ( currentWorker.getId().equals(currentResource.getId()) ) {
 
-                    if ( currentWorker.getId().equals(currentResource.getId()) ){
-
-                        workersList.get(i).setUser(workerModel.getBoundUserFromDB(currentWorker));
+                        aWorkersList.setUser(workerModel.getBoundUserFromDB(currentWorker));
                         User currentUser = currentWorker.getUser();
 
-                        if ( currentUser != null
-                                && (currentUser.isInRole(UserRole.ROLE_EMAIL_TASK_ASSIGNED_TO_RESOURCE)
-                                || currentUser.isInRole(UserRole.ROLE_EMAIL_RESOURCE_REMOVED_FROM_TASK)) )
+                        if ( currentUser != null &&
+                                (currentUser.isInRole(UserRole.ROLE_EMAIL_TASK_ASSIGNED_TO_RESOURCE) ||
+                                        currentUser.isInRole(UserRole.ROLE_EMAIL_RESOURCE_REMOVED_FROM_TASK)) )
+
                             setEmailNotificationEntity(enumeration, currentResource);
                         break;
                     }
@@ -796,12 +786,8 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
             emailNotificationModel.confirmSave();
         } catch (DataIntegrityViolationException e){
-            try {
-                Messagebox.show(_("You cannot email user twice with the same info"), _("Error"),
-                        Messagebox.OK, Messagebox.ERROR);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
+            Messagebox.show(_("You cannot email user twice with the same info"), _("Error"),
+                    Messagebox.OK, Messagebox.ERROR);
         }
     }
 

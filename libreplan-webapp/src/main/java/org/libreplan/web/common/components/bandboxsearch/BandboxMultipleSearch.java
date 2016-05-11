@@ -50,7 +50,7 @@ import org.zkoss.zul.Listhead;
 import org.zkoss.zul.Listheader;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.api.Listbox;
+import org.zkoss.zul.Listbox;
 
 /**
  * {@link Bandbox} allowing to choose more than one element from the drop down
@@ -251,10 +251,10 @@ public class BandboxMultipleSearch extends HtmlMacroComponent {
      * Find the first ten filters
      */
     @SuppressWarnings("unchecked")
-    private ListModel getSubModel() {
-        List result = multipleFiltersFinder.getFirstTenFilters();
+    private ListModel<FilterPair> getSubModel() {
+        List<FilterPair> result = multipleFiltersFinder.getFirstTenFilters();
 
-        return new SimpleListModel(result);
+        return new SimpleListModel<>(result);
     }
 
     /**
@@ -262,17 +262,17 @@ public class BandboxMultipleSearch extends HtmlMacroComponent {
      * @param inputText
      */
     @SuppressWarnings("unchecked")
-    private ListModel getSubModel(String inputText) {
-        List result = multipleFiltersFinder.getMatching(inputText);
+    private ListModel<FilterPair> getSubModel(String inputText) {
+        List<FilterPair> result = multipleFiltersFinder.getMatching(inputText);
 
-        return new SimpleListModel(result);
+        return new SimpleListModel<>(result);
     }
 
     /**
      * Append headers to listbox header list
      */
     @SuppressWarnings("unchecked")
-    public void addHeaders() {
+    private void addHeaders() {
         clearHeaderIfNecessary();
         final String[] headers = multipleFiltersFinder.getHeaders();
         for (String header : headers) {
@@ -288,7 +288,7 @@ public class BandboxMultipleSearch extends HtmlMacroComponent {
 
     private Listitem getSelectedItem() {
         try {
-            return (Listitem) listbox.getSelectedItems().iterator().next();
+            return listbox.getSelectedItems().iterator().next();
         }
         catch (NoSuchElementException e) {
             return null;
@@ -329,11 +329,11 @@ public class BandboxMultipleSearch extends HtmlMacroComponent {
 
     private void clearListbox() {
         List<Object> list = new ArrayList<>();
-        listbox.setModel(new SimpleListModel(list));
+        listbox.setModel(new SimpleListModel<>(list));
         listbox.invalidate();
     }
 
-    public List<Object> asList(ListModel model) {
+    public List<Object> asList(ListModel<Object> model) {
         List<Object> result = new ArrayList<>();
         for (int i = 0; i < model.getSize(); i++) {
             result.add(model.getElementAt(i));
@@ -342,7 +342,7 @@ public class BandboxMultipleSearch extends HtmlMacroComponent {
         return result;
     }
 
-    public void setListboxEventListener(String event, EventListener listener) {
+    public void setListboxEventListener(String event, EventListener<Event> listener) {
         listbox.addEventListener(event, listener);
     }
 

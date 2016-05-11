@@ -60,7 +60,7 @@ public class EffortDuration implements Comparable<EffortDuration> {
 
         private final int secondsPerUnit;
 
-        private Granularity(int secondsPerUnit) {
+        Granularity(int secondsPerUnit) {
             this.secondsPerUnit = secondsPerUnit;
         }
 

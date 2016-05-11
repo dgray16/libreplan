@@ -27,7 +27,8 @@ import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelExt;
-import org.zkoss.zul.api.Column;
+import org.zkoss.zul.Column;
+import org.zkoss.zul.ext.Sortable;
 
 /**
  * NewDataSortableGrid is a macrocomponent which extends {@link Grid}
@@ -45,6 +46,7 @@ import org.zkoss.zul.api.Column;
 public class NewDataSortableGrid extends Grid implements AfterCompose {
 
     private Column lastSortedColumn;
+
     private boolean lastSortedColumnAscending;
 
     public NewDataSortableGrid() {
@@ -57,18 +59,18 @@ public class NewDataSortableGrid extends Grid implements AfterCompose {
     }
 
     public void setSortedColumn(Column c) {
-        if (c == null) {
+        if ( c == null ) {
             throw new IllegalArgumentException("The column parameter cannot"
                     + "cannot be null");
         }
         this.lastSortedColumn = c;
     }
 
-    public Column getSortedColumn() {
+    Column getSortedColumn() {
         return lastSortedColumn;
     }
 
-    public void setLastSortedColumnAscending(boolean ascending) {
+    void setLastSortedColumnAscending(boolean ascending) {
         this.lastSortedColumnAscending = ascending;
     }
 
@@ -94,14 +96,13 @@ public class NewDataSortableGrid extends Grid implements AfterCompose {
         if (!(getModel() instanceof ListModelExt)) {
             return;
         }
+        //TODO Checko this ?
+        Sortable model = (Sortable) getModel();
 
-        ListModelExt model = (ListModelExt) getModel();
-        if (lastSortedColumnAscending) {
-            model.sort(lastSortedColumn.getSortAscending(),
-                    lastSortedColumnAscending);
+        if ( lastSortedColumnAscending ) {
+            model.sort(lastSortedColumn.getSortAscending(), lastSortedColumnAscending);
         } else {
-            model.sort(lastSortedColumn.getSortDescending(),
-                    lastSortedColumnAscending);
+            model.sort(lastSortedColumn.getSortDescending(), lastSortedColumnAscending);
         }
     }
 }

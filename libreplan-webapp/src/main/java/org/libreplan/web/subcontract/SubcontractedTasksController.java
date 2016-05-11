@@ -56,11 +56,11 @@ import org.zkoss.zul.Button;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Label;
-import org.zkoss.zul.ListModelExt;
+import org.zkoss.zul.ext.Sortable;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.Vbox;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for operations related with subcontracted tasks.
@@ -78,6 +78,7 @@ public class SubcontractedTasksController extends GenericForwardComposer {
     private Grid listing;
 
     private Component messagesContainer;
+
     private IMessagesForUser messagesForUser;
 
     @Autowired
@@ -88,8 +89,9 @@ public class SubcontractedTasksController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
         window = (Window) comp;
-        window.setVariable("controller", this, true);
+        window.setAttribute("controller", this, true);
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
@@ -104,16 +106,14 @@ public class SubcontractedTasksController extends GenericForwardComposer {
     private class SubcontractedTasksRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-            SubcontractedTaskData subcontractedTaskData = (SubcontractedTaskData) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            SubcontractedTaskData subcontractedTaskData = (SubcontractedTaskData) o;
             row.setValue(subcontractedTaskData);
 
             Order order = getOrder(subcontractedTaskData);
 
-            appendLabel(row, Util.formatDateTime(subcontractedTaskData
-                    .getSubcontratationDate()));
-            appendLabel(row, Util.formatDateTime(subcontractedTaskData
-                    .getSubcontractCommunicationDate()));
+            appendLabel(row, Util.formatDateTime(subcontractedTaskData.getSubcontratationDate()));
+            appendLabel(row, Util.formatDateTime(subcontractedTaskData.getSubcontractCommunicationDate()));
             appendLabel(row, getExternalCompany(subcontractedTaskData));
             appendLabel(row, getOrderCode(order));
             appendLabel(row, getOrderName(order));
@@ -121,11 +121,11 @@ public class SubcontractedTasksController extends GenericForwardComposer {
             appendLabel(row, getTaskName(subcontractedTaskData));
             row.setTooltiptext(subcontractedTaskData.getWorkDescription());
             appendLabel(row, Util.addCurrencySymbol(subcontractedTaskData.getSubcontractPrice()));
-            appendLabel(row, Util.formatDate(subcontractedTaskData
-                    .getLastRequiredDeliverDate()));
+            appendLabel(row, Util.formatDate(subcontractedTaskData.getLastRequiredDeliverDate()));
             appendLabel(row, _(toString(subcontractedTaskData.getState())));
             appendOperations(row, subcontractedTaskData);
         }
+
 
         private String getOrderCode(Order order) {
             return (order != null) ? order.getCode() : "";
@@ -139,8 +139,8 @@ public class SubcontractedTasksController extends GenericForwardComposer {
             return subcontractedTasksModel.getOrder(subcontractedTaskData);
         }
 
-        private String toString(Object object) {
-            if (object == null) {
+        private String toString(org.libreplan.business.planner.entities.SubcontractState object) {
+            if ( object == null ) {
                 return "";
             }
 
@@ -232,7 +232,6 @@ public class SubcontractedTasksController extends GenericForwardComposer {
 
             return sendButton;
         }
-
     }
 
     public void reload() {
@@ -240,13 +239,14 @@ public class SubcontractedTasksController extends GenericForwardComposer {
         forceSortGridSatisfaction();
     }
 
-    public void forceSortGridSatisfaction() {
-        Column column = (Column) columnBySort;
-        ListModelExt model = (ListModelExt) listing.getModel();
-        if ("ascending".equals(column.getSortDirection())) {
+    private void forceSortGridSatisfaction() {
+        Column column = columnBySort;
+        //TODO Check this ? ListModelExt or Sortable
+        Sortable model = (Sortable) listing.getModel();
+        if ( "ascending".equals(column.getSortDirection()) ) {
             model.sort(column.getSortAscending(), true);
         }
-        if ("descending".equals(column.getSortDirection())) {
+        if ( "descending".equals(column.getSortDirection()) ) {
             model.sort(column.getSortDescending(), false);
         }
     }

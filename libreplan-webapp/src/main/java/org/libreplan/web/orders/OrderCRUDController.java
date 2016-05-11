@@ -38,7 +38,6 @@ import java.util.TreeSet;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
 import org.libreplan.business.calendars.entities.BaseCalendar;
 import org.libreplan.business.common.IOnTransaction;
@@ -118,8 +117,8 @@ import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Tree;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.Vbox;
-import org.zkoss.zul.api.Listbox;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for CRUD actions <br />
@@ -134,8 +133,6 @@ import org.zkoss.zul.api.Window;
 public class OrderCRUDController extends GenericForwardComposer {
 
     private static final String DEFAULT_TAB = "tabOrderElements";
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(OrderCRUDController.class);
 
     @Autowired
     private IOrderModel orderModel;
@@ -213,13 +210,14 @@ public class OrderCRUDController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         messagesForUser = new MessagesForUser(messagesContainer);
-        comp.setVariable("controller", this, true);
+        comp.setAttribute("controller", this, true);
 
         // Configuration of the order filter
         Component filterComponent = Executions.createComponents("/orders/_orderFilter.zul",
                                                                 orderFilter,
                                                                 new HashMap<String, String>());
-        filterComponent.setVariable("orderFilterController", this, true);
+
+        filterComponent.setAttribute("orderFilterController", this, true);
         filterStartDate = (Datebox) filterComponent.getFellow("filterStartDate");
         filterFinishDate = (Datebox) filterComponent.getFellow("filterFinishDate");
         bdFilters = (BandboxMultipleSearch) filterComponent.getFellow("bdFilters");
@@ -328,24 +326,20 @@ public class OrderCRUDController extends GenericForwardComposer {
                 new EventListener() {
                     @Override
                     public void onEvent(Event event) throws Exception {
-                        try {
-                            Messagebox.show(_("Unsaved changes will be lost. Are you sure?"),
-                                            _("Confirm exit dialog"),
-                                            Messagebox.OK | Messagebox.CANCEL,
-                                            Messagebox.QUESTION,
-                                            new org.zkoss.zk.ui.event.EventListener() {
-                                                public void onEvent(Event evt)
-                                                        throws InterruptedException {
-                                                    if (evt.getName().equals(
-                                                            "onOK")) {
-                                                        ConfirmCloseUtil.resetConfirmClose();
-                                                        Executions.sendRedirect("/planner/index.zul;company_scheduling");
-                                                    }
+                        Messagebox.show(_("Unsaved changes will be lost. Are you sure?"),
+                                        _("Confirm exit dialog"),
+                                        Messagebox.OK | Messagebox.CANCEL,
+                                        Messagebox.QUESTION,
+                                        new EventListener() {
+                                            public void onEvent(Event evt)
+                                                    throws InterruptedException {
+                                                if (evt.getName().equals(
+                                                        "onOK")) {
+                                                    ConfirmCloseUtil.resetConfirmClose();
+                                                    Executions.sendRedirect("/planner/index.zul;company_scheduling");
                                                 }
-                                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                                            }
+                                        });
                     }
                 });
 
@@ -389,7 +383,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
         private final Datebox deadline;
 
-        public OrderDatesHandler(Window editWindow) {
+        OrderDatesHandler(Window editWindow) {
             schedulingMode = Util.findComponentAt(editWindow, "schedulingMode");
             initDate = Util.findComponentAt(editWindow, "initDate");
             deadline = Util.findComponentAt(editWindow, "deadline");
@@ -505,7 +499,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         });
     }
 
-    public void setupOrderElementTreeController() {
+    private void setupOrderElementTreeController() {
         if ( !confirmLastTab() ) {
             return;
         }
@@ -587,7 +581,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         Component orderElementHours = editWindow.getFellowIfAny("orderElementHours");
         if (assignedHoursController == null) {
             assignedHoursController = (AssignedHoursToOrderElementController) orderElementHours
-                    .getVariable("assignedHoursToOrderElementController", true);
+                    .getAttribute("assignedHoursToOrderElementController", true);
 
             final IOrderElementModel orderElementModel = getOrderElementModel();
             assignedHoursController.openWindow(orderElementModel);
@@ -610,7 +604,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         if ( manageOrderElementAdvancesController == null ) {
             final IOrderElementModel orderElementModel = getOrderElementModel();
             manageOrderElementAdvancesController = (ManageOrderElementAdvancesController) orderElementAdvances
-                    .getVariable("manageOrderElementAdvancesController", true);
+                    .getAttribute("manageOrderElementAdvancesController", true);
             manageOrderElementAdvancesController.openWindow(orderElementModel);
         } else {
             manageOrderElementAdvancesController.refreshChangesFromOrderElement();
@@ -649,7 +643,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             Component orderElementCriterionRequirements = editWindow.getFellowIfAny("orderElementCriterionRequirements");
             assignedCriterionRequirementController =
                     (AssignedCriterionRequirementToOrderElementController) orderElementCriterionRequirements
-                    .getVariable("assignedCriterionRequirementController", true);
+                    .getAttribute("assignedCriterionRequirementController", true);
 
             final IOrderElementModel orderElementModel = getOrderElementModel();
             assignedCriterionRequirementController.openWindow(orderElementModel);
@@ -689,7 +683,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
             assignedTaskQualityFormController =
                     (AssignedTaskQualityFormsToOrderElementController) orderElementTaskQualityForms
-                    .getVariable("assignedTaskQualityFormsController", true);
+                    .getAttribute("assignedTaskQualityFormsController", true);
 
             final IOrderElementModel orderElementModel = getOrderElementModel();
             assignedTaskQualityFormController.openWindow(orderElementModel);
@@ -710,20 +704,18 @@ public class OrderCRUDController extends GenericForwardComposer {
         Component orderFiles = editWindow.getFellowIfAny("orderElementFiles");
 
         if ( orderFilesController == null ){
-            orderFilesController = (OrderFilesController) orderFiles.getVariable("orderFilesController", true);
+            orderFilesController = (OrderFilesController) orderFiles.getAttribute("orderFilesController", true);
 
             final IOrderElementModel orderElementModel = getOrderElementModel();
 
             orderFilesController.openWindow(orderElementModel);
-
-        } else {
 
         }
     }
 
     private OrderAuthorizationController orderAuthorizationController;
 
-    public void setupOrderAuthorizationController() {
+    private void setupOrderAuthorizationController() {
         if ( !confirmLastTab() ) {
             return;
         }
@@ -733,7 +725,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         if (orderAuthorizationController == null) {
             orderAuthorizationController =
                     (OrderAuthorizationController) orderElementAuthorizations
-                    .getVariable("orderAuthorizationController", true);
+                    .getAttribute("orderAuthorizationController", true);
             orderAuthorizationController.setMessagesForUserComponent(messagesForUser);
             initOrderAuthorizations();
         } else {
@@ -832,21 +824,17 @@ public class OrderCRUDController extends GenericForwardComposer {
             // come back to the current tab after initialize all tabs.
             resetSelectedTab();
             selectTab(previousTab.getId());
-            Events.sendEvent(new SelectEvent(Events.ON_SELECT, previousTab, null));
+            Events.sendEvent(new SelectEvent<Component, Object>(Events.ON_SELECT, previousTab, null));
 
             if ( isNewObject ) {
                 this.planningControllerEntryPoints.goToOrderDetails(order);
             }
         } else {
-            try {
-                Messagebox.show(_("You don't have read access to this project"),
-                                _("Information"),
-                                Messagebox.OK,
-                                Messagebox.INFORMATION);
-                goToList();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Messagebox.show(_("You don't have read access to this project"),
+                            _("Information"),
+                            Messagebox.OK,
+                            Messagebox.INFORMATION);
+            goToList();
         }
     }
 
@@ -924,11 +912,11 @@ public class OrderCRUDController extends GenericForwardComposer {
         }
     }
 
-    protected Tab getCurrentTab() {
+    Tab getCurrentTab() {
         return selectedTab;
     }
 
-    protected void selectTab(String str) {
+    void selectTab(String str) {
         Tab tab = (Tab) editWindow.getFellowIfAny(str);
         if ( tab != null ) {
             tab.setSelected(true);
@@ -952,7 +940,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         Util.reloadBindings(ReloadStrategy.ONE_PER_REQUEST, window);
     }
 
-    public void reloadHoursGroupOrder() {
+    private void reloadHoursGroupOrder() {
         if (getCurrentTab().getId().equals("tabRequirements")) {
             assignedCriterionRequirementController.reload();
         }
@@ -972,28 +960,20 @@ public class OrderCRUDController extends GenericForwardComposer {
 
     public void confirmRemove(Order order) {
         if ( orderModel.userCanWrite(order) ) {
-            try {
-                int status = Messagebox.show(_("Confirm deleting {0}. Are you sure?",
-                                                order.getName()),
-                                                "Delete",
-                                                Messagebox.OK | Messagebox.CANCEL,
-                                                Messagebox.QUESTION);
-                if ( Messagebox.OK == status ) {
-                    remove(order);
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            int status = Messagebox.show(_("Confirm deleting {0}. Are you sure?",
+                                            order.getName()),
+                                            "Delete",
+                                            Messagebox.OK | Messagebox.CANCEL,
+                                            Messagebox.QUESTION);
+            if ( Messagebox.OK == status ) {
+                remove(order);
             }
         }
         else {
-            try {
-                Messagebox.show(_("Not enough permissions to edit this project"),
-                                _("Information"),
-                                Messagebox.OK,
-                                Messagebox.INFORMATION);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Messagebox.show(_("Not enough permissions to edit this project"),
+                            _("Information"),
+                            Messagebox.OK,
+                            Messagebox.INFORMATION);
         }
     }
 
@@ -1015,16 +995,12 @@ public class OrderCRUDController extends GenericForwardComposer {
                                     order.getName()));
         } else {
             if ( !StringUtils.isBlank(order.getExternalCode()) ) {
-                try {
-                    if ( Messagebox.show(
-                                    _("This project is a subcontracted project. If you delete it, " +
-                                            "you won't be able to report progress anymore. Are you sure?"),
-                                    _("Confirm"),
-                                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.CANCEL ) {
-                        return;
-                    }
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                if ( Messagebox.show(
+                                _("This project is a subcontracted project. If you delete it, " +
+                                        "you won't be able to report progress anymore. Are you sure?"),
+                                _("Confirm"),
+                                Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.CANCEL ) {
+                    return;
                 }
             }
 
@@ -1043,27 +1019,19 @@ public class OrderCRUDController extends GenericForwardComposer {
                 planningControllerEntryPoints.goToScheduleOf(order);
                 showCreateButtons(false);
             } else {
-                try {
-                    Messagebox.show(
-                            _("The project has no scheduled elements"),
-                            _("Information"), Messagebox.OK, Messagebox.INFORMATION);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                Messagebox.show(
+                        _("The project has no scheduled elements"),
+                        _("Information"), Messagebox.OK, Messagebox.INFORMATION);
             }
         }
         else {
-            try {
-                Messagebox.show(
-                        _("You don't have read access to this project"),
-                        _("Information"), Messagebox.OK, Messagebox.INFORMATION);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Messagebox.show(
+                    _("You don't have read access to this project"),
+                    _("Information"), Messagebox.OK, Messagebox.INFORMATION);
         }
     }
 
-    public void createTemplate(Order order) {
+    private void createTemplate(Order order) {
         orderTemplates.goToCreateTemplateFrom(order);
     }
 
@@ -1087,12 +1055,8 @@ public class OrderCRUDController extends GenericForwardComposer {
 
     public void checkUserCanRead(Order order) {
         if ( !orderModel.userCanRead(order, SecurityUtils.getSessionUserLoginName()) ) {
-            try {
-                Messagebox.show(_("Sorry, you do not have permissions to access this project"),
-                        _("Information"), Messagebox.OK, Messagebox.INFORMATION);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Messagebox.show(_("Sorry, you do not have permissions to access this project"),
+                    _("Information"), Messagebox.OK, Messagebox.INFORMATION);
         }
     }
 
@@ -1161,7 +1125,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         setupTimSynchronizationController();
     }
 
-    public void reloadOrderDetailsTab() {
+    private void reloadOrderDetailsTab() {
         Tabpanel tabPanel = (Tabpanel) editWindow.getFellow("tabPanelGeneralData");
         Util.createBindingsFor(tabPanel);
         Util.reloadBindings(tabPanel);
@@ -1176,7 +1140,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         orderModel.prepareForCreate(desktop);
     }
 
-    public void editNewCreatedOrder(Window detailsWindow) {
+    void editNewCreatedOrder(Window detailsWindow) {
         showOrderElementFilter();
         hideCreateButtons();
         prepareEditWindow(_("Create project"));
@@ -1212,25 +1176,24 @@ public class OrderCRUDController extends GenericForwardComposer {
         return orderModel.getBaseCalendars();
     }
 
-    public BaseCalendarsComboitemRenderer getBaseCalendarsComboitemRenderer() {
+    BaseCalendarsComboitemRenderer getBaseCalendarsComboitemRenderer() {
         return baseCalendarsComboitemRenderer;
     }
 
     private class BaseCalendarsComboitemRenderer implements ComboitemRenderer {
 
         @Override
-        public void render(Comboitem item, Object data) {
-            BaseCalendar calendar = (BaseCalendar) data;
-            item.setLabel(calendar.getName());
-            item.setValue(calendar);
+        public void render(Comboitem comboitem, Object o, int i) throws Exception {
+            BaseCalendar calendar = (BaseCalendar) o;
+            comboitem.setLabel(calendar.getName());
+            comboitem.setValue(calendar);
 
             BaseCalendar current = orderModel.getCalendar();
             if ( (current != null) && calendar.getId().equals(current.getId()) ) {
-                Combobox combobox = (Combobox) item.getParent();
-                combobox.setSelectedItem(item);
+                Combobox combobox = (Combobox) comboitem.getParent();
+                combobox.setSelectedItem(comboitem);
             }
         }
-
     }
 
     public void setBaseCalendar(BaseCalendar calendar) {
@@ -1261,7 +1224,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         return OrderStatusEnum.values();
     }
 
-    public List<ExternalCompany> getExternalCompaniesAreClient() {
+    List<ExternalCompany> getExternalCompaniesAreClient() {
         return orderModel.getExternalCompaniesAreClient();
     }
 
@@ -1269,12 +1232,11 @@ public class OrderCRUDController extends GenericForwardComposer {
         return ordersRowRenderer;
     }
 
-    public class OrdersRowRenderer implements RowRenderer {
+    private class OrdersRowRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-
-            final Order order = (Order) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            final Order order = (Order) o;
             row.setValue(order);
 
             appendLabel(row, order.getName());
@@ -1298,7 +1260,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     private void appendObject(final Row row, Object object) {
-        String text = new String("");
+        String text = "";
         if ( object != null ) {
             text = object.toString();
         }
@@ -1306,7 +1268,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     private void appendCustomer(final Row row, ExternalCompany externalCompany) {
-        String customerName = new String("");
+        String customerName = "";
         if ( externalCompany != null ) {
             customerName = externalCompany.getName();
         }
@@ -1319,7 +1281,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     private void appendDate(final Row row, Date date) {
-        String labelDate = new String("");
+        String labelDate = "";
         if ( date != null ) {
             labelDate = Util.formatDate(date);
         }
@@ -1401,7 +1363,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         hbox.appendChild(buttonDerived);
     }
 
-    public String getTooltipText(final Order order) {
+    private String getTooltipText(final Order order) {
         return orderModel.gettooltipText(order);
     }
 
@@ -1519,7 +1481,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     private void showAllOrders() {
-        listing.setModel(new SimpleListModel(getOrders().toArray()));
+        listing.setModel(new SimpleListModel<Object>(getOrders().toArray()));
         listing.invalidate();
     }
 
@@ -1564,7 +1526,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             public void run() {
                 if ( tab != null ) {
                     tab.setSelected(true);
-                    Events.sendEvent(new SelectEvent(Events.ON_SELECT, tab, null));
+                    Events.sendEvent(new SelectEvent<Component, Object>(Events.ON_SELECT, tab, null));
                 }
 
                 if ( !(orderElement instanceof Order) && orderElementTreeController != null ) {
@@ -1644,8 +1606,7 @@ public class OrderCRUDController extends GenericForwardComposer {
                     if ( !found.getId().equals(getOrder().getId()) ) {
                         throw new WrongValueException(comp, _("project name already being used"));
                     }
-                } catch (InstanceNotFoundException e) {
-                    return;
+                } catch (InstanceNotFoundException ignored) {
                 }
             }
         };
@@ -1665,15 +1626,14 @@ public class OrderCRUDController extends GenericForwardComposer {
                     if ( !found.getId().equals(getOrder().getId()) ) {
                         throw new WrongValueException(comp, _("project code already being used"));
                     }
-                } catch (InstanceNotFoundException e) {
-                    return;
+                } catch (InstanceNotFoundException ignored) {
                 }
             }
         };
     }
 
-    public boolean isSubcontractedProject() {
-        return (getOrder() != null) ? (getOrder().getExternalCode() != null) : false;
+    private boolean isSubcontractedProject() {
+        return (getOrder() != null) && (getOrder().getExternalCode() != null);
     }
 
     public String getProjectType() {
@@ -1748,8 +1708,8 @@ public class OrderCRUDController extends GenericForwardComposer {
     private class EndDatesRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) throws Exception {
-            EndDateCommunication endDate = (EndDateCommunication) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            EndDateCommunication endDate = (EndDateCommunication) o;
             row.setValue(endDate);
 
             appendLabel(row, Util.formatDateTime(endDate.getSaveDate()));
@@ -1788,15 +1748,14 @@ public class OrderCRUDController extends GenericForwardComposer {
 
         private boolean isNotUpdate(final EndDateCommunication endDate) {
             EndDateCommunication lastAskedEndDate = getOrder().getEndDateCommunicationToCustomer().first();
-            if ( (lastAskedEndDate != null) && (lastAskedEndDate.equals(endDate)) ) {
-                return (lastAskedEndDate.getCommunicationDate() != null);
-            }
 
-            return true;
+            return !((lastAskedEndDate != null) && (lastAskedEndDate.equals(endDate))) ||
+                    (lastAskedEndDate.getCommunicationDate() != null);
+
         }
     }
 
-    public void removeAskedEndDate(EndDateCommunication endDate) {
+    private void removeAskedEndDate(EndDateCommunication endDate) {
         orderModel.removeAskedEndDate(endDate);
         reloadGridAskedEndDates();
     }
@@ -1820,7 +1779,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     /**
      * Setup the connector, JiraSynchronization controller
      */
-    public void setupJiraSynchronizationController() {
+    private void setupJiraSynchronizationController() {
         if ( jiraSynchronizationController == null ) {
             jiraSynchronizationController = new JiraSynchronizationController();
         }
@@ -1834,7 +1793,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     /**
      * Setup the connector, TimSynchronization controller
      */
-    public void setupTimSynchronizationController() {
+    private void setupTimSynchronizationController() {
         if ( timSynchronizationController == null ) {
             timSynchronizationController = new TimSynchronizationController();
         }
@@ -1845,7 +1804,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         }
     }
 
-    public BigDecimal getResourcesBudget() {
+    private BigDecimal getResourcesBudget() {
         return Registry.getTransactionService().runOnReadOnlyTransaction(
                 new IOnTransaction<BigDecimal>() {
                     @Override

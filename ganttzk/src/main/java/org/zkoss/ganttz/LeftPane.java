@@ -47,15 +47,14 @@ public class LeftPane extends HtmlMacroComponent {
 
     private Planner planner;
 
-    public void setGoingDownInLastArrowCommand(
-            CommandContextualized<?> goingDownInLastArrowCommand) {
-        this.leftTasksTree
-                .setGoingDownInLastArrowCommand(goingDownInLastArrowCommand);
+    void setGoingDownInLastArrowCommand(CommandContextualized<?> goingDownInLastArrowCommand) {
+        this.leftTasksTree.setGoingDownInLastArrowCommand(goingDownInLastArrowCommand);
     }
 
-    public LeftPane(IDisabilityConfiguration disabilityConfiguration,
-            Planner planner,
+    LeftPane(IDisabilityConfiguration disabilityConfiguration,
+             Planner planner,
             FilterAndParentExpandedPredicates predicate) {
+
         this.topLevelTasks = planner.getDiagramGraph().getTopLevelTasks();
         this.disabilityConfiguration = disabilityConfiguration;
         this.predicate = predicate;
@@ -65,18 +64,17 @@ public class LeftPane extends HtmlMacroComponent {
     @Override
     public void afterCompose() {
         super.afterCompose();
-        leftTasksTree = new LeftTasksTree(disabilityConfiguration, planner,
-                predicate);
+
+        leftTasksTree = new LeftTasksTree(disabilityConfiguration, planner, predicate);
         getContainer().appendChild(leftTasksTree);
         leftTasksTree.afterCompose();
     }
 
     private Component getContainer() {
-        Component container = getFellow("listdetails_container");
-        return container;
+        return getFellow("listdetails_container");
     }
 
-    public void taskRemoved(Task task) {
+    void taskRemoved(Task task) {
         leftTasksTree.taskRemoved(task);
     }
 
@@ -84,7 +82,7 @@ public class LeftPane extends HtmlMacroComponent {
         leftTasksTree.addTask(position, newTask);
     }
 
-    public void addTasks(Position position, Collection<? extends Task> newTasks) {
+    void addTasks(Position position, Collection<? extends Task> newTasks) {
         leftTasksTree.addTasks(position, newTasks);
     }
 
