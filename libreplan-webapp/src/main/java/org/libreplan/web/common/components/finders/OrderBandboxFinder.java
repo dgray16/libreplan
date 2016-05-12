@@ -20,8 +20,6 @@
 
 package org.libreplan.web.common.components.finders;
 
-import java.util.List;
-
 import org.libreplan.business.orders.daos.IOrderDAO;
 import org.libreplan.business.orders.entities.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+
+import java.util.List;
 
 /**
  * Bandbox finder for {@link Order}.
@@ -53,22 +53,22 @@ public class OrderBandboxFinder extends BandboxFinder implements IBandboxFinder 
     @Override
     @Transactional(readOnly = true)
     public List<Order> getAll() {
-        List<Order> orders = orderDAO.findAll();
-        return orders;
+        return orderDAO.findAll();
     }
 
     @Override
     public boolean entryMatchesText(Object obj, String text) {
         Order order = (Order) obj;
         text = text.trim().toLowerCase();
-        return (order.getCode().toLowerCase().contains(text) || order.getName()
-                .toLowerCase().contains(text));
+
+        return (order.getCode().toLowerCase().contains(text) || order.getName().toLowerCase().contains(text));
     }
 
     @Override
     @Transactional(readOnly = true)
     public String objectToString(Object obj) {
         Order order = (Order) obj;
+
         return order.getCode() + " :: " + order.getName();
     }
 
@@ -85,7 +85,7 @@ public class OrderBandboxFinder extends BandboxFinder implements IBandboxFinder 
     private final ListitemRenderer orderRenderer = new ListitemRenderer() {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             Order order = (Order) data;
             item.setValue(order);
 

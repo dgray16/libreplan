@@ -21,8 +21,6 @@
 
 package org.libreplan.web.common.components.finders;
 
-import java.util.List;
-
 import org.libreplan.business.externalcompanies.daos.IExternalCompanyDAO;
 import org.libreplan.business.externalcompanies.entities.ExternalCompany;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +31,8 @@ import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 
+import java.util.List;
+
 /**
  * Implements all the methods needed to comply IBandboxFinder This is a finder
  * for {@link ExternalCompany}l in a {@link Bandbox}. Provides how many columns
@@ -42,8 +42,7 @@ import org.zkoss.zul.ListitemRenderer;
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
 @Repository
-public class ExternalCompanyBandboxFinder extends BandboxFinder implements
-        IBandboxFinder {
+public class ExternalCompanyBandboxFinder extends BandboxFinder implements IBandboxFinder {
 
     @Autowired
     private IExternalCompanyDAO externalCompanyDAO;
@@ -62,6 +61,7 @@ public class ExternalCompanyBandboxFinder extends BandboxFinder implements
     public List<ExternalCompany> getAll() {
         List<ExternalCompany> externalCompanies = externalCompanyDAO.getAll();
         initializeExternalCompanies(externalCompanies);
+
         return externalCompanies;
     }
 
@@ -80,9 +80,9 @@ public class ExternalCompanyBandboxFinder extends BandboxFinder implements
     public boolean entryMatchesText(Object obj, String text) {
         final ExternalCompany externalCompany = (ExternalCompany) obj;
         text = text.toLowerCase();
-        return (externalCompany.getNif().toLowerCase().contains(
-                text.toLowerCase()) || externalCompany.getName().toLowerCase()
-                .contains(text));
+
+        return (externalCompany.getNif().toLowerCase().contains(text.toLowerCase()) ||
+                externalCompany.getName().toLowerCase().contains(text));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ExternalCompanyBandboxFinder extends BandboxFinder implements
     private final ListitemRenderer externalCompanyRenderer = new ListitemRenderer() {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             ExternalCompany externalCompany = (ExternalCompany) data;
 
             item.setValue(data);

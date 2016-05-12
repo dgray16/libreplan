@@ -21,17 +21,7 @@
 
 package org.libreplan.web.users;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.libreplan.business.users.entities.OrderAuthorization;
-import org.libreplan.business.users.entities.OrderAuthorizationType;
-import org.libreplan.business.users.entities.Profile;
-import org.libreplan.business.users.entities.ProfileOrderAuthorization;
-import org.libreplan.business.users.entities.User;
-import org.libreplan.business.users.entities.UserOrderAuthorization;
+import org.libreplan.business.users.entities.*;
 import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.Util;
@@ -44,6 +34,11 @@ import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over an {@link OrderAuthorization}
@@ -62,7 +57,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("orderAuthorizationController", this, true);
+        comp.setAttribute("orderAuthorizationController", this, true);
         this.window = comp;
     }
 
@@ -84,16 +79,14 @@ public class OrderAuthorizationController extends GenericForwardComposer{
         return orderAuthorizationModel.getUserOrderAuthorizations();
     }
 
-    public void addOrderAuthorization(Comboitem comboItem,
-            boolean readAuthorization, boolean writeAuthorization) {
+    public void addOrderAuthorization(Comboitem comboItem, boolean readAuthorization, boolean writeAuthorization) {
         if(comboItem != null) {
             if(!readAuthorization && !writeAuthorization) {
                 messagesForUser.showMessage(Level.WARNING,
                         _("No authorizations were added because you did not select any."));
                 return;
             }
-            List<OrderAuthorizationType> authorizations =
-                new ArrayList<OrderAuthorizationType>();
+            List<OrderAuthorizationType> authorizations = new ArrayList<>();
             if(readAuthorization) {
                 authorizations.add(OrderAuthorizationType.READ_AUTHORIZATION);
             }
@@ -102,8 +95,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
             }
             if (comboItem.getValue() instanceof User) {
                 List<OrderAuthorizationType> result =
-                    orderAuthorizationModel.addUserOrderAuthorization(
-                            (User)comboItem.getValue(), authorizations);
+                    orderAuthorizationModel.addUserOrderAuthorization((User)comboItem.getValue(), authorizations);
                 if(result != null && result.size()==authorizations.size()) {
                     messagesForUser.showMessage(Level.WARNING,
                             _("Could not add those authorizations to user {0} " +
@@ -113,8 +105,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
             }
             else if (comboItem.getValue() instanceof Profile) {
                 List<OrderAuthorizationType> result =
-                    orderAuthorizationModel.addProfileOrderAuthorization(
-                            (Profile)comboItem.getValue(), authorizations);
+                    orderAuthorizationModel.addProfileOrderAuthorization((Profile)comboItem.getValue(), authorizations);
                 if(result != null && result.size()==authorizations.size()) {
                     messagesForUser.showMessage(Level.WARNING,
                             _("Could not add those authorizations to profile {0} " +
@@ -126,7 +117,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
         Util.reloadBindings(window);
     }
 
-    public void removeOrderAuthorization(OrderAuthorization orderAuthorization) {
+    private void removeOrderAuthorization(OrderAuthorization orderAuthorization) {
         orderAuthorizationModel.removeOrderAuthorization(orderAuthorization);
         Util.reloadBindings(window);
     }
@@ -139,7 +130,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
         return new RowRenderer() {
 
             @Override
-            public void render(Row row, Object data) {
+            public void render(Row row, Object data, int i) {
                 final ProfileOrderAuthorization profileOrderAuthorization = (ProfileOrderAuthorization) data;
 
                 row.appendChild(new Label(profileOrderAuthorization.getProfile().getProfileName()));

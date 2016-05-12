@@ -21,11 +21,7 @@
 
 package org.libreplan.web.orders;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.Date;
-import java.util.List;
-
+import com.igalia.java.zk.components.customdetailrowcomponent.Detail;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.advance.exceptions.DuplicateAdvanceAssignmentForOrderElementException;
 import org.libreplan.business.advance.exceptions.DuplicateValueTrueReportGlobalAdvanceException;
@@ -36,11 +32,7 @@ import org.libreplan.business.qualityforms.entities.QualityForm;
 import org.libreplan.business.qualityforms.entities.TaskQualityForm;
 import org.libreplan.business.qualityforms.entities.TaskQualityFormItem;
 import org.libreplan.business.resources.entities.CriterionSatisfaction;
-import org.libreplan.web.common.ConstraintChecker;
-import org.libreplan.web.common.IMessagesForUser;
-import org.libreplan.web.common.Level;
-import org.libreplan.web.common.MessagesForUser;
-import org.libreplan.web.common.Util;
+import org.libreplan.web.common.*;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
@@ -48,19 +40,12 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Column;
-import org.zkoss.zul.Columns;
-import org.zkoss.zul.Constraint;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.*;
 
-import com.igalia.java.zk.components.customdetailrowcomponent.Detail;
+import java.util.Date;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for showing OrderElement assigned task quality forms
@@ -92,7 +77,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("assignedTaskQualityFormsController", this, true);
+        comp.setAttribute("assignedTaskQualityFormsController", this, true);
         messages = new MessagesForUser(messagesContainerTaskQualityForms);
         this.reloadTaskQualityForms();
     }
@@ -160,20 +145,17 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         public boolean isAssigned(QualityForm qualityForm);
     }
 
-    public static QualityForm retrieveQualityFormFrom(
-            BandboxSearch qualityFormFinder,
-            ICheckQualityFormAssigned checkQualityFormAssigned) {
-        QualityForm qualityForm = (QualityForm) qualityFormFinder
-                .getSelectedElement();
+    public static QualityForm retrieveQualityFormFrom(BandboxSearch qualityFormFinder,
+                                                      ICheckQualityFormAssigned checkQualityFormAssigned) {
+        QualityForm qualityForm = (QualityForm) qualityFormFinder.getSelectedElement();
         if (qualityForm == null) {
-            throw new WrongValueException(qualityFormFinder,
-                    _("please, select a quality form"));
+            throw new WrongValueException(qualityFormFinder, _("please, select a quality form"));
         }
         if (checkQualityFormAssigned.isAssigned(qualityForm)) {
-            throw new WrongValueException(qualityFormFinder,
-                    _("already assigned"));
+            throw new WrongValueException(qualityFormFinder, _("already assigned"));
         }
         qualityFormFinder.clear();
+
         return qualityForm;
     }
 
@@ -182,27 +164,21 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     }
 
     private void assignQualityForm(QualityForm qualityForm) {
-        assignedTaskQualityFormsToOrderElementModel
-                .assignTaskQualityForm(qualityForm);
+        assignedTaskQualityFormsToOrderElementModel.assignTaskQualityForm(qualityForm);
         reloadTaskQualityForms();
     }
 
     private boolean isAssigned(QualityForm qualityForm) {
-        return assignedTaskQualityFormsToOrderElementModel
-                .isAssigned(qualityForm);
+        return assignedTaskQualityFormsToOrderElementModel.isAssigned(qualityForm);
     }
 
     public void confirmRemove(TaskQualityForm taskQualityForm) {
-        try {
-            int status = Messagebox.show(_(
-                    "Confirm deleting {0}. Are you sure?",
-                    getTaskQualityFormName(taskQualityForm)), _("Delete"),
-                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                deleteTaskQualityForm(taskQualityForm);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int status = Messagebox.show(_(
+                "Confirm deleting {0}. Are you sure?",
+                getTaskQualityFormName(taskQualityForm)), _("Delete"),
+                Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+        if (Messagebox.OK == status) {
+            deleteTaskQualityForm(taskQualityForm);
         }
     }
 
@@ -210,19 +186,18 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         if (taskQualityForm == null || taskQualityForm.getQualityForm() == null) {
             return ITEM;
         }
+
         return taskQualityForm.getQualityForm().getName();
     }
 
-    public void deleteTaskQualityForm(TaskQualityForm taskQualityForm) {
+    private void deleteTaskQualityForm(TaskQualityForm taskQualityForm) {
         try {
-            assignedTaskQualityFormsToOrderElementModel
-                    .removeAdvanceAssignmentIfNeeded(taskQualityForm);
+            assignedTaskQualityFormsToOrderElementModel.removeAdvanceAssignmentIfNeeded(taskQualityForm);
         } catch (ValidationException e) {
             showInformativeMessage(e.getMessage());
             return;
         }
-        assignedTaskQualityFormsToOrderElementModel
-                .deleteTaskQualityForm(taskQualityForm);
+        assignedTaskQualityFormsToOrderElementModel.deleteTaskQualityForm(taskQualityForm);
         reloadTaskQualityForms();
     }
 
@@ -231,8 +206,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     }
 
     public List<QualityForm> getNotAssignedQualityForms() {
-        return assignedTaskQualityFormsToOrderElementModel
-                .getNotAssignedQualityForms();
+        return assignedTaskQualityFormsToOrderElementModel.getNotAssignedQualityForms();
     }
 
     private void reloadTaskQualityForms() {
@@ -242,8 +216,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     }
 
     public void sortTaskQualityForms() {
-        Column columnName = (Column) assignedTaskQualityForms.getColumns()
-                .getChildren().get(1);
+        Column columnName = (Column) assignedTaskQualityForms.getColumns().getChildren().get(1);
         if (columnName != null) {
             if (columnName.getSortDirection().equals("ascending")) {
                 columnName.sort(false, false);
@@ -265,20 +238,18 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     public class TaskQualityFormsRowRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             TaskQualityForm taskQualityForm = (TaskQualityForm) data;
             row.setValue(taskQualityForm);
 
             appendDetails(row, taskQualityForm);
             appendNewLabel(row, taskQualityForm.getQualityForm().getName());
-            appendNewLabel(row, _(taskQualityForm.getQualityForm()
-                    .getQualityFormType().toString()));
+            appendNewLabel(row, _(taskQualityForm.getQualityForm().getQualityFormType().toString()));
             appendCheckboxReportAdvance(row, taskQualityForm);
             appendOperations(row);
         }
 
-        private void appendCheckboxReportAdvance(Row row,
-                final TaskQualityForm taskQualityForm) {
+        private void appendCheckboxReportAdvance(Row row, final TaskQualityForm taskQualityForm) {
             final Checkbox tmpCheckbox = new Checkbox();
             Checkbox checkbox = Util.bind(tmpCheckbox,
                     new Util.Getter<Boolean>() {
@@ -296,7 +267,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
                                 } else {
                                     try {
                                         assignedTaskQualityFormsToOrderElementModel
-                                            .removeAdvanceAssignmentIfNeeded(taskQualityForm);
+                                                .removeAdvanceAssignmentIfNeeded(taskQualityForm);
                                     } catch (ValidationException e) {
                                         showInformativeMessage(e.getMessage());
                                         return;
@@ -324,12 +295,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     }
 
     private void showInformativeMessage(String message) {
-        try {
-            Messagebox.show(_(message), _("Delete"), Messagebox.OK,
-                    Messagebox.ERROR);
-        } catch (InterruptedException e) {
-            messagesForUser.showMessage(Level.ERROR, _(e.getMessage()));
-        }
+        Messagebox.show(_(message), _("Delete"), Messagebox.OK, Messagebox.ERROR);
     }
 
     private void appendDetails(Row row, TaskQualityForm taskQualityForm) {
@@ -344,13 +310,12 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
 
         gridItems.setMold("paging");
         gridItems.setPageSize(5);
-        gridItems.setFixedLayout(true);
+        gridItems.setSizedByContent(false);
 
         renderColumns(gridItems);
 
         gridItems.setRowRenderer(getTaskQualityFormItemsRowRenderer());
-        gridItems.setModel(new SimpleListModel(taskQualityForm
-                .getTaskQualityFormItems().toArray()));
+        gridItems.setModel(new SimpleListModel<>(taskQualityForm.getTaskQualityFormItems().toArray()));
 
         return gridItems;
     }
@@ -408,14 +373,14 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         });
     }
 
-    public TaskQualityFormItemsRowRenderer getTaskQualityFormItemsRowRenderer() {
+    private TaskQualityFormItemsRowRenderer getTaskQualityFormItemsRowRenderer() {
         return taskQualityFormItemsRowRenderer;
     }
 
-    public class TaskQualityFormItemsRowRenderer implements RowRenderer {
+    private class TaskQualityFormItemsRowRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             TaskQualityFormItem item = (TaskQualityFormItem) data;
             row.setValue(item);
 
@@ -438,7 +403,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         date.setParent(row);
 
         final TaskQualityForm taskQualityForm = getTaskQualityFormByRow(row);
-        final TaskQualityFormItem item = (TaskQualityFormItem) row.getValue();
+        final TaskQualityFormItem item = row.getValue();
 
         Util.bind(date, new Util.Getter<Date>() {
             @Override
@@ -454,8 +419,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
             }
         });
 
-        date.setDisabled(assignedTaskQualityFormsToOrderElementModel
-                .isDisabledDateItem(taskQualityForm, item));
+        date.setDisabled(assignedTaskQualityFormsToOrderElementModel.isDisabledDateItem(taskQualityForm, item));
         date.setConstraint(checkConsecutiveDate(row));
     }
 
@@ -464,7 +428,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         checkbox.setParent(row);
 
         final TaskQualityForm taskQualityForm = getTaskQualityFormByRow(row);
-        final TaskQualityFormItem item = (TaskQualityFormItem) row.getValue();
+        final TaskQualityFormItem item = row.getValue();
 
         Util.bind(checkbox, new Util.Getter<Boolean>() {
             @Override
@@ -480,18 +444,15 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
             }
         });
 
-        checkbox.setDisabled(assignedTaskQualityFormsToOrderElementModel
-                .isDisabledPassedItem(taskQualityForm, item));
+        checkbox.setDisabled(assignedTaskQualityFormsToOrderElementModel.isDisabledPassedItem(taskQualityForm, item));
 
         if (!taskQualityForm.isByItems()) {
             checkbox.addEventListener(Events.ON_CHECK, new EventListener() {
                 @Override
                 public void onEvent(Event event) {
-                    assignedTaskQualityFormsToOrderElementModel
-                            .updatePassedTaskQualityFormItems(taskQualityForm);
+                    assignedTaskQualityFormsToOrderElementModel.updatePassedTaskQualityFormItems(taskQualityForm);
                     Grid gridItems = row.getGrid();
-                    gridItems.setModel(new SimpleListModel(taskQualityForm
-                            .getTaskQualityFormItems().toArray()));
+                    gridItems.setModel(new SimpleListModel(taskQualityForm.getTaskQualityFormItems().toArray()));
                     gridItems.invalidate();
                 }
             });
@@ -504,25 +465,19 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
             public void validate(Component comp, Object value)
                     throws WrongValueException {
 
-                final TaskQualityFormItem item = (TaskQualityFormItem) row
-                        .getValue();
+                final TaskQualityFormItem item = row.getValue();
                 final TaskQualityForm taskQualityForm = getTaskQualityFormByRow(row);
 
                 if (taskQualityForm != null) {
                     item.setDate((Date) value);
 
-                    if (((Date) value == null)
-                            && (!item.isIfDateCanBeNullConstraint())) {
+                    if ((value == null) && (!item.isIfDateCanBeNullConstraint())) {
                         item.setDate(null);
-                        throw new WrongValueException(comp,
-                                _("date not specified"));
+                        throw new WrongValueException(comp, _("date not specified"));
                     }
-                    if (!assignedTaskQualityFormsToOrderElementModel
-                            .isCorrectConsecutiveDate(taskQualityForm, item)) {
+                    if (!assignedTaskQualityFormsToOrderElementModel.isCorrectConsecutiveDate(taskQualityForm, item)) {
                         item.setDate(null);
-                        throw new WrongValueException(
-                                comp,
-                                _("must be after the previous date"));
+                        throw new WrongValueException(comp, _("must be after the previous date"));
                     }
                 }
             }
@@ -531,8 +486,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
 
     private TaskQualityForm getTaskQualityFormByRow(final Row row) {
         try {
-            return (TaskQualityForm) ((Row) row.getGrid().getParent()
-                    .getParent()).getValue();
+            return (TaskQualityForm) ((Row) row.getGrid().getParent().getParent()).getValue();
         } catch (Exception e) {
             return null;
         }
@@ -547,17 +501,16 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         return result;
     }
 
-    public void updateAdvancesIfNeeded() {
+    private void updateAdvancesIfNeeded() {
         assignedTaskQualityFormsToOrderElementModel.updateAdvancesIfNeeded();
     }
 
-    public void validateConstraints() {
+    private void validateConstraints() {
         ConstraintChecker.isValid(self);
     }
 
     /**
      * Shows invalid values for {@link CriterionSatisfaction} entities
-     * @param e
      */
     private boolean validate() throws ValidationException {
         try {
@@ -572,6 +525,7 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
             messages.showMessage(Level.ERROR, e.getMessage());
             return false;
         }
+
         return true;
     }
 
@@ -588,12 +542,10 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
         }
     }
 
-    private void showInvalidValue(InvalidValue invalidValue,
-            TaskQualityForm taskQualityForm) {
+    private void showInvalidValue(InvalidValue invalidValue, TaskQualityForm taskQualityForm) {
         if (assignedTaskQualityForms != null) {
             // Find which row contains TaskQualityForm inside grid
-            Row row = findRowOfTaskQualityForm(assignedTaskQualityForms
-                    .getRows().getChildren(), taskQualityForm);
+            Row row = findRowOfTaskQualityForm(assignedTaskQualityForms.getRows().<Row>getChildren(), taskQualityForm);
 
             if (row != null && invalidValue.getInvalidValue() instanceof String) {
                 String itemName = (String) invalidValue.getInvalidValue();
@@ -604,41 +556,39 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
                     if (TaskQualityFormItem.propertyDate.equals(propertyName)) {
                         openDetails(rowItem);
                         Datebox datebox = getDatebox(rowItem);
-                        throw new WrongValueException(datebox,
-                                _(invalidValue.getMessage()));
+                        throw new WrongValueException(datebox, _(invalidValue.getMessage()));
                     }
                     if (TaskQualityFormItem.propertyPassed.equals(propertyName)) {
                         openDetails(rowItem);
                         Checkbox checkbox = getCheckbox(rowItem);
-                        throw new WrongValueException(checkbox,
-                                _(invalidValue.getMessage()));
+                        throw new WrongValueException(checkbox, _(invalidValue.getMessage()));
                     }
                 }
             }
         }
     }
 
-    private Row findRowOfTaskQualityForm(List<Row> rows,
-            TaskQualityForm taskQualityForm) {
+    private Row findRowOfTaskQualityForm(List<Row> rows, TaskQualityForm taskQualityForm) {
         for (Row row : rows) {
             if (taskQualityForm.equals(row.getValue())) {
                 return row;
             }
         }
+
         return null;
     }
 
-    private Row findRowOfTaskQualityFormItem(Row rowTaskQualityForm,
-            String itemName) {
+    private Row findRowOfTaskQualityFormItem(Row rowTaskQualityForm, String itemName) {
         Grid gridItems = (Grid) rowTaskQualityForm.getFirstChild()
                 .getFirstChild();
-        List<Row> rows = (List<Row>) gridItems.getRows().getChildren();
+        List<Row> rows = gridItems.getRows().getChildren();
         for (Row row : rows) {
-            TaskQualityFormItem item = (TaskQualityFormItem) row.getValue();
+            TaskQualityFormItem item = row.getValue();
             if ((item != null) && (itemName.equals(item.getName()))) {
                 return row;
             }
         }
+
         return null;
     }
 

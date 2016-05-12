@@ -21,8 +21,6 @@
 
 package org.libreplan.web.common.components.finders;
 
-import java.util.List;
-
 import org.libreplan.business.labels.daos.ILabelDAO;
 import org.libreplan.business.labels.entities.Label;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,8 @@ import org.zkoss.zul.Bandbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+
+import java.util.List;
 
 /**
  * Implements all the methods needed to comply IBandboxFinder
@@ -63,6 +63,7 @@ public class LabelBandboxFinder extends BandboxFinder implements IBandboxFinder 
     public List<Label> getAll() {
         List<Label> labels = labelDAO.getAll();
         initializeLabels(labels);
+
         return labels;
     }
 
@@ -81,8 +82,9 @@ public class LabelBandboxFinder extends BandboxFinder implements IBandboxFinder 
     public boolean entryMatchesText(Object obj, String text) {
         final Label label = (Label) obj;
         text = text.toLowerCase();
-        return (label.getType().getName().toLowerCase().contains(text.toLowerCase()) || label
-                .getName().toLowerCase().contains(text));
+
+        return (label.getType().getName().toLowerCase().contains(text.toLowerCase()) ||
+                label.getName().toLowerCase().contains(text));
     }
 
     @Override
@@ -108,7 +110,7 @@ public class LabelBandboxFinder extends BandboxFinder implements IBandboxFinder 
     private final ListitemRenderer labelRenderer = new ListitemRenderer() {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             Label label = (Label) data;
 
             item.setValue(data);

@@ -21,15 +21,6 @@
 
 package org.libreplan.web.limitingresources;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.Validate;
 import org.joda.time.LocalDate;
 import org.libreplan.business.planner.entities.ResourceAllocation;
@@ -51,18 +42,11 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Listbox;
-import org.zkoss.zul.Listcell;
-import org.zkoss.zul.Listitem;
-import org.zkoss.zul.ListitemRenderer;
-import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Radio;
-import org.zkoss.zul.Radiogroup;
-import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.Window;
+import org.zkoss.zul.*;
+
+import java.util.*;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for manual allocation of queue elements
@@ -89,13 +73,14 @@ public class ManualAllocationController extends GenericForwardComposer {
 
     private Checkbox cbAllocationType;
 
-    private Map<Gap, DateAndHour> endAllocationDates = new HashMap<Gap, DateAndHour>();
+    private Map<Gap, DateAndHour> endAllocationDates = new HashMap<>();
 
     private final QueueRenderer queueRenderer = new QueueRenderer();
 
     private final CandidateGapRenderer candidateGapRenderer = new CandidateGapRenderer();
 
     private Grid gridLimitingOrderElementHours;
+
     private Grid gridCurrentQueue;
 
     public ManualAllocationController() {
@@ -105,7 +90,7 @@ public class ManualAllocationController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) {
         this.self = comp;
-        self.setVariable("manualAllocationController", this, true);
+        self.setAttribute("manualAllocationController", this, true);
         listAssignableQueues = (Listbox) self.getFellowIfAny("listAssignableQueues");
         listCandidateGaps = (Listbox) self.getFellowIfAny("listCandidateGaps");
 
@@ -117,21 +102,19 @@ public class ManualAllocationController extends GenericForwardComposer {
         startAllocationDate = (Datebox) self.getFellowIfAny("startAllocationDate");
         cbAllocationType = (Checkbox) self.getFellowIfAny("cbAllocationType");
 
-        gridLimitingOrderElementHours = (Grid) self
-                .getFellowIfAny("gridLimitingOrderElementHours");
-        gridCurrentQueue = (Grid) self
-                .getFellowIfAny("gridCurrentQueue");
+        gridLimitingOrderElementHours = (Grid) self.getFellowIfAny("gridLimitingOrderElementHours");
+        gridCurrentQueue = (Grid) self.getFellowIfAny("gridCurrentQueue");
     }
 
-    public void setLimitingResourcesPanel(LimitingResourcesPanel limitingResourcesPanel) {
+    void setLimitingResourcesPanel(LimitingResourcesPanel limitingResourcesPanel) {
         this.limitingResourcesPanel = limitingResourcesPanel;
     }
 
-    public void setLimitingResourcesController(LimitingResourcesController limitingResourcesController) {
+    void setLimitingResourcesController(LimitingResourcesController limitingResourcesController) {
         this.limitingResourcesController = limitingResourcesController;
     }
 
-    public ILimitingResourceQueueModel getLimitingResourceQueueModel() {
+    private ILimitingResourceQueueModel getLimitingResourceQueueModel() {
         return limitingResourcesController.getLimitingResourceQueueModel();
     }
 
@@ -146,7 +129,7 @@ public class ManualAllocationController extends GenericForwardComposer {
     private void feedValidGapsSince(LimitingResourceQueueElement element, LimitingResourceQueue queue, DateAndHour since) {
         List<Gap> gaps = LimitingResourceAllocator.getValidGapsForElementSince(element, queue, since);
         endAllocationDates = calculateEndAllocationDates(element.getResourceAllocation(), queue.getResource(), gaps);
-        listCandidateGaps.setModel(new SimpleListModel(gaps));
+        listCandidateGaps.setModel(new SimpleListModel<>(gaps));
 
         if (!isAppropriative()) {
             if (gaps.isEmpty()) {
@@ -194,24 +177,26 @@ public class ManualAllocationController extends GenericForwardComposer {
         startAllocationDate.setValue(date);
     }
 
-    private Map<Gap, DateAndHour> calculateEndAllocationDates(
-            ResourceAllocation<?> resourceAllocation, Resource resource,
-            List<Gap> gaps) {
+    private Map<Gap, DateAndHour> calculateEndAllocationDates(ResourceAllocation<?> resourceAllocation,
+                                                              Resource resource,
+                                                              List<Gap> gaps) {
 
-        Map<Gap, DateAndHour> result = new HashMap<Gap, DateAndHour>();
+        Map<Gap, DateAndHour> result = new HashMap<>();
         for (Gap each: gaps) {
             result.put(each, calculateEndAllocationDate(resourceAllocation, resource, each));
         }
+
         return result;
     }
 
-    private DateAndHour calculateEndAllocationDate(
-            ResourceAllocation<?> resourceAllocation, Resource resource,
-            Gap gap) {
+    private DateAndHour calculateEndAllocationDate(ResourceAllocation<?> resourceAllocation,
+                                                   Resource resource,
+                                                   Gap gap) {
 
         if (gap.getEndTime() != null) {
             return LimitingResourceAllocator.startTimeToAllocateStartingFromEnd(resourceAllocation, resource, gap);
         }
+
         return null;
     }
 
@@ -229,7 +214,7 @@ public class ManualAllocationController extends GenericForwardComposer {
 
     private void setAssignableQueues(final LimitingResourceQueueElement element) {
         List<LimitingResourceQueue> queues = getLimitingResourceQueueModel().getAssignableQueues(element);
-        listAssignableQueues.setModel(new SimpleListModel(queues));
+        listAssignableQueues.setModel(new SimpleListModel<>(queues));
         listAssignableQueues.setItemRenderer(queueRenderer);
         listAssignableQueues.addEventListener(Events.ON_SELECT, new EventListener() {
 
@@ -258,8 +243,9 @@ public class ManualAllocationController extends GenericForwardComposer {
 
         final Listitem item = listAssignableQueues.getSelectedItem();
         if (item != null) {
-            result = (LimitingResourceQueue) item.getValue();
+            result = item.getValue();
         }
+
         return result;
     }
 
@@ -317,15 +303,18 @@ public class ManualAllocationController extends GenericForwardComposer {
                 if (selectedDay.compareTo(new LocalDate(beingEdited.getEarliestStartDateBecauseOfGantt())) < 0) {
                     throw new WrongValueException(startAllocationDate, _("Day is not valid"));
                 }
+
                 return new DateAndHour(selectedDay, 0);
             } else {
                 DateAndHour allocationTime = getValidDayInGap(selectedDay, getSelectedGap());
                 if (allocationTime == null) {
                     throw new WrongValueException(startAllocationDate, _("Day is not valid"));
                 }
+
                 return allocationTime;
             }
         }
+
         return null;
     }
 
@@ -338,6 +327,7 @@ public class ManualAllocationController extends GenericForwardComposer {
         Validate.notNull(gap);
         LimitingResourceQueueElement element = getLimitingResourceQueueModel().getLimitingResourceQueueElement();
         LimitingResourceQueue queue = getSelectedQueue();
+
         return LimitingResourceAllocator.startTimeToAllocateStartingFromEnd(
                 element.getResourceAllocation(), queue.getResource(), gap);
     }
@@ -347,6 +337,7 @@ public class ManualAllocationController extends GenericForwardComposer {
         if (item != null) {
             return (Gap) item.getValue();
         }
+
         return null;
     }
 
@@ -423,7 +414,7 @@ public class ManualAllocationController extends GenericForwardComposer {
      * @param uuid
      * @param gap
      */
-    public void highlightDaysInGap(String uuid, Gap gap) {
+    private void highlightDaysInGap(String uuid, Gap gap) {
         final LocalDate start = gap.getStartTime().getDate();
         final LocalDate end = gap.getEndTime() != null ? gap.getEndTime()
                 .getDate() : null;
@@ -441,7 +432,7 @@ public class ManualAllocationController extends GenericForwardComposer {
      * @param uuid
      * @param start
      */
-    public void highlightDaysFromDate(String uuid, LocalDate start) {
+    private void highlightDaysFromDate(String uuid, LocalDate start) {
         final String jsCall = "highlightDaysInInterval('"
                 + uuid + "', '"
                 + jsonInterval(formatDate(start), null) + "', '"
@@ -456,9 +447,9 @@ public class ManualAllocationController extends GenericForwardComposer {
     private String jsonInterval(String start, String end) {
         StringBuilder result = new StringBuilder();
 
-        result.append("{\"start\": \"" + start + "\", ");
+        result.append("{\"start\": \"").append(start).append("\", ");
         if (end != null) {
-            result.append("\"end\": \"" + end + "\"");
+            result.append("\"end\": \"").append(end).append("\"");
         }
         result.append("}");
 
@@ -476,7 +467,7 @@ public class ManualAllocationController extends GenericForwardComposer {
     private static class CandidateGapRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             Gap gap = (Gap) data;
 
             item.setValue(gap);
@@ -489,8 +480,7 @@ public class ManualAllocationController extends GenericForwardComposer {
         }
 
         private String formatTime(DateAndHour time) {
-            return time == null ? _("END") : Util.formatDate(time.getDate())
-                    + " - " + time.getHour();
+            return time == null ? _("END") : Util.formatDate(time.getDate()) + " - " + time.getHour();
         }
 
     }
@@ -507,9 +497,6 @@ public class ManualAllocationController extends GenericForwardComposer {
         } catch (SuspendNotAllowedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
@@ -523,17 +510,17 @@ public class ManualAllocationController extends GenericForwardComposer {
     }
 
     public Integer getStatus() {
-        return (Integer) self.getVariable("status", true);
+        return (Integer) self.getAttribute("status", true);
     }
 
     public void setStatus(int status) {
-        self.setVariable("status", Integer.valueOf(status), true);
+        self.setAttribute("status", status, true);
     }
 
     private static class QueueRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             final LimitingResourceQueue queue = (LimitingResourceQueue) data;
             item.setValue(queue);
 //            item.setLabel("test1");
@@ -558,6 +545,7 @@ public class ManualAllocationController extends GenericForwardComposer {
         if (getBeingEditedElement() == null) {
             return 0;
         }
+
         return getBeingEditedElement().getIntentedTotalHours();
     }
 
@@ -565,33 +553,31 @@ public class ManualAllocationController extends GenericForwardComposer {
         if (getBeingEditedElement() == null) {
             return "";
         }
-        return LimitingResourcesController
-                .getResourceOrCriteria(getBeingEditedElement()
-                        .getResourceAllocation());
+
+        return LimitingResourcesController.getResourceOrCriteria(getBeingEditedElement().getResourceAllocation());
     }
 
     public String getCurrentQueue() {
-        if (getBeingEditedElement() == null
-                || getBeingEditedElement().getLimitingResourceQueue() == null) {
+        if (getBeingEditedElement() == null || getBeingEditedElement().getLimitingResourceQueue() == null) {
             return _("Unassigned");
         }
-        return getBeingEditedElement().getLimitingResourceQueue().getResource()
-                .getName();
+
+        return getBeingEditedElement().getLimitingResourceQueue().getResource().getName();
     }
 
     public String getCurrentStart() {
-        if (getBeingEditedElement() == null
-                || getBeingEditedElement().getStartDate() == null) {
+        if (getBeingEditedElement() == null || getBeingEditedElement().getStartDate() == null) {
             return _("Unassigned");
         }
+
         return getBeingEditedElement().getStartDate().toString();
     }
 
     public String getCurrentEnd() {
-        if (getBeingEditedElement() == null
-                || getBeingEditedElement().getEndDate() == null) {
+        if (getBeingEditedElement() == null || getBeingEditedElement().getEndDate() == null) {
             return _("Unassigned");
         }
+
         return getBeingEditedElement().getEndDate().toString();
     }
 

@@ -19,10 +19,6 @@
 
 package org.libreplan.web.users.dashboard;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.libreplan.web.common.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
@@ -30,6 +26,9 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Controller for "Personal timesheets" area in the user dashboard window
@@ -47,7 +46,7 @@ public class PersonalTimesheetsAreaController extends GenericForwardComposer {
     private RowRenderer personalTimesheetsRenderer = new RowRenderer() {
 
         @Override
-        public void render(Row row, Object data) throws Exception {
+        public void render(Row row, Object data, int i) throws Exception {
             final PersonalTimesheetDTO personalTimesheet = (PersonalTimesheetDTO) data;
             row.setValue(personalTimesheet);
 

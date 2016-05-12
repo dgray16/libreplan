@@ -21,16 +21,6 @@
 
 package org.libreplan.web.templates.historicalAssignment;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.libreplan.business.common.IAdHocTransactionService;
 import org.libreplan.business.common.IOnTransaction;
 import org.libreplan.business.common.Registry;
@@ -53,6 +43,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.HtmlMacroComponent;
 import org.zkoss.zul.Messagebox;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
@@ -136,32 +135,28 @@ public class OrderElementHistoricalAssignmentComponent extends HtmlMacroComponen
     public void view(final OrderElementHistoricAssignmentDTO dto) {
         OrderElement orderElement = dto.getOrderElement();
         Order order = dto.getOrder();
-        try {
-            if (model.getCurrentScenario().contains(order)) {
-                if (SecurityUtils.isSuperuserOrUserInRoles(
-                        UserRole.ROLE_PLANNING,
-                        UserRole.ROLE_READ_ALL_PROJECTS,
-                        UserRole.ROLE_EDIT_ALL_PROJECTS)
-                        || curerntUserHasAnyPermissionOverOrder(order)) {
-                    globalView.goToOrderElementDetails(order, orderElement);
-                } else {
-                    Messagebox
-                            .show(_("Not enough permissions to edit this project"),
-                                    _("Warning"), Messagebox.OK,
-                                    Messagebox.EXCLAMATION);
-                }
+        if (model.getCurrentScenario().contains(order)) {
+            if (SecurityUtils.isSuperuserOrUserInRoles(
+                    UserRole.ROLE_PLANNING,
+                    UserRole.ROLE_READ_ALL_PROJECTS,
+                    UserRole.ROLE_EDIT_ALL_PROJECTS)
+                    || curerntUserHasAnyPermissionOverOrder(order)) {
+                globalView.goToOrderElementDetails(order, orderElement);
             } else {
-                String scenarios = "";
-                for (Scenario scene : getScenarios(order)) {
-                    scenarios = scenarios.concat(scene.getName() + "\n");
-                }
                 Messagebox
-                        .show(_("The planning of this task is not in the current scenenario.\nYou should change to any of the following scenarios: {0}",
-                                scenarios), _("Information"), Messagebox.OK,
-                                Messagebox.INFORMATION);
+                        .show(_("Not enough permissions to edit this project"),
+                                _("Warning"), Messagebox.OK,
+                                Messagebox.EXCLAMATION);
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } else {
+            String scenarios = "";
+            for (Scenario scene : getScenarios(order)) {
+                scenarios = scenarios.concat(scene.getName() + "\n");
+            }
+            Messagebox
+                    .show(_("The planning of this task is not in the current scenenario.\nYou should change to any of the following scenarios: {0}",
+                            scenarios), _("Information"), Messagebox.OK,
+                            Messagebox.INFORMATION);
         }
     }
 

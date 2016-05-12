@@ -109,10 +109,10 @@ public class ProjectDetailsController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         window = (Window) comp;
-        window.setVariable("projectController", this, true);
+        window.setAttribute("projectController", this, true);
     }
 
-    public void showWindow(OrderCRUDController orderController, MultipleTabsPlannerController tabs) {
+    public void showWindow(OrderCRUDController orderController, MultipleTabsPlannerController tabs) throws InterruptedException {
         this.tabs = tabs;
         this.orderController = orderController;
         this.defaultCalendar = orderController.getOrder().getCalendar();
@@ -123,8 +123,6 @@ public class ProjectDetailsController extends GenericForwardComposer {
             Util.reloadBindings(gridProjectDetails);
             window.doModal();
         } catch (SuspendNotAllowedException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -162,6 +160,7 @@ public class ProjectDetailsController extends GenericForwardComposer {
             showWrongName();
             return false;
         }
+
         return true;
     }
 
@@ -258,7 +257,7 @@ public class ProjectDetailsController extends GenericForwardComposer {
         };
     }
 
-    public void calculateProjectDates(OrderTemplate template) {
+    private void calculateProjectDates(OrderTemplate template) {
         LocalDate initLocalDate = new LocalDate()
                 .plusDays(template.getStartAsDaysFromBeginning());
         Date initDate = initLocalDate.toDateTimeAtStartOfDay().toDate();

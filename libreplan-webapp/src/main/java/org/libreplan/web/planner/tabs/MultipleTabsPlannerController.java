@@ -22,11 +22,6 @@
  */
 package org.libreplan.web.planner.tabs;
 
-import static org.libreplan.web.I18nHelper._;
-import static org.zkoss.ganttz.adapters.TabsConfiguration.configure;
-
-import java.util.Map;
-
 import org.libreplan.business.common.IAdHocTransactionService;
 import org.libreplan.business.common.daos.IConfigurationDAO;
 import org.libreplan.business.orders.daos.IOrderDAO;
@@ -84,6 +79,11 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.Composer;
+
+import java.util.Map;
+
+import static org.libreplan.web.I18nHelper._;
+import static org.zkoss.ganttz.adapters.TabsConfiguration.configure;
 
 /**
  * Creates and handles several tabs
@@ -578,8 +578,11 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     public void goToCreateForm() {
         orderCRUDController.prepareForCreate(tabsSwitcher.getDesktop());
-        orderCRUDController.getCreationPopup().showWindow(orderCRUDController,
-                this);
+        try {
+            orderCRUDController.getCreationPopup().showWindow(orderCRUDController, this);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

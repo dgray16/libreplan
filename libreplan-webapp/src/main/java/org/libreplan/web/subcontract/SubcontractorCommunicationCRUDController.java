@@ -19,12 +19,6 @@
 
 package org.libreplan.web.subcontract;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.externalcompanies.entities.CommunicationType;
@@ -43,14 +37,12 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Popup;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.*;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over a {@link SubcontractorCommunication}
@@ -89,7 +81,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
-    public void goToEdit(SubcontractorCommunication subcontractorCommunication) {
+    private void goToEdit(SubcontractorCommunication subcontractorCommunication) {
         if(subcontractorCommunication != null){
             TaskElement task = subcontractorCommunication.getSubcontractedTaskData().getTask();
             OrderElement orderElement = task.getOrderElement();
@@ -118,21 +110,25 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
 
     private void refreshSubcontractorCommunicationsList() {
         // update the subcontractor communication list
-        listing.setModel(new SimpleListModel(getSubcontractorCommunications()));
+        listing.setModel(new SimpleListModel<>(getSubcontractorCommunications()));
         listing.invalidate();
     }
 
-    protected void save(SubcontractorCommunication subcontractorCommunication)
-            throws ValidationException {
+    protected void save(SubcontractorCommunication subcontractorCommunication) throws ValidationException {
         subcontractorCommunicationModel.confirmSave(subcontractorCommunication);
     }
 
     public List<SubcontractorCommunication> getSubcontractorCommunications() {
         FilterCommunicationEnum currentFilter = subcontractorCommunicationModel.getCurrentFilter();
         switch(currentFilter){
-            case ALL: return subcontractorCommunicationModel.getSubcontractorAllCommunications();
-            case NOT_REVIEWED: return subcontractorCommunicationModel.getSubcontractorCommunicationWithoutReviewed();
-            default: return subcontractorCommunicationModel.getSubcontractorAllCommunications();
+            case ALL:
+                return subcontractorCommunicationModel.getSubcontractorAllCommunications();
+
+            case NOT_REVIEWED:
+                return subcontractorCommunicationModel.getSubcontractorCommunicationWithoutReviewed();
+
+            default:
+                return subcontractorCommunicationModel.getSubcontractorAllCommunications();
         }
     }
 
@@ -140,11 +136,10 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
         return subcontractorCommunicationRenderer;
     }
 
-    private class SubcontractorCommunicationRenderer implements
-            RowRenderer {
+    private class SubcontractorCommunicationRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             SubcontractorCommunication subcontractorCommunication = (SubcontractorCommunication) data;
             row.setValue(subcontractorCommunication);
 
@@ -157,8 +152,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
             appendLabel(row,  getOrderName(subcontractorCommunication.getSubcontractedTaskData()));
             appendLabel(row,  getOrderCode(subcontractorCommunication.getSubcontractedTaskData()));
             appendLabel(row, subcontractorCommunication.getSubcontractedTaskData().getExternalCompany().getName());
-            appendLabel(row, Util.formatDateTime(subcontractorCommunication
-                    .getCommunicationDate()));
+            appendLabel(row, Util.formatDateTime(subcontractorCommunication.getCommunicationDate()));
             appendLabelWithTooltip(row, subcontractorCommunication);
             appendCheckbox(row, subcontractorCommunication);
             appendOperations(row, subcontractorCommunication);
@@ -172,10 +166,8 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
             return subcontractorCommunicationModel.getOrderName(subcontractedTaskData);
         }
 
-        private String getLastValue(
-                SubcontractorCommunication subcontractorCommunication) {
-            SubcontractorCommunicationValue value = subcontractorCommunication
-                    .getLastSubcontractorCommunicationValues();
+        private String getLastValue(SubcontractorCommunication subcontractorCommunication) {
+            SubcontractorCommunicationValue value = subcontractorCommunication.getLastSubcontractorCommunicationValues();
             return (value != null) ? value.toString() : "";
         }
 
@@ -184,7 +176,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
         }
 
         private void appendLabelWithTooltip(final Row row,
-                final SubcontractorCommunication subcontractorCommunication) {
+                                            final SubcontractorCommunication subcontractorCommunication) {
             String lastValue = getLastValue(subcontractorCommunication);
             final Label compLabel = new Label(lastValue);
 
@@ -205,8 +197,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
             row.appendChild(compLabel);
         }
 
-        private void appendCheckbox(final Row row,
-                final SubcontractorCommunication subcontractorCommunication) {
+        private void appendCheckbox(final Row row, final SubcontractorCommunication subcontractorCommunication) {
             final Checkbox checkBoxReviewed = new Checkbox();
             checkBoxReviewed.setChecked(subcontractorCommunication.getReviewed());
 
@@ -232,8 +223,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
             }
         }
 
-        private void appendOperations(Row row,
-                final SubcontractorCommunication subcontractorCommunication) {
+        private void appendOperations(Row row, final SubcontractorCommunication subcontractorCommunication) {
             Button buttonEdit = new Button();
             buttonEdit.setSclass("icono");
             buttonEdit.setImage("/common/img/ico_editar1.png");

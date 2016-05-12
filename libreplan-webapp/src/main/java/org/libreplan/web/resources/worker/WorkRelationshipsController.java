@@ -21,19 +21,8 @@
 
 package org.libreplan.web.resources.worker;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
-import org.libreplan.business.resources.entities.Criterion;
-import org.libreplan.business.resources.entities.CriterionSatisfaction;
-import org.libreplan.business.resources.entities.CriterionWithItsType;
-import org.libreplan.business.resources.entities.ICriterionType;
-import org.libreplan.business.resources.entities.Worker;
+import org.libreplan.business.resources.entities.*;
 import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.Util;
@@ -41,6 +30,9 @@ import org.libreplan.web.resources.worker.IWorkerModel.AddingSatisfactionResult;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Listbox;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -78,9 +70,9 @@ public class WorkRelationshipsController extends GenericForwardComposer {
         this.workerModel = workerModel;
         this.workerCRUDController = workerCRUDController;
         this.messagesForUser = messagesForUser;
-        this.workCriterions = new ArrayList<Criterion>();
+        this.workCriterions = new ArrayList<>();
         Map<ICriterionType<?>, Collection<Criterion>> map = workerModel.getLaboralRelatedCriterions();
-        this.fromCriterionToType = new HashMap<Criterion, CriterionWithItsType>();
+        this.fromCriterionToType = new HashMap<>();
 
         for (Entry<ICriterionType<?>, Collection<Criterion>> entry : map.entrySet()) {
             this.workCriterions.addAll(entry.getValue());
@@ -93,15 +85,13 @@ public class WorkRelationshipsController extends GenericForwardComposer {
 
     public List<CriterionSatisfaction> getCriterionSatisfactions() {
         if (getWorker() == null) {
-            return new ArrayList<CriterionSatisfaction>();
+            return new ArrayList<>();
         } else {
-            return workerModel
-                    .getLaboralRelatedCriterionSatisfactions();
+            return workerModel.getLaboralRelatedCriterionSatisfactions();
         }
     }
 
-    public void deleteCriterionSatisfaction(CriterionSatisfaction satisfaction)
-            throws InstanceNotFoundException {
+    public void deleteCriterionSatisfaction(CriterionSatisfaction satisfaction) throws InstanceNotFoundException {
         workerModel.removeSatisfaction(satisfaction);
         this.workerCRUDController.goToEditForm();
     }
@@ -133,13 +123,13 @@ public class WorkRelationshipsController extends GenericForwardComposer {
             }
             i++;
         }
+
         throw new RuntimeException("Could not find the criterion " + criterion);
     }
 
     public void saveCriterionSatisfaction() {
         Criterion choosenCriterion = getChoosenCriterion();
-        CriterionWithItsType criterionWithItsType = fromCriterionToType
-                .get(choosenCriterion);
+        CriterionWithItsType criterionWithItsType = fromCriterionToType.get(choosenCriterion);
         satisfactionEdited.setCriterion(choosenCriterion);
         AddingSatisfactionResult addSatisfaction = workerModel.addSatisfaction(
                 criterionWithItsType.getType(), originalSatisfaction,
@@ -170,9 +160,9 @@ public class WorkRelationshipsController extends GenericForwardComposer {
         if (editing) {
             criterion = satisfactionEdited.getCriterion();
         } else {
-            criterion = (Criterion) this.selectedWorkCriterion
-                    .getSelectedItemApi().getValue();
+            criterion = this.selectedWorkCriterion.getSelectedItem().getValue();
         }
+
         return criterion;
     }
 

@@ -78,11 +78,7 @@ public class EditTemplateWindowController extends GenericForwardComposer {
     }
 
     public void open(OrderElementTemplate template) {
-        try {
-            editTemplateWindow.setMode("modal");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        editTemplateWindow.setMode("modal");
         bindAdvancesAssignment(template);
         bindOrderElementLabels(template);
         bindCriterionRequirements(template);

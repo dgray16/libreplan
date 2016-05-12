@@ -21,12 +21,12 @@
 
 package org.libreplan.web.common;
 
-import static org.libreplan.web.I18nHelper._;
-
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * {@link Enum} types needs to be translated in the webapp module, because of it
@@ -41,7 +41,7 @@ import org.zkoss.zul.ListitemRenderer;
 public class EnumsListitemRenderer implements ListitemRenderer {
 
     @Override
-    public void render(Listitem item, Object data) {
+    public void render(Listitem item, Object data, int i) {
         item.setValue(data);
         item.appendChild(new Listcell(_(data.toString())));
     }

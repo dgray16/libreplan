@@ -65,6 +65,7 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.ext.Sortable;
 
 /**
  * Controller for {@link Criterion} worker <br />
@@ -73,9 +74,13 @@ import org.zkoss.zul.SimpleListModel;
 public class CriterionsController extends GenericForwardComposer {
 
     private IAssignedCriterionsModel assignedCriterionsModel;
+
     private Checkbox criterionFilterCheckbox;
+
     private Grid listingCriterions;
+
     private IMessagesForUser messages;
+
     private Component messagesContainer;
 
     CriterionsController(IWorkerModel workerModel) {
@@ -89,7 +94,7 @@ public class CriterionsController extends GenericForwardComposer {
             throw new RuntimeException(_("MessagesContainer is needed"));
         }
         messages = new MessagesForUser(messagesContainer);
-        comp.setVariable("assignedCriterionsController", this, true);
+        comp.setAttribute("assignedCriterionsController", this, true);
         criterionFilterCheckbox.setChecked(false);
     }
 
@@ -113,6 +118,7 @@ public class CriterionsController extends GenericForwardComposer {
         }else{
             list.addAll(assignedCriterionsModel.getAllCriterionSatisfactions());
         }
+
         return list;
     }
 
@@ -121,7 +127,7 @@ public class CriterionsController extends GenericForwardComposer {
         reload();
     }
 
-    public List<CriterionWithItsType> getCriterionWithItsTypes(){
+    private List<CriterionWithItsType> getCriterionWithItsTypes(){
         return assignedCriterionsModel.getCriterionWithItsType();
     }
 
@@ -134,9 +140,9 @@ public class CriterionsController extends GenericForwardComposer {
         forceSortGridSatisfaction();
     }
 
-    public void forceSortGridSatisfaction() {
+    private void forceSortGridSatisfaction() {
         Column column = (Column) listingCriterions.getColumns().getFirstChild();
-        ListModelExt model = (ListModelExt) listingCriterions.getModel();
+        Sortable model = (Sortable) listingCriterions.getModel();
         if (model != null) {
             if ("ascending".equals(column.getSortDirection())) {
                 model.sort(column.getSortAscending(), true);
@@ -152,10 +158,10 @@ public class CriterionsController extends GenericForwardComposer {
         reload();
     }
 
-    public void selectCriterionAndType(Listitem item,Bandbox bandbox,
-        CriterionSatisfactionDTO criterionSatisfactionDTO){
+    private void selectCriterionAndType(Listitem item, Bandbox bandbox,
+                                        CriterionSatisfactionDTO criterionSatisfactionDTO){
         if(item != null){
-            CriterionWithItsType criterionAndType = (CriterionWithItsType)item.getValue();
+            CriterionWithItsType criterionAndType = item.getValue();
             bandbox.setValue(criterionAndType.getNameAndType());
             setCriterionWithItsType(criterionAndType,criterionSatisfactionDTO,bandbox);
         }else{
@@ -170,7 +176,7 @@ public class CriterionsController extends GenericForwardComposer {
     }
 
     private void validateCriterionWithItsType(CriterionSatisfactionDTO satisfaction,
-            Component comp) throws WrongValueException{
+                                              Component comp) throws WrongValueException{
             if(satisfaction.getCriterionWithItsType() == null) {
                 return;
             }
@@ -188,8 +194,7 @@ public class CriterionsController extends GenericForwardComposer {
     }
 
     public void changeDate(Component comp) {
-        CriterionSatisfactionDTO criterionSatisfactionDTO =
-            (CriterionSatisfactionDTO)((Row) comp.getParent()).getValue();
+        CriterionSatisfactionDTO criterionSatisfactionDTO = ((Row) comp.getParent()).getValue();
         validateCriterionWithItsType(criterionSatisfactionDTO,comp);
         reload();
     }
@@ -205,8 +210,7 @@ public class CriterionsController extends GenericForwardComposer {
     }
 
     private void validateStartDate(Component comp, Object value){
-        CriterionSatisfactionDTO criterionSatisfactionDTO =
-            (CriterionSatisfactionDTO)((Row) comp.getParent()).getValue();
+        CriterionSatisfactionDTO criterionSatisfactionDTO = ((Row) comp.getParent()).getValue();
         if(value == null) {
             throw new WrongValueException(comp,
                     _("cannot be empty"));
@@ -232,8 +236,7 @@ public class CriterionsController extends GenericForwardComposer {
     }
 
     private void validateEndDate(Component comp, Object value){
-        CriterionSatisfactionDTO criterionSatisfactionDTO =
-            (CriterionSatisfactionDTO)((Row) comp.getParent()).getValue();
+        CriterionSatisfactionDTO criterionSatisfactionDTO = ((Row) comp.getParent()).getValue();
         if(!criterionSatisfactionDTO.isGreaterStartDate((Date) value)){
             throw new WrongValueException(comp,
                 _("End date is not valid, the new end date must be after start date"));
@@ -269,6 +272,7 @@ public class CriterionsController extends GenericForwardComposer {
                  messages.showMessage(Level.ERROR,e.getMessage());
                 return false;
         }
+
         return true;
     }
 
@@ -295,8 +299,7 @@ public class CriterionsController extends GenericForwardComposer {
                 //Validate endDate Domain Restricctions.
                 Bandbox bandCriterion = getBandType(row);
                 if(isInvalid(bandCriterion)){
-                    CriterionSatisfactionDTO satisfactionDTO =
-                        (CriterionSatisfactionDTO)row.getValue();
+                    CriterionSatisfactionDTO satisfactionDTO = row.getValue();
                     validateCriterionWithItsType(satisfactionDTO,bandCriterion);
                 }
             }
@@ -328,8 +331,7 @@ public class CriterionsController extends GenericForwardComposer {
         if(listingCriterions != null){
 
             // Find which listItem contains CriterionSatisfaction inside listBox
-            Row row = findRowOfCriterionSatisfactionDTO(listingCriterions.getRows(),
-                    satisfactionDTO);
+            Row row = findRowOfCriterionSatisfactionDTO(listingCriterions.getRows(), satisfactionDTO);
 
             if (row != null) {
                 String propertyName = invalidValue.getPropertyPath();
@@ -339,16 +341,14 @@ public class CriterionsController extends GenericForwardComposer {
                     Datebox startDate = getStartDatebox(row);
                     // Value is incorrect, clear
                     startDate.setValue(null);
-                    throw new WrongValueException(startDate,
-                            _("cannot be empty"));
+                    throw new WrongValueException(startDate, _("cannot be empty"));
                 }
                 if (CriterionSatisfactionDTO.CRITERION_WITH_ITS_TYPE.equals(propertyName)) {
                     // Locate TextboxResource
                     Bandbox bandType = getBandType(row);
                     // Value is incorrect, clear
                     bandType.setValue(null);
-                    throw new WrongValueException(bandType,
-                            _("cannot be empty"));
+                    throw new WrongValueException(bandType, _("cannot be empty"));
                 }
             }
         }
@@ -364,12 +364,13 @@ public class CriterionsController extends GenericForwardComposer {
      */
     private Row findRowOfCriterionSatisfactionDTO(Rows rows,
             CriterionSatisfactionDTO satisfactionDTO) {
-        List<Row> listRows = (List<Row>) rows.getChildren();
+        List<Row> listRows = rows.getChildren();
         for (Row row : listRows) {
             if (satisfactionDTO.equals(row.getValue())) {
                 return row;
             }
         }
+
         return null;
     }
 
@@ -404,7 +405,7 @@ public class CriterionsController extends GenericForwardComposer {
                 .getChildren().get(0);
     }
 
-    public void validateConstraints() {
+    void validateConstraints() {
         ConstraintChecker.isValid(self);
     }
 
@@ -428,28 +429,24 @@ public class CriterionsController extends GenericForwardComposer {
     }
 
     private ListModel getSubModel(String text) {
-        List<CriterionWithItsType> list = new ArrayList<CriterionWithItsType>();
+        List<CriterionWithItsType> list = new ArrayList<>();
         text = text.trim().toLowerCase();
         for (CriterionWithItsType criterion : this.getCriterionWithItsTypes()) {
-            if ((criterion.getNameHierarchy().toLowerCase()
-                    .contains(text) || criterion.getType().getName()
+            if ((criterion.getNameHierarchy().toLowerCase().contains(text) || criterion.getType().getName()
                     .toLowerCase().contains(text))) {
                 list.add(criterion);
             }
         }
-        return new SimpleListModel(list);
+        return new SimpleListModel<>(list);
     }
 
     public void onOK(KeyEvent event) {
         Component listitem = event.getReference();
         if (listitem instanceof Listitem) {
-            Bandbox bandbox = (Bandbox) listitem.getParent().getParent()
-                    .getParent();
-            CriterionSatisfactionDTO criterionSatisfactionDTO = (CriterionSatisfactionDTO) ((Row) bandbox
-                    .getParent().getParent()).getValue();
+            Bandbox bandbox = (Bandbox) listitem.getParent().getParent().getParent();
+            CriterionSatisfactionDTO criterionSatisfactionDTO = ((Row) bandbox.getParent().getParent()).getValue();
 
-            selectCriterionAndType((Listitem) listitem, bandbox,
-                    criterionSatisfactionDTO);
+            selectCriterionAndType((Listitem) listitem, bandbox, criterionSatisfactionDTO);
 
             bandbox.close();
         }
@@ -458,8 +455,7 @@ public class CriterionsController extends GenericForwardComposer {
     public void onClick(MouseEvent event) {
         Component listitem = event.getTarget();
         if (listitem instanceof Listitem) {
-            Bandbox bandbox = (Bandbox) listitem.getParent().getParent()
-                    .getParent();
+            Bandbox bandbox = (Bandbox) listitem.getParent().getParent().getParent();
             bandbox.close();
         }
     }

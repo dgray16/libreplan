@@ -19,8 +19,6 @@
 
 package org.libreplan.web.planner.taskedition;
 
-import static org.libreplan.web.I18nHelper._;
-
 import org.apache.commons.lang3.Validate;
 import org.joda.time.LocalDate;
 import org.libreplan.business.planner.entities.AggregateOfResourceAllocations;
@@ -40,6 +38,8 @@ import org.springframework.context.annotation.Scope;
 import org.zkoss.ganttz.extensions.IContextWithPlannerTask;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Messagebox;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for advanced allocation of a {@link Task}.
@@ -69,12 +69,8 @@ public class AdvancedAllocationTaskController extends GenericForwardComposer {
                 planningState.getCurrentScenario(), task);
 
         if (allocationResult.getAggregate().isEmpty()) {
-            try {
-                Messagebox.show(_("Some allocations needed"), _("Warning"),
-                        Messagebox.OK, Messagebox.EXCLAMATION);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Messagebox.show(_("Some allocations needed"), _("Warning"),
+                    Messagebox.OK, Messagebox.EXCLAMATION);
             return;
         }
 

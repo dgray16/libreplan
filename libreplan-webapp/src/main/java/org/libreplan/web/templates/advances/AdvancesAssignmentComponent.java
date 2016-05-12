@@ -20,21 +20,16 @@
  */
 package org.libreplan.web.templates.advances;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.libreplan.business.advance.entities.AdvanceAssignmentTemplate;
 import org.libreplan.business.templates.entities.OrderElementTemplate;
 import org.libreplan.web.templates.IOrderTemplatesModel;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlMacroComponent;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Hbox;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Listcell;
-import org.zkoss.zul.Listitem;
-import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
@@ -47,7 +42,7 @@ public class AdvancesAssignmentComponent extends HtmlMacroComponent {
     private ListitemRenderer advancesRenderer = new ListitemRenderer() {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             AdvanceAssignmentTemplate assignment = (AdvanceAssignmentTemplate) data;
             append(item, createTypeLabel(assignment));
             append(item, createMaxValueLabel(assignment));
@@ -63,12 +58,14 @@ public class AdvancesAssignmentComponent extends HtmlMacroComponent {
             Listcell cell = new Listcell();
             cell.appendChild(component);
             item.appendChild(cell);
+
             return component;
         }
 
         private Label createTypeLabel(AdvanceAssignmentTemplate assignment) {
             Label result = new Label();
             result.setValue(assignment.getAdvanceType().getUnitName());
+
             return result;
         }
 
@@ -81,6 +78,7 @@ public class AdvancesAssignmentComponent extends HtmlMacroComponent {
             Checkbox result = new Checkbox();
             result.setChecked(assignment.isReportGlobalAdvance());
             result.setDisabled(true);
+
             return result;
         }
 

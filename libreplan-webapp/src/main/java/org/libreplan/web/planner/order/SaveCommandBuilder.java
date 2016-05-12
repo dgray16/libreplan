@@ -21,15 +21,6 @@
 
 package org.libreplan.web.planner.order;
 
-import static org.libreplan.business.planner.limiting.entities.LimitingResourceQueueDependency.toQueueDependencyType;
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
@@ -50,35 +41,10 @@ import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.common.exceptions.ValidationException.InvalidValue;
 import org.libreplan.business.orders.daos.IOrderDAO;
 import org.libreplan.business.orders.daos.IOrderElementDAO;
-import org.libreplan.business.orders.entities.HoursGroup;
-import org.libreplan.business.orders.entities.ISumChargedEffortRecalculator;
-import org.libreplan.business.orders.entities.ISumExpensesRecalculator;
-import org.libreplan.business.orders.entities.Order;
-import org.libreplan.business.orders.entities.OrderElement;
-import org.libreplan.business.orders.entities.OrderLineGroup;
-import org.libreplan.business.orders.entities.TaskSource;
-import org.libreplan.business.planner.daos.IConsolidationDAO;
-import org.libreplan.business.planner.daos.IDependencyDAO;
-import org.libreplan.business.planner.daos.ISubcontractedTaskDataDAO;
-import org.libreplan.business.planner.daos.ITaskElementDAO;
-import org.libreplan.business.planner.daos.ITaskSourceDAO;
-import org.libreplan.business.planner.entities.DayAssignment;
-import org.libreplan.business.planner.entities.Dependency;
-import org.libreplan.business.planner.entities.DerivedAllocation;
-import org.libreplan.business.planner.entities.DerivedDayAssignment;
-import org.libreplan.business.planner.entities.DerivedDayAssignmentsContainer;
-import org.libreplan.business.planner.entities.ResourceAllocation;
-import org.libreplan.business.planner.entities.SubcontractedTaskData;
-import org.libreplan.business.planner.entities.SubcontractorDeliverDate;
-import org.libreplan.business.planner.entities.Task;
-import org.libreplan.business.planner.entities.TaskElement;
-import org.libreplan.business.planner.entities.TaskGroup;
-import org.libreplan.business.planner.entities.consolidations.CalculatedConsolidatedValue;
-import org.libreplan.business.planner.entities.consolidations.CalculatedConsolidation;
-import org.libreplan.business.planner.entities.consolidations.ConsolidatedValue;
-import org.libreplan.business.planner.entities.consolidations.Consolidation;
-import org.libreplan.business.planner.entities.consolidations.NonCalculatedConsolidatedValue;
-import org.libreplan.business.planner.entities.consolidations.NonCalculatedConsolidation;
+import org.libreplan.business.orders.entities.*;
+import org.libreplan.business.planner.daos.*;
+import org.libreplan.business.planner.entities.*;
+import org.libreplan.business.planner.entities.consolidations.*;
 import org.libreplan.business.planner.limiting.daos.ILimitingResourceQueueDependencyDAO;
 import org.libreplan.business.planner.limiting.entities.LimitingResourceQueueDependency;
 import org.libreplan.business.planner.limiting.entities.LimitingResourceQueueElement;
@@ -110,6 +76,11 @@ import org.zkoss.ganttz.extensions.IContext;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
+
+import java.util.*;
+
+import static org.libreplan.business.planner.limiting.entities.LimitingResourceQueueDependency.toQueueDependencyType;
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Builds a command that saves the changes in the taskElements. It can be
@@ -320,28 +291,24 @@ public class SaveCommandBuilder {
                     throw validationException;
                 }
 
-                try {
-                    String message = "";
+                String message = "";
 
-                    LabelCreatorForInvalidValues labelCreator = new LabelCreatorForInvalidValues();
+                LabelCreatorForInvalidValues labelCreator = new LabelCreatorForInvalidValues();
 
-                    for (InvalidValue invalidValue : validationException.getInvalidValues()) {
-                        message += "* " + ((Label) labelCreator.createLabelFor(invalidValue)).getValue() + "\n";
-                    }
-
-                    if ( validationException.getInvalidValues().isEmpty() ) {
-                        message += validationException.getMessage();
-                    }
-
-                    LOG.warn("Error saving the project", validationException);
-
-                    Messagebox.show(
-                            _("Error saving the project\n{0}", message),
-                            _("Error"), Messagebox.OK, Messagebox.ERROR);
-
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                for (InvalidValue invalidValue : validationException.getInvalidValues()) {
+                    message += "* " + ((Label) labelCreator.createLabelFor(invalidValue)).getValue() + "\n";
                 }
+
+                if ( validationException.getInvalidValues().isEmpty() ) {
+                    message += validationException.getMessage();
+                }
+
+                LOG.warn("Error saving the project", validationException);
+
+                Messagebox.show(
+                        _("Error saving the project\n{0}", message),
+                        _("Error"), Messagebox.OK, Messagebox.ERROR);
+
             }
 
         }
@@ -357,11 +324,7 @@ public class SaveCommandBuilder {
                 // test environment
                 return;
             }
-            try {
-                Messagebox.show(_("Project saved"), _("Information"), Messagebox.OK, Messagebox.INFORMATION);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Messagebox.show(_("Project saved"), _("Information"), Messagebox.OK, Messagebox.INFORMATION);
             if ( Executions.getCurrent() != null ) {
                 // Reset timer of warning on leaving page
                 ConfirmCloseUtil.resetConfirmClose();
@@ -466,19 +429,17 @@ public class SaveCommandBuilder {
 
         private void createAdvancePercentageIfRequired(OrderElement orderElement) {
             DirectAdvanceAssignment advancePercentage = orderElement
-                    .getDirectAdvanceAssignmentByType(PredefinedAdvancedTypes.PERCENTAGE
-                            .getType());
+                    .getDirectAdvanceAssignmentByType(PredefinedAdvancedTypes.PERCENTAGE.getType());
 
-            if ((orderElement.isSchedulingPoint())
-                    && (orderElement.getReportGlobalAdvanceAssignment() == null)
-                    && (advancePercentage == null)) {
+            if ((orderElement.isSchedulingPoint()) && (orderElement.getReportGlobalAdvanceAssignment() == null) &&
+                    (advancePercentage == null)) {
+
                 createAdvancePercentage(orderElement);
             }
         }
 
         private void createAdvancePercentage(OrderElement orderElement) {
-            DirectAdvanceAssignment newAdvance = DirectAdvanceAssignment
-                    .create();
+            DirectAdvanceAssignment newAdvance = DirectAdvanceAssignment.create();
             newAdvance.setOrderElement(orderElement);
 
             AdvanceType type = PredefinedAdvancedTypes.PERCENTAGE.getType();
@@ -499,8 +460,7 @@ public class SaveCommandBuilder {
         }
 
         private void generateOrderElementCodes(Order order) {
-            order.generateOrderElementCodes(entitySequenceDAO
-                    .getNumberOfDigitsCode(EntityNameEnum.ORDER));
+            order.generateOrderElementCodes(entitySequenceDAO.getNumberOfDigitsCode(EntityNameEnum.ORDER));
         }
 
         private void checkConstraintOrderUniqueCode(OrderElement order) {
@@ -508,31 +468,26 @@ public class SaveCommandBuilder {
 
             // Check no code is repeated in this order
             if (order instanceof OrderLineGroup) {
-                repeatedOrder = ((OrderLineGroup) order)
-                        .findRepeatedOrderCode();
+                repeatedOrder = ((OrderLineGroup) order).findRepeatedOrderCode();
                 if (repeatedOrder != null) {
-                    throw new ValidationException(_(
-                            "Repeated Project code {0} in Project {1}",
-                            repeatedOrder.getCode(), repeatedOrder.getName()));
+                    throw new ValidationException(_("Repeated Project code {0} in Project {1}", repeatedOrder.getCode(),
+                            repeatedOrder.getName()));
                 }
             }
 
             // Check no code is repeated within the DB
-            repeatedOrder = Registry.getOrderElementDAO()
-                    .findRepeatedOrderCodeInDB(order);
+            repeatedOrder = Registry.getOrderElementDAO().findRepeatedOrderCodeInDB(order);
             if (repeatedOrder != null) {
-                throw new ValidationException(_(
-                        "Repeated Project code {0} in Project {1}",
-                        repeatedOrder.getCode(), repeatedOrder.getName()));
+                throw new ValidationException(_("Repeated Project code {0} in Project {1}", repeatedOrder.getCode(),
+                        repeatedOrder.getName()));
             }
         }
 
         private void checkConstraintHoursGroupUniqueCode(Order order) {
             HoursGroup repeatedHoursGroup;
 
-            if (order instanceof OrderLineGroup) {
-                repeatedHoursGroup = ((OrderLineGroup) order)
-                        .findRepeatedHoursGroupCode();
+            if (order != null) {
+                repeatedHoursGroup = (order).findRepeatedHoursGroupCode();
                 if (repeatedHoursGroup != null) {
                     throw new ValidationException(_(
                             "Repeated Hours Group code {0} in Project {1}",
@@ -546,23 +501,19 @@ public class SaveCommandBuilder {
             if (repeatedHoursGroup != null) {
                 throw new ValidationException(_(
                         "Repeated Hours Group code {0} in Project {1}",
-                        repeatedHoursGroup.getCode(), repeatedHoursGroup
-                                .getParentOrderLine().getName()));
+                        repeatedHoursGroup.getCode(), repeatedHoursGroup.getParentOrderLine().getName()));
             }
         }
 
         private void saveDerivedScenarios(Order order) {
-            List<Scenario> derivedScenarios = scenarioDAO
-                    .getDerivedScenarios(state.getCurrentScenario());
+            List<Scenario> derivedScenarios = scenarioDAO.getDerivedScenarios(state.getCurrentScenario());
             for (Scenario scenario : derivedScenarios) {
                 scenario.addOrder(order, order.getCurrentOrderVersion());
             }
         }
 
-        private void deleteOrderElementWithoutParent(Order order)
-                throws ValidationException {
-            List<OrderElement> listToBeRemoved = orderElementDAO
-                    .findWithoutParent();
+        private void deleteOrderElementWithoutParent(Order order) throws ValidationException {
+            List<OrderElement> listToBeRemoved = orderElementDAO.findWithoutParent();
             for (OrderElement orderElement : listToBeRemoved) {
                 if (!(orderElement instanceof Order)) {
                     tryToRemove(orderElement);
@@ -580,8 +531,7 @@ public class SaveCommandBuilder {
 
         private void tryToRemove(OrderElement orderElement) {
             // checking no work reports for that orderElement
-            if (orderElementDAO
-                    .isAlreadyInUseThisOrAnyOfItsChildren(orderElement)) {
+            if (orderElementDAO.isAlreadyInUseThisOrAnyOfItsChildren(orderElement)) {
                 return;
             }
             try {
@@ -613,8 +563,7 @@ public class SaveCommandBuilder {
             for (TaskElement taskElement : rootTask.getChildren()) {
                 removeEmptyConsolidation(taskElement);
                 updateLimitingResourceQueueElementDates(taskElement);
-                if (taskElement.getTaskSource() != null
-                        && taskElement.getTaskSource().isNewObject()) {
+                if (taskElement.getTaskSource() != null && taskElement.getTaskSource().isNewObject()) {
                     saveTaskSources(taskElement);
                 }
                 updateLimitingQueueDependencies(taskElement);
@@ -629,13 +578,11 @@ public class SaveCommandBuilder {
         }
 
         private void updateRootTaskPosition(TaskGroup rootTask) {
-            final IntraDayDate min = TaskElement
-                    .minDate(rootTask.getChildren());
+            final IntraDayDate min = TaskElement.minDate(rootTask.getChildren());
             if (min != null) {
                 rootTask.setIntraDayStartDate(min);
             }
-            final IntraDayDate max = TaskElement
-                    .maxDate(rootTask.getChildren());
+            final IntraDayDate max = TaskElement.maxDate(rootTask.getChildren());
             if (max != null) {
                 rootTask.setIntraDayEndDate(max);
             }
@@ -654,8 +601,7 @@ public class SaveCommandBuilder {
             }
         }
 
-        private void updateLimitingResourceQueueElementDates(
-                TaskElement taskElement) {
+        private void updateLimitingResourceQueueElementDates(TaskElement taskElement) {
             if (taskElement.isLimiting()) {
                 Task task = (Task) taskElement;
                 updateLimitingResourceQueueElementDates(task);
@@ -668,8 +614,7 @@ public class SaveCommandBuilder {
 
         private void updateLimitingResourceQueueElementDates(Task task) {
             try {
-                LimitingResourceQueueElement limiting = task
-                        .getAssociatedLimitingResourceQueueElementIfAny();
+                LimitingResourceQueueElement limiting = task.getAssociatedLimitingResourceQueueElementIfAny();
 
                 GanttDate earliestStart = resolveConstraints(task, Point.START);
                 GanttDate earliestEnd = resolveConstraints(task, Point.END);
@@ -690,19 +635,16 @@ public class SaveCommandBuilder {
                     adapter.getIncomingDependencies(task), point);
             List<Constraint<GanttDate>> taskConstraints = getTaskConstraints(task);
 
-            boolean dependenciesHavePriority = configuration
-                    .isDependenciesConstraintsHavePriority();
+            boolean dependenciesHavePriority = configuration.isDependenciesConstraintsHavePriority();
             if (dependenciesHavePriority) {
                 return Constraint
-                        .<GanttDate> initialValue(
-                                TaskElementAdapter.toGantt(getOrderInitDate()))
+                        .<GanttDate> initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
                         .withConstraints(taskConstraints)
                         .withConstraints(dependencyConstraints)
                         .applyWithoutFinalCheck();
             } else {
                 return Constraint
-                        .<GanttDate> initialValue(
-                                TaskElementAdapter.toGantt(getOrderInitDate()))
+                        .<GanttDate> initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
                         .withConstraints(dependencyConstraints)
                         .withConstraints(taskConstraints)
                         .applyWithoutFinalCheck();
@@ -710,31 +652,27 @@ public class SaveCommandBuilder {
         }
 
         private List<Constraint<GanttDate>> getTaskConstraints(Task task) {
-            return TaskElementAdapter.getStartConstraintsFor(task,
-                    getOrderInitDate());
+            return TaskElementAdapter.getStartConstraintsFor(task, getOrderInitDate());
         }
 
         private LocalDate getOrderInitDate() {
-            return LocalDate.fromDateFields(state.getRootTask()
-                    .getOrderElement().getInitDate());
+            return LocalDate.fromDateFields(state.getRootTask().getOrderElement().getInitDate());
         }
 
-        private List<Constraint<GanttDate>> toConstraints(
-                List<DomainDependency<TaskElement>> incomingDependencies,
+        private List<Constraint<GanttDate>> toConstraints(List<DomainDependency<TaskElement>> incomingDependencies,
                 Point point) {
-            List<Constraint<GanttDate>> result = new ArrayList<Constraint<GanttDate>>();
+            List<Constraint<GanttDate>> result = new ArrayList<>();
             for (DomainDependency<TaskElement> each : incomingDependencies) {
                 result.addAll(constraintCalculator.getConstraints(each, point));
             }
+
             return result;
         }
 
         private void removeEmptyConsolidation(TaskElement taskElement) {
             if ((taskElement.isLeaf()) && (!taskElement.isMilestone())) {
-                Consolidation consolidation = ((Task) taskElement)
-                        .getConsolidation();
-                if ((consolidation != null)
-                        && (isEmptyConsolidation(consolidation))) {
+                Consolidation consolidation = ((Task) taskElement).getConsolidation();
+                if ((consolidation != null) && (isEmptyConsolidation(consolidation))) {
                     if (!consolidation.isNewObject()) {
                         try {
                             consolidationDAO.remove(consolidation.getId());
@@ -755,15 +693,17 @@ public class SaveCommandBuilder {
 
                             consolidationDAO.reattach(consolidation);
                             if (consolidation instanceof CalculatedConsolidation) {
-                                SortedSet<CalculatedConsolidatedValue> consolidatedValues = ((CalculatedConsolidation) consolidation)
-                                        .getCalculatedConsolidatedValues();
+                                SortedSet<CalculatedConsolidatedValue> consolidatedValues =
+                                        ((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues();
                                 return consolidatedValues.isEmpty();
                             }
                             if (consolidation instanceof NonCalculatedConsolidation) {
-                                SortedSet<NonCalculatedConsolidatedValue> consolidatedValues = ((NonCalculatedConsolidation) consolidation)
-                                        .getNonCalculatedConsolidatedValues();
+                                SortedSet<NonCalculatedConsolidatedValue> consolidatedValues =
+                                        ((NonCalculatedConsolidation) consolidation)
+                                                .getNonCalculatedConsolidatedValues();
                                 return consolidatedValues.isEmpty();
                             }
+
                             return false;
 
                         }
@@ -781,33 +721,26 @@ public class SaveCommandBuilder {
         }
 
         private void addLimitingDependencyIfNeeded(Dependency d) {
-            if (d.isDependencyBetweenLimitedAllocatedTasks()
-                    && !d.hasLimitedQueueDependencyAssociated()) {
-                LimitingResourceQueueElement origin = calculateQueueElementFromDependency((Task) d
-                        .getOrigin());
-                LimitingResourceQueueElement destiny = calculateQueueElementFromDependency((Task) d
-                        .getDestination());
+            if (d.isDependencyBetweenLimitedAllocatedTasks() && !d.hasLimitedQueueDependencyAssociated()) {
+                LimitingResourceQueueElement origin = calculateQueueElementFromDependency((Task) d.getOrigin());
+                LimitingResourceQueueElement destiny = calculateQueueElementFromDependency((Task) d.getDestination());
 
                 LimitingResourceQueueDependency queueDependency = LimitingResourceQueueDependency
-                        .create(origin, destiny, d,
-                                toQueueDependencyType(d.getType()));
+                        .create(origin, destiny, d, toQueueDependencyType(d.getType()));
                 d.setQueueDependency(queueDependency);
                 limitingResourceQueueDependencyDAO.save(queueDependency);
             }
         }
 
-        private LimitingResourceQueueElement calculateQueueElementFromDependency(
-                Task t) {
+        private LimitingResourceQueueElement calculateQueueElementFromDependency(Task t) {
 
             LimitingResourceQueueElement result = null;
             // TODO: Improve this method: One Task can only have one
             // limiting resource allocation
-            Set<ResourceAllocation<?>> allocations = t
-                    .getLimitingResourceAllocations();
+            Set<ResourceAllocation<?>> allocations = t.getLimitingResourceAllocations();
 
             if (allocations.isEmpty() || allocations.size() != 1) {
-                throw new ValidationException("Incorrect limiting resource "
-                        + "allocation configuration");
+                throw new ValidationException("Incorrect limiting resource " + "allocation configuration");
             }
 
             for (ResourceAllocation<?> r : allocations) {
@@ -818,20 +751,16 @@ public class SaveCommandBuilder {
         }
 
         private void removeLimitingDependencyIfNeeded(Dependency d) {
-            if (!d.isDependencyBetweenLimitedAllocatedTasks()
-                    && (d.hasLimitedQueueDependencyAssociated())) {
-                LimitingResourceQueueDependency queueDependency = d
-                        .getQueueDependency();
+            if (!d.isDependencyBetweenLimitedAllocatedTasks() && (d.hasLimitedQueueDependencyAssociated())) {
+                LimitingResourceQueueDependency queueDependency = d.getQueueDependency();
                 queueDependency.getHasAsOrigin().remove(queueDependency);
                 queueDependency.getHasAsDestiny().remove(queueDependency);
                 d.setQueueDependency(null);
                 try {
-                    limitingResourceQueueDependencyDAO.remove(queueDependency
-                            .getId());
+                    limitingResourceQueueDependencyDAO.remove(queueDependency.getId());
                 } catch (InstanceNotFoundException e) {
                     e.printStackTrace();
-                    throw new RuntimeException("Trying to delete instance "
-                            + " does not exist");
+                    throw new RuntimeException("Trying to delete instance " + " does not exist");
                 }
             }
         }
@@ -840,8 +769,7 @@ public class SaveCommandBuilder {
             order.getEndDateCommunicationToCustomer().size();
         }
 
-        private void loadDataAccessedWithNotPosedAsTransient(
-                OrderElement orderElement) {
+        private void loadDataAccessedWithNotPosedAsTransient(OrderElement orderElement) {
             orderElement.getDirectAdvanceAssignments().size();
             getAllMeasurements(orderElement.getDirectAdvanceAssignments());
             orderElement.getIndirectAdvanceAssignments().size();
@@ -850,8 +778,7 @@ public class SaveCommandBuilder {
             orderElement.getTaskQualityForms().size();
             orderElement.getAllMaterialAssignments().size();
             for (HoursGroup hoursGroup : orderElement.getHoursGroups()) {
-                dontPoseAsTransientObjectAnymore(hoursGroup
-                        .getCriterionRequirements());
+                dontPoseAsTransientObjectAnymore(hoursGroup.getCriterionRequirements());
             }
 
             for (OrderElement each : orderElement.getChildren()) {
@@ -861,8 +788,7 @@ public class SaveCommandBuilder {
 
         // avoid LazyInitializationException when forcing the don't pose as
         // transient
-        private void loadDependenciesCollectionsForTaskRoot(
-                TaskElement taskElement) {
+        private void loadDependenciesCollectionsForTaskRoot(TaskElement taskElement) {
             taskElement.getDependenciesWithThisOrigin().size();
             taskElement.getDependenciesWithThisDestination().size();
         }
@@ -888,46 +814,33 @@ public class SaveCommandBuilder {
         }
 
         private boolean userAcceptsCreateANewOrderVersion() {
-            try {
-                int status = Messagebox
-                        .show(_("Confirm creating a new project version for this scenario and derived. Are you sure?"),
-                                _("New project version"), Messagebox.OK
-                                        | Messagebox.CANCEL,
-                                Messagebox.QUESTION);
-                return (Messagebox.OK == status);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            int status = Messagebox
+                    .show(_("Confirm creating a new project version for this scenario and derived. Are you sure?"),
+                            _("New project version"), Messagebox.OK
+                                    | Messagebox.CANCEL,
+                            Messagebox.QUESTION);
+            return (Messagebox.OK == status);
         }
 
         private void dontPoseAsTransientObjectAnymore(OrderElement orderElement) {
             orderElement.dontPoseAsTransientObjectAnymore();
             dontPoseAsTransientObjectAnymore(orderElement.getOrderVersions());
-            dontPoseAsTransientObjectAnymore(orderElement
-                    .getTaskSourcesFromBottomToTop());
-            dontPoseAsTransientObjectAnymore(orderElement
-                    .getSchedulingDatasForVersionFromBottomToTop());
+            dontPoseAsTransientObjectAnymore(orderElement.getTaskSourcesFromBottomToTop());
+            dontPoseAsTransientObjectAnymore(orderElement.getSchedulingDatasForVersionFromBottomToTop());
 
-            dontPoseAsTransientObjectAnymore(orderElement
-                    .getDirectAdvanceAssignments());
-            dontPoseAsTransientObjectAnymore(getAllMeasurements(orderElement
-                    .getDirectAdvanceAssignments()));
+            dontPoseAsTransientObjectAnymore(orderElement.getDirectAdvanceAssignments());
+            dontPoseAsTransientObjectAnymore(getAllMeasurements(orderElement.getDirectAdvanceAssignments()));
 
-            dontPoseAsTransientObjectAnymore(orderElement
-                    .getIndirectAdvanceAssignments());
-            dontPoseAsTransientObjectAnymore(orderElement
-                    .getCriterionRequirements());
+            dontPoseAsTransientObjectAnymore(orderElement.getIndirectAdvanceAssignments());
+            dontPoseAsTransientObjectAnymore(orderElement.getCriterionRequirements());
             dontPoseAsTransientObjectAnymore(orderElement.getLabels());
-            dontPoseAsTransientObjectAnymoreTasks(orderElement
-                    .getTaskElements());
+            dontPoseAsTransientObjectAnymoreTasks(orderElement.getTaskElements());
             dontPoseAsTransientObjectAnymore(orderElement.getHoursGroups());
             dontPoseAsTransientObjectAnymore(orderElement.getTaskQualityForms());
-            dontPoseAsTransientObjectAnymore(orderElement
-                    .getAllMaterialAssignments());
+            dontPoseAsTransientObjectAnymore(orderElement.getAllMaterialAssignments());
 
             for (HoursGroup hoursGroup : orderElement.getHoursGroups()) {
-                dontPoseAsTransientObjectAnymore(hoursGroup
-                        .getCriterionRequirements());
+                dontPoseAsTransientObjectAnymore(hoursGroup.getCriterionRequirements());
             }
 
             for (OrderElement child : orderElement.getAllChildren()) {
@@ -943,17 +856,15 @@ public class SaveCommandBuilder {
             }
         }
 
-        private List<AdvanceMeasurement> getAllMeasurements(
-                Collection<? extends DirectAdvanceAssignment> assignments) {
-            List<AdvanceMeasurement> result = new ArrayList<AdvanceMeasurement>();
+        private List<AdvanceMeasurement> getAllMeasurements(Collection<? extends DirectAdvanceAssignment> assignments) {
+            List<AdvanceMeasurement> result = new ArrayList<>();
             for (DirectAdvanceAssignment each : assignments) {
                 result.addAll(each.getAdvanceMeasurements());
             }
             return result;
         }
 
-        private void dontPoseAsTransientObjectAnymoreTasks(
-                Collection<? extends TaskElement> taskElements) {
+        private void dontPoseAsTransientObjectAnymoreTasks(Collection<? extends TaskElement> taskElements) {
             for (TaskElement each : taskElements) {
                 dontPoseAsTransient(each);
             }
@@ -964,10 +875,8 @@ public class SaveCommandBuilder {
                 taskElement.dontPoseAsTransientObjectAnymore();
             }
             dontPoseAsTransient(taskElement.getDependenciesWithThisOrigin());
-            dontPoseAsTransient(taskElement
-                    .getDependenciesWithThisDestination());
-            Set<ResourceAllocation<?>> resourceAllocations = taskElement
-                    .getAllResourceAllocations();
+            dontPoseAsTransient(taskElement.getDependenciesWithThisDestination());
+            Set<ResourceAllocation<?>> resourceAllocations = taskElement.getAllResourceAllocations();
             dontPoseAsTransientAndChildrenObjects(resourceAllocations);
             if (!taskElement.isLeaf()) {
                 for (TaskElement each : taskElement.getChildren()) {
@@ -987,11 +896,9 @@ public class SaveCommandBuilder {
             if (consolidation != null) {
                 consolidation.dontPoseAsTransientObjectAnymore();
                 if (consolidation.isCalculated()) {
-                    dontPoseAsTransient(((CalculatedConsolidation) consolidation)
-                            .getCalculatedConsolidatedValues());
+                    dontPoseAsTransient(((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues());
                 } else {
-                    dontPoseAsTransient(((NonCalculatedConsolidation) consolidation)
-                            .getNonCalculatedConsolidatedValues());
+                    dontPoseAsTransient(((NonCalculatedConsolidation) consolidation).getNonCalculatedConsolidatedValues());
                 }
             }
         }
@@ -1001,28 +908,24 @@ public class SaveCommandBuilder {
                 //dontPoseAsTransient - subcontratedTaskData
                 subcontractedTaskData.dontPoseAsTransientObjectAnymore();
 
-                for (SubcontractorDeliverDate subDeliverDate : subcontractedTaskData
-                        .getRequiredDeliveringDates()) {
+                for (SubcontractorDeliverDate subDeliverDate : subcontractedTaskData.getRequiredDeliveringDates()) {
                     //dontPoseAsTransient - DeliverDate
                     subDeliverDate.dontPoseAsTransientObjectAnymore();
                 }
             }
         }
 
-        private void dontPoseAsTransient(
-                SortedSet<? extends ConsolidatedValue> values) {
+        private void dontPoseAsTransient(SortedSet<? extends ConsolidatedValue> values) {
             for (ConsolidatedValue value : values) {
                 value.dontPoseAsTransientObjectAnymore();
             }
         }
 
-        private void dontPoseAsTransient(
-                Collection<? extends Dependency> dependencies) {
+        private void dontPoseAsTransient(Collection<? extends Dependency> dependencies) {
             for (Dependency each : dependencies) {
                 each.dontPoseAsTransientObjectAnymore();
                 if (each.hasLimitedQueueDependencyAssociated()) {
-                    each.getQueueDependency()
-                            .dontPoseAsTransientObjectAnymore();
+                    each.getQueueDependency().dontPoseAsTransientObjectAnymore();
                 }
             }
         }
@@ -1044,8 +947,7 @@ public class SaveCommandBuilder {
 
     }
 
-    private static final class LabelCreatorForInvalidValues implements
-            IMessagesForUser.ICustomLabelCreator {
+    private static final class LabelCreatorForInvalidValues implements IMessagesForUser.ICustomLabelCreator {
 
         @Override
         public org.zkoss.zk.ui.Component createLabelFor(
@@ -1061,16 +963,13 @@ public class SaveCommandBuilder {
                             ((OrderElement) invalidValue.getRootBean()).getName());
                 }
 
-                result.setValue(orderElementName + ": "
-                        + _(invalidValue.getMessage()));
+                result.setValue(orderElementName + ": " + _(invalidValue.getMessage()));
                 return result;
             } else if (invalidValue.getRootBean() instanceof HoursGroup) {
                 Label result = new Label();
                 HoursGroup hoursGroup = (HoursGroup) invalidValue.getRootBean();
-                result.setValue(_("Hours Group at {0}",
-                        getParentName(hoursGroup))
-                        + ": "
-                        + _(invalidValue.getMessage()));
+                result.setValue(_("Hours Group at {0}", getParentName(hoursGroup)) +
+                        ": " + _(invalidValue.getMessage()));
                 return result;
             } else {
                 return MessagesForUser.createLabelFor(invalidValue);
@@ -1078,9 +977,9 @@ public class SaveCommandBuilder {
         }
 
         private String getParentName(HoursGroup hoursGroup) {
-            return (hoursGroup.getParentOrderLine() != null) ? hoursGroup
-                    .getParentOrderLine().getName() : hoursGroup
-                    .getOrderLineTemplate().getName();
+            return (hoursGroup.getParentOrderLine() != null)
+                    ? hoursGroup.getParentOrderLine().getName()
+                    : hoursGroup.getOrderLineTemplate().getName();
         }
     }
 

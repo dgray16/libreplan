@@ -21,17 +21,16 @@
 
 package org.libreplan.web.reports;
 
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
-import java.util.Map;
-
 import net.sf.jasperreports.engine.JRDataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.util.Locales;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
+
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * @author Diego Pino Garcia <dpino@igalia.com>
@@ -50,7 +49,7 @@ public class HoursWorkedPerWorkerInAMonthController extends LibrePlanReportContr
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("controller", this, true);
+        comp.setAttribute("controller", this, true);
         hoursWorkedPerWorkerInAMonthModel.init();
         initYears();
         initMonths();
@@ -76,8 +75,7 @@ public class HoursWorkedPerWorkerInAMonthController extends LibrePlanReportContr
     }
 
     private void initYears() {
-        int beginYear = hoursWorkedPerWorkerInAMonthModel
-                .getBeginDisplayYears();
+        int beginYear = hoursWorkedPerWorkerInAMonthModel.getBeginDisplayYears();
         int endYear = hoursWorkedPerWorkerInAMonthModel.getEndDisplayYears();
         if (beginYear != 0 && endYear != 0) {
             for (int i = beginYear; i <= endYear; i++) {
@@ -110,11 +108,12 @@ public class HoursWorkedPerWorkerInAMonthController extends LibrePlanReportContr
 
     private String getSelectedValue(Listbox listbox) {
         Listitem item = listbox.getSelectedItem();
+
         return (item != null) ? (String) item.getValue() : getFirst(listbox);
     }
 
     private String getFirst(Listbox listbox) {
-        final Listitem item = (Listitem) listbox.getItems().iterator().next();
+        final Listitem item = listbox.getItems().iterator().next();
         return (String) item.getValue();
     }
 
@@ -139,13 +138,14 @@ public class HoursWorkedPerWorkerInAMonthController extends LibrePlanReportContr
         result.put("year", getSelectedYear());
         result.put("month", monthAsLiteral(getSelectedMonth()));
         result.put("showNote", hoursWorkedPerWorkerInAMonthModel.isShowReportMessage());
+
         return result;
     }
 
     private String monthAsLiteral(String monthNumber) {
         Integer number = Integer.parseInt(monthNumber);
-        String months[] = DateFormatSymbols.getInstance(Locales.getCurrent())
-                .getMonths();
+        String months[] = DateFormatSymbols.getInstance(Locales.getCurrent()).getMonths();
+
         return months[number - 1];
     }
 

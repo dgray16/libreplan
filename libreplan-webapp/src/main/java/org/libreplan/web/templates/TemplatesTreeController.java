@@ -20,10 +20,6 @@
  */
 package org.libreplan.web.templates;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.math.BigDecimal;
-
 import org.apache.commons.lang3.StringUtils;
 import org.libreplan.business.orders.entities.SchedulingState;
 import org.libreplan.business.templates.entities.OrderElementTemplate;
@@ -40,6 +36,10 @@ import org.zkoss.zul.Button;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Treeitem;
+
+import java.math.BigDecimal;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for template element tree <br />
@@ -63,14 +63,11 @@ public class TemplatesTreeController extends
     final class TemplatesTreeRenderer extends Renderer {
 
         @Override
-        protected void addOperationsCell(Treeitem item,
-                OrderElementTemplate currentElement) {
-            addCell(createEditButton(currentElement),
-                    createRemoveButton(currentElement));
+        protected void addOperationsCell(Treeitem item, OrderElementTemplate currentElement) {
+            addCell(createEditButton(currentElement), createRemoveButton(currentElement));
         }
 
-        private Button createEditButton(
-                final OrderElementTemplate currentTemplate) {
+        private Button createEditButton(final OrderElementTemplate currentTemplate) {
             Button result = createButton("/common/img/ico_editar1.png",
                     _("Edit"), "/common/img/ico_editar.png", "icono",
                     new EventListener() {
@@ -111,6 +108,11 @@ public class TemplatesTreeController extends
         @Override
         protected void addCodeCell(final OrderElementTemplate element) {
             //empty because templates don't have code attribute
+        }
+
+        @Override
+        public void render(Treeitem treeitem, Object o) throws Exception {
+
         }
 
         void addInitCell(final OrderElementTemplate currentElement) {
@@ -168,8 +170,7 @@ public class TemplatesTreeController extends
 
     }
 
-    public TemplatesTreeController(IOrderTemplatesModel model,
-            OrderTemplatesController orderTemplatesController) {
+    public TemplatesTreeController(IOrderTemplatesModel model, OrderTemplatesController orderTemplatesController) {
         super(OrderElementTemplate.class);
         this.model = model;
         this.orderTemplatesController = orderTemplatesController;
@@ -182,8 +183,8 @@ public class TemplatesTreeController extends
      */
     private void initializeOperationsForOrderTemplate() {
         operationsForOrderTemplate = TemplateElementOperations.build()
-            .treeController(this)
-            .orderTemplatesController(this.orderTemplatesController);
+                .treeController(this)
+                .orderTemplatesController(this.orderTemplatesController);
     }
 
     @Override
@@ -213,14 +214,13 @@ public class TemplatesTreeController extends
     @Override
     protected String createTooltipText(OrderElementTemplate elem) {
             StringBuilder tooltipText = new StringBuilder();
-            tooltipText.append(elem.getName() + ". ");
-            if ((elem.getDescription() != null)
-                    && (!elem.getDescription().equals(""))) {
+            tooltipText.append(elem.getName()).append(". ");
+            if ((elem.getDescription() != null) && (!elem.getDescription().equals(""))) {
                 tooltipText.append(elem.getDescription());
                 tooltipText.append(". ");
             }
             if ((elem.getLabels() != null) && (!elem.getLabels().isEmpty())) {
-                tooltipText.append(" " + _("Labels") + ":");
+                tooltipText.append(" ").append(_("Labels")).append(":");
             tooltipText.append(StringUtils.join(elem.getLabels(), ","));
                 tooltipText.append(".");
             }
@@ -304,10 +304,9 @@ public class TemplatesTreeController extends
         };
     }
 
-    public void refreshRow(Treeitem item) {
+    void refreshRow(Treeitem item) {
         try {
-            OrderElementTemplate orderElement = (OrderElementTemplate) item
-                    .getValue();
+            OrderElementTemplate orderElement = item.getValue();
             getRenderer().updateColumnsFor(orderElement);
             getRenderer().render(item, orderElement);
         } catch (Exception e) {

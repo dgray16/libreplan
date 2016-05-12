@@ -21,11 +21,6 @@
 
 package org.libreplan.web.orders;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.libreplan.business.common.Registry;
-import org.libreplan.business.common.daos.ConfigurationDAO;
 import org.libreplan.business.expensesheet.entities.ExpenseSheetLine;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.business.reports.dtos.WorkReportLineDTO;
@@ -34,6 +29,9 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Progressmeter;
 import org.zkoss.zul.Vbox;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Controller for show the asigned hours of the selected order element<br />
@@ -59,7 +57,7 @@ public class AssignedHoursToOrderElementController extends
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("assignedHoursToOrderElementController", this, true);
+        comp.setAttribute("assignedHoursToOrderElementController", this, true);
     }
 
     public List<WorkReportLineDTO> getWorkReportLines() {
@@ -67,13 +65,11 @@ public class AssignedHoursToOrderElementController extends
     }
 
     public String getTotalAssignedDirectEffort() {
-        return assignedHoursToOrderElementModel.getAssignedDirectEffort()
-                .toFormattedString();
+        return assignedHoursToOrderElementModel.getAssignedDirectEffort().toFormattedString();
     }
 
     public String getTotalAssignedEffort() {
-        return assignedHoursToOrderElementModel.getTotalAssignedEffort()
-                .toFormattedString();
+        return assignedHoursToOrderElementModel.getTotalAssignedEffort().toFormattedString();
     }
 
     public String getTotalDirectExpenses() {
@@ -89,13 +85,11 @@ public class AssignedHoursToOrderElementController extends
     }
 
     public String getEffortChildren() {
-        return assignedHoursToOrderElementModel
-                .getAssignedDirectEffortChildren().toFormattedString();
+        return assignedHoursToOrderElementModel.getAssignedDirectEffortChildren().toFormattedString();
     }
 
     public String getEstimatedEffort() {
-        return assignedHoursToOrderElementModel.getEstimatedEffort()
-                .toFormattedString();
+        return assignedHoursToOrderElementModel.getEstimatedEffort().toFormattedString();
     }
 
     public int getProgressWork() {
@@ -144,7 +138,7 @@ public class AssignedHoursToOrderElementController extends
         paintProgressBars();
     }
 
-    public void paintProgressBars() {
+    void paintProgressBars() {
         viewPercentage();
         showMoneyCostPercentageBars();
     }
@@ -181,9 +175,7 @@ public class AssignedHoursToOrderElementController extends
             moneyCostProgressBar.setValue(100);
 
             exceedMoneyCostProgressBar.setVisible(true);
-            exceedMoneyCostProgressBar.setWidth(moneyCostPercentage.subtract(
-                    new BigDecimal(100)).intValue()
-                    + "px");
+            exceedMoneyCostProgressBar.setWidth(moneyCostPercentage.subtract(new BigDecimal(100)).intValue() + "px");
         } else {
             moneyCostProgressBar.setValue(moneyCostPercentage.intValue());
             exceedMoneyCostProgressBar.setVisible(false);

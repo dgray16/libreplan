@@ -19,12 +19,6 @@
 
 package org.libreplan.web.users.dashboard;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.expensesheet.entities.ExpenseSheet;
 import org.libreplan.web.common.IMessagesForUser;
@@ -41,6 +35,11 @@ import org.zkoss.zul.Grid;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for "Expenses" area in the user dashboard window
@@ -64,22 +63,20 @@ public class ExpensesAreaController extends GenericForwardComposer {
     private RowRenderer expenseSheetsRenderer = new RowRenderer() {
 
         @Override
-        public void render(Row row, Object data) throws Exception {
+        public void render(Row row, Object data, int i) throws Exception {
             final ExpenseSheet expenseSheet = (ExpenseSheet) data;
             row.setValue(expenseSheet);
 
             Util.appendLabel(row, expenseSheet.getDescription());
             Util.appendLabel(row, expenseSheet.getCode());
-            Util.appendLabel(row,
-                    Util.addCurrencySymbol(expenseSheet.getTotal()));
+            Util.appendLabel(row, Util.addCurrencySymbol(expenseSheet.getTotal()));
             Util.appendLabel(row, expenseSheet.getFirstExpense().toString());
             Util.appendLabel(row, expenseSheet.getLastExpense().toString());
 
             Util.appendOperationsAndOnClickEvent(row, new EventListener() {
                 @Override
                 public void onEvent(Event event) throws Exception {
-                    expenseSheetCRUDController
-                            .goToEditPersonalExpenseSheet(expenseSheet);
+                    expenseSheetCRUDController.goToEditPersonalExpenseSheet(expenseSheet);
                 }
             }, new EventListener() {
 
@@ -99,8 +96,6 @@ public class ExpensesAreaController extends GenericForwardComposer {
                                             expenseSheet.getHumanId()));
                             Util.reloadBindings(expenseSheetsList);
                         }
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
                     } catch (InstanceNotFoundException ie) {
                         messagesForUser
                                 .showMessage(
@@ -118,8 +113,7 @@ public class ExpensesAreaController extends GenericForwardComposer {
         super.doAfterCompose(comp);
         comp.setAttribute("controller", this);
 
-        messagesForUser = new MessagesForUser(
-                comp.getFellow("messagesContainer"));
+        messagesForUser = new MessagesForUser(comp.getFellow("messagesContainer"));
     }
 
     public void newExpenseSheet() {

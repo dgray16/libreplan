@@ -21,8 +21,6 @@
 
 package org.libreplan.web.planner.calendar;
 
-import java.util.List;
-
 import org.libreplan.business.calendars.entities.BaseCalendar;
 import org.libreplan.business.planner.entities.Task;
 import org.libreplan.web.common.Util;
@@ -34,6 +32,8 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Window;
+
+import java.util.List;
 
 /**
  * Controller for allocate one calendar to a task view.
@@ -66,8 +66,6 @@ public class CalendarAllocationController extends GenericForwardComposer {
             Util.reloadBindings(window);
             window.doModal();
         } catch (SuspendNotAllowedException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

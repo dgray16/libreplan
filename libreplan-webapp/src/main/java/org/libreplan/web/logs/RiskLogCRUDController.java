@@ -19,13 +19,6 @@
 
 package org.libreplan.web.logs;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.common.exceptions.ValidationException;
@@ -45,13 +38,14 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.Textbox;
-import org.zkoss.zul.Hbox;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.Cell;
-import org.zkoss.zul.ListitemRenderer;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.RowRenderer;
+import org.zkoss.zul.*;
+
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for RiskLog CRUD actions
@@ -61,10 +55,9 @@ import org.zkoss.zul.RowRenderer;
 @SuppressWarnings("serial")
 @org.springframework.stereotype.Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
+class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(RiskLogCRUDController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(RiskLogCRUDController.class);
 
     @Autowired
     private IRiskLogModel riskLogModel;
@@ -79,7 +72,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         riskScore = (Textbox)comp.getFellow("editWindow").getFellow("riskScore");
-        comp.setVariable("riskLogController", this, true);
+        comp.setAttribute("riskLogController", this, true);
         showListWindow();
         initializeOrderComponent();
         initializeUserComponent();
@@ -122,8 +115,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
                 new EventListener() {
                     @Override
                     public void onEvent(Event event) {
-                        final Object object = bdUserRiskLog
-                                .getSelectedElement();
+                        final Object object = bdUserRiskLog.getSelectedElement();
                         riskLogModel.setCreatedBy((User) object);
                     }
                 });
@@ -131,8 +123,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
                 new EventListener() {
                     @Override
                     public void onEvent(Event event) {
-                        final Object object = bdUserRiskLog
-                                .getSelectedElement();
+                        final Object object = bdUserRiskLog.getSelectedElement();
                         riskLogModel.setCreatedBy((User) object);
                         bdUserRiskLog.close();
                     }
@@ -148,7 +139,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         return new RowRenderer() {
 
             @Override
-            public void render(Row row, Object data) throws Exception {
+            public void render(Row row, Object data, int i) throws Exception {
                 final RiskLog riskLog = (RiskLog) data;
                 row.setValue(riskLog);
                 appendObject(row, riskLog.getCode());
@@ -191,19 +182,17 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         }
     }
 
-    public  ListitemRenderer lowMediumHighEnumRenderer = new ListitemRenderer() {
+    private ListitemRenderer lowMediumHighEnumRenderer = new ListitemRenderer() {
         @Override
-        public void render(org.zkoss.zul.Listitem item, Object data)
-                throws Exception {
+        public void render(Listitem item, Object data, int i) throws Exception {
             LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
             String displayName = lowMediumHighEnum.getDisplayName();
             item.setLabel(displayName);
         }
     };
-    public  ListitemRenderer riskScoreStatesEnumRenderer = new ListitemRenderer() {
+    private ListitemRenderer riskScoreStatesEnumRenderer = new ListitemRenderer() {
         @Override
-        public void render(org.zkoss.zul.Listitem item, Object data)
-                throws Exception {
+        public void render(Listitem item, Object data, int i) throws Exception {
             RiskScoreStatesEnum riskScoreStatesEnum = (RiskScoreStatesEnum) data;
             String displayName = riskScoreStatesEnum.getDisplayName();
             item.setLabel(displayName);
@@ -236,7 +225,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      * @param object
      */
     private void appendObject(final Row row, Object object) {
-        String text = new String("");
+        String text = "";
         if (object != null) {
             text = object.toString();
         }
@@ -264,7 +253,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      * @param date
      */
     private void appendDate(final Row row, Date date) {
-        String labelDate = new String("");
+        String labelDate = "";
         if (date != null) {
             labelDate = Util.formatDate(date);
         }
@@ -328,9 +317,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         if (riskLogModel.getRiskLog() == null) {
             return null;
         }
-        return (riskLogModel.getRiskLog().getDateCreated() != null) ? riskLogModel
-                .getRiskLog().getDateCreated()
-                : null;
+        return (riskLogModel.getRiskLog().getDateCreated() != null) ? riskLogModel.getRiskLog().getDateCreated() : null;
     }
 
     /**
@@ -360,9 +347,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         if (riskLogModel.getRiskLog() == null) {
             return null;
         }
-        return (riskLogModel.getRiskLog().getActionWhen() != null) ? riskLogModel
-                .getRiskLog().getActionWhen()
-                : null;
+        return (riskLogModel.getRiskLog().getActionWhen() != null) ? riskLogModel.getRiskLog().getActionWhen() : null;
     }
 
     /**
@@ -376,7 +361,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     /**
      * Returns the {@link RiskLog} object
      */
-    public RiskLog getRiskLog() {
+    private RiskLog getRiskLog() {
         return riskLogModel.getRiskLog();
     }
 
@@ -384,21 +369,22 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      * Returns a list of {@link RiskLog} objects
      */
     public List<RiskLog> getRiskLogs() {
-        if (LogsController.getProjectNameVisibility() == true)
+        if (LogsController.getProjectNameVisibility())
             return riskLogModel.getRiskLogs();
         else{
-            List<RiskLog> riskLogs = new ArrayList<RiskLog>();
+            List<RiskLog> riskLogs = new ArrayList<>();
             Order order = LogsController.getOrder();
             for (RiskLog issueLog : riskLogModel.getRiskLogs()) {
                 if (issueLog.getOrder().equals(order))
                     riskLogs.add(issueLog);
             }
+
             return riskLogs;
         }
     }
 
     public Order getOrder() {
-        if (LogsController.getProjectNameVisibility() == false) {
+        if (!LogsController.getProjectNameVisibility()) {
             getRiskLog().setOrder(LogsController.getOrder());
             return getRiskLog().getOrder();
         }
@@ -429,13 +415,11 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     @Override
     protected void save() throws ValidationException {
         if (getRiskLog().getOrder() == null) {
-            throw new WrongValueException(bdProjectRiskLog,
-                    _("please select a project"));
+            throw new WrongValueException(bdProjectRiskLog, _("please select a project"));
         }
 
         if (getRiskLog().getCreatedBy() == null) {
-            throw new WrongValueException(bdUserRiskLog,
-                    _("please select an author"));
+            throw new WrongValueException(bdUserRiskLog, _("please select an author"));
         }
 
         riskLogModel.confirmSave();

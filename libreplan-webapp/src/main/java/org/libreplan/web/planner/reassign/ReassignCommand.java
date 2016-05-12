@@ -20,15 +20,6 @@
  */
 package org.libreplan.web.planner.reassign;
 
-import static org.libreplan.web.I18nHelper._;
-import static org.zkoss.ganttz.util.LongOperationFeedback.and;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang3.Validate;
 import org.libreplan.business.common.IAdHocTransactionService;
 import org.libreplan.business.common.IOnTransaction;
@@ -62,6 +53,15 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Messagebox;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+
+import static org.libreplan.web.I18nHelper._;
+import static org.zkoss.ganttz.util.LongOperationFeedback.and;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
@@ -187,7 +187,8 @@ public class ReassignCommand implements IReassignCommand {
         return new IDesktopUpdate() {
             @Override
             public void doUpdate() {
-                Clients.showBusy(_("Doing {0} reassignations", total), true);
+                // TODO Check this ?
+                Clients.showBusy((org.zkoss.zk.ui.Component) new Object(),_("Doing {0} reassignations", total));
             }
         };
     }
@@ -197,7 +198,8 @@ public class ReassignCommand implements IReassignCommand {
 
             @Override
             public void doUpdate() {
-                Clients.showBusy(_("Done {0} of {1}", number, total), true);
+                // TODO Check this ?
+                Clients.showBusy((org.zkoss.zk.ui.Component) new Object(),_("Done {0} of {1}", number, total));
             }
         };
     }
@@ -222,11 +224,12 @@ public class ReassignCommand implements IReassignCommand {
     }
 
     private IDesktopUpdate busyEnd() {
+        // TODO Check this ?
         return new IDesktopUpdate() {
 
             @Override
             public void doUpdate() {
-                Clients.showBusy(null, false);
+                Clients.showBusy(null, "");
             }
         };
     }
@@ -251,13 +254,9 @@ public class ReassignCommand implements IReassignCommand {
                     @Override
                     public void onEvent(Event event) {
                         relativeTo.removeEventListener(eventName, this);
-                        try {
-                            Messagebox.show(resolve(message),
-                                    _("Reassignation"),
-                                    Messagebox.OK, Messagebox.INFORMATION);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                        Messagebox.show(resolve(message),
+                                _("Reassignation"),
+                                Messagebox.OK, Messagebox.INFORMATION);
                     }
                 });
             }
@@ -273,10 +272,9 @@ public class ReassignCommand implements IReassignCommand {
     }
 
     private static class WithAssociatedEntity {
-        static WithAssociatedEntity create(
-                IDomainAndBeansMapper<TaskElement> mapper, Task each) {
-            return new WithAssociatedEntity(mapper
-                    .findAssociatedDomainObject(each), each);
+
+        static WithAssociatedEntity create(IDomainAndBeansMapper<TaskElement> mapper, Task each) {
+            return new WithAssociatedEntity(mapper.findAssociatedDomainObject(each), each);
         }
 
         private TaskElement domainEntity;
@@ -292,32 +290,34 @@ public class ReassignCommand implements IReassignCommand {
 
     }
 
-    private List<WithAssociatedEntity> getReassignations(
-            IContext<TaskElement> context, ReassignConfiguration configuration) {
+    private List<WithAssociatedEntity> getReassignations(IContext<TaskElement> context,
+                                                         ReassignConfiguration configuration)
+    {
         Validate.notNull(configuration);
-        List<Task> taskToReassign = configuration.filterForReassignment(context
-                .getTasksOrderedByStartDate());
+        List<Task> taskToReassign = configuration.filterForReassignment(context.getTasksOrderedByStartDate());
+
         return withEntities(context.getMapper(), taskToReassign);
     }
 
-    private List<WithAssociatedEntity> withEntities(
-            IDomainAndBeansMapper<TaskElement> mapper,
-            List<Task> forReassignment) {
-        List<WithAssociatedEntity> result = new ArrayList<WithAssociatedEntity>();
+    private List<WithAssociatedEntity> withEntities(IDomainAndBeansMapper<TaskElement> mapper,
+                                                    List<Task> forReassignment) {
+
+        List<WithAssociatedEntity> result = new ArrayList<>();
         for (Task each : forReassignment) {
             result.add(WithAssociatedEntity.create(mapper, each));
         }
+
         return result;
     }
 
-    private IOnTransaction<Void> reassignmentTransaction(
-            final WithAssociatedEntity withAssociatedEntity) {
+    private IOnTransaction<Void> reassignmentTransaction(final WithAssociatedEntity withAssociatedEntity) {
         return new IOnTransaction<Void>() {
 
             @Override
             public Void execute() {
                 reattach(withAssociatedEntity);
                 reassign(withAssociatedEntity.domainEntity);
+
                 return null;
             }
         };
@@ -325,19 +325,19 @@ public class ReassignCommand implements IReassignCommand {
 
     private void reattach(WithAssociatedEntity each) {
         planningState.reassociateResourcesWithSession();
-        Set<Long> idsOfTypesAlreadyAttached = new HashSet<Long>();
+        Set<Long> idsOfTypesAlreadyAttached = new HashSet<>();
         taskElementDAO.reattach(each.domainEntity);
-        Set<ResourceAllocation<?>> resourceAllocations = each.domainEntity
-                .getSatisfiedResourceAllocations();
+        Set<ResourceAllocation<?>> resourceAllocations = each.domainEntity.getSatisfiedResourceAllocations();
+
         List<GenericResourceAllocation> generic = ResourceAllocation.getOfType(
                 GenericResourceAllocation.class, resourceAllocations);
-        reattachCriterionTypesToAvoidLazyInitializationExceptionOnType(
-                idsOfTypesAlreadyAttached, generic);
+
+        reattachCriterionTypesToAvoidLazyInitializationExceptionOnType(idsOfTypesAlreadyAttached, generic);
     }
 
-    private void reattachCriterionTypesToAvoidLazyInitializationExceptionOnType(
-            Set<Long> idsOfTypesAlreadyAttached,
+    private void reattachCriterionTypesToAvoidLazyInitializationExceptionOnType(Set<Long> idsOfTypesAlreadyAttached,
             List<GenericResourceAllocation> generic) {
+
         for (GenericResourceAllocation eachGenericAllocation : generic) {
             Set<Criterion> criterions = eachGenericAllocation.getCriterions();
             for (Criterion eachCriterion : criterions) {
@@ -352,8 +352,7 @@ public class ReassignCommand implements IReassignCommand {
 
     private void reassign(TaskElement taskElement) {
         org.libreplan.business.planner.entities.Task t = (org.libreplan.business.planner.entities.Task) taskElement;
-        t.reassignAllocationsWithNewResources(
-                planningState.getCurrentScenario(), resourcesSearcher);
+        t.reassignAllocationsWithNewResources(planningState.getCurrentScenario(), resourcesSearcher);
     }
 
     @Override

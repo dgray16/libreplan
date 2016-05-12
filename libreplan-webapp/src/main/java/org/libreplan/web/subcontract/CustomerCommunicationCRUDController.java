@@ -19,12 +19,6 @@
 
 package org.libreplan.web.subcontract;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.externalcompanies.entities.CommunicationType;
@@ -39,13 +33,12 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.*;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over a {@link CustomerCommunication}
@@ -78,7 +71,7 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
-    public void goToEdit(CustomerCommunication customerCommunication) {
+    private void goToEdit(CustomerCommunication customerCommunication) {
         if(customerCommunication != null && customerCommunication.getOrder() != null){
             Order order = customerCommunication.getOrder();
             globalView.goToOrderDetails(order);
@@ -100,21 +93,25 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
 
     private void refreshCustomerCommunicationsList(){
         // update the customer communication list
-        listing.setModel(new SimpleListModel(getCustomerCommunications()));
+        listing.setModel(new SimpleListModel<>(getCustomerCommunications()));
         listing.invalidate();
     }
 
-    protected void save(CustomerCommunication customerCommunication)
-            throws ValidationException {
+    protected void save(CustomerCommunication customerCommunication) throws ValidationException {
         customerCommunicationModel.confirmSave(customerCommunication);
     }
 
     public List<CustomerCommunication> getCustomerCommunications() {
         FilterCommunicationEnum currentFilter = customerCommunicationModel.getCurrentFilter();
         switch(currentFilter){
-            case ALL: return customerCommunicationModel.getCustomerAllCommunications();
-            case NOT_REVIEWED: return customerCommunicationModel.getCustomerCommunicationWithoutReviewed();
-            default: return customerCommunicationModel.getCustomerAllCommunications();
+            case ALL:
+                return customerCommunicationModel.getCustomerAllCommunications();
+
+            case NOT_REVIEWED:
+                return customerCommunicationModel.getCustomerCommunicationWithoutReviewed();
+
+            default:
+                return customerCommunicationModel.getCustomerAllCommunications();
         }
     }
 
@@ -126,25 +123,21 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
             RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             CustomerCommunication customerCommunication = (CustomerCommunication) data;
             row.setValue(customerCommunication);
 
             final CommunicationType type = customerCommunication.getCommunicationType();
-            final boolean reviewed = customerCommunication.getReviewed();
             if(!customerCommunication.getReviewed()){
                 row.setSclass("communication-not-reviewed");
             }
 
             appendLabel(row, toString(type));
             appendLabel(row, customerCommunication.getOrder().getName());
-            appendLabel(row,
-                    Util.formatDate(customerCommunication.getDeadline()));
+            appendLabel(row, Util.formatDate(customerCommunication.getDeadline()));
             appendLabel(row, customerCommunication.getOrder().getCode());
-            appendLabel(row, customerCommunication.getOrder()
-                    .getCustomerReference());
-            appendLabel(row, Util.formatDateTime(customerCommunication
-                    .getCommunicationDate()));
+            appendLabel(row, customerCommunication.getOrder().getCustomerReference());
+            appendLabel(row, Util.formatDateTime(customerCommunication.getCommunicationDate()));
             appendCheckbox(row, customerCommunication);
             appendOperations(row, customerCommunication);
         }
@@ -153,6 +146,7 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
             if (object == null) {
                 return "";
             }
+
             return object.toString();
         }
 
@@ -160,8 +154,7 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
             row.appendChild(new Label(label));
         }
 
-        private void appendCheckbox(final Row row,
-                final CustomerCommunication customerCommunication) {
+        private void appendCheckbox(final Row row, final CustomerCommunication customerCommunication) {
             final Checkbox checkBoxReviewed = new Checkbox();
             checkBoxReviewed.setChecked(customerCommunication.getReviewed());
 
@@ -187,8 +180,7 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
             }
         }
 
-        private void appendOperations(Row row,
-                final CustomerCommunication customerCommunication) {
+        private void appendOperations(Row row, final CustomerCommunication customerCommunication) {
             Button buttonEdit = new Button();
             buttonEdit.setSclass("icono");
             buttonEdit.setImage("/common/img/ico_editar1.png");

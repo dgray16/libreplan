@@ -21,11 +21,6 @@
 
 package org.libreplan.web.advance;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.advance.entities.AdvanceType;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
@@ -37,13 +32,12 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Constraint;
-import org.zkoss.zul.Hbox;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
+import org.zkoss.zul.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over a {@link AdvanceType}
@@ -52,8 +46,7 @@ import org.zkoss.zul.RowRenderer;
  */
 public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(AdvanceTypeCRUDController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(AdvanceTypeCRUDController.class);
 
     private IAdvanceTypeModel advanceTypeModel;
 
@@ -66,43 +59,37 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
     }
 
     public Constraint lessThanDefaultMaxValue() {
-        Constraint newConstraint = new Constraint() {
+        return new Constraint() {
             @Override
             public void validate(Component comp, Object value)
                     throws WrongValueException {
-                if (((BigDecimal) value) == null) {
-                    throw new WrongValueException(comp,
-                            _("Value is not valid, the precision value must not be empty"));
+                if (value == null) {
+                    throw new WrongValueException(comp, _("Value is not valid, the precision value must not be empty"));
                 }
 
                 if (!(advanceTypeModel.isPrecisionValid((BigDecimal) value))) {
                     throw new WrongValueException(
-                            comp,
-                            _("Invalid value. Precission value must be lower than the Default Max value."));
+                            comp, _("Invalid value. Precission value must be lower than the Default Max value."));
                 }
             }
         };
-        return newConstraint;
     }
 
     public Constraint greaterThanPrecision() {
-        Constraint newConstraint = new Constraint() {
+        return new Constraint() {
             @Override
             public void validate(Component comp, Object value)
                     throws WrongValueException {
-                if (((BigDecimal) value) == null) {
-                    throw new WrongValueException(comp,
-                            _("Invalid value. Default Max Value cannot be empty"));
+                if (value == null) {
+                    throw new WrongValueException(comp, _("Invalid value. Default Max Value cannot be empty"));
                 }
-                if (!(advanceTypeModel
-                        .isDefaultMaxValueValid((BigDecimal) value))) {
+                if (!(advanceTypeModel.isDefaultMaxValueValid((BigDecimal) value))) {
                     throw new WrongValueException(
                             comp,
                             _("Value is not valid, the default max value must be greater than the precision value "));
                 }
             }
         };
-        return newConstraint;
     }
 
     public Constraint distinctNames() {
@@ -165,7 +152,7 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         return new RowRenderer() {
 
             @Override
-            public void render(Row row, Object data) {
+            public void render(Row row, Object data, int i) {
                 final AdvanceType advanceType = (AdvanceType) data;
                 appendLabelName(row, advanceType);
                 appendCheckboxEnabled(row, advanceType);
@@ -190,8 +177,7 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
                 row.appendChild(checkbox);
             }
 
-            private void appendCheckboxPredefined(Row row,
-                    AdvanceType advanceType) {
+            private void appendCheckboxPredefined(Row row, AdvanceType advanceType) {
                 Checkbox checkbox = new Checkbox();
                 checkbox.setChecked(advanceType.isImmutable());
                 checkbox.setDisabled(true);
@@ -209,16 +195,14 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
                     }
                 }));
 
-                Button removeButton = Util
-                        .createRemoveButton(new EventListener() {
+                Button removeButton = Util.createRemoveButton(new EventListener() {
 
                     @Override
                             public void onEvent(Event event) throws InstanceNotFoundException {
                         confirmDelete(advanceType);
                     }
                 });
-                removeButton.setDisabled(advanceTypeModel
-                        .isImmutableOrAlreadyInUse(advanceType));
+                removeButton.setDisabled(advanceTypeModel.isImmutableOrAlreadyInUse(advanceType));
                 hbox.appendChild(removeButton);
 
                 row.appendChild(hbox);

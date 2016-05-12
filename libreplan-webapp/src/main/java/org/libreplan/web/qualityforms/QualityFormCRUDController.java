@@ -155,22 +155,17 @@ public class QualityFormCRUDController extends BaseCRUDController<QualityForm> {
      */
     public void confirmDeleteQualityFormItem(QualityFormItem item) {
         if (qualityFormModel.isTotalPercentage(item)) {
-            try {
-                if (Messagebox
-                        .show(
-                                _("Deleting this item will disable the report progress option. Are you sure?"),
-                                _("Confirm"),
-                                Messagebox.OK | Messagebox.CANCEL,
-                                Messagebox.QUESTION) == Messagebox.OK) {
-                    Checkbox reportProgress = (Checkbox) editWindow
-                            .getFellowIfAny("checkBoxReportProgress");
-                    disabledCheckbocReportProgress(reportProgress);
-                } else {
-                    return;
-                }
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            if (Messagebox
+                    .show(
+                            _("Deleting this item will disable the report progress option. Are you sure?"),
+                            _("Confirm"),
+                            Messagebox.OK | Messagebox.CANCEL,
+                            Messagebox.QUESTION) == Messagebox.OK) {
+                Checkbox reportProgress = (Checkbox) editWindow
+                        .getFellowIfAny("checkBoxReportProgress");
+                disabledCheckbocReportProgress(reportProgress);
+            } else {
+                return;
             }
         }
         deleteQualityFormItem(item);
@@ -387,11 +382,7 @@ public class QualityFormCRUDController extends BaseCRUDController<QualityForm> {
     }
 
     private void showCannotDeleteQualityFormDialog(String message, QualityForm qualityForm) {
-        try {
-            Messagebox.show(_(message), _("Warning"), Messagebox.OK,
-                    Messagebox.EXCLAMATION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Messagebox.show(_(message), _("Warning"), Messagebox.OK,
+                Messagebox.EXCLAMATION);
     }
 }

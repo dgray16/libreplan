@@ -19,8 +19,6 @@
 
 package org.libreplan.web.common.components.finders;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.libreplan.business.users.daos.IUserDAO;
 import org.libreplan.business.users.entities.User;
@@ -32,6 +30,8 @@ import org.zkoss.zul.Bandbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+
+import java.util.List;
 
 /**
  * This is a finder for {@link User}s in a {@link Bandbox}
@@ -63,9 +63,10 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
     public boolean entryMatchesText(Object obj, String text) {
         final User user = (User) obj;
         text = StringUtils.trim(text.toLowerCase());
-        return checkContainsText(user.getLoginName(), text)
-                || checkContainsText(user.getFirstName(), text)
-                || checkContainsText(user.getLastName(), text);
+
+        return checkContainsText(user.getLoginName(), text) ||
+                checkContainsText(user.getFirstName(), text) ||
+                checkContainsText(user.getLastName(), text);
     }
 
     private boolean checkContainsText(String original, String text) {
@@ -96,7 +97,7 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
 
     private final ListitemRenderer usersRenderer = new ListitemRenderer() {
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             User user = (User) data;
 
             item.setValue(data);

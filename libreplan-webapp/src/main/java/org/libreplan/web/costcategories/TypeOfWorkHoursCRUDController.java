@@ -21,11 +21,6 @@
 
 package org.libreplan.web.costcategories;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.common.exceptions.ValidationException;
@@ -38,6 +33,11 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Messagebox;
+
+import java.util.ConcurrentModificationException;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over a {@link TypeOfWorkHours}
@@ -99,12 +99,8 @@ public class TypeOfWorkHoursCRUDController extends BaseCRUDController<TypeOfWork
 
     private void showCannotDeleteWorkHoursTypeDialog(String message,
             TypeOfWorkHours typeOfWorkHours) {
-        try {
-            Messagebox.show(_(message), _("Warning"), Messagebox.OK,
-                    Messagebox.EXCLAMATION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Messagebox.show(_(message), _("Warning"), Messagebox.OK,
+                Messagebox.EXCLAMATION);
     }
 
     @Override

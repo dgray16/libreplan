@@ -20,9 +20,9 @@
  */
 package org.libreplan.web.planner.reassign;
 
-import static org.libreplan.web.I18nHelper._;
-
 import org.zkoss.zul.Radio;
+
+import static org.libreplan.web.I18nHelper._;
 public enum Type {
     ALL {
 
@@ -62,7 +62,7 @@ public enum Type {
     };
 
     public static Type fromRadio(Radio selectedItem) {
-        return Type.valueOf(selectedItem.getValue());
+        return Type.valueOf((String) selectedItem.getValue());
     }
 
     public Radio createRadio() {

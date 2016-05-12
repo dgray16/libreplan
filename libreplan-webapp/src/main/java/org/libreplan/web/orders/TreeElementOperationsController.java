@@ -22,13 +22,13 @@
 
 package org.libreplan.web.orders;
 
-import static org.libreplan.web.I18nHelper._;
-
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.web.templates.IOrderTemplatesControllerEntryPoints;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Tree;
 import org.zkoss.zul.Treeitem;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  *
@@ -51,11 +51,7 @@ public abstract class TreeElementOperationsController<T> {
     }
 
     protected void showSelectAnElementError() {
-        try {
-            Messagebox.show(_("Please select a task"));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Messagebox.show(_("Please select a task"));
     }
 
     protected abstract void showEditElement(Treeitem treeitem);
@@ -238,27 +234,19 @@ class OrderElementOperations extends TreeElementOperationsController<OrderElemen
     }
 
     private int showConfirmCreateTemplateDialog() {
-        try {
-            return Messagebox
-                    .show(_("Unsaved changes will be lost. Would you like to continue?"),
-                            _("Confirm create template"), Messagebox.OK
-                                    | Messagebox.CANCEL, Messagebox.QUESTION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        return Messagebox
+                .show(_("Unsaved changes will be lost. Would you like to continue?"),
+                        _("Confirm create template"), Messagebox.OK
+                                | Messagebox.CANCEL, Messagebox.QUESTION);
     }
 
     private void notifyTemplateCantBeCreated() {
-        try {
-            Messagebox.show(
-                    _("Templates can only be created out of existent tasks."
-                            + "You are trying to create a template out of a new task.\n"
-                            + "Please save your project before proceeding."),
-                    _("Operation cannot be done"), Messagebox.OK,
-                    Messagebox.INFORMATION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Messagebox.show(
+                _("Templates can only be created out of existent tasks."
+                        + "You are trying to create a template out of a new task.\n"
+                        + "Please save your project before proceeding."),
+                _("Operation cannot be done"), Messagebox.OK,
+                Messagebox.INFORMATION);
     }
 
 }

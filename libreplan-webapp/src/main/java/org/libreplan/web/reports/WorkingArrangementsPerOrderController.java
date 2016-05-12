@@ -21,17 +21,8 @@
 
 package org.libreplan.web.reports;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
+import com.igalia.java.zk.components.JasperreportComponent;
 import net.sf.jasperreports.engine.JRDataSource;
-
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.business.planner.entities.TaskStatusEnum;
@@ -45,7 +36,9 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import java.util.*;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * @author Diego Pino Garcia <dpino@igalia.com>
@@ -74,7 +67,7 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("controller", this, true);
+        comp.setAttribute("controller", this, true);
         setupTaskStatusListbox();
         workingArrangementsPerOrderModel.init();
     }
@@ -113,6 +106,7 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
 
     private TaskStatusEnum getSelectedTaskStatus() {
         final Listitem item = lbTaskStatus.getSelectedItem();
+
         return (item != null) ? (TaskStatusEnum) item.getValue() : TaskStatusEnum.ALL;
     }
 
@@ -141,15 +135,15 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
         super.showReport(jasperreport);
     }
 
-    public List<TaskStatusEnum> getTasksStatus() {
-        List<TaskStatusEnum> result = new ArrayList<TaskStatusEnum>();
+    private List<TaskStatusEnum> getTasksStatus() {
+        List<TaskStatusEnum> result = new ArrayList<>();
         result.addAll(Arrays.asList(TaskStatusEnum.values()));
         Collections.sort(result, new TaskStatusEnumComparator());
+
         return result;
     }
 
-    private static class TaskStatusEnumComparator implements
-            Comparator<TaskStatusEnum> {
+    private static class TaskStatusEnumComparator implements Comparator<TaskStatusEnum> {
 
         @Override
         public int compare(TaskStatusEnum arg0, TaskStatusEnum arg1) {
@@ -167,11 +161,9 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
         if (label == null) {
             throw new WrongValueException(bdLabels, _("please, select a label"));
         }
-        boolean result = workingArrangementsPerOrderModel
-                .addSelectedLabel(label);
+        boolean result = workingArrangementsPerOrderModel.addSelectedLabel(label);
         if (!result) {
-            throw new WrongValueException(bdLabels,
-                    _("Label has already been added."));
+            throw new WrongValueException(bdLabels, _("Label has already been added."));
         } else {
             Util.reloadBindings(lbLabels);
         }
@@ -198,14 +190,11 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
     public void onSelectCriterion() {
         Criterion criterion = (Criterion) bdCriterions.getSelectedElement();
         if (criterion == null) {
-            throw new WrongValueException(bdCriterions,
-                    _("please, select a Criterion"));
+            throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
         }
-        boolean result = workingArrangementsPerOrderModel
-                .addSelectedCriterion(criterion);
+        boolean result = workingArrangementsPerOrderModel.addSelectedCriterion(criterion);
         if (!result) {
-            throw new WrongValueException(bdCriterions,
-                    _("This Criterion has already been added."));
+            throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));
         } else {
             Util.reloadBindings(lbCriterions);
         }

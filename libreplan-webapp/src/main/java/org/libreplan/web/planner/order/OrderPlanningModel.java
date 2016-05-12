@@ -21,24 +21,6 @@
 
 package org.libreplan.web.planner.order;
 
-import static org.libreplan.business.planner.chart.ContiguousDaysLine.min;
-import static org.libreplan.business.planner.chart.ContiguousDaysLine.sum;
-import static org.libreplan.business.planner.chart.ContiguousDaysLine.toSortedMap;
-import static org.libreplan.web.I18nHelper._;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -116,11 +98,7 @@ import org.zkoss.ganttz.extensions.ICommandOnTask;
 import org.zkoss.ganttz.extensions.IContext;
 import org.zkoss.ganttz.extensions.IContextWithPlannerTask;
 import org.zkoss.ganttz.timetracker.TimeTracker;
-import org.zkoss.ganttz.timetracker.zoom.DetailItem;
-import org.zkoss.ganttz.timetracker.zoom.IDetailItemModificator;
-import org.zkoss.ganttz.timetracker.zoom.IZoomLevelChangedListener;
-import org.zkoss.ganttz.timetracker.zoom.SeveralModificators;
-import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
+import org.zkoss.ganttz.timetracker.zoom.*;
 import org.zkoss.ganttz.util.Interval;
 import org.zkoss.ganttz.util.ProfilingLogFactory;
 import org.zkoss.zk.ui.Executions;
@@ -128,19 +106,14 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Constraint;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Div;
-import org.zkoss.zul.Hbox;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Tab;
-import org.zkoss.zul.Tabbox;
-import org.zkoss.zul.Tabpanel;
-import org.zkoss.zul.Tabpanels;
-import org.zkoss.zul.Tabs;
-import org.zkoss.zul.Vbox;
+import org.zkoss.zul.*;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
+
+import static org.libreplan.business.planner.chart.ContiguousDaysLine.*;
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
@@ -1085,26 +1058,22 @@ public class OrderPlanningModel implements IOrderPlanningModel {
             @Override
             public void doAction(IContext<TaskElement> context) {
 
-                try {
-                    Messagebox
-                            .show(_("Unsaved changes will be lost. Are you sure?"),
-                                    _("Confirm exit dialog"), Messagebox.OK
-                                            | Messagebox.CANCEL,
-                                    Messagebox.QUESTION,
-                            new org.zkoss.zk.ui.event.EventListener() {
-                                @Override
-                                public void onEvent(Event evt)
-                                        throws InterruptedException {
-                                    if (evt.getName().equals("onOK")) {
-                                        ConfirmCloseUtil.resetConfirmClose();
-                                        Executions
-                                                .sendRedirect("/planner/index.zul;company_scheduling");
-                                    }
+                Messagebox
+                        .show(_("Unsaved changes will be lost. Are you sure?"),
+                                _("Confirm exit dialog"), Messagebox.OK
+                                        | Messagebox.CANCEL,
+                                Messagebox.QUESTION,
+                        new EventListener() {
+                            @Override
+                            public void onEvent(Event evt)
+                                    throws InterruptedException {
+                                if (evt.getName().equals("onOK")) {
+                                    ConfirmCloseUtil.resetConfirmClose();
+                                    Executions
+                                            .sendRedirect("/planner/index.zul;company_scheduling");
                                 }
-                            });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                            }
+                        });
             }
 
             @Override

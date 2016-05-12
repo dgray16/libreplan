@@ -71,7 +71,7 @@ public class DynamicDatebox extends GenericForwardComposer {
                 .getCurrent());
     }
 
-    public Datebox createDateBox() {
+    private Datebox createDateBox() {
         dateBox = new Datebox();
         dateBox.setFormat("short");
         dateBox.setValue(getter.get());
@@ -82,7 +82,7 @@ public class DynamicDatebox extends GenericForwardComposer {
         return dateBox;
     }
 
-    public Datebox getDateBox() {
+    private Datebox getDateBox() {
         return dateBox;
     }
 
@@ -92,7 +92,7 @@ public class DynamicDatebox extends GenericForwardComposer {
      * @param component
      *            the component that has received focus
      */
-    public void userWantsDateBox(Component component) {
+    private void userWantsDateBox(Component component) {
         if (component == dateTextBox) {
             showDateBox(dateTextBox);
         }
@@ -111,7 +111,7 @@ public class DynamicDatebox extends GenericForwardComposer {
      * @param dateBox
      *            the component that has lost focus
      */
-    public void dateBoxHasLostFocus(Datebox currentDateBox) {
+    private void dateBoxHasLostFocus(Datebox currentDateBox) {
         if (currentDateBox == dateBox) {
             hideDateBox(dateTextBox);
         }
@@ -155,16 +155,15 @@ public class DynamicDatebox extends GenericForwardComposer {
     }
 
     private void findComponents(Hbox hbox) {
-        List<Object> children = hbox.getChildren();
+        List<Component> children = hbox.getChildren();
         assert children.size() == 1;
 
         dateTextBox = findTextBoxOfCell(children);
         // dateBox = findDateBoxOfCell(children);
     }
 
-    private static Textbox findTextBoxOfCell(List<Object> children) {
-        return ComponentsFinder.findComponentsOfType(Textbox.class, children)
-                .get(0);
+    private static Textbox findTextBoxOfCell(List<Component> children) {
+        return ComponentsFinder.findComponentsOfType(Textbox.class, children).get(0);
     }
 
     private void registerOnChange(Component component) {
@@ -208,24 +207,24 @@ public class DynamicDatebox extends GenericForwardComposer {
         });
     }
 
-    public static interface Getter<Date> {
+    public interface Getter<Date> {
         /**
          * Typical get method that returns a variable.
          * @return A variable of type Date.
          */
-        public Date get();
+        Date get();
     }
 
-    public static interface Setter<Date> {
+    public interface Setter<Date> {
         /**
          * Typical set method to store a variable.
          * @param value
          *            A variable of type Date to be set.
          */
-        public void set(Date value);
+        void set(Date value);
     }
 
-    public void updateBean() {
+    private void updateBean() {
         Date date = getDateBox().getValue();
         setter.set(date);
     }

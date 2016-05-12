@@ -21,14 +21,8 @@
 
 package org.libreplan.web.reports;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import com.igalia.java.zk.components.JasperreportComponent;
 import net.sf.jasperreports.engine.JRDataSource;
-
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.business.resources.entities.Criterion;
@@ -39,7 +33,11 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Listbox;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * @author Diego Pino Garcia <dpino@igalia.com>
@@ -66,7 +64,7 @@ public class CompletedEstimatedHoursPerTaskController extends LibrePlanReportCon
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("controller", this, true);
+        comp.setAttribute("controller", this, true);
         completedEstimatedHoursPerTaskModel.init();
     }
 
@@ -96,6 +94,7 @@ public class CompletedEstimatedHoursPerTaskController extends LibrePlanReportCon
         if (result == null) {
             referenceDate.setValue(new Date());
         }
+
         return referenceDate.getValue();
     }
 
@@ -129,8 +128,7 @@ public class CompletedEstimatedHoursPerTaskController extends LibrePlanReportCon
         if (label == null) {
             throw new WrongValueException(bdLabels, _("please, select a label"));
         }
-        boolean result = completedEstimatedHoursPerTaskModel
-                .addSelectedLabel(label);
+        boolean result = completedEstimatedHoursPerTaskModel.addSelectedLabel(label);
         if (!result) {
             throw new WrongValueException(bdLabels,
                     _("Label has already been added."));
@@ -160,14 +158,12 @@ public class CompletedEstimatedHoursPerTaskController extends LibrePlanReportCon
     public void onSelectCriterion() {
         Criterion criterion = (Criterion) bdCriterions.getSelectedElement();
         if (criterion == null) {
-            throw new WrongValueException(bdCriterions,
-                    _("please, select a Criterion"));
+            throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
         }
         boolean result = completedEstimatedHoursPerTaskModel
                 .addSelectedCriterion(criterion);
         if (!result) {
-            throw new WrongValueException(bdCriterions,
-                    _("This Criterion has already been added."));
+            throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));
         } else {
             Util.reloadBindings(lbCriterions);
         }

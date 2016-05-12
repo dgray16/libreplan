@@ -20,8 +20,6 @@
 
 package org.libreplan.web.common.components.finders;
 
-import java.util.List;
-
 import org.libreplan.business.resources.daos.ICriterionDAO;
 import org.libreplan.business.resources.entities.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+
+import java.util.List;
 
 /**
  * Bandbox finder for {@link Criterion}.
@@ -55,6 +55,7 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
     public List<Criterion> getAll() {
         List<Criterion> criterions = criterionDAO.findAll();
         forLoadCriterions(criterions);
+
         return criterions;
     }
 
@@ -72,15 +73,16 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
     public boolean entryMatchesText(Object obj, String text) {
         Criterion criterion = (Criterion) obj;
         text = text.trim().toLowerCase();
-        return (criterion.getType().getName().toLowerCase().contains(text) || getNamesHierarchy(
-                criterion, new String())
-                .toLowerCase().contains(text));
+
+        return (criterion.getType().getName().toLowerCase().contains(text) ||
+                getNamesHierarchy(criterion, "").toLowerCase().contains(text));
     }
 
     @Override
     @Transactional(readOnly = true)
     public String objectToString(Object obj) {
         Criterion criterion = (Criterion) obj;
+
         return criterion.getCompleteName();
     }
 
@@ -97,7 +99,7 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
     private final ListitemRenderer orderRenderer = new ListitemRenderer() {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             Criterion criterion = (Criterion)data;
             item.setValue(criterion);
 
@@ -106,7 +108,7 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
             criterionType.setParent(item);
 
             Listcell criterionName = new Listcell();
-            criterionName.setLabel(getNamesHierarchy(criterion,new String()));
+            criterionName.setLabel(getNamesHierarchy(criterion, ""));
             criterionName.setParent(item);
         }
 
@@ -118,6 +120,7 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
             etiqueta = getNamesHierarchy(parent,etiqueta);
             etiqueta = etiqueta.concat(" > ");
         }
+
         return etiqueta.concat(criterion.getName());
     }
 

@@ -19,17 +19,6 @@
 
 package org.libreplan.web.expensesheet;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.math.BigDecimal;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
@@ -56,16 +45,13 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Constraint;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Decimalbox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Listitem;
-import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.Textbox;
+import org.zkoss.zul.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.*;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over a {@link ExpenseSheet}
@@ -75,8 +61,7 @@ import org.zkoss.zul.Textbox;
 public class ExpenseSheetCRUDController extends
         BaseCRUDController<ExpenseSheet> implements IExpenseSheetCRUDController {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(ExpenseSheetCRUDController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(ExpenseSheetCRUDController.class);
 
     @Autowired
     private IExpenseSheetModel expenseSheetModel;
@@ -109,8 +94,7 @@ public class ExpenseSheetCRUDController extends
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         checkUserHasProperRoleOrSendForbiddenCode();
-        URLHandlerRegistry.getRedirectorFor(IExpenseSheetCRUDController.class)
-                .register(this, page);
+        URLHandlerRegistry.getRedirectorFor(IExpenseSheetCRUDController.class).register(this, page);
     }
 
     private void checkUserHasProperRoleOrSendForbiddenCode() {
@@ -169,7 +153,6 @@ public class ExpenseSheetCRUDController extends
     /**
      * Adds a new {@link ExpenseSheetLine} to the list of rows
      *
-     * @param rows
      */
     public void addExpenseSheetLine() {
         if (validateNewLine()) {
@@ -187,35 +170,26 @@ public class ExpenseSheetCRUDController extends
     }
 
     private boolean validateNewLine() {
-        boolean result = true;
         if (expenseSheetModel.getNewExpenseSheetLine().getDate() == null) {
-            result = false;
             throw new WrongValueException(this.dateboxExpenseDate, _("cannot be empty"));
         }
         if (expenseSheetModel.getNewExpenseSheetLine().getOrderElement() == null) {
-            result = false;
             throw new WrongValueException(this.bandboxTasks, _("cannot be empty"));
         }
         BigDecimal value = expenseSheetModel.getNewExpenseSheetLine().getValue();
         if (value == null || value.compareTo(BigDecimal.ZERO) < 0) {
-            result = false;
-            throw new WrongValueException(this.dboxValue,
-                    _("cannot be empty or less than zero"));
+            throw new WrongValueException(this.dboxValue, _("cannot be empty or less than zero"));
         }
-        return result;
+        return true;
     }
 
     public void confirmRemove(ExpenseSheetLine expenseSheetLine) {
-        try {
-            int status = Messagebox.show(
-                    _("Confirm deleting {0}. Are you sure?",
-                            getExpenseSheetLineName(expenseSheetLine)), _("Delete"), Messagebox.OK
-                            | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                removeExpenseSheetLine(expenseSheetLine);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int status = Messagebox.show(
+                _("Confirm deleting {0}. Are you sure?",
+                        getExpenseSheetLineName(expenseSheetLine)), _("Delete"), Messagebox.OK
+                        | Messagebox.CANCEL, Messagebox.QUESTION);
+        if (Messagebox.OK == status) {
+            removeExpenseSheetLine(expenseSheetLine);
         }
     }
 
@@ -284,10 +258,10 @@ public class ExpenseSheetCRUDController extends
      * RowRenderer for a @{ExpenseSheetLine} element
      * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
      */
-    public class ExpenseSheetLineRenderer implements RowRenderer {
+    private class ExpenseSheetLineRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             ExpenseSheetLine expenseSheetLine = (ExpenseSheetLine) data;
             row.setValue(expenseSheetLine);
 
@@ -301,7 +275,7 @@ public class ExpenseSheetCRUDController extends
         }
 
         private void appendConceptInLines(Row row) {
-            final ExpenseSheetLine expenseSheetLine = (ExpenseSheetLine) row.getValue();
+            final ExpenseSheetLine expenseSheetLine = row.getValue();
             final Textbox txtConcept = new Textbox();
             txtConcept.setWidth("160px");
             Util.bind(txtConcept, new Util.Getter<String>() {
@@ -327,7 +301,7 @@ public class ExpenseSheetCRUDController extends
         }
 
         private void appendDateInLines(Row row) {
-            final ExpenseSheetLine expenseSheetLine = (ExpenseSheetLine) row.getValue();
+            final ExpenseSheetLine expenseSheetLine = row.getValue();
             final Datebox dateboxExpense = new Datebox();
             Util.bind(dateboxExpense, new Util.Getter<Date>() {
 
@@ -362,9 +336,8 @@ public class ExpenseSheetCRUDController extends
         }
 
         private void appendResourceInLines(Row row) {
-            final ExpenseSheetLine expenseSheetLine = (ExpenseSheetLine) row.getValue();
-            final BandboxSearch bandboxSearch = BandboxSearch.create(
-                    "ResourceInExpenseSheetBandboxFinder");
+            final ExpenseSheetLine expenseSheetLine = row.getValue();
+            final BandboxSearch bandboxSearch = BandboxSearch.create("ResourceInExpenseSheetBandboxFinder");
 
             bandboxSearch.setSelectedElement(expenseSheetLine.getResource());
             bandboxSearch.setSclass("bandbox-workreport-task");
@@ -384,7 +357,7 @@ public class ExpenseSheetCRUDController extends
         }
 
         private void appendCode(final Row row) {
-            final ExpenseSheetLine line = (ExpenseSheetLine) row.getValue();
+            final ExpenseSheetLine line = row.getValue();
             final Textbox code = new Textbox();
             code.setWidth("170px");
             code.setDisabled(getExpenseSheet().isCodeAutogenerated());
@@ -397,7 +370,7 @@ public class ExpenseSheetCRUDController extends
             code.addEventListener("onChange", new EventListener() {
                 @Override
                 public void onEvent(Event event) {
-                    final ExpenseSheetLine line = (ExpenseSheetLine) row.getValue();
+                    final ExpenseSheetLine line = row.getValue();
                     line.setCode(code.getValue());
                 }
             });
@@ -420,7 +393,7 @@ public class ExpenseSheetCRUDController extends
         }
 
         private void appendValueInLines(Row row) {
-            final ExpenseSheetLine expenseSheetLine = (ExpenseSheetLine) row.getValue();
+            final ExpenseSheetLine expenseSheetLine = row.getValue();
             final Decimalbox dbValue = new Decimalbox();
             dbValue.setScale(2);
 
@@ -455,9 +428,8 @@ public class ExpenseSheetCRUDController extends
          * @param row
          */
         private void appendOrderElementInLines(Row row) {
-            final ExpenseSheetLine expenseSheetLine = (ExpenseSheetLine) row.getValue();
-            final BandboxSearch bandboxSearch = BandboxSearch
-                    .create("OrderElementInExpenseSheetBandboxFinder");
+            final ExpenseSheetLine expenseSheetLine = row.getValue();
+            final BandboxSearch bandboxSearch = BandboxSearch.create("OrderElementInExpenseSheetBandboxFinder");
 
             bandboxSearch.setSelectedElement(expenseSheetLine.getOrderElement());
             bandboxSearch.setSclass("bandbox-workreport-task");
@@ -470,29 +442,25 @@ public class ExpenseSheetCRUDController extends
                     setOrderElementInESL(selectedItem, expenseSheetLine);
                 }
             };
-            bandboxSearch
-                    .setListboxEventListener(Events.ON_SELECT, eventListenerUpdateOrderElement);
+            bandboxSearch.setListboxEventListener(Events.ON_SELECT, eventListenerUpdateOrderElement);
             bandboxSearch.setListboxEventListener(Events.ON_OK, eventListenerUpdateOrderElement);
-            bandboxSearch.setBandboxEventListener(Events.ON_CHANGING,
-                    eventListenerUpdateOrderElement);
+            bandboxSearch.setBandboxEventListener(Events.ON_CHANGING, eventListenerUpdateOrderElement);
             bandboxSearch.setBandboxConstraint("no empty:" + _("cannot be empty"));
             row.appendChild(bandboxSearch);
         }
 
         private void setOrderElementInESL(Listitem selectedItem, ExpenseSheetLine line) {
-            OrderElement orderElement = (selectedItem == null ? null : (OrderElement) selectedItem
-                    .getValue());
+            OrderElement orderElement = (selectedItem == null ? null : (OrderElement) selectedItem.getValue());
             line.setOrderElement(orderElement);
         }
 
-        private void setResourceInESL(Listitem selectedItem,
-                ExpenseSheetLine expenseSheetLine) {
+        private void setResourceInESL(Listitem selectedItem, ExpenseSheetLine expenseSheetLine) {
             Resource resource = (selectedItem == null ? null : (Resource) selectedItem.getValue());
             expenseSheetLine.setResource(resource);
         }
     }
 
-    public Constraint checkConstraintExpenseValue() {
+    private Constraint checkConstraintExpenseValue() {
         return new Constraint() {
             @Override
             public void validate(Component comp, Object value) throws WrongValueException {
@@ -504,7 +472,7 @@ public class ExpenseSheetCRUDController extends
         };
     }
 
-    public Constraint checkConstraintLineCodes(final ExpenseSheetLine line) {
+    private Constraint checkConstraintLineCodes(final ExpenseSheetLine line) {
         return new Constraint() {
             @Override
             public void validate(Component comp, Object value) throws WrongValueException {
@@ -515,8 +483,7 @@ public class ExpenseSheetCRUDController extends
                     } else {
                         String oldCode = line.getCode();
                         line.setCode(code);
-                        if (!getExpenseSheet()
-                                .isNonRepeatedExpenseSheetLinesCodesConstraint()) {
+                        if (!getExpenseSheet().isNonRepeatedExpenseSheetLinesCodesConstraint()) {
                             line.setCode(oldCode);
                             throw new WrongValueException(comp, _("The code must be unique."));
                         }
@@ -533,8 +500,7 @@ public class ExpenseSheetCRUDController extends
                 if (!getExpenseSheet().isCodeAutogenerated()) {
                     String code = (String) value;
                     if (code == null || code.isEmpty()) {
-                        throw new WrongValueException(comp,
-                                _("The code cannot be empty and it must be unique."));
+                        throw new WrongValueException(comp, _("The code cannot be empty and it must be unique."));
                     } else if (!getExpenseSheet().isUniqueCodeConstraint()) {
                         throw new WrongValueException(comp,
                                 _("it already exists another expense sheet with the same code."));
@@ -550,6 +516,7 @@ public class ExpenseSheetCRUDController extends
                     .getNewExpenseSheetLine().getDate().toDateTimeAtStartOfDay().toDate()
                     : null;
         }
+
         return null;
     }
 
@@ -580,8 +547,7 @@ public class ExpenseSheetCRUDController extends
     }
 
     @Override
-    public void delete(ExpenseSheet expenseSheet)
-            throws InstanceNotFoundException {
+    public void delete(ExpenseSheet expenseSheet) throws InstanceNotFoundException {
         expenseSheetModel.removeExpenseSheet(expenseSheet);
     }
 
@@ -627,9 +593,8 @@ public class ExpenseSheetCRUDController extends
 
     @Override
     public void goToEditPersonalExpenseSheet(ExpenseSheet expenseSheet) {
-        if (!SecurityUtils.isUserInRole(UserRole.ROLE_BOUND_USER)
-                || !expenseSheetModel
-                        .isPersonalAndBelognsToCurrentUser(expenseSheet)) {
+        if (!SecurityUtils.isUserInRole(UserRole.ROLE_BOUND_USER) ||
+                !expenseSheetModel.isPersonalAndBelognsToCurrentUser(expenseSheet)) {
             Util.sendForbiddenStatusCodeInHttpServletResponse();
         }
         goToEditForm(expenseSheet);
@@ -670,7 +635,7 @@ public class ExpenseSheetCRUDController extends
         return new RowRenderer() {
 
             @Override
-            public void render(Row row, Object data) throws Exception {
+            public void render(Row row, Object data, int i) throws Exception {
                 final ExpenseSheet expenseSheet = (ExpenseSheet) data;
                 row.setValue(expenseSheet);
 

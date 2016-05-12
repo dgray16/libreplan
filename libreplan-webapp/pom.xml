@@ -295,6 +295,10 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.xnap.commons</groupId>
+            <artifactId>gettext-commons</artifactId>
+        </dependency>
 
         <!-- Jasper Reports -->
         <dependency>

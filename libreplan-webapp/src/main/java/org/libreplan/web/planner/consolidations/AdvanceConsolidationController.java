@@ -77,8 +77,6 @@ public class AdvanceConsolidationController extends GenericForwardComposer {
             window.doModal();
         } catch (SuspendNotAllowedException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 

@@ -46,17 +46,17 @@ public class LoginController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("loginController", this, true);
+        comp.setAttribute("loginController", this, true);
     }
 
     /**
      * It returns the login value in function of the property autocompleteLogin.
      */
     public String getLoginValue() {
-        Configuration configuration = configurationDAO
-                .getConfigurationWithReadOnlyTransaction();
-        return ((configuration.isAutocompleteLogin()) && (!configuration
-                .getChangedDefaultAdminPassword())) ? this.autocompletLoginValue
+
+        Configuration configuration = configurationDAO.getConfigurationWithReadOnlyTransaction();
+        return ((configuration.isAutocompleteLogin()) && (!configuration.getChangedDefaultAdminPassword()))
+                ? this.autocompletLoginValue
                 : null;
     }
 

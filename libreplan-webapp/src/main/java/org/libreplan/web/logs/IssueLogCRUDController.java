@@ -19,12 +19,6 @@
 
 package org.libreplan.web.logs;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.common.exceptions.ValidationException;
@@ -44,15 +38,13 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.ListitemRenderer;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.Cell;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Hbox;
-import org.zkoss.zul.ListModelList;
-import org.zkoss.zul.Listbox;
+import org.zkoss.zul.*;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 
 /**
@@ -81,7 +73,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         status = (Listbox)comp.getFellow("editWindow").getFellow("listIssueLogStatus");
-        comp.setVariable("issueLogController", this, true);
+        comp.setAttribute("issueLogController", this, true);
         showListWindow();
         initializeOrderComponent();
         initializeUserComponent();
@@ -93,8 +85,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      * Initializes order component
      */
     private void initializeOrderComponent() {
-        bdProjectIssueLog = (BandboxSearch) editWindow
-                .getFellow("bdProjectIssueLog");
+        bdProjectIssueLog = (BandboxSearch) editWindow.getFellow("bdProjectIssueLog");
         Util.createBindingsFor(bdProjectIssueLog);
         bdProjectIssueLog.setListboxEventListener(Events.ON_SELECT,
                 new EventListener() {
@@ -146,7 +137,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      */
     public static ListitemRenderer issueTypeRenderer = new ListitemRenderer() {
         @Override
-        public void render(org.zkoss.zul.Listitem item, Object data)
+        public void render(Listitem item, Object data, int i)
                 throws Exception {
             IssueTypeEnum issueTypeEnum = (IssueTypeEnum) data;
             String displayName = issueTypeEnum.getDisplayName();
@@ -158,7 +149,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
 
     public static ListitemRenderer lowMediumHighEnumRenderer = new ListitemRenderer() {
         @Override
-        public void render(org.zkoss.zul.Listitem item, Object data)
+        public void render(Listitem item, Object data, int i)
                 throws Exception {
             LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
             String displayName = lowMediumHighEnum.getDisplayName();
@@ -175,7 +166,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         return new RowRenderer() {
 
             @Override
-            public void render(Row row, Object data) throws Exception {
+            public void render(Row row, Object data, int i) throws Exception {
                 final IssueLog issueLog = (IssueLog) data;
                 row.setValue(issueLog);
                 appendObject(row, issueLog.getCode());
@@ -220,7 +211,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      * @param object
      */
     private void appendObject(final Row row, Object object) {
-        String text = new String("");
+        String text = "";
         if (object != null) {
             text = object.toString();
         }
@@ -246,7 +237,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      *  @param row
      * @param date*/
     private void appendDate(final Row row, Date date) {
-        String labelDate = new String("");
+        String labelDate = "";
         if (date != null) {
             labelDate = Util.formatDate(date);
         }
@@ -293,13 +284,14 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     /**
      * Returns {@link ArrayList} values
      */
-    public ArrayList<String> getIssueStatusEnum() {
+    private ArrayList<String> getIssueStatusEnum() {
         ArrayList<String> result = new ArrayList<String>();
         if (getIssueLog().getType() == IssueTypeEnum.REQUEST_FOR_CHANGE){
             result.add(_("Must have"));
             result.add(_("Should have"));
             result.add(_("Could have"));
             result.add(_("Won't have"));
+
             return result;
         }
         if (getIssueLog().getType() == IssueTypeEnum.PROBLEM_OR_CONCERN) {
@@ -307,6 +299,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
             result.add(_("Significant"));
             result.add(_("Major"));
             result.add(_("Critical"));
+
             return result;
         }
 
@@ -316,8 +309,8 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         return result;
     }
 
-    public void updateStatusList(boolean ifNew) {
-        ListModelList model = new ListModelList(getIssueStatusEnum());
+    private void updateStatusList(boolean ifNew) {
+        ListModelList model = new ListModelList<>(getIssueStatusEnum());
         status.setModel(model);
         if(ifNew)
             status.setSelectedItem(status.getItemAtIndex(0));
@@ -408,7 +401,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     /**
      * Returns the {@link IssueLog} object
      */
-    public IssueLog getIssueLog() {
+    private IssueLog getIssueLog() {
         return issueLogModel.getIssueLog();
     }
 
@@ -416,22 +409,24 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      * Returns a list of {@link IssueLog} objects
      */
     public List<IssueLog> getIssueLogs() {
-        if (LogsController.getProjectNameVisibility() == true)
+        if (LogsController.getProjectNameVisibility())
             return issueLogModel.getIssueLogs();
         else{
-            List<IssueLog> issueLogs = new ArrayList<IssueLog>();
+            List<IssueLog> issueLogs = new ArrayList<>();
             Order order = LogsController.getOrder();
             for (IssueLog issueLog : issueLogModel.getIssueLogs()) {
                 if (issueLog.getOrder().equals(order))
                     issueLogs.add(issueLog);
             }
+
             return issueLogs;
         }
     }
 
     public Order getOrder() {
-        if (LogsController.getProjectNameVisibility() == false){
+        if (!LogsController.getProjectNameVisibility()){
             this.getIssueLog().setOrder(LogsController.getOrder());
+
             return getIssueLog().getOrder();
         }
         else
@@ -463,13 +458,11 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     @Override
     protected void save() throws ValidationException {
         if (getIssueLog().getOrder() == null) {
-            throw new WrongValueException(bdProjectIssueLog,
-                    _("please select a project"));
+            throw new WrongValueException(bdProjectIssueLog, _("please select a project"));
         }
 
         if (getIssueLog().getCreatedBy() == null) {
-            throw new WrongValueException(bdUserIssueLog,
-                    _("please select an author"));
+            throw new WrongValueException(bdUserIssueLog, _("please select an author"));
         }
         getIssueLog().setStatus(status.getSelectedItem().getLabel());
         issueLogModel.confirmSave();

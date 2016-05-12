@@ -20,11 +20,6 @@
  */
 package org.libreplan.web.materials;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
@@ -39,12 +34,12 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Constraint;
-import org.zkoss.zul.Hbox;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.RowRenderer;
+import org.zkoss.zul.*;
+
+import java.util.ConcurrentModificationException;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  *
@@ -56,8 +51,7 @@ import org.zkoss.zul.RowRenderer;
 
 public class UnitTypeController extends BaseCRUDController<UnitType> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-    .getLog(UnitTypeController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(UnitTypeController.class);
 
     private IUnitTypeModel unitTypeModel;
 
@@ -69,7 +63,7 @@ public class UnitTypeController extends BaseCRUDController<UnitType> {
 
         return new RowRenderer() {
             @Override
-            public void render(Row row, Object data) {
+            public void render(Row row, Object data, int i) {
                 final UnitType unitType = (UnitType) data;
 
                 appendUnitTypeName(row, unitType);
@@ -97,16 +91,14 @@ public class UnitTypeController extends BaseCRUDController<UnitType> {
                     }
                 }));
 
-                Button removeButton = Util
-                        .createRemoveButton(new EventListener() {
+                Button removeButton = Util.createRemoveButton(new EventListener() {
 
                     @Override
                     public void onEvent(Event event) {
                         confirmDelete(unitType);
                     }
                 });
-                removeButton.setDisabled(unitTypeModel
-                        .isUnitTypeUsedInAnyMaterial(unitType));
+                removeButton.setDisabled(unitTypeModel.isUnitTypeUsedInAnyMaterial(unitType));
                 hbox.appendChild(removeButton);
 
                 row.appendChild(hbox);

@@ -76,9 +76,8 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("assignmentController", this, true);
-        this.listResourcesCostCategoryAssignments =
-            (Grid) comp.getFellowIfAny("listResourcesCostCategoryAssignments");
+        comp.setAttribute("assignmentController", this, true);
+        this.listResourcesCostCategoryAssignments = (Grid) comp.getFellowIfAny("listResourcesCostCategoryAssignments");
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
@@ -91,14 +90,14 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
         return resourcesCostCategoryAssignmentModel.getCostCategoryAssignments();
     }
 
-    public void removeCostCategoryAssignment(ResourcesCostCategoryAssignment assignment) {
+    private void removeCostCategoryAssignment(ResourcesCostCategoryAssignment assignment) {
         resourcesCostCategoryAssignmentModel.removeCostCategoryAssignment(assignment);
         Util.reloadBindings(listResourcesCostCategoryAssignments);
     }
 
     private CostCategory getCostCategory(Row listitem) {
-        ResourcesCostCategoryAssignment assignment =
-            (ResourcesCostCategoryAssignment) listitem.getValue();
+        ResourcesCostCategoryAssignment assignment = listitem.getValue();
+
         return assignment.getCostCategory();
     }
 
@@ -128,8 +127,7 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
 
                 if(comboitem != null) {
                     // Update resourcesCostCategoryAssignment
-                    ResourcesCostCategoryAssignment assignment =
-                        (ResourcesCostCategoryAssignment) row.getValue();
+                    ResourcesCostCategoryAssignment assignment = row.getValue();
                     assignment.setCostCategory((CostCategory) comboitem.getValue());
                     row.setValue(assignment);
                 }
@@ -139,14 +137,10 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
     }
 
     public void confirmRemove(ResourcesCostCategoryAssignment assignment) {
-        try {
-            int status = Messagebox.show(_("Confirm deleting this hour cost. Are you sure?"), _("Delete"),
-                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                removeCostCategoryAssignment(assignment);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int status = Messagebox.show(_("Confirm deleting this hour cost. Are you sure?"), _("Delete"),
+                Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+        if (Messagebox.OK == status) {
+            removeCostCategoryAssignment(assignment);
         }
     }
 
@@ -265,6 +259,7 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
                     return new Date(dateTime.getYear()-1900,
                             dateTime.getMonthOfYear()-1,dateTime.getDayOfMonth());
                 }
+
                 return null;
             }
 
@@ -293,12 +288,11 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
      * @author Jacobo Aragunde Perez <jaragunde@igalia.com>
      *
      */
-    public class CostCategoryAssignmentRenderer implements RowRenderer {
+    private class CostCategoryAssignmentRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-            ResourcesCostCategoryAssignment assignment =
-                (ResourcesCostCategoryAssignment) data;
+        public void render(Row row, Object data, int i) {
+            ResourcesCostCategoryAssignment assignment = (ResourcesCostCategoryAssignment) data;
 
             row.setValue(assignment);
 
@@ -333,6 +327,7 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
         } catch (ValidationException e) {
             ValidationExceptionPrinter.showAt(listResourcesCostCategoryAssignments, e);
         }
+
         return true;
     }
 

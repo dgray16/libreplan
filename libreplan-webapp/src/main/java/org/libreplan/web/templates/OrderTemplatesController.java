@@ -373,26 +373,22 @@ public class OrderTemplatesController extends GenericForwardComposer implements
      * @param OrderTemplate
      */
     public void confirmDelete(OrderElementTemplate template) {
-        try {
-            if (Messagebox.show(_("Delete template. Are you sure?"),
-                    _("Confirm"),
-                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
-                if (this.model.hasNotApplications(template)) {
-                    this.model.confirmDelete(template);
-                    Grid gridOrderTemplates = (Grid) listWindow
-                            .getFellowIfAny("listing");
-                    if (gridOrderTemplates != null) {
-                        Util.reloadBindings(gridOrderTemplates);
-                    }
-                } else {
-                    messagesForUser
-                            .showMessage(
-                                    Level.ERROR,
-                                    _("Template cannot be removed because it has applications"));
+        if (Messagebox.show(_("Delete template. Are you sure?"),
+                _("Confirm"),
+                Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
+            if (this.model.hasNotApplications(template)) {
+                this.model.confirmDelete(template);
+                Grid gridOrderTemplates = (Grid) listWindow
+                        .getFellowIfAny("listing");
+                if (gridOrderTemplates != null) {
+                    Util.reloadBindings(gridOrderTemplates);
                 }
+            } else {
+                messagesForUser
+                        .showMessage(
+                                Level.ERROR,
+                                _("Template cannot be removed because it has applications"));
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
 
     }

@@ -21,8 +21,6 @@
 
 package org.libreplan.web.orders;
 
-import static org.libreplan.web.I18nHelper._;
-
 import org.apache.commons.lang3.StringUtils;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.business.orders.entities.OrderElement;
@@ -43,6 +41,8 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabpanel;
 import org.zkoss.zul.Window;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for {@link OrderElement} view of {@link Order} entities <br />
@@ -88,13 +88,13 @@ public class OrderElementController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("orderElementController", this, true);
+        comp.setAttribute("orderElementController", this, true);
         setupDetailsOrderElementController();
     }
 
     private void setupDetailsOrderElementController() {
         detailsController = (DetailsOrderElementController)
-        orderElementDetails.getVariable("detailsController", true);
+        orderElementDetails.getAttribute("detailsController", true);
     }
 
     private void redraw(Component comp) {
@@ -105,7 +105,7 @@ public class OrderElementController extends GenericForwardComposer {
     public void setupAssignedHoursToOrderElementController() {
         if (assignedHoursToOrderElementController == null) {
             assignedHoursToOrderElementController = (AssignedHoursToOrderElementController) orderElementHours
-                    .getVariable("assignedHoursToOrderElementController", true);
+                    .getAttribute("assignedHoursToOrderElementController", true);
             assignedHoursToOrderElementController.openWindow(orderElementModel);
         } else {
             redraw(orderElementHours);
@@ -113,10 +113,9 @@ public class OrderElementController extends GenericForwardComposer {
         }
     }
 
-    public String getOrderElementName() {
+    private String getOrderElementName() {
         String name = "";
-        if ((getOrderElement() != null)
-                && (!StringUtils.isBlank(getOrderElement().getName()))) {
+        if ((getOrderElement() != null) && (!StringUtils.isBlank(getOrderElement().getName()))) {
             name = ": " + getOrderElement().getName();
         }
         return _("Edit task {0}", name);
@@ -126,11 +125,10 @@ public class OrderElementController extends GenericForwardComposer {
             {
         if (manageOrderElementAdvancesController == null) {
             manageOrderElementAdvancesController = (ManageOrderElementAdvancesController) orderElementAdvances
-                    .getVariable("manageOrderElementAdvancesController", true);
+                    .getAttribute("manageOrderElementAdvancesController", true);
             manageOrderElementAdvancesController.openWindow(orderElementModel);
         } else {
-            manageOrderElementAdvancesController
-                    .refreshChangesFromOrderElement();
+            manageOrderElementAdvancesController.refreshChangesFromOrderElement();
             manageOrderElementAdvancesController.createAndLoadBindings();
             manageOrderElementAdvancesController.refreshSelectedAdvance();
         }
@@ -148,10 +146,10 @@ public class OrderElementController extends GenericForwardComposer {
     public void setupAssignedCriterionRequirementToOrderElementController()
             {
         if (assignedCriterionRequirementController == null) {
-            assignedCriterionRequirementController = (AssignedCriterionRequirementToOrderElementController) orderElementCriterionRequirements
-                    .getVariable("assignedCriterionRequirementController", true);
-            assignedCriterionRequirementController
-                    .openWindow(orderElementModel);
+            assignedCriterionRequirementController =
+                    (AssignedCriterionRequirementToOrderElementController) orderElementCriterionRequirements
+                    .getAttribute("assignedCriterionRequirementController", true);
+            assignedCriterionRequirementController.openWindow(orderElementModel);
         } else {
             redraw(orderElementCriterionRequirements);
         }
@@ -171,7 +169,7 @@ public class OrderElementController extends GenericForwardComposer {
             {
         if (assignedTaskQualityFormsController == null) {
             assignedTaskQualityFormsController = (AssignedTaskQualityFormsToOrderElementController) orderElementTaskQualityForms
-                .getVariable("assignedTaskQualityFormsController", true);
+                .getAttribute("assignedTaskQualityFormsController", true);
             assignedTaskQualityFormsController.openWindow(orderElementModel);
         } else {
             redraw(orderElementTaskQualityForms);
@@ -185,7 +183,7 @@ public class OrderElementController extends GenericForwardComposer {
     /**
      * Open the window to edit a {@link OrderElement}. If it's a
      * {@link OrderLineGroup} less fields will be enabled.
-     * @param orderElement
+     * @param model
      *            The {@link OrderElement} to be edited
      */
     public void openWindow(IOrderElementModel model){
@@ -206,8 +204,6 @@ public class OrderElementController extends GenericForwardComposer {
             ((Window) self).doModal();
         } catch (SuspendNotAllowedException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -215,7 +211,7 @@ public class OrderElementController extends GenericForwardComposer {
         this.orderElementModel = orderElementModel;
     }
 
-    public void clearAll() {
+    private void clearAll() {
         Tabpanel tabPanel = (Tabpanel) self.getFellow("tabPanelDetails");
         Util.createBindingsFor(tabPanel);
         Util.reloadBindings(tabPanel);
@@ -261,6 +257,7 @@ public class OrderElementController extends GenericForwardComposer {
             selectTab("tabTaskQualityForm");
             throw e;
         }
+
         return true;
     }
 
@@ -273,6 +270,7 @@ public class OrderElementController extends GenericForwardComposer {
             selectTab("tabRequirements");
             throw e;
         }
+
         return true;
     }
 
@@ -286,6 +284,7 @@ public class OrderElementController extends GenericForwardComposer {
             selectTab("tabAdvances");
             throw e;
         }
+        
         return true;
     }
 

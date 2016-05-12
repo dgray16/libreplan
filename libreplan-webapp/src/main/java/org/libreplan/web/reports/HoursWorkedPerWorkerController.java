@@ -21,17 +21,7 @@
 
 package org.libreplan.web.reports;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import net.sf.jasperreports.engine.JRDataSource;
-
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.reports.dtos.LabelFilterType;
 import org.libreplan.business.resources.entities.Criterion;
@@ -45,15 +35,12 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Comboitem;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Listbox;
-import org.zkoss.zul.Listcell;
-import org.zkoss.zul.Listitem;
-import org.zkoss.zul.ListitemRenderer;
-import org.zkoss.zul.Radio;
+import org.zkoss.zul.*;
+
+import java.util.*;
+import java.util.Calendar;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * @author Diego Pino Garcia <dpino@igalia.com>
@@ -92,7 +79,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("controller", this, true);
+        comp.setAttribute("controller", this, true);
         hoursWorkedPerWorkerModel.init();
     }
 
@@ -124,16 +111,18 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         if (filterByBoth.isChecked()) {
             return LabelFilterType.BOTH;
         }
+
         return LabelFilterType.ANY;
     }
 
     private List<Resource> getSelectedResources() {
-        List<Resource> result = new ArrayList<Resource>();
+        List<Resource> result = new ArrayList<>();
 
         final List<Listitem> listItems = lbResources.getItems();
         for (Listitem each : listItems) {
             result.add((Resource) each.getValue());
         }
+
         return result;
     }
 
@@ -143,8 +132,8 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startingDate.getValue());
-        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DATE), 0, 0, 0);
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0);
+
         return calendar.getTime();
     }
 
@@ -156,6 +145,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         calendar.setTime(endingDate.getValue());
         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DATE), 23, 59, 59);
+
         return calendar.getTime();
     }
 
@@ -168,14 +158,14 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         result.put("criteria", getParameterCriterions());
         result.put("labels", getParameterLabels());
         result.put("showNote", hoursWorkedPerWorkerModel.isShowReportMessage());
+
         return result;
     }
 
     public void onAddResource() {
         Resource resource = getSelectedCurrentResource();
         if (resource != null) {
-            boolean result = hoursWorkedPerWorkerModel
-                    .addSelectedResource(resource);
+            boolean result = hoursWorkedPerWorkerModel.addSelectedResource(resource);
             if (!result) {
                 throw new WrongValueException(filterResource,
                         _("This resource has already been added."));
@@ -185,17 +175,17 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         }
     }
 
-    public void onRemoveResource(Resource resource) {
+    private void onRemoveResource(Resource resource) {
         hoursWorkedPerWorkerModel.removeSelectedResource(resource);
         Util.reloadBindings(lbResources);
     }
 
     private Resource getSelectedCurrentResource() {
         Comboitem itemSelected = filterResource.getSelectedItem();
-        if ((itemSelected != null)
-                && (((Resource) itemSelected.getValue()) != null)) {
+        if ((itemSelected != null) && ((itemSelected.getValue()) != null)) {
             return (Resource) itemSelected.getValue();
         }
+
         return null;
     }
 
@@ -207,10 +197,10 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
      * ListitemRenderer for a @{Resource} element
      * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
      */
-    public class ResourceListRenderer implements ListitemRenderer {
+    private class ResourceListRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             final Resource resource = (Resource) data;
             item.setValue(resource);
 
@@ -223,9 +213,8 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private void appendType(final Listitem item) {
-        Resource resource = (Resource) item.getValue();
-        org.zkoss.zul.Label typeLabel = new org.zkoss.zul.Label(
-                getType(resource));
+        Resource resource = item.getValue();
+        org.zkoss.zul.Label typeLabel = new org.zkoss.zul.Label(getType(resource));
 
         Listcell typeResourceCell = new Listcell();
         typeResourceCell.appendChild(typeLabel);
@@ -233,7 +222,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private void appendLimiting(final Listitem item) {
-        final Resource resource = (Resource) item.getValue();
+        final Resource resource = item.getValue();
         final Checkbox limitingCheckbox = new Checkbox();
         limitingCheckbox.setChecked(resource.isLimitingResource());
         limitingCheckbox.setDisabled(true);
@@ -244,9 +233,8 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private void appendName(final Listitem item) {
-        Resource resource = (Resource) item.getValue();
-        org.zkoss.zul.Label nameLabel = new org.zkoss.zul.Label(
-                getName(resource));
+        Resource resource = item.getValue();
+        org.zkoss.zul.Label nameLabel = new org.zkoss.zul.Label(getName(resource));
 
         Listcell nameResourceCell = new Listcell();
         nameResourceCell.appendChild(nameLabel);
@@ -254,9 +242,8 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private void appendCode(Listitem item) {
-        Resource resource = (Resource) item.getValue();
-        org.zkoss.zul.Label codeLabel = new org.zkoss.zul.Label(resource
-                .getCode());
+        Resource resource = item.getValue();
+        org.zkoss.zul.Label codeLabel = new org.zkoss.zul.Label(resource.getCode());
 
         Listcell codeResourceCell = new Listcell();
         codeResourceCell.appendChild(codeLabel);
@@ -282,8 +269,9 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     private String getName(Resource resource) {
         if ((resource instanceof Worker) && (((Worker) resource).isReal())) {
-            return ((Worker) resource).getShortDescription();
+            return (resource).getShortDescription();
         }
+
         return resource.getName();
     }
 
@@ -295,6 +283,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
                 return _("Virtual worker");
             }
         }
+
         return "Machine";
     }
 
@@ -333,14 +322,11 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     public void onSelectCriterion() {
         Criterion criterion = (Criterion) bdCriterions.getSelectedElement();
         if (criterion == null) {
-            throw new WrongValueException(bdCriterions,
-                    _("please, select a Criterion"));
+            throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
         }
-        boolean result = hoursWorkedPerWorkerModel
-                .addSelectedCriterion(criterion);
+        boolean result = hoursWorkedPerWorkerModel.addSelectedCriterion(criterion);
         if (!result) {
-            throw new WrongValueException(bdCriterions,
-                    _("This Criterion has already been added."));
+            throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));
         } else {
             Util.reloadBindings(lbCriterions);
         }

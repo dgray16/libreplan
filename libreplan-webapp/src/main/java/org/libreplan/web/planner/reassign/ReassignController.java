@@ -20,12 +20,6 @@
  */
 package org.libreplan.web.planner.reassign;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-
 import org.joda.time.LocalDate;
 import org.libreplan.web.planner.reassign.ReassignCommand.IConfigurationResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -39,12 +33,13 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Radio;
-import org.zkoss.zul.Radiogroup;
-import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.Window;
+import org.zkoss.zul.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+
+import static org.libreplan.web.I18nHelper._;
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  *
@@ -76,11 +71,7 @@ public class ReassignController extends GenericForwardComposer {
 
     private void showWindow(IConfigurationResult configurationResult) {
         this.configurationResult = configurationResult;
-        try {
-            window.setMode("modal");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        window.setMode("modal");
     }
 
     @Override

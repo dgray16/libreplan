@@ -21,11 +21,6 @@
 
 package org.libreplan.web.resources.criterion;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
@@ -41,11 +36,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Combobox;
-import org.zkoss.zul.Comboitem;
-import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Tree;
+import org.zkoss.zul.*;
+
+import java.util.ConcurrentModificationException;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for Criterions <br />
@@ -91,19 +87,15 @@ public class CriterionAdminController extends BaseCRUDController<CriterionType> 
     }
 
     private void showConfirmingHierarchyWindow() {
-        try {
-            int status = Messagebox
-                    .show(_("Disable hierarchy will cause criteria tree to be flattened. Are you sure?"),
-                            _("Question"), Messagebox.OK | Messagebox.CANCEL,
-                            Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                disableHierarchy();
-                editionTree.reloadTree();
-            } else {
-                cbHierarchy.setChecked(true);
-            }
-        } catch (InterruptedException e) {
-            messagesForUser.showMessage(Level.ERROR, e.getMessage());
+        int status = Messagebox
+                .show(_("Disable hierarchy will cause criteria tree to be flattened. Are you sure?"),
+                        _("Question"), Messagebox.OK | Messagebox.CANCEL,
+                        Messagebox.QUESTION);
+        if (Messagebox.OK == status) {
+            disableHierarchy();
+            editionTree.reloadTree();
+        } else {
+            cbHierarchy.setChecked(true);
         }
     }
 

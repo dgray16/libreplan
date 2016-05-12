@@ -20,13 +20,6 @@
 
 package org.libreplan.web.users.settings;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.resources.entities.Criterion;
@@ -45,6 +38,13 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for user settings
@@ -67,10 +67,9 @@ public class SettingsController extends GenericForwardComposer {
 
     private BandboxSearch resourcesLoadFilterCriterionBandboxSearch;
 
-    public static ListitemRenderer languagesRenderer = new ListitemRenderer() {
+    private static ListitemRenderer languagesRenderer = new ListitemRenderer() {
         @Override
-        public void render(org.zkoss.zul.Listitem item, Object data)
-                throws Exception {
+        public void render(Listitem item, Object data, int i) throws Exception {
             Language language = (Language) data;
             String displayName = language.getDisplayName();
             if (language.equals(Language.BROWSER_LANGUAGE)) {
@@ -83,15 +82,14 @@ public class SettingsController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("settingsController", this, true);
+        comp.setAttribute("settingsController", this, true);
         messages = new MessagesForUser(messagesContainer);
         settingsModel.initEditLoggedUser();
         projectsFilterLabelBandboxSearch.setListboxEventListener(
                 Events.ON_SELECT, new EventListener() {
                     @Override
                     public void onEvent(Event event) {
-                        Listitem selectedItem = (Listitem) ((SelectEvent) event)
-                                .getSelectedItems().iterator().next();
+                        Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
                         setProjectsFilterLabel((Label) selectedItem.getValue());
                     }
                 });
@@ -99,10 +97,8 @@ public class SettingsController extends GenericForwardComposer {
                 Events.ON_SELECT, new EventListener() {
                     @Override
                     public void onEvent(Event event) {
-                        Listitem selectedItem = (Listitem) ((SelectEvent) event)
-                                .getSelectedItems().iterator().next();
-                        setResourcesLoadFilterCriterion((Criterion) selectedItem
-                                .getValue());
+                        Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
+                        setResourcesLoadFilterCriterion((Criterion) selectedItem.getValue());
                     }
                 });
     }
@@ -121,6 +117,7 @@ public class SettingsController extends GenericForwardComposer {
                 return o1.getDisplayName().compareTo(o2.getDisplayName());
             }
         });
+
         return languages;
     }
 
@@ -134,6 +131,7 @@ public class SettingsController extends GenericForwardComposer {
         } catch (ValidationException e) {
             messages.showInvalidValues(e);
         }
+
         return false;
     }
 
@@ -163,10 +161,8 @@ public class SettingsController extends GenericForwardComposer {
         return languagesRenderer;
     }
 
-    public void setExpandCompanyPlanningViewCharts(
-            boolean expandCompanyPlanningViewCharts) {
-        settingsModel
-                .setExpandCompanyPlanningViewCharts(expandCompanyPlanningViewCharts);
+    public void setExpandCompanyPlanningViewCharts(boolean expandCompanyPlanningViewCharts) {
+        settingsModel.setExpandCompanyPlanningViewCharts(expandCompanyPlanningViewCharts);
 
     }
 
@@ -174,20 +170,16 @@ public class SettingsController extends GenericForwardComposer {
         return settingsModel.isExpandCompanyPlanningViewCharts();
     }
 
-    public void setExpandOrderPlanningViewCharts(
-            boolean expandOrderPlanningViewCharts) {
-        settingsModel
-                .setExpandOrderPlanningViewCharts(expandOrderPlanningViewCharts);
+    public void setExpandOrderPlanningViewCharts(boolean expandOrderPlanningViewCharts) {
+        settingsModel.setExpandOrderPlanningViewCharts(expandOrderPlanningViewCharts);
     }
 
     public boolean isExpandOrderPlanningViewCharts() {
         return settingsModel.isExpandOrderPlanningViewCharts();
     }
 
-    public void setExpandResourceLoadViewCharts(
-            boolean expandResourceLoadViewCharts) {
-        settingsModel
-                .setExpandResourceLoadViewCharts(expandResourceLoadViewCharts);
+    public void setExpandResourceLoadViewCharts(boolean expandResourceLoadViewCharts) {
+        settingsModel.setExpandResourceLoadViewCharts(expandResourceLoadViewCharts);
     }
 
     public boolean isExpandResourceLoadViewCharts() {
@@ -266,7 +258,7 @@ public class SettingsController extends GenericForwardComposer {
         return settingsModel.getProjectsFilterLabel();
     }
 
-    public void setProjectsFilterLabel(Label label) {
+    private void setProjectsFilterLabel(Label label) {
         settingsModel.setProjectsFilterLabel(label);
     }
 
@@ -278,7 +270,7 @@ public class SettingsController extends GenericForwardComposer {
         return settingsModel.getResourcesLoadFilterCriterion();
     }
 
-    public void setResourcesLoadFilterCriterion(Criterion criterion) {
+    private void setResourcesLoadFilterCriterion(Criterion criterion) {
         settingsModel.setResourcesLoadFilterCriterion(criterion);
     }
 
