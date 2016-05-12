@@ -34,16 +34,16 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.api.Button;
-import org.zkoss.zul.api.Listbox;
-import org.zkoss.zul.api.Listitem;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listitem;
 
 /**
  * Subcontroller for assigning localizations <br />
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Fernando Bellas Permuy <fbellas@udc.es>
  */
-public class LocalizationsController extends GenericForwardComposer {
+class LocalizationsController extends GenericForwardComposer {
 
     private IWorkerModel workerModel;
 
@@ -69,26 +69,26 @@ public class LocalizationsController extends GenericForwardComposer {
     }
 
     public List<Criterion> getCriterionsNotAssigned() {
-        return workerModel.getLocalizationsAssigner()
-                .getCriterionsNotAssigned();
+        return workerModel.getLocalizationsAssigner().getCriterionsNotAssigned();
     }
 
     private void reloadLists() {
         Util.reloadBindings(activeSatisfactions, criterionsNotAssigned);
     }
 
-    private static <T> List<T> extractValuesOf(
-            Collection<? extends Listitem> items, Class<T> klass) {
-        ArrayList<T> result = new ArrayList<T>();
+    private static <T> List<T> extractValuesOf(Collection<? extends Listitem> items, Class<T> klass) {
+        ArrayList<T> result = new ArrayList<>();
         for (Listitem listitem : items) {
             result.add(klass.cast(listitem.getValue()));
         }
+
         return result;
     }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
         unassignButton.addEventListener("onClick", new EventListener() {
 
             @Override
@@ -100,6 +100,7 @@ public class LocalizationsController extends GenericForwardComposer {
             }
 
         });
+
         assignButton.addEventListener("onClick", new EventListener() {
 
             @Override

@@ -82,11 +82,9 @@ import com.igalia.java.zk.components.customdetailrowcomponent.Detail;
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
-public abstract class AssignedCriterionRequirementController<T, M> extends
-        GenericForwardComposer {
+public abstract class AssignedCriterionRequirementController<T, M> extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(OrderCRUDController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(OrderCRUDController.class);
 
     private IMessagesForUser messagesForUser;
 
@@ -100,13 +98,13 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
 
     protected NewDataSortableGrid listHoursGroups;
 
-    protected Intbox orderElementTotalHours;
+    private Intbox orderElementTotalHours;
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         messagesForUser = new MessagesForUser(messagesContainer);
-        comp.setVariable("assignedCriterionRequirementController", this, true);
+        comp.setAttribute("assignedCriterionRequirementController", this, true);
 
         // init the resorcesType
         listResourceTypes.add(ResourceEnum.MACHINE);
@@ -128,6 +126,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
             return false;
         }
         confirm();
+
         return true;
     }
 
@@ -143,6 +142,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
             showInvalidValuesInHoursGroups(invalidHoursGroupWrapper);
             return true;
         }
+
         return false;
     }
 
@@ -151,24 +151,24 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
     public abstract List<CriterionWithItsType> getCriterionWithItsTypes();
 
     public List<CriterionWithItsType> getCriterionWithItsTypesWorker() {
-        List<CriterionWithItsType> result = new ArrayList<CriterionWithItsType>();
+        List<CriterionWithItsType> result = new ArrayList<>();
         for (CriterionWithItsType criterionAndType : getCriterionWithItsTypes()) {
-            if (!criterionAndType.getCriterion().getType().getResource()
-                    .equals(ResourceEnum.MACHINE)) {
+            if (!criterionAndType.getCriterion().getType().getResource().equals(ResourceEnum.MACHINE)) {
                 result.add(criterionAndType);
             }
         }
+
         return result;
     }
 
     public List<CriterionWithItsType> getCriterionWithItsTypesMachine() {
-        List<CriterionWithItsType> result = new ArrayList<CriterionWithItsType>();
+        List<CriterionWithItsType> result = new ArrayList<>();
         for (CriterionWithItsType criterionAndType : getCriterionWithItsTypes()) {
-            if (!criterionAndType.getCriterion().getType().getResource()
-                    .equals(ResourceEnum.WORKER)) {
+            if (!criterionAndType.getCriterion().getType().getResource().equals(ResourceEnum.WORKER)) {
                 result.add(criterionAndType);
             }
         }
+
         return result;
     }
 
@@ -188,11 +188,10 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
             CriterionRequirementWrapper requirementWrapper,
             CriterionWithItsType newCriterionAndType);
 
-    public void selectCriterionAndType(Listitem item, Bandbox bandbox,
-            CriterionRequirementWrapper requirementWrapper) {
+    private void selectCriterionAndType(Listitem item, Bandbox bandbox,
+                                        CriterionRequirementWrapper requirementWrapper) {
         if (item != null) {
-            CriterionWithItsType newCriterionAndType = (CriterionWithItsType) item
-                    .getValue();
+            CriterionWithItsType newCriterionAndType = item.getValue();
             try {
                 bandbox.setValue(newCriterionAndType.getNameAndType());
                 changeCriterionAndType(requirementWrapper, newCriterionAndType);
@@ -226,7 +225,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
     }
 
     private ListModel getSubModel(String text) {
-        List<CriterionWithItsType> list = new ArrayList<CriterionWithItsType>();
+        List<CriterionWithItsType> list = new ArrayList<>();
         text = text.trim().toLowerCase();
         for (CriterionWithItsType criterion : this.getCriterionWithItsTypes()) {
             if ((criterion.getNameHierarchy().toLowerCase().contains(text) || criterion
@@ -234,33 +233,27 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
                 list.add(criterion);
             }
         }
-        return new SimpleListModel(list);
+
+        return new SimpleListModel<>(list);
     }
 
-    protected abstract void updateCriterionsWithDiferentResourceType(
-            HoursGroupWrapper hoursGroupWrapper);
+    protected abstract void updateCriterionsWithDiferentResourceType(HoursGroupWrapper hoursGroupWrapper);
 
     public void selectResourceType(Combobox combobox)
             throws InterruptedException {
-        HoursGroupWrapper hoursGroupWrapper = (HoursGroupWrapper) ((Row) combobox
-                .getParent()).getValue();
+        HoursGroupWrapper hoursGroupWrapper = ((Row) combobox.getParent()).getValue();
 
         if (combobox.getSelectedItem() != null) {
-            try {
-                int status = Messagebox
-                    .show(
-                            _("Are you sure of changing the resource type? You will lose the criteria with different resource type."),
-                            "Question", Messagebox.OK | Messagebox.CANCEL,
-                            Messagebox.QUESTION);
+            int status = Messagebox.show(
+                        _("Are you sure of changing the resource type? You will lose the criteria with different resource type."),
+                        "Question", Messagebox.OK | Messagebox.CANCEL,
+                        Messagebox.QUESTION);
 
-                if (Messagebox.OK == status) {
-                    ResourceEnum resource = (ResourceEnum) combobox
-                        .getSelectedItem().getValue();
-                    hoursGroupWrapper.assignResourceType(resource);
-                    updateCriterionsWithDiferentResourceType(hoursGroupWrapper);
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            if (Messagebox.OK == status) {
+                ResourceEnum resource = (ResourceEnum) combobox
+                    .getSelectedItem().getValue();
+                hoursGroupWrapper.assignResourceType(resource);
+                updateCriterionsWithDiferentResourceType(hoursGroupWrapper);
             }
         }
         Util.reloadBindings(listHoursGroups);
@@ -285,12 +278,10 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
     private void showInvalidValuesInHoursGroups(
             CriterionRequirementWrapper requirementWrapper) {
         if (listHoursGroups != null) {
-            List<Row> listRowsHoursGroup = (List<Row>) ((Rows) listHoursGroups
-                    .getRows()).getChildren();
+            List<Row> listRowsHoursGroup = listHoursGroups.getRows().getChildren();
             for (Row row : listRowsHoursGroup) {
                 Rows listRequirementRows = getRequirementRows(row);
-                Row requirementRow = findRowOfCriterionRequirementWrapper(
-                        listRequirementRows, requirementWrapper);
+                Row requirementRow = findRowOfCriterionRequirementWrapper(listRequirementRows, requirementWrapper);
                 showInvalidValue(requirementRow, requirementWrapper);
             }
         }
@@ -299,10 +290,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
     /**
      * Validates {@link CriterionRequirementWrapper} data constraints
      *
-     * @param invalidValue
+     * @param requirementWrapper
      */
-    private void showInvalidValues(
-            CriterionRequirementWrapper requirementWrapper) {
+    private void showInvalidValues(CriterionRequirementWrapper requirementWrapper) {
         if (listingRequirements != null) {
             // Find which listItem contains CriterionSatisfaction inside listBox
             Row row = findRowOfCriterionRequirementWrapper(listingRequirements
@@ -331,12 +321,13 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
 
     private Row findRowOfCriterionRequirementWrapper(Rows rows,
             CriterionRequirementWrapper requirementWrapper) {
-        final List<Row> listRows = (List<Row>) rows.getChildren();
+        final List<Row> listRows =  rows.getChildren();
         for (Row row : listRows) {
             if (requirementWrapper.equals(row.getValue())) {
                 return row;
             }
         }
+
         return null;
     }
 
@@ -620,7 +611,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends
     public class HoursGroupListitemRender implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             final HoursGroup hoursGroup = (HoursGroup) data;
 
             // Criterion Requirements hours Group

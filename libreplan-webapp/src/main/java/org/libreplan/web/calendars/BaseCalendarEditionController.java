@@ -83,8 +83,8 @@ import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Calendar;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Calendar;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for edit and create one {@link BaseCalendar}. It's separated of
@@ -93,24 +93,22 @@ import org.zkoss.zul.api.Window;
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
-public abstract class BaseCalendarEditionController extends
-        GenericForwardComposer {
+public abstract class BaseCalendarEditionController extends GenericForwardComposer {
 
     private static final String TEXT_COLOR_HIGHLIGHTED_DAY = "white";
 
     private static final String BACKGROUND_COLOR_ZERO_HOURS_DAY = "lightgrey";
 
     private static String asString(Capacity capacity) {
-        String extraEffortString = capacity.isOverAssignableWithoutLimit() ? _("unl")
+        String extraEffortString = capacity.isOverAssignableWithoutLimit()
+                ? _("unl")
                 : asString(capacity.getAllowedExtraEffort());
 
-        return asString(capacity.getStandardEffort()) + " ["
-                + extraEffortString
-                + "]";
+        return asString(capacity.getStandardEffort()) + " [" + extraEffortString + "]";
     }
 
     private static String asString(EffortDuration duration) {
-        if (duration == null) {
+        if ( duration == null ) {
             return "";
         }
         EnumMap<Granularity, Integer> decomposed = duration.decompose();
@@ -118,9 +116,10 @@ public abstract class BaseCalendarEditionController extends
         String result = decomposed.get(Granularity.HOURS) + ":";
         result += decomposed.get(Granularity.MINUTES);
 
-        if (decomposed.get(Granularity.SECONDS) > 0) {
+        if ( decomposed.get(Granularity.SECONDS) > 0 ) {
             result += " " + decomposed.get(Granularity.SECONDS) + "s";
         }
+
         return result;
     }
 
@@ -151,8 +150,10 @@ public abstract class BaseCalendarEditionController extends
     private IMessagesForUser messagesForUser;
 
     public BaseCalendarEditionController(IBaseCalendarModel baseCalendarModel,
-            Window window, Window createNewVersionWindow,
-            IMessagesForUser messagesForUser) {
+                                         Window window,
+                                         Window createNewVersionWindow,
+                                         IMessagesForUser messagesForUser) {
+
         this.baseCalendarModel = baseCalendarModel;
         this.window = window;
         this.createNewVersionWindow = createNewVersionWindow;
@@ -175,18 +176,15 @@ public abstract class BaseCalendarEditionController extends
         updateWithCapacityFrom(getSelectedExceptionType());
     }
 
-    private CapacityPicker addEffortDurationPickerAtWorkableTimeRow(
-            Component comp) {
-        Component normalEffortRow = comp
-                .getFellow("exceptionDayNormalEffortRow");
+    private CapacityPicker addEffortDurationPickerAtWorkableTimeRow(Component comp) {
+        Component normalEffortRow = comp.getFellow("exceptionDayNormalEffortRow");
         Component extraEffortRow = comp.getFellow("exceptionDayExtraEffortBox");
 
         EffortDurationPicker normalDuration = findOrCreateDurationPicker(normalEffortRow);
         normalDuration.initializeFor24HoursAnd0Minutes();
         EffortDurationPicker extraDuration = findOrCreateDurationPicker(extraEffortRow);
         Checkbox checkbox = findOrCreateUnlimitedCheckbox(extraEffortRow);
-        return CapacityPicker.workWith(checkbox, normalDuration, extraDuration,
-                Capacity.create(EffortDuration.zero()));
+        return CapacityPicker.workWith(checkbox, normalDuration, extraDuration, Capacity.create(EffortDuration.zero()));
     }
 
     private EffortDurationPicker findOrCreateDurationPicker(Component parent) {
@@ -197,6 +195,7 @@ public abstract class BaseCalendarEditionController extends
                     public EffortDurationPicker createAt(Component parent) {
                         EffortDurationPicker normalDuration = new EffortDurationPicker();
                         parent.appendChild(normalDuration);
+
                         return normalDuration;
                     }
                 });
@@ -209,6 +208,7 @@ public abstract class BaseCalendarEditionController extends
             public Checkbox createAt(Component parent) {
                 Checkbox result = createUnlimitedCheckbox();
                 parent.appendChild(result);
+
                 return result;
             }
 
@@ -219,19 +219,22 @@ public abstract class BaseCalendarEditionController extends
         Checkbox unlimited = new Checkbox();
         unlimited.setLabel(_("Unlimited"));
         unlimited.setTooltiptext(_("Infinitely Over Assignable"));
+
         return unlimited;
     }
 
     private void updateWithCapacityFrom(CalendarExceptionType exceptionType) {
-        capacityPicker.setValue(exceptionType != null ? exceptionType
-                .getCapacity() : Capacity.create(EffortDuration.zero()));
+        capacityPicker.setValue(exceptionType != null
+                ? exceptionType.getCapacity()
+                : Capacity.create(EffortDuration.zero()));
     }
 
     private CalendarExceptionType getSelectedExceptionType() {
         Comboitem selectedItem = exceptionTypes.getSelectedItem();
-        if (selectedItem != null) {
+        if ( selectedItem != null ) {
             return (CalendarExceptionType) selectedItem.getValue();
         }
+
         return null;
     }
 
@@ -249,7 +252,7 @@ public abstract class BaseCalendarEditionController extends
             @Override
             public void onEvent(Event event) {
                 Comboitem selectedItem = getSelectedItem((SelectEvent) event);
-                if (selectedItem != null) {
+                if ( selectedItem != null ) {
                     updateWithCapacityFrom(getValue(selectedItem));
                 }
             }
@@ -264,25 +267,21 @@ public abstract class BaseCalendarEditionController extends
         });
     }
 
-    private void fillExceptionTypesComboAndMarkSelectedItem(
-            Combobox exceptionTypes) {
+    private void fillExceptionTypesComboAndMarkSelectedItem(Combobox exceptionTypes) {
         exceptionTypes.getChildren().clear();
-        CalendarExceptionType type = baseCalendarModel
-                .getCalendarExceptionType();
+        CalendarExceptionType type = baseCalendarModel.getCalendarExceptionType();
 
         Comboitem defaultItem = new Comboitem("NO_EXCEPTION");
         exceptionTypes.appendChild(defaultItem);
-        if (type == null) {
+        if ( type == null ) {
             exceptionTypes.setSelectedItem(defaultItem);
         }
 
-        for (CalendarExceptionType calendarExceptionType : baseCalendarModel
-                .getCalendarExceptionTypes()) {
+        for (CalendarExceptionType calendarExceptionType : baseCalendarModel.getCalendarExceptionTypes()) {
             Comboitem item = new Comboitem(calendarExceptionType.getName());
             item.setValue(calendarExceptionType);
             exceptionTypes.appendChild(item);
-            if ((type != null)
-                    && (type.getName().equals(calendarExceptionType.getName()))) {
+            if ( (type != null) && (type.getName().equals(calendarExceptionType.getName())) ) {
                 exceptionTypes.setSelectedItem(item);
             }
         }
@@ -297,30 +296,33 @@ public abstract class BaseCalendarEditionController extends
     }
 
     public String getCalendarType() {
-        if (baseCalendarModel.isDerived()) {
+        if ( baseCalendarModel.isDerived() ) {
             String currentStartDate = this.getCurrentStartDateLabel();
             String currentExpiringDate = this.getCurrentExpiringDateLabel();
-            return _("Derived of calendar {0}",  getNameParentCalendar())
-                    + currentStartDate + currentExpiringDate;
+
+            return _("Derived of calendar {0}",  getNameParentCalendar()) + currentStartDate + currentExpiringDate;
         }
+
         return _("Root calendar");
     }
 
     private String getCurrentExpiringDateLabel() {
         Date date = baseCalendarModel.getCurrentExpiringDate();
         String label = "";
-        if (date != null) {
+        if ( date != null ) {
             label = " " + _("to {0}", Util.formatDate(date));
         }
+
         return label;
     }
 
     private String getCurrentStartDateLabel() {
         Date date = baseCalendarModel.getCurrentStartDate();
         String label = "";
-        if (date != null) {
+        if ( date != null ) {
             label = " " + _("from {0}", Util.formatDate(date));
         }
+
         return label;
     }
 
@@ -340,10 +342,10 @@ public abstract class BaseCalendarEditionController extends
         return hoursPerDayRenderer;
     }
 
-    public class HoursPerDayRenderer implements ListitemRenderer {
+    private class HoursPerDayRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             final Days day = (Days) data;
 
             addLabelCell(item, day);
@@ -372,23 +374,22 @@ public abstract class BaseCalendarEditionController extends
                             reloadDayInformation();
                         }
                     });
-            capacityPicker.setDisabled(baseCalendarModel.isDerived()
-                    && baseCalendarModel.isDefault(day));
+            capacityPicker.setDisabled(baseCalendarModel.isDerived() && baseCalendarModel.isDefault(day));
 
             Listcell inheritedListcell = new Listcell();
-            if (baseCalendarModel.isDerived()) {
+            if ( baseCalendarModel.isDerived() ) {
                 Checkbox inheritedCheckbox = Util.bind(new Checkbox(),
-                        new Util.Getter<Boolean>() {
+                        new Getter<Boolean>() {
 
                             @Override
                             public Boolean get() {
                                 return baseCalendarModel.isDefault(day);
                             }
-                        }, new Util.Setter<Boolean>() {
+                        }, new Setter<Boolean>() {
 
                             @Override
                             public void set(Boolean value) {
-                                if (value) {
+                                if ( value ) {
                                     baseCalendarModel.setDefault(day);
                                 } else {
                                     baseCalendarModel.unsetDefault(day);
@@ -411,23 +412,20 @@ public abstract class BaseCalendarEditionController extends
         }
 
         private void addLabelCell(Listitem item, final Days day) {
-            String days[] = DateFormatSymbols.getInstance(Locales.getCurrent())
-                    .getWeekdays();
+            String days[] = DateFormatSymbols.getInstance(Locales.getCurrent()).getWeekdays();
 
             Listcell labelListcell = new Listcell();
             labelListcell.appendChild(new Label(days[day.getIndex()]));
             item.appendChild(labelListcell);
         }
 
-        private void addNormalDurationCell(Listitem item,
-                EffortDurationPicker normalDurationPicker) {
+        private void addNormalDurationCell(Listitem item, EffortDurationPicker normalDurationPicker) {
             Listcell normalEffortCell = new Listcell();
             normalEffortCell.appendChild(normalDurationPicker);
             item.appendChild(normalEffortCell);
         }
 
-        private void addExtraEffortCell(Listitem item,
-                EffortDurationPicker extraDurationPicker, Checkbox checkbox) {
+        private void addExtraEffortCell(Listitem item, EffortDurationPicker extraDurationPicker, Checkbox checkbox) {
             Listcell extraEffortCell = new Listcell();
             Hbox hbox = new Hbox();
             hbox.setSclass("extra effort cell");
@@ -436,7 +434,6 @@ public abstract class BaseCalendarEditionController extends
             extraEffortCell.appendChild(hbox);
             item.appendChild(extraEffortCell);
         }
-
     }
 
     private void reloadCurrentWindow() {
@@ -468,20 +465,17 @@ public abstract class BaseCalendarEditionController extends
     private void reloadTypeDatesAndDuration() {
         LocalDate selectedDay = baseCalendarModel.getSelectedDay();
 
-        CalendarExceptionType type = baseCalendarModel
-                .getCalendarExceptionType(new LocalDate(selectedDay));
+        CalendarExceptionType type = baseCalendarModel.getCalendarExceptionType(new LocalDate(selectedDay));
         Combobox exceptionTypes = (Combobox) window.getFellow("exceptionTypes");
         @SuppressWarnings("unchecked")
         List<Comboitem> items = exceptionTypes.getItems();
         for (Comboitem item : items) {
-            CalendarExceptionType value = (CalendarExceptionType) item
-                    .getValue();
-            if ((value == null) && (type == null)) {
+            CalendarExceptionType value = item.getValue();
+            if ( (value == null) && (type == null) ) {
                 exceptionTypes.setSelectedItem(item);
                 break;
             }
-            if ((value != null) && (type != null)
-                    && (value.getName().equals(type.getName()))) {
+            if ( (value != null) && (type != null) && (value.getName().equals(type.getName())) ) {
                 exceptionTypes.setSelectedItem(item);
                 break;
             }
@@ -501,19 +495,17 @@ public abstract class BaseCalendarEditionController extends
         LocalDate minDate = currentDate.dayOfMonth().withMinimumValue();
         LocalDate maxDate = currentDate.dayOfMonth().withMaximumValue();
 
-        Map<String, List<Integer>> colorsMap = new HashMap<String, List<Integer>>();
+        Map<String, List<Integer>> colorsMap = new HashMap<>();
 
         BaseCalendar calendar = baseCalendarModel.getBaseCalendar();
-        if (calendar == null) {
+        if ( calendar == null ) {
             return colorsMap;
         }
 
-        for (LocalDate date = minDate; date.compareTo(maxDate) <= 0; date = date
-                .plusDays(1)) {
-            CalendarExceptionType calendarExceptionType = calendar
-                    .getExceptionType(date);
+        for (LocalDate date = minDate; date.compareTo(maxDate) <= 0; date = date.plusDays(1)) {
+            CalendarExceptionType calendarExceptionType = calendar.getExceptionType(date);
 
-            if (calendarExceptionType != null) {
+            if ( calendarExceptionType != null ) {
                 if (calendar.getOwnExceptionDay(date) != null) {
                     addDayToColor(colorsMap, calendarExceptionType.getColor()
                             .getColorOwnException(), date.getDayOfMonth());
@@ -522,9 +514,8 @@ public abstract class BaseCalendarEditionController extends
                             .getColorDerivedException(), date.getDayOfMonth());
                 }
             } else {
-                if (calendar.getCapacityOn(PartialDay.wholeDay(date)).isZero()) {
-                    addDayToColor(colorsMap, BACKGROUND_COLOR_ZERO_HOURS_DAY,
-                            date.getDayOfMonth());
+                if ( calendar.getCapacityOn(PartialDay.wholeDay(date)).isZero() ) {
+                    addDayToColor(colorsMap, BACKGROUND_COLOR_ZERO_HOURS_DAY, date.getDayOfMonth());
                 }
             }
         }
@@ -532,15 +523,14 @@ public abstract class BaseCalendarEditionController extends
         return colorsMap;
     }
 
-    private void addDayToColor(Map<String, List<Integer>> colorsMap,
-            String color, int day) {
-        if (colorsMap.get(color) == null) {
+    private void addDayToColor(Map<String, List<Integer>> colorsMap, String color, int day) {
+        if ( colorsMap.get(color) == null)  {
             colorsMap.put(color, new ArrayList<Integer>());
         }
         colorsMap.get(color).add(day);
     }
 
-    public void highlightDaysOnCalendar() {
+    void highlightDaysOnCalendar() {
         Calendar calendar = (Calendar) window.getFellow("calendarWidget");
 
         Clients.response(new AuInvoke(calendar, "resetHighlightedDates"));
@@ -555,23 +545,26 @@ public abstract class BaseCalendarEditionController extends
 
     public Date getSelectedDay() {
         Date selectedDay = toDate(baseCalendarModel.getSelectedDay());
-        if (selectedDay == null) {
+        if ( selectedDay == null)  {
             return new Date();
         }
+
         return selectedDay;
     }
 
     private static Date toDate(LocalDate date) {
-        if (date == null) {
+        if ( date == null ) {
             return null;
         }
+
         return date.toDateTimeAtStartOfDay().toDate();
     }
 
     private static LocalDate toLocalDate(Date date) {
-        if (date == null) {
+        if ( date == null ) {
             return null;
         }
+
         return LocalDate.fromDateFields(date);
     }
 
@@ -582,22 +575,21 @@ public abstract class BaseCalendarEditionController extends
 
     public String getTypeOfDay() {
         BaseCalendar calendar = baseCalendarModel.getBaseCalendar();
-        if (calendar == null) {
+        if ( calendar == null ) {
             return "";
         }
 
         LocalDate date = baseCalendarModel.getSelectedDay();
         CalendarException exceptionDay = calendar.getExceptionDay(date);
-        if (exceptionDay != null) {
-            if (calendar.getOwnExceptionDay(date) != null) {
+        if ( exceptionDay != null ) {
+            if ( calendar.getOwnExceptionDay(date) != null ) {
                 return _("Exception: {0}", exceptionDay.getType().getName());
             } else {
-                return _("Exception: {0} (Inh)", exceptionDay.getType()
-                        .getName());
+                return _("Exception: {0} (Inh)", exceptionDay.getType().getName());
             }
         }
 
-        if (calendar.getCapacityOn(PartialDay.wholeDay(date)).isZero()) {
+        if ( calendar.getCapacityOn(PartialDay.wholeDay(date)).isZero() ) {
             return _("Not workable day");
         }
 
@@ -610,43 +602,39 @@ public abstract class BaseCalendarEditionController extends
 
     public void createException() {
         Combobox exceptionTypes = (Combobox) window.getFellow("exceptionTypes");
-        CalendarExceptionType type = (CalendarExceptionType) exceptionTypes
-                .getSelectedItem().getValue();
-        if (type == null) {
-            throw new WrongValueException(exceptionTypes,
-                    _("Please, select type of exception"));
+        CalendarExceptionType type = exceptionTypes.getSelectedItem().getValue();
+        if ( type == null ) {
+            throw new WrongValueException(exceptionTypes, _("Please, select type of exception"));
         } else {
-            Clients.closeErrorBox(exceptionTypes);
+            Clients.clearWrongValue(exceptionTypes);
         }
 
-        Datebox dateboxStartDate = (Datebox) window
-                .getFellow("exceptionStartDate");
+        Datebox dateboxStartDate = (Datebox) window.getFellow("exceptionStartDate");
         Date startDate = dateboxStartDate.getValue();
-        if (startDate == null) {
-            throw new WrongValueException(dateboxStartDate,
-                    _("You should select a start date for the exception"));
+
+        if ( startDate == null ) {
+            throw new WrongValueException(dateboxStartDate, _("You should select a start date for the exception"));
         } else {
-            Clients.closeErrorBox(dateboxStartDate);
+            Clients.clearWrongValue(dateboxStartDate);
         }
         Datebox dateboxEndDate = (Datebox) window.getFellow("exceptionEndDate");
         Date endDate = dateboxEndDate.getValue();
-        if (endDate == null) {
-            throw new WrongValueException(dateboxEndDate,
-                    _("Please, select an End Date for the Exception"));
+
+        if ( endDate == null ) {
+            throw new WrongValueException(dateboxEndDate, _("Please, select an End Date for the Exception"));
         } else {
-            Clients.closeErrorBox(dateboxEndDate);
+            Clients.clearWrongValue(dateboxEndDate);
         }
-        if (new LocalDate(startDate).compareTo(new LocalDate(endDate)) > 0) {
-            throw new WrongValueException(
-                    dateboxEndDate,
+        if ( new LocalDate(startDate).compareTo(new LocalDate(endDate)) > 0 ) {
+            throw new WrongValueException(dateboxEndDate,
                     _("Exception end date should be greater or equals than start date"));
         } else {
-            Clients.closeErrorBox(dateboxEndDate);
+            Clients.clearWrongValue(dateboxEndDate);
         }
 
         Capacity capacity = capacityPicker.getValue();
-        baseCalendarModel.createException(type, LocalDate
-                .fromDateFields(startDate), LocalDate.fromDateFields(endDate),
+        baseCalendarModel.createException(type,
+                LocalDate.fromDateFields(startDate), LocalDate.fromDateFields(endDate),
                 capacity);
         reloadDayInformation();
     }
@@ -672,31 +660,30 @@ public abstract class BaseCalendarEditionController extends
     public class HistoryVersionsRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
-            CalendarData calendarData = (CalendarData) data;
-            item.setValue(calendarData);
+        public void render(Listitem listitem, Object o, int i) throws Exception {
+            CalendarData calendarData = (CalendarData) o;
+            listitem.setValue(calendarData);
 
-            if (isDerived()) {
-                appendParentCombobox(item, calendarData);
+            if ( isDerived() ) {
+                appendParentCombobox(listitem, calendarData);
             } else {
-                appendParentLabel(item, calendarData);
+                appendParentLabel(listitem, calendarData);
             }
-            appendStartDatebox(item, calendarData);
-            appendExpiringDatebox(item, calendarData);
-            appendSummaryLabel(item, calendarData);
-            appendOperationsListcell(item, calendarData);
-            markAsSelected(item, calendarData);
-            addEventListener(item);
+            appendStartDatebox(listitem, calendarData);
+            appendExpiringDatebox(listitem, calendarData);
+            appendSummaryLabel(listitem, calendarData);
+            appendOperationsListcell(listitem, calendarData);
+            markAsSelected(listitem, calendarData);
+            addEventListener(listitem);
         }
 
-        private void appendSummaryLabel(final Listitem listItem,
-                final CalendarData version) {
+        private void appendSummaryLabel(final Listitem listItem, final CalendarData version) {
             BaseCalendar parent = version.getParent();
 
-            List<String> summary = new ArrayList<String>();
+            List<String> summary = new ArrayList<>();
             for (Days day : Days.values()) {
-                if (version.isDefault(day)) {
-                    if (parent == null) {
+                if ( version.isDefault(day) ) {
+                    if ( parent == null ) {
                         summary.add("0");
                     } else {
                         summary.add(_("Inh"));
@@ -712,13 +699,11 @@ public abstract class BaseCalendarEditionController extends
             listItem.appendChild(listCell);
         }
 
-        private void appendStartDatebox(final Listitem listItem,
-                final CalendarData version) {
+        private void appendStartDatebox(final Listitem listItem, final CalendarData version) {
             Datebox datebox = new Datebox();
 
-            final LocalDate dateValidFrom = baseCalendarModel
-                    .getValidFrom(version);
-            if (dateValidFrom != null) {
+            final LocalDate dateValidFrom = baseCalendarModel.getValidFrom(version);
+            if ( dateValidFrom != null ) {
                 Util.bind(datebox, new Util.Getter<Date>() {
                     @Override
                     public Date get() {
@@ -739,11 +724,9 @@ public abstract class BaseCalendarEditionController extends
 
             datebox.setConstraint(new Constraint() {
                 @Override
-                public void validate(Component comp, Object value)
-                        throws WrongValueException {
+                public void validate(Component comp, Object value) throws WrongValueException {
                     try {
-                        baseCalendarModel.checkAndChangeStartDate(version,
-                                ((Date) value));
+                        baseCalendarModel.checkAndChangeStartDate(version, ((Date) value));
                     } catch (ValidationException e) {
                         throw new WrongValueException(comp, e.getMessage());
                     }
@@ -755,12 +738,11 @@ public abstract class BaseCalendarEditionController extends
             listItem.appendChild(listCell);
         }
 
-        private void appendExpiringDatebox(final Listitem listItem,
-                final CalendarData version) {
+        private void appendExpiringDatebox(final Listitem listItem, final CalendarData version) {
             Datebox datebox = new Datebox();
 
             final LocalDate expiringDate = version.getExpiringDate();
-            if (expiringDate != null) {
+            if ( expiringDate != null ) {
                 datebox.setDisabled(false);
             } else {
                 datebox.setDisabled(true);
@@ -770,17 +752,17 @@ public abstract class BaseCalendarEditionController extends
                 @Override
                 public Date get() {
                     LocalDate expiringDate = version.getExpiringDate();
-                    if (expiringDate != null) {
-                        return expiringDate.minusDays(1)
-                                .toDateTimeAtStartOfDay().toDate();
+                    if ( expiringDate != null ) {
+                        return expiringDate.minusDays(1).toDateTimeAtStartOfDay().toDate();
                     }
+
                     return null;
                 }
             }, new Util.Setter<Date>() {
                 @Override
                 public void set(Date value) {
                     LocalDate expiringDate = null;
-                    if (value != null) {
+                    if ( value != null ) {
                         expiringDate = new LocalDate(value).plusDays(1);
                     }
                     version.setExpiringDate(expiringDate);
@@ -796,12 +778,10 @@ public abstract class BaseCalendarEditionController extends
 
             datebox.setConstraint(new Constraint() {
                 @Override
-                public void validate(Component comp, Object value)
-                        throws WrongValueException {
+                public void validate(Component comp, Object value) throws WrongValueException {
                     Date date = ((Date) value);
                     try {
-                        baseCalendarModel
-                                .checkChangeExpiringDate(version, date);
+                        baseCalendarModel.checkChangeExpiringDate(version, date);
                     } catch (ValidationException e) {
                         throw new WrongValueException(comp, e.getMessage());
                     }
@@ -815,7 +795,7 @@ public abstract class BaseCalendarEditionController extends
 
         private void appendParentLabel(Listitem listItem, CalendarData version) {
             final Label labelParent = new Label();
-            if (version.getParent() != null) {
+            if ( version.getParent() != null ) {
                 labelParent.setValue(version.getParent().getName());
             }
 
@@ -824,8 +804,7 @@ public abstract class BaseCalendarEditionController extends
             listItem.appendChild(listCell);
         }
 
-        private void appendParentCombobox(final Listitem listItem,
-                final CalendarData version) {
+        private void appendParentCombobox(final Listitem listItem, final CalendarData version) {
             final Combobox comboParents = new Combobox();
             final List<BaseCalendar> listParents = getParentCalendars();
 
@@ -835,8 +814,7 @@ public abstract class BaseCalendarEditionController extends
                 comboItem.setLabel(parent.getName());
                 comboItem.setParent(comboParents);
 
-                if ( (version.getParent() ) != null &&
-                        (parent.getId().equals(version.getParent().getId())) ) {
+                if ( (version.getParent() ) != null && (parent.getId().equals(version.getParent().getId())) ) {
                     comboParents.setSelectedItem(comboItem);
                 }
             }
@@ -861,10 +839,9 @@ public abstract class BaseCalendarEditionController extends
             }, new Util.Setter<Comboitem>() {
                 @Override
                 public void set(Comboitem comboItem) {
-                    if ( ((comboItem != null)) && (comboItem.getValue() != null )
-                            && (comboItem.getValue() instanceof BaseCalendar)) {
-                        BaseCalendar parent = (BaseCalendar) comboItem
-                                .getValue();
+                    if ( ((comboItem != null)) && (comboItem.getValue() != null ) &&
+                            (comboItem.getValue() instanceof BaseCalendar))  {
+                        BaseCalendar parent = comboItem.getValue();
                         version.setParent(parent);
                     }
                 }
@@ -877,13 +854,12 @@ public abstract class BaseCalendarEditionController extends
 
         private void markAsSelected(Listitem item, CalendarData calendarData) {
             CalendarData selected = baseCalendarModel.getCalendarData();
-            if ((selected != null) && (calendarData.equals(selected))) {
+            if ( (selected != null) && (calendarData.equals(selected)) ) {
                 item.setSelected(true);
             }
         }
 
-        private void appendOperationsListcell(Listitem item,
-                CalendarData calendarData) {
+        private void appendOperationsListcell(Listitem item, CalendarData calendarData) {
             Listcell listcell = new Listcell();
             listcell.appendChild(createRemoveButton(calendarData));
             item.appendChild(listcell);
@@ -899,24 +875,27 @@ public abstract class BaseCalendarEditionController extends
                             reloadWorkWeeksList();
                         }
                     });
-            if (baseCalendarModel.getBaseCalendar() == null
-                    || baseCalendarModel.getBaseCalendar()
-                            .getCalendarDataVersions().size() == 1) {
+            if (baseCalendarModel.getBaseCalendar() == null ||
+                    baseCalendarModel.getBaseCalendar().getCalendarDataVersions().size() == 1) {
                 result.setDisabled(true);
             } else {
                 result.setDisabled(false);
             }
+
             return result;
         }
 
-        private Button createButton(String image, String tooltip,
-                String hoverImage, String styleClass,
-                EventListener eventListener) {
+        private Button createButton(String image,
+                                    String tooltip,
+                                    String hoverImage,
+                                    String styleClass,
+                                    EventListener eventListener) {
             Button result = new Button("", image);
             result.setHoverImage(hoverImage);
             result.setSclass(styleClass);
             result.setTooltiptext(tooltip);
             result.addEventListener(Events.ON_CLICK, eventListener);
+
             return result;
         }
 
@@ -925,25 +904,21 @@ public abstract class BaseCalendarEditionController extends
                 @Override
                 public void onEvent(Event event) {
                     Listitem item = (Listitem) event.getTarget();
-                    CalendarData calendarData = (CalendarData) item.getValue();
+                    CalendarData calendarData = item.getValue();
 
-                    LocalDate dateValidFrom = baseCalendarModel
-                            .getValidFrom(calendarData);
+                    LocalDate dateValidFrom = baseCalendarModel.getValidFrom(calendarData);
                     LocalDate expiringDate = calendarData.getExpiringDate();
 
-                    if (dateValidFrom != null) {
-                        goToDate(dateValidFrom.toDateTimeAtStartOfDay()
-                                .toDate());
-                    } else if (expiringDate != null) {
-                        goToDate(expiringDate.minusDays(1)
-                                .toDateTimeAtStartOfDay().toDate());
+                    if ( dateValidFrom != null ) {
+                        goToDate(dateValidFrom.toDateTimeAtStartOfDay().toDate());
+                    } else if ( expiringDate != null ) {
+                        goToDate(expiringDate.minusDays(1).toDateTimeAtStartOfDay().toDate());
                     } else {
                         goToDate(new Date());
                     }
                 }
             });
         }
-
     }
 
     public boolean isLastVersion(LocalDate selectedDate) {
@@ -954,7 +929,7 @@ public abstract class BaseCalendarEditionController extends
         return baseCalendarModel.isFirstVersion(selectedDate);
     }
 
-    public void goToDate(Date date) {
+    private void goToDate(Date date) {
         setSelectedDay(toLocalDate(date));
     }
 
@@ -974,52 +949,43 @@ public abstract class BaseCalendarEditionController extends
     }
 
     private void initDatesToCreateNewVersion() {
-        this.newWorkWeekStartDate = (new LocalDate()).plusDays(1)
-                .toDateTimeAtStartOfDay().toDate();
-        this.newWorkWeekExpiringDate = (new LocalDate()).plusDays(2)
-                .toDateTimeAtStartOfDay().toDate();
+        this.newWorkWeekStartDate = (new LocalDate()).plusDays(1).toDateTimeAtStartOfDay().toDate();
+        this.newWorkWeekExpiringDate = (new LocalDate()).plusDays(2).toDateTimeAtStartOfDay().toDate();
     }
 
     public void acceptCreateNewVersion() {
-        Component compStartDate = createNewVersionWindow
-                .getFellow("startDateValidFromNewVersion");
+        Component compStartDate = createNewVersionWindow.getFellow("startDateValidFromNewVersion");
         LocalDate startDate = getLocalDateFrom((Datebox) compStartDate);
 
-        Component compExpiringDate = createNewVersionWindow
-                .getFellow("expiringDateValidFromNewVersion");
+        Component compExpiringDate = createNewVersionWindow.getFellow("expiringDateValidFromNewVersion");
         LocalDate expiringDate = getLocalDateFrom((Datebox) compExpiringDate);
 
         BaseCalendar selected = null;
-        if (isDerived()) {
-            Combobox parentCalendars = (Combobox) createNewVersionWindow
-                    .getFellow("parentCalendars");
-            if (parentCalendars.getSelectedItem() == null) {
-                throw new WrongValueException(parentCalendars,
-                        _("cannot be empty"));
+        if ( isDerived() ) {
+            Combobox parentCalendars = (Combobox) createNewVersionWindow.getFellow("parentCalendars");
+            if ( parentCalendars.getSelectedItem() == null ) {
+                throw new WrongValueException(parentCalendars, _("cannot be empty"));
             }
-            selected = (BaseCalendar) parentCalendars.getSelectedItem()
-                    .getValue();
+            selected = parentCalendars.getSelectedItem().getValue();
         }
 
         try {
-            baseCalendarModel.createNewVersion(startDate, expiringDate,
-                    selected);
+            baseCalendarModel.createNewVersion(startDate, expiringDate, selected);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("Wrong expiring date")) {
-                throw new WrongValueException(compExpiringDate, _(e
-                        .getMessage()));
+            if ( e.getMessage().contains("Wrong expiring date") ) {
+                throw new WrongValueException(compExpiringDate, _(e.getMessage()));
             } else {
                 throw new WrongValueException(compStartDate, _(e.getMessage()));
             }
         }
 
-        Clients.closeErrorBox(compStartDate);
-        Clients.closeErrorBox(compExpiringDate);
+        Clients.clearWrongValue(compStartDate);
+        Clients.clearWrongValue(compExpiringDate);
         creatingNewVersion = false;
         Util.reloadBindings(createNewVersionWindow);
 
         setSelectedDay(startDate);
-        if ((startDate == null) && (expiringDate != null)) {
+        if ( (startDate == null) && (expiringDate != null) ) {
             setSelectedDay(expiringDate.minusDays(1));
         }
 
@@ -1028,9 +994,10 @@ public abstract class BaseCalendarEditionController extends
 
     private static LocalDate getLocalDateFrom(Datebox datebox) {
         Date value = datebox.getValue();
-        if (value == null) {
+        if ( value == null ) {
             return null;
         }
+
         return LocalDate.fromDateFields(value);
     }
 
@@ -1055,7 +1022,7 @@ public abstract class BaseCalendarEditionController extends
         this.newWorkWeekExpiringDate = date;
     }
 
-    public List<BaseCalendar> getParentCalendars() {
+    private List<BaseCalendar> getParentCalendars() {
         return baseCalendarModel.getPossibleParentCalendars();
     }
 
@@ -1069,6 +1036,7 @@ public abstract class BaseCalendarEditionController extends
                         return o1.getDate().compareTo(o2.getDate());
                     }
                 });
+
         return calendarExceptions;
     }
 
@@ -1076,16 +1044,16 @@ public abstract class BaseCalendarEditionController extends
         return parentCalendarsComboitemRenderer;
     }
 
-    public class ParentCalendarsComboitemRenderer implements ComboitemRenderer {
+    private class ParentCalendarsComboitemRenderer implements ComboitemRenderer {
 
         @Override
-        public void render(Comboitem item, Object data) {
-            BaseCalendar calendar = (BaseCalendar) data;
-            item.setLabel(calendar.getName());
-            item.setValue(calendar);
+        public void render(Comboitem comboitem, Object o, int i) throws Exception {
+            BaseCalendar calendar = (BaseCalendar) o;
+            comboitem.setLabel(calendar.getName());
+            comboitem.setValue(calendar);
 
-            Combobox combobox = (Combobox) item.getParent();
-            if (combobox.getSelectedIndex() != 0) {
+            Combobox combobox = (Combobox) comboitem.getParent();
+            if ( combobox.getSelectedIndex() != 0 ) {
                 combobox.setSelectedIndex(0);
             }
         }
@@ -1098,45 +1066,40 @@ public abstract class BaseCalendarEditionController extends
     public class CalendarExceptionRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
-            CalendarException calendarException = (CalendarException) data;
-            item.setValue(calendarException);
+        public void render(Listitem listitem, Object o, int i) throws Exception {
+            CalendarException calendarException = (CalendarException) o;
+            listitem.setValue(calendarException);
 
-            appendDayListcell(item, calendarException);
-            appendExceptionTypeListcell(item, calendarException);
-            appendStandardEffortListcell(item, calendarException.getCapacity());
-            appendExtraEffortListcell(item, calendarException.getCapacity());
-            appendCodeListcell(item, calendarException);
-            appendOriginListcell(item, calendarException);
-            appendOperationsListcell(item, calendarException);
+            appendDayListcell(listitem, calendarException);
+            appendExceptionTypeListcell(listitem, calendarException);
+            appendStandardEffortListcell(listitem, calendarException.getCapacity());
+            appendExtraEffortListcell(listitem, calendarException.getCapacity());
+            appendCodeListcell(listitem, calendarException);
+            appendOriginListcell(listitem, calendarException);
+            appendOperationsListcell(listitem, calendarException);
 
-            markAsSelected(item, calendarException);
+            markAsSelected(listitem, calendarException);
 
         }
 
-        private void markAsSelected(Listitem item,
-                CalendarException calendarException) {
+        private void markAsSelected(Listitem item, CalendarException calendarException) {
             LocalDate selectedDay = baseCalendarModel.getSelectedDay();
-            if (selectedDay != null) {
-                if (calendarException.getDate().equals(selectedDay)) {
+            if ( selectedDay != null ) {
+                if ( calendarException.getDate().equals(selectedDay) ) {
                     item.setSelected(true);
                 }
             }
         }
 
-        private void appendDayListcell(Listitem item,
-                CalendarException calendarException) {
+        private void appendDayListcell(Listitem item, CalendarException calendarException) {
             Listcell listcell = new Listcell();
-            listcell.appendChild(new Label(calendarException.getDate()
-                    .toString()));
+            listcell.appendChild(new Label(calendarException.getDate().toString()));
             item.appendChild(listcell);
         }
 
-        private void appendStandardEffortListcell(Listitem item,
-                Capacity capacity) {
+        private void appendStandardEffortListcell(Listitem item, Capacity capacity) {
             Listcell listcell = new Listcell();
-            listcell.appendChild(new Label(
-                    _(capacity.getStandardEffortString())));
+            listcell.appendChild(new Label(_(capacity.getStandardEffortString())));
             item.appendChild(listcell);
         }
 
@@ -1146,24 +1109,22 @@ public abstract class BaseCalendarEditionController extends
             item.appendChild(listcell);
         }
 
-        private void appendExceptionTypeListcell(Listitem item,
-                CalendarException calendarException) {
+        private void appendExceptionTypeListcell(Listitem item, CalendarException calendarException) {
             Listcell listcell = new Listcell();
             String type = "";
-            if (calendarException.getType() != null) {
+            if ( calendarException.getType() != null ) {
                 type = calendarException.getType().getName();
             }
             listcell.appendChild(new Label(type));
             item.appendChild(listcell);
         }
 
-        private void appendCodeListcell(final Listitem item,
-                final CalendarException calendarException) {
+        private void appendCodeListcell(final Listitem item, final CalendarException calendarException) {
             item.setValue(calendarException);
             Listcell listcell = new Listcell();
             final Textbox code = new Textbox();
 
-            if (getBaseCalendar() != null) {
+            if ( getBaseCalendar() != null ) {
                 code.setDisabled(getBaseCalendar().isCodeAutogenerated());
             }
 
@@ -1191,11 +1152,10 @@ public abstract class BaseCalendarEditionController extends
             item.appendChild(listcell);
         }
 
-        private void appendOriginListcell(Listitem item,
-                CalendarException calendarException) {
+        private void appendOriginListcell(Listitem item, CalendarException calendarException) {
             Listcell listcell = new Listcell();
             String origin = _("Inherited");
-            if (baseCalendarModel.isOwnException(calendarException)) {
+            if ( baseCalendarModel.isOwnException(calendarException) ) {
                 origin = _("Direct");
             }
             listcell.appendChild(new Label(origin));
@@ -1208,38 +1168,38 @@ public abstract class BaseCalendarEditionController extends
             item.appendChild(listcell);
         }
 
-        private Button createRemoveButton(
-                final CalendarException calendarException) {
+        private Button createRemoveButton(final CalendarException calendarException) {
             Button result = createButton("/common/img/ico_borrar1.png",
                     _("Delete"), "/common/img/ico_borrar.png", "icono",
                     new EventListener() {
                         @Override
                         public void onEvent(Event event) {
-                            baseCalendarModel
-                                    .removeException(calendarException
-                                    .getDate());
+                            baseCalendarModel.removeException(calendarException.getDate());
                             reloadDayInformation();
                         }
                     });
-            if (!baseCalendarModel.isOwnException(calendarException)) {
+            if ( !baseCalendarModel.isOwnException(calendarException) ) {
                 result.setDisabled(true);
-                result
-                        .setTooltiptext(_("inherited exception can not be removed"));
+                result.setTooltiptext(_("inherited exception can not be removed"));
             }
+
             return result;
         }
 
-        private Button createButton(String image, String tooltip,
-                String hoverImage, String styleClass,
-                EventListener eventListener) {
+        private Button createButton(String image,
+                                    String tooltip,
+                                    String hoverImage,
+                                    String styleClass,
+                                    EventListener eventListener) {
+
             Button result = new Button("", image);
             result.setHoverImage(hoverImage);
             result.setSclass(styleClass);
             result.setTooltiptext(tooltip);
             result.addEventListener(Events.ON_CLICK, eventListener);
+
             return result;
         }
-
     }
 
     public boolean isOwnExceptionDay() {
@@ -1252,32 +1212,29 @@ public abstract class BaseCalendarEditionController extends
 
     public void updateException() {
         Combobox exceptionTypes = (Combobox) window.getFellow("exceptionTypes");
-        CalendarExceptionType type = (CalendarExceptionType) exceptionTypes
-                .getSelectedItem().getValue();
+        CalendarExceptionType type = exceptionTypes.getSelectedItem().getValue();
 
-        Datebox dateboxStartDate = (Datebox) window
-                .getFellow("exceptionStartDate");
+        Datebox dateboxStartDate = (Datebox) window.getFellow("exceptionStartDate");
         Date startDate = dateboxStartDate.getValue();
-        if (startDate == null) {
-            throw new WrongValueException(dateboxStartDate,
-                    _("You should select a start date for the exception"));
+
+        if ( startDate == null ) {
+            throw new WrongValueException(dateboxStartDate, _("You should select a start date for the exception"));
         } else {
-            Clients.closeErrorBox(dateboxStartDate);
+            Clients.clearWrongValue(dateboxStartDate);
         }
         Datebox dateboxEndDate = (Datebox) window.getFellow("exceptionEndDate");
         Date endDate = dateboxEndDate.getValue();
-        if (endDate == null) {
-            throw new WrongValueException(dateboxEndDate,
-                    _("Please, select an End Date for the Exception"));
+
+        if ( endDate == null ) {
+            throw new WrongValueException(dateboxEndDate, _("Please, select an End Date for the Exception"));
         } else {
-            Clients.closeErrorBox(dateboxEndDate);
+            Clients.clearWrongValue(dateboxEndDate);
         }
-        if (startDate.compareTo(endDate) > 0) {
-            throw new WrongValueException(
-                    dateboxEndDate,
+        if ( startDate.compareTo(endDate) > 0 ) {
+            throw new WrongValueException(dateboxEndDate,
                     _("Exception end date should be greater or equals than start date"));
         } else {
-            Clients.closeErrorBox(dateboxEndDate);
+            Clients.clearWrongValue(dateboxEndDate);
         }
 
         Capacity capacity = capacityPicker.getValue();
@@ -1287,11 +1244,12 @@ public abstract class BaseCalendarEditionController extends
         reloadDayInformation();
     }
 
-    public String getNameParentCalendar() {
+        private String getNameParentCalendar() {
         BaseCalendar parent = baseCalendarModel.getCurrentParent();
-        if (parent != null) {
+        if ( parent != null ) {
             return parent.getName();
         }
+
         return "";
     }
 
@@ -1310,18 +1268,17 @@ public abstract class BaseCalendarEditionController extends
     public class CalendarAvailabilityRenderer implements ListitemRenderer {
 
         @Override
-        public void render(Listitem item, Object data) {
-            CalendarAvailability calendarAvailability = (CalendarAvailability) data;
-            item.setValue(calendarAvailability);
+        public void render(Listitem listitem, Object o, int i) throws Exception {
+            CalendarAvailability calendarAvailability = (CalendarAvailability) o;
+            listitem.setValue(calendarAvailability);
 
-            appendValidFromListcell(item, calendarAvailability);
-            appendExpirationDateListcell(item, calendarAvailability);
-            appendAvailabilityCodeListcell(item, calendarAvailability);
-            appendOperationsListcell(item, calendarAvailability);
+            appendValidFromListcell(listitem, calendarAvailability);
+            appendExpirationDateListcell(listitem, calendarAvailability);
+            appendAvailabilityCodeListcell(listitem, calendarAvailability);
+            appendOperationsListcell(listitem, calendarAvailability);
         }
 
-        private void appendValidFromListcell(Listitem item,
-                final CalendarAvailability calendarAvailability) {
+        private void appendValidFromListcell(Listitem item, final CalendarAvailability calendarAvailability) {
             Listcell listcell = new Listcell();
 
             final Datebox datebox = new Datebox();
@@ -1330,12 +1287,11 @@ public abstract class BaseCalendarEditionController extends
 
                         @Override
                         public Date get() {
-                            LocalDate startDate = calendarAvailability
-                                    .getStartDate();
-                            if (startDate != null) {
-                                return startDate.toDateTimeAtStartOfDay()
-                                        .toDate();
+                            LocalDate startDate = calendarAvailability.getStartDate();
+                            if ( startDate != null ) {
+                                return startDate.toDateTimeAtStartOfDay().toDate();
                             }
+
                             return null;
                         }
 
@@ -1345,11 +1301,9 @@ public abstract class BaseCalendarEditionController extends
                         public void set(Date value) {
                             LocalDate startDate = new LocalDate(value);
                             try {
-                                baseCalendarModel.setStartDate(
-                                        calendarAvailability, startDate);
+                                baseCalendarModel.setStartDate(calendarAvailability, startDate);
                             } catch (IllegalArgumentException e) {
-                                throw new WrongValueException(datebox, e
-                                        .getMessage());
+                                throw new WrongValueException(datebox, e.getMessage());
                             }
                         }
 
@@ -1359,8 +1313,7 @@ public abstract class BaseCalendarEditionController extends
             item.appendChild(listcell);
         }
 
-        private void appendExpirationDateListcell(Listitem item,
-                final CalendarAvailability calendarAvailability) {
+        private void appendExpirationDateListcell(Listitem item, final CalendarAvailability calendarAvailability) {
             Listcell listcell = new Listcell();
 
             final Datebox datebox = new Datebox();
@@ -1369,11 +1322,9 @@ public abstract class BaseCalendarEditionController extends
 
                         @Override
                         public Date get() {
-                            LocalDate endDate = calendarAvailability
-                                    .getEndDate();
-                            if (endDate != null) {
-                                return endDate.toDateTimeAtStartOfDay()
-                                        .toDate();
+                            LocalDate endDate = calendarAvailability.getEndDate();
+                            if ( endDate != null ) {
+                                return endDate.toDateTimeAtStartOfDay().toDate();
                             }
                             return null;
                         }
@@ -1383,14 +1334,11 @@ public abstract class BaseCalendarEditionController extends
                         @Override
                         public void set(Date value) {
                             try {
-                                LocalDate endDate = getAppropiateEndDate(
-                                    calendarAvailability, value);
+                                LocalDate endDate = getAppropiateEndDate(calendarAvailability, value);
 
-                                baseCalendarModel.setEndDate(
-                                        calendarAvailability, endDate);
+                                baseCalendarModel.setEndDate(calendarAvailability, endDate);
                             } catch (IllegalArgumentException e) {
-                                throw new WrongValueException(datebox, e
-                                        .getMessage());
+                                throw new WrongValueException(datebox, e.getMessage());
                             }
                         }
 
@@ -1400,27 +1348,24 @@ public abstract class BaseCalendarEditionController extends
             item.appendChild(listcell);
         }
 
-        private LocalDate getAppropiateEndDate(
-                CalendarAvailability calendarAvailability, Date endDate) {
-            if (endDate == null) {
-                if (baseCalendarModel
-                        .isLastActivationPeriod(calendarAvailability)) {
+        private LocalDate getAppropiateEndDate(CalendarAvailability calendarAvailability, Date endDate) {
+            if ( endDate == null ) {
+                if (baseCalendarModel.isLastActivationPeriod(calendarAvailability)) {
                     return null;
                 } else {
-                    throw new IllegalArgumentException(
-                            _("End date can only be deleted in the the last activation"));
+                    throw new IllegalArgumentException(_("End date can only be deleted in the the last activation"));
                 }
             }
+
             return new LocalDate(endDate);
         }
 
-        private void appendAvailabilityCodeListcell(Listitem item,
-                final CalendarAvailability availability) {
+        private void appendAvailabilityCodeListcell(Listitem item, final CalendarAvailability availability) {
             item.setValue(availability);
             Listcell listcell = new Listcell();
             final Textbox code = new Textbox();
 
-            if (getBaseCalendar() != null) {
+            if ( getBaseCalendar() != null ) {
                 code.setDisabled(getBaseCalendar().isCodeAutogenerated());
             }
 
@@ -1448,40 +1393,41 @@ public abstract class BaseCalendarEditionController extends
             item.appendChild(listcell);
         }
 
-        private void appendOperationsListcell(Listitem item,
-                CalendarAvailability calendarAvailability) {
+        private void appendOperationsListcell(Listitem item, CalendarAvailability calendarAvailability) {
             Listcell listcell = new Listcell();
             listcell.appendChild(createRemoveButton(calendarAvailability));
             item.appendChild(listcell);
         }
 
-        private Button createRemoveButton(
-                final CalendarAvailability calendarAvailability) {
+        private Button createRemoveButton(final CalendarAvailability calendarAvailability) {
             Button result = createButton("/common/img/ico_borrar1.png",
                     _("Delete"), "/common/img/ico_borrar.png", "icono",
                     new EventListener() {
                         @Override
                         public void onEvent(Event event) {
-                            baseCalendarModel
-                                    .removeCalendarAvailability(calendarAvailability);
+                            baseCalendarModel.removeCalendarAvailability(calendarAvailability);
                             reloadDayInformation();
                             reloadActivationPeriods();
                         }
                     });
+
             return result;
         }
 
-        private Button createButton(String image, String tooltip,
-                String hoverImage, String styleClass,
-                EventListener eventListener) {
+        private Button createButton(String image,
+                                    String tooltip,
+                                    String hoverImage,
+                                    String styleClass,
+                                    EventListener eventListener) {
+
             Button result = new Button("", image);
             result.setHoverImage(hoverImage);
             result.setSclass(styleClass);
             result.setTooltiptext(tooltip);
             result.addEventListener(Events.ON_CLICK, eventListener);
+
             return result;
         }
-
     }
 
     public void createCalendarAvailability() {
@@ -1494,31 +1440,27 @@ public abstract class BaseCalendarEditionController extends
         Util.reloadBindings(window.getFellow("calendarAvailabilities"));
     }
 
-    public void reloadExceptionsList() {
+    private void reloadExceptionsList() {
         Util.reloadBindings(window.getFellow("exceptionsList"));
     }
 
     public boolean isNotResourceCalendar() {
         BaseCalendar baseCalendar = baseCalendarModel.getBaseCalendar();
-        if ((baseCalendar == null)
-                || (baseCalendar instanceof ResourceCalendar)) {
-            return false;
-        }
-        return true;
+        return !((baseCalendar == null) || (baseCalendar instanceof ResourceCalendar));
     }
 
-    public void validateCalendarExceptionCodes(){
+    protected void validateCalendarExceptionCodes(){
         Listbox listbox = (Listbox) window.getFellow("exceptionsList");
-        if (listbox != null) {
+        if ( listbox != null ) {
+
             for (int i = 0; i < listbox.getItemCount(); i++) {
-                Listitem item = (Listitem) listbox.getItems().get(i);
-                if (item.getChildren().size() == 5) {
-                    Textbox code = (Textbox) ((Listcell) item.getChildren()
-                            .get(3)).getFirstChild();
-                    if (code != null && !code.isDisabled()
-                            && code.getValue().isEmpty()) {
-                        throw new WrongValueException(code,
-                                _("It cannot be empty"));
+                Listitem item = listbox.getItems().get(i);
+
+                if ( item.getChildren().size() == 5)  {
+                    Textbox code = (Textbox) (item.getChildren().get(3)).getFirstChild();
+
+                    if ( code != null && !code.isDisabled() && code.getValue().isEmpty() ) {
+                        throw new WrongValueException(code, _("It cannot be empty"));
                     }
                 }
             }
@@ -1545,10 +1487,10 @@ public abstract class BaseCalendarEditionController extends
 
     public void onSelectException(Event event) {
         Listbox listBox = (Listbox) event.getTarget();
-        Listitem item = (Listitem) listBox.getSelectedItem();
-        if (item != null) {
-            CalendarException calendarException = (CalendarException) item
-                .getValue();
+        Listitem item = listBox.getSelectedItem();
+
+        if ( item != null ) {
+            CalendarException calendarException = item.getValue();
             setSelectedDay(calendarException.getDate());
             reloadDayInformation();
         }

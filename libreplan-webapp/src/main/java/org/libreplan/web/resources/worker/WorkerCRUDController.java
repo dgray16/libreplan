@@ -56,7 +56,6 @@ import org.libreplan.web.common.ILimitsModel;
 import org.libreplan.web.common.BaseCRUDController.CRUDControllerState;
 import org.libreplan.web.common.components.bandboxsearch.BandboxMultipleSearch;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
-import org.libreplan.web.common.components.finders.FilterPair;
 import org.libreplan.web.common.entrypoints.EntryPointsHandler;
 import org.libreplan.web.common.entrypoints.IURLHandlerRegistry;
 import org.libreplan.web.costcategories.ResourcesCostCategoryAssignmentController;
@@ -90,10 +89,10 @@ import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Caption;
-import org.zkoss.zul.api.Groupbox;
-import org.zkoss.zul.api.Radiogroup;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Caption;
+import org.zkoss.zul.Groupbox;
+import org.zkoss.zul.Radiogroup;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for {@link Worker} resource <br />
@@ -193,7 +192,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
         private String label;
 
-        private UserBindingOption(String label) {
+        UserBindingOption(String label) {
             this.label = label;
         }
 
@@ -204,16 +203,18 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             return text;
         }
 
-    };
+    }
 
     public WorkerCRUDController() {
     }
 
-    public WorkerCRUDController(Window listWindow, Window editWindow,
+    public WorkerCRUDController(Window listWindow,
+                                Window editWindow,
                                 Window editCalendarWindow,
                                 IWorkerModel workerModel,
                                 IMessagesForUser messages,
                                 IWorkerCRUDControllerEntryPoints workerCRUD) {
+
         this.listWindow = listWindow;
         this.editWindow = editWindow;
         this.workerModel = workerModel;
@@ -239,9 +240,10 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     public LocalizationsController getLocalizations() {
-        if (workerModel.isCreating()) {
+        if ( workerModel.isCreating() ) {
             return localizationsForCreationController;
         }
+
         return localizationsForEditionController;
     }
 
@@ -252,8 +254,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     public void saveAndContinue() {
-        if (save()) {
-            if (!getWorker().isVirtual()) {
+        if ( save() ) {
+            if ( !getWorker().isVirtual() ) {
                 goToEditForm(getWorker());
             } else {
                 this.goToEditVirtualWorkerForm(getWorker());
@@ -291,6 +293,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         } catch (ValidationException e) {
             messages.showInvalidValues(e);
         }
+
         return false;
     }
 
@@ -321,21 +324,17 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
         String password = passwordTextbox.getValue();
         if (StringUtils.isBlank(loginName)) {
-            throw new WrongValueException(passwordTextbox,
-                    _("cannot be empty"));
+            throw new WrongValueException(passwordTextbox, _("cannot be empty"));
         }
 
         String passwordConfirmation = passwordConfirmationTextbox.getValue();
         if (!password.equals(passwordConfirmation)) {
-            throw new WrongValueException(passwordConfirmationTextbox,
-                    _("passwords do not match"));
+            throw new WrongValueException(passwordConfirmationTextbox, _("passwords do not match"));
         }
 
-        String encodedPassword = dbPasswordEncoderService.encodePassword(
-                password, loginName);
+        String encodedPassword = dbPasswordEncoderService.encodePassword(password, loginName);
 
-        User newUser = User.create(loginName, encodedPassword,
-                emailTextbox.getValue());
+        User newUser = User.create(loginName, encodedPassword, emailTextbox.getValue());
 
         Worker worker = getWorker();
         newUser.setFirstName(worker.getFirstName());
@@ -422,7 +421,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         Util.reloadBindings(userBindingGroupbox);
     }
 
-    public void goToEditVirtualWorkerForm(Worker worker) {
+    private void goToEditVirtualWorkerForm(Worker worker) {
         state = CRUDControllerState.EDIT;
         workerModel.prepareEditFor(worker);
         resourcesCostCategoryAssignmentController.setResource(workerModel
@@ -468,7 +467,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         super.doAfterCompose(comp);
         localizationsForEditionController = createLocalizationsController(comp, "editWindow");
         localizationsForCreationController = createLocalizationsController(comp, "editWindow");
-        comp.setVariable("controller", this, true);
+        comp.setAttribute("controller", this, true);
         if ( messagesContainer == null ) {
             throw new RuntimeException(_("MessagesContainer is needed"));
         }
@@ -530,17 +529,16 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     private void setupResourcesCostCategoryAssignmentController(Component comp) {
-        Component costCategoryAssignmentContainer =
-                editWindow.getFellowIfAny("costCategoryAssignmentContainer");
+        Component costCategoryAssignmentContainer = editWindow.getFellowIfAny("costCategoryAssignmentContainer");
         resourcesCostCategoryAssignmentController = (ResourcesCostCategoryAssignmentController)
-                costCategoryAssignmentContainer.getVariable("assignmentController", true);
+                costCategoryAssignmentContainer.getAttribute("assignmentController", true);
     }
 
     private void editAsignedCriterions() {
         try{
             setupCriterionsController();
             criterionsController.prepareForEdit( workerModel.getWorker());
-        }catch(Exception e){
+        } catch(Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -556,28 +554,28 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     private void setupCriterionsController() throws Exception {
         criterionsController = new CriterionsController(workerModel);
-        criterionsController.doAfterCompose(getCurrentWindow().
-                getFellow("criterionsContainer"));
+        criterionsController.doAfterCompose(getCurrentWindow().getFellow("criterionsContainer"));
     }
 
     public BaseCalendarEditionController getEditionController() {
         return baseCalendarEditionController;
     }
 
-    private LocalizationsController createLocalizationsController(
-            Component comp, String localizationsContainerName) throws Exception {
-        LocalizationsController localizationsController = new LocalizationsController(
-                workerModel);
+    private LocalizationsController createLocalizationsController(Component comp,
+                                                                  String localizationsContainerName) throws Exception {
+        LocalizationsController localizationsController = new LocalizationsController(workerModel);
         localizationsController
                 .doAfterCompose(comp.getFellow(localizationsContainerName)
-                        .getFellow("localizationsContainer"));
+                .getFellow("localizationsContainer"));
+
         return localizationsController;
     }
 
     private OnlyOneVisible getVisibility() {
-        if (visibility == null) {
+        if ( visibility == null ) {
             visibility = new OnlyOneVisible(listWindow, editWindow);
         }
+
         return visibility;
     }
 
@@ -589,38 +587,31 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         return workerModel.getBaseCalendars();
     }
 
-    public boolean isCalendarNull() {
-        if (workerModel.getCalendar() != null) {
-            return false;
-        }
-        return true;
+    private boolean isCalendarNull() {
+        return workerModel.getCalendar() == null;
     }
 
-    public boolean isCalendarNotNull() {
+    private boolean isCalendarNotNull() {
         return !isCalendarNull();
     }
 
     private void createCalendar() {
-        Combobox combobox = (Combobox) getCurrentWindow().getFellow(
-                "createDerivedCalendar");
+        Combobox combobox = (Combobox) getCurrentWindow().getFellow("createDerivedCalendar");
         Comboitem selectedItem = combobox.getSelectedItem();
-        if (selectedItem == null) {
-            throw new WrongValueException(combobox,
-                    "You should select one calendar");
+        if ( selectedItem == null ) {
+            throw new WrongValueException(combobox, "You should select one calendar");
         }
-        BaseCalendar parentCalendar = (BaseCalendar) combobox.getSelectedItem()
-                .getValue();
-        if (parentCalendar == null) {
+        BaseCalendar parentCalendar =  combobox.getSelectedItem().getValue();
+        if ( parentCalendar == null ) {
             parentCalendar = workerModel.getDefaultCalendar();
         }
 
         resourceCalendarModel.initCreateDerived(parentCalendar);
         resourceCalendarModel.generateCalendarCodes();
-        workerModel.setCalendar((ResourceCalendar) resourceCalendarModel
-                .getBaseCalendar());
+        workerModel.setCalendar((ResourceCalendar) resourceCalendarModel.getBaseCalendar());
     }
 
-    public void editCalendar() {
+    private void editCalendar() {
         updateCalendarController();
         resourceCalendarModel.initEdit(workerModel.getCalendar());
         try {
@@ -647,10 +638,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     private void updateCalendarController() {
-        editCalendarWindow = (Window) getCurrentWindow().getFellow(
-                "editCalendarWindow");
-        createNewVersionWindow = (Window) getCurrentWindow().getFellow(
-                "createNewVersion");
+        editCalendarWindow = (Window) getCurrentWindow().getFellow("editCalendarWindow");
+        createNewVersionWindow = (Window) getCurrentWindow().getFellow("createNewVersion");
 
         createNewVersionWindow.setVisible(true);
         createNewVersionWindow.setVisible(false);
@@ -661,9 +650,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
             @Override
             public void goToList() {
-                workerModel
-                        .setCalendar((ResourceCalendar) resourceCalendarModel
-                                .getBaseCalendar());
+                workerModel.setCalendar((ResourceCalendar) resourceCalendarModel.getBaseCalendar());
                 reloadCurrentWindow();
             }
 
@@ -677,9 +664,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             @Override
             public void save() {
                 validateCalendarExceptionCodes();
-                ResourceCalendar calendar = (ResourceCalendar) resourceCalendarModel
-                        .getBaseCalendar();
-                if (calendar != null) {
+                ResourceCalendar calendar = (ResourceCalendar) resourceCalendarModel.getBaseCalendar();
+                if ( calendar != null ) {
                     resourceCalendarModel.generateCalendarCodes();
                     workerModel.setCalendar(calendar);
                 }
@@ -693,8 +679,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
         };
 
-        editCalendarWindow.setVariable("calendarController", this, true);
-        createNewVersionWindow.setVariable("calendarController", this, true);
+        editCalendarWindow.setAttribute("calendarController", this, true);
+        createNewVersionWindow.setAttribute("calendarController", this, true);
     }
 
     public BaseCalendarsComboitemRenderer getBaseCalendarsComboitemRenderer() {
@@ -704,19 +690,20 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     private class BaseCalendarsComboitemRenderer implements ComboitemRenderer {
 
         @Override
-        public void render(Comboitem item, Object data) {
-            BaseCalendar calendar = (BaseCalendar) data;
-            item.setLabel(calendar.getName());
-            item.setValue(calendar);
+        public void render(Comboitem comboitem, Object o, int i) throws Exception {
+            BaseCalendar calendar = (BaseCalendar) o;
+            comboitem.setLabel(calendar.getName());
+            comboitem.setValue(calendar);
 
-            if (isDefaultCalendar(calendar)) {
-                Combobox combobox = (Combobox) item.getParent();
-                combobox.setSelectedItem(item);
+            if ( isDefaultCalendar(calendar) ) {
+                Combobox combobox = (Combobox) comboitem.getParent();
+                combobox.setSelectedItem(comboitem);
             }
         }
 
         private boolean isDefaultCalendar(BaseCalendar calendar) {
             BaseCalendar defaultCalendar = workerModel.getDefaultCalendar();
+
             return defaultCalendar.getId().equals(calendar.getId());
         }
     }
@@ -725,16 +712,15 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         state = CRUDControllerState.CREATE;
         workerModel.prepareForCreate(true);
         createAsignedCriterions();
-        resourcesCostCategoryAssignmentController.setResource(workerModel
-                .getWorker());
+        resourcesCostCategoryAssignmentController.setResource(workerModel.getWorker());
         showEditWindow(_("Create Virtual Workers Group"));
         resourceCalendarModel.cancel();
     }
 
-    public boolean isVirtualWorker() {
+    private boolean isVirtualWorker() {
         boolean isVirtual = false;
-        if (this.workerModel != null) {
-            if (this.workerModel.getWorker() != null ) {
+        if ( this.workerModel != null ) {
+            if ( this.workerModel.getWorker() != null ) {
                 isVirtual = this.workerModel.getWorker().isVirtual();
             }
         }
@@ -746,18 +732,16 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     public String getVirtualWorkerObservations() {
-        if (isVirtualWorker()) {
-            return ((VirtualWorker) this.workerModel.getWorker())
-                    .getObservations();
+        if ( isVirtualWorker() ) {
+            return ((VirtualWorker) this.workerModel.getWorker()).getObservations();
         } else {
             return "";
         }
     }
 
     public void setVirtualWorkerObservations(String observations) {
-        if (isVirtualWorker()) {
-            ((VirtualWorker) this.workerModel.getWorker())
-                    .setObservations(observations);
+        if ( isVirtualWorker() ) {
+            ((VirtualWorker) this.workerModel.getWorker()).setObservations(observations);
         }
     }
 
@@ -771,12 +755,10 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             public void validate(Component comp, Object value)
                     throws WrongValueException {
                 Date finishDate = (Date) value;
-                if ((finishDate != null)
-                        && (filterStartDate.getValue() != null)
-                        && (finishDate.compareTo(filterStartDate.getValue()) < 0)) {
+                if ( (finishDate != null) && (filterStartDate.getValue() != null) &&
+                        (finishDate.compareTo(filterStartDate.getValue()) < 0) ) {
                     filterFinishDate.setValue(null);
-                    throw new WrongValueException(comp,
-                            _("must be after start date"));
+                    throw new WrongValueException(comp, _("must be after start date"));
                 }
             }
         };
@@ -788,12 +770,10 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             public void validate(Component comp, Object value)
                     throws WrongValueException {
                 Date startDate = (Date) value;
-                if ((startDate != null)
-                        && (filterFinishDate.getValue() != null)
-                        && (startDate.compareTo(filterFinishDate.getValue()) > 0)) {
+                if ( (startDate != null) && (filterFinishDate.getValue() != null) && (
+                        startDate.compareTo(filterFinishDate.getValue()) > 0) ) {
                     filterStartDate.setValue(null);
-                    throw new WrongValueException(comp,
-                            _("must be lower than end date"));
+                    throw new WrongValueException(comp, _("must be lower than end date"));
                 }
             }
         };
@@ -801,7 +781,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public void onApplyFilter() {
         ResourcePredicate predicate = createPredicate();
-        if (predicate != null) {
+        if ( predicate != null ) {
             filterByPredicate(predicate);
         } else {
             showAllWorkers();
@@ -809,39 +789,36 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     private ResourcePredicate createPredicate() {
-        List<FilterPair> listFilters = bdFilters
-                .getSelectedElements();
+        List listFilters = bdFilters.getSelectedElements();
 
         String personalFilter = txtfilter.getValue();
 
         // Get the dates filter
         LocalDate startDate = null;
         LocalDate finishDate = null;
-        if (filterStartDate.getValue() != null) {
+        if ( filterStartDate.getValue() != null ) {
             startDate = LocalDate.fromDateFields(filterStartDate.getValue());
         }
-        if (filterFinishDate.getValue() != null) {
+        if ( filterFinishDate.getValue() != null ) {
             finishDate = LocalDate.fromDateFields(filterFinishDate.getValue());
         }
 
         final Listitem item = filterLimitingResource.getSelectedItem();
-        Boolean isLimitingResource = (item != null) ? LimitingResourceEnum
-                .valueOf((LimitingResourceEnum) item.getValue()) : null;
+        Boolean isLimitingResource = (item != null)
+                ? LimitingResourceEnum.valueOf((LimitingResourceEnum) item.getValue())
+                : null;
 
-        if (listFilters.isEmpty()
-                && (personalFilter == null || personalFilter.isEmpty())
-                && startDate == null && finishDate == null
-                && isLimitingResource == null) {
+        if ( listFilters.isEmpty() && (personalFilter == null || personalFilter.isEmpty()) &&
+                startDate == null && finishDate == null && isLimitingResource == null ) {
             return null;
         }
-        return new ResourcePredicate(listFilters, personalFilter, startDate,
-                finishDate, isLimitingResource);
+
+        return new ResourcePredicate(listFilters, personalFilter, startDate, finishDate, isLimitingResource);
     }
 
     private void filterByPredicate(ResourcePredicate predicate) {
-        List<Worker> filteredResources = workerModel
-                .getFilteredWorker(predicate);
-        listing.setModel(new SimpleListModel(filteredResources.toArray()));
+        List<Worker> filteredResources = workerModel.getFilteredWorker(predicate);
+        listing.setModel(new SimpleListModel<>(filteredResources.toArray()));
         listing.invalidate();
     }
 
@@ -850,9 +827,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         filterFinishDate.setValue(null);
     }
 
-    public void showAllWorkers() {
-        listing.setModel(new SimpleListModel(workerModel.getAllCurrentWorkers()
-                .toArray()));
+    private void showAllWorkers() {
+        listing.setModel(new SimpleListModel<>(workerModel.getAllCurrentWorkers().toArray()));
         listing.invalidate();
     }
 
@@ -863,7 +839,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
         private String option;
 
-        private LimitingResourceEnum(String option) {
+        LimitingResourceEnum(String option) {
             this.option = option;
         }
 
@@ -877,9 +853,9 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         }
 
         public static Boolean valueOf(LimitingResourceEnum option) {
-            if (LIMITING_RESOURCE.equals(option)) {
+            if ( LIMITING_RESOURCE.equals(option) ) {
                 return true;
-            } else if (NON_LIMITING_RESOURCE.equals(option)) {
+            } else if ( NON_LIMITING_RESOURCE.equals(option) ) {
                 return false;
             } else {
                 return null;
@@ -887,35 +863,32 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         }
 
         public static Set<LimitingResourceEnum> getLimitingResourceOptionList() {
-            return EnumSet.of(
-                    LimitingResourceEnum.LIMITING_RESOURCE,
-                    LimitingResourceEnum.NON_LIMITING_RESOURCE);
+            return EnumSet.of(LimitingResourceEnum.LIMITING_RESOURCE, LimitingResourceEnum.NON_LIMITING_RESOURCE);
         }
 
         public static Set<LimitingResourceEnum> getLimitingResourceFilterOptionList() {
-            return EnumSet.of(LimitingResourceEnum.ALL,
-                    LimitingResourceEnum.LIMITING_RESOURCE,
-                    LimitingResourceEnum.NON_LIMITING_RESOURCE);
+            return EnumSet.of(LimitingResourceEnum.ALL, LimitingResourceEnum.LIMITING_RESOURCE, LimitingResourceEnum.NON_LIMITING_RESOURCE);
         }
 
         public static ResourceType toResourceType(LimitingResourceEnum limitingResource) {
-            if (LIMITING_RESOURCE.equals(limitingResource)) {
+            if ( LIMITING_RESOURCE.equals(limitingResource) ) {
                 return ResourceType.LIMITING_RESOURCE;
             }
+
             return ResourceType.NON_LIMITING_RESOURCE;
         }
 
     }
 
     private void setupFilterLimitingResourceListbox() {
-        for(LimitingResourceEnum resourceEnum :
-                LimitingResourceEnum.getLimitingResourceFilterOptionList()) {
+        for(LimitingResourceEnum resourceEnum : LimitingResourceEnum.getLimitingResourceFilterOptionList()) {
             Listitem item = new Listitem();
             item.setParent(filterLimitingResource);
             item.setValue(resourceEnum);
             item.appendChild(new Listcell(resourceEnum.toString()));
             filterLimitingResource.appendChild(item);
         }
+
         filterLimitingResource.setSelectedIndex(0);
     }
 
@@ -925,16 +898,17 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public Object getLimitingResource() {
         final Worker worker = getWorker();
-        return (worker != null) ? LimitingResourceEnum.valueOf(worker
-                .isLimitingResource())
+
+        return (worker != null)
+                ? LimitingResourceEnum.valueOf(worker.isLimitingResource())
                 : LimitingResourceEnum.NON_LIMITING_RESOURCE;         // Default option
     }
 
     public void setLimitingResource(LimitingResourceEnum option) {
         Worker worker = getWorker();
-        if (worker != null) {
+        if ( worker != null ) {
             worker.setResourceType(LimitingResourceEnum.toResourceType(option));
-            if (worker.isLimitingResource()) {
+            if ( worker.isLimitingResource() ) {
                 worker.setUser(null);
             }
             Util.reloadBindings(userBindingGroupbox);
@@ -947,7 +921,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public void onCheckGenerateCode(Event e) {
         CheckEvent ce = (CheckEvent) e;
-        if (ce.isChecked()) {
+        if ( ce.isChecked() ) {
             // we have to auto-generate the code if it's unsaved
             try {
                 workerModel.setCodeAutogenerated(ce.isChecked());
@@ -960,7 +934,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public void confirmRemove(Worker worker) {
         try {
-            if (!workerModel.canRemove(worker)) {
+            if ( !workerModel.canRemove(worker) ) {
                 messages.showMessage(
                         Level.WARNING,
                         _("This worker cannot be deleted because it has assignments to projects or imputed hours"));
@@ -969,13 +943,13 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
             int status = Messagebox.show(_("Confirm deleting this worker. Are you sure?"), _("Delete"),
                     Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK != status) {
+            if ( Messagebox.OK != status ) {
                 return;
             }
 
             boolean removeBoundUser = false;
             User user = workerModel.getBoundUserFromDB(worker);
-            if (user != null && !user.isSuperuser()) {
+            if ( user != null && !user.isSuperuser() ) {
                 removeBoundUser = Messagebox.show(
                         _("Do you want to remove bound user \"{0}\" too?",
                                 user.getLoginName()), _("Delete bound user"),
@@ -987,9 +961,6 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
                     removeBoundUser ? _("Worker and bound user deleted")
                             : _("Worker deleted"));
             goToList();
-        } catch (InterruptedException e) {
-            messages.showMessage(
-                    Level.ERROR, e.getMessage());
         } catch (InstanceNotFoundException e) {
             messages.showMessage(
                     Level.INFO, _("This worker was already removed by other user"));
@@ -1000,7 +971,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         return new RowRenderer() {
 
             @Override
-            public void render(Row row, Object data) {
+            public void render(Row row, Object data,int i) {
                 final Worker worker = (Worker) data;
                 row.setValue(worker);
 
@@ -1016,8 +987,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
                 row.appendChild(new Label(worker.getFirstName()));
                 row.appendChild(new Label(worker.getNif()));
                 row.appendChild(new Label(worker.getCode()));
-                row.appendChild(new Label((Boolean.TRUE.equals(worker
-                        .isLimitingResource())) ? _("yes") : _("no")));
+                row.appendChild(new Label((Boolean.TRUE.equals(worker.isLimitingResource())) ? _("yes") : _("no")));
 
                 Hbox hbox = new Hbox();
                 hbox.appendChild(Util.createEditButton(new EventListener() {
@@ -1039,11 +1009,11 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     public void updateWindowTitle() {
-        if (editWindow != null && state != CRUDControllerState.LIST) {
+        if ( editWindow != null && state != CRUDControllerState.LIST ) {
             Worker worker = getWorker();
 
             String entityType = _("Worker");
-            if (worker.isVirtual()) {
+            if ( worker.isVirtual( )) {
                 entityType = _("Virtual Workers Group");
             }
 
@@ -1052,7 +1022,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             String title;
             switch (state) {
                 case CREATE:
-                    if (StringUtils.isEmpty(humanId)) {
+                    if ( StringUtils.isEmpty(humanId) ) {
                         title = _("Create {0}", entityType);
                     } else {
                         title = _("Create {0}: {1}", entityType, humanId);
@@ -1062,8 +1032,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
                     title = _("Edit {0}: {1}", entityType, humanId);
                     break;
                 default:
-                    throw new IllegalStateException(
-                            "You should be in creation or edition mode to use this method");
+                    throw new IllegalStateException("You should be in creation or edition mode to use this method");
             }
             ((Caption) editWindow.getFellow("caption")).setLabel(title);
         }
@@ -1073,7 +1042,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         return workerModel.getPossibleUsersToBound();
     }
 
-    public User getBoundUser() {
+    private User getBoundUser() {
         return workerModel.getBoundUser();
     }
 
@@ -1088,27 +1057,31 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public String getLoginName() {
         User user = getBoundUser();
-        if (user != null) {
+        if ( user != null ) {
             return user.getLoginName();
         }
+
         return "";
     }
 
     public String getEmail() {
         User user = getBoundUser();
-        if (user != null) {
+        if ( user != null ) {
             return user.getEmail();
         }
+
         return "";
     }
 
     public boolean isExistingUser() {
         int option = userBindingRadiogroup.getSelectedIndex();
+
         return UserBindingOption.EXISTING_USER.ordinal() == option;
     }
 
     public boolean isCreateNewUser() {
         int option = userBindingRadiogroup.getSelectedIndex();
+
         return UserBindingOption.CREATE_NEW_USER.ordinal() == option;
     }
 
@@ -1118,41 +1091,36 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public boolean isNotLimitingOrVirtualResource() {
         Worker worker = getWorker();
-        if (worker != null) {
-            return !(worker.isLimitingResource() || worker.isVirtual());
-        }
-        return false;
+
+        return worker != null && !(worker.isLimitingResource() || worker.isVirtual());
+
     }
 
     public void goToUserEdition() {
         User user = getWorker().getUser();
-        if (user != null) {
-            if (showConfirmUserEditionDialog() == Messagebox.OK) {
+        if ( user != null ) {
+            if ( showConfirmUserEditionDialog() == Messagebox.OK ) {
                 userCRUD.goToEditForm(user);
             }
         }
     }
 
     private int showConfirmUserEditionDialog() {
-        try {
-            return Messagebox
-                    .show(_("Unsaved changes will be lost. Would you like to continue?"),
-                            _("Confirm editing user"), Messagebox.OK
-                                    | Messagebox.CANCEL, Messagebox.QUESTION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        return Messagebox
+                .show(_("Unsaved changes will be lost. Would you like to continue?"),
+                        _("Confirm editing user"), Messagebox.OK
+                                | Messagebox.CANCEL, Messagebox.QUESTION);
     }
 
-    public boolean isNoRoleUserAccounts() {
-        return !SecurityUtils
-                .isSuperuserOrUserInRoles(UserRole.ROLE_USER_ACCOUNTS);
+    private boolean isNoRoleUserAccounts() {
+        return !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_USER_ACCOUNTS);
     }
 
     public String getUserEditionButtonTooltip() {
-        if (isNoRoleUserAccounts()) {
+        if ( isNoRoleUserAccounts() ) {
             return _("You do not have permissions to go to edit user window");
         }
+
         return "";
     }
 
@@ -1172,9 +1140,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         Integer resourcesCount = resourceDAO.getRowCount().intValue();
 
         int resourcesLeft = resourcesTypeLimit.getValue() - resourcesCount;
-        if ( resourcesTypeLimit != null )
-            if ( resourcesCount >= resourcesTypeLimit.getValue() )
-                return _("Workers limit reached");
+        if ( resourcesCount >= resourcesTypeLimit.getValue() )
+            return _("Workers limit reached");
 
         return _("Create") + " ( " + resourcesLeft  + " " + _("left") + " )";
     }

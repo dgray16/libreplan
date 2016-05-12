@@ -45,18 +45,17 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Groupbox;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Groupbox;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for Tim synchronization
  *
  * @author Miciele Ghiorghis <m.ghiorghis@antoniusziekenhuis.nl>
  */
-public class TimSynchronizationController extends GenericForwardComposer {
+class TimSynchronizationController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(TimSynchronizationController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(TimSynchronizationController.class);
 
     private OrderCRUDController orderController;
 
@@ -81,7 +80,7 @@ public class TimSynchronizationController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("timSynchronizationController", this, true);
+        comp.setAttribute("timSynchronizationController", this, true);
         loadComponentsEditWindow(comp);
         showOrHideTimEditWindow();
         updateOrderLastSyncInfoScreen();
@@ -96,10 +95,8 @@ public class TimSynchronizationController extends GenericForwardComposer {
 
     private void loadComponentsEditWindow(Component comp) {
         txtProductCode = (Textbox) comp.getFellowIfAny("txtProductCode");
-        labelLastSyncDate = (Label) comp
-                .getFellowIfAny("labelLastSyncDate");
-        labelProductCode = (Label) comp
-                .getFellowIfAny("labelProductCode");
+        labelLastSyncDate = (Label) comp.getFellowIfAny("labelLastSyncDate");
+        labelProductCode = (Label) comp.getFellowIfAny("labelProductCode");
         timGroupBox = (Groupbox) comp.getFellowIfAny("timGroupBox");
 
         messagesForUser = new MessagesForUser(messagesContainer);
@@ -117,11 +114,9 @@ public class TimSynchronizationController extends GenericForwardComposer {
      * Updates the UI text last synchronized date and the text product code
      */
     private void updateOrderLastSyncInfoScreen() {
-        OrderSyncInfo orderSyncInfo = exportTimesheetsToTim
-                .getOrderLastSyncInfo(getOrder());
-        if (orderSyncInfo != null) {
-            labelLastSyncDate.setValue(Util.formatDateTime(orderSyncInfo
-                    .getLastSyncDate()));
+        OrderSyncInfo orderSyncInfo = exportTimesheetsToTim.getOrderLastSyncInfo(getOrder());
+        if ( orderSyncInfo != null ) {
+            labelLastSyncDate.setValue(Util.formatDateTime(orderSyncInfo.getLastSyncDate()));
             labelProductCode.setValue("(" + orderSyncInfo.getKey() + ")");
         }
     }
@@ -129,49 +124,40 @@ public class TimSynchronizationController extends GenericForwardComposer {
     /**
      * Returns true if Tim is Activated. Used to show/hide Tim edit window
      */
-    public boolean isTimActivated() {
-        Connector connector = connectorDAO
-                .findUniqueByName(PredefinedConnectors.TIM.getName());
-        if (connector == null) {
-            return false;
-        }
-        return connector.isActivated();
+    private boolean isTimActivated() {
+        Connector connector = connectorDAO.findUniqueByName(PredefinedConnectors.TIM.getName());
+
+        return connector != null && connector.isActivated();
     }
 
     public void startExportToTim() {
         txtProductCode.setConstraint("no empty:" + _("cannot be empty"));
         try {
-            exportTimesheetsToTim.exportTimesheets(txtProductCode.getValue(),
-                    getOrder());
+            exportTimesheetsToTim.exportTimesheets(txtProductCode.getValue(), getOrder());
 
             updateOrderLastSyncInfoScreen();
 
             shwoImpExpInfo();
 
         } catch (ConnectorException e) {
-            messagesForUser.showMessage(Level.ERROR,
-                            _("Exporting timesheets to Tim failed. Check the Tim connector"));
+            messagesForUser.showMessage(Level.ERROR, _("Exporting timesheets to Tim failed. Check the Tim connector"));
         }
     }
 
 
     private void shwoImpExpInfo() {
-        Map<String, Object> args = new HashMap<String, Object>();
+        Map<String, Object> args = new HashMap<>();
 
         SynchronizationInfo synchronizationInfo = exportTimesheetsToTim.getSynchronizationInfo();
         args.put("action", synchronizationInfo.getAction());
         args.put("showSuccess", synchronizationInfo.isSuccessful());
-        args.put("failedReasons",
-                new SimpleListModel(synchronizationInfo.getFailedReasons()));
+        args.put("failedReasons", new SimpleListModel<>(synchronizationInfo.getFailedReasons()));
 
-        Window timImpExpInfoWindow = (Window) Executions.createComponents(
-                "/orders/_timImpExpInfo.zul", null, args);
+        Window timImpExpInfoWindow = (Window) Executions.createComponents("/orders/_timImpExpInfo.zul", null, args);
 
         try {
             timImpExpInfoWindow.doModal();
         } catch (SuspendNotAllowedException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

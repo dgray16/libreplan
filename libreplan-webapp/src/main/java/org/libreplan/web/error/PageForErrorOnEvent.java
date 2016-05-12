@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.api.Textbox;
+import org.zkoss.zul.Textbox;
 
 public class PageForErrorOnEvent extends GenericForwardComposer {
 
@@ -48,23 +48,19 @@ public class PageForErrorOnEvent extends GenericForwardComposer {
         super.doAfterCompose(comp);
         logError();
         modalWindow = comp;
-        if (stacktrace != null) {
+        if ( stacktrace != null ) {
             stacktrace.setValue(getStacktrace());
         }
     }
 
     private void logError() {
-        Throwable exception = (Throwable) Executions.getCurrent().getAttribute(
-                "javax.servlet.error.exception");
-        String errorMessage = (String) Executions.getCurrent().getAttribute(
-                "javax.servlet.error.message");
-        Integer code = (Integer) Executions.getCurrent().getAttribute(
-                "javax.servlet.error.status_code");
-        if (code != null) {
+        Throwable exception = (Throwable) Executions.getCurrent().getAttribute("javax.servlet.error.exception");
+        String errorMessage = (String) Executions.getCurrent().getAttribute("javax.servlet.error.message");
+        Integer code = (Integer) Executions.getCurrent().getAttribute("javax.servlet.error.status_code");
+        if ( code != null ) {
             errorMessage += " [Status Code: " + code + "]";
-            if (code == HttpServletResponse.SC_FORBIDDEN) {
-                String uri = (String) Executions.getCurrent().getAttribute(
-                        "javax.servlet.error.request_uri");
+            if ( code == HttpServletResponse.SC_FORBIDDEN ) {
+                String uri = (String) Executions.getCurrent().getAttribute("javax.servlet.error.request_uri");
                 errorMessage += " [Request URI: " + uri + "]";
             }
         }
@@ -80,20 +76,19 @@ public class PageForErrorOnEvent extends GenericForwardComposer {
     }
 
     public void onClick$quitSession() {
-        HttpServletRequest nativeRequest = (HttpServletRequest) Executions
-                .getCurrent().getNativeRequest();
+        HttpServletRequest nativeRequest = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
         nativeRequest.getSession().invalidate();
         Executions.sendRedirect("/");
     }
 
     private String getStacktrace() {
-        Throwable exception = (Throwable) Executions.getCurrent().getAttribute(
-                "javax.servlet.error.exception");
-        if (exception != null) {
+        Throwable exception = (Throwable) Executions.getCurrent().getAttribute("javax.servlet.error.exception");
+        if ( exception != null ) {
             Writer stacktrace = new StringWriter();
             exception.printStackTrace(new PrintWriter(stacktrace));
             return stacktrace.toString();
         }
+        
         return "";
     }
 

@@ -100,12 +100,14 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
      * Shows Resource Allocation window
      * @param context
      * @param task
-     * @param ganttTask
+     * @param messagesForUser
      * @param planningState
      */
-    public void init(IContextWithPlannerTask<TaskElement> context, org.libreplan.business.planner.entities.Task task,
-            PlanningState planningState,
-            IMessagesForUser messagesForUser) {
+    public void init(IContextWithPlannerTask<TaskElement> context,
+                     org.libreplan.business.planner.entities.Task task,
+                     PlanningState planningState,
+                     IMessagesForUser messagesForUser) {
+
         try {
             resourceAllocationModel.init(context, task, planningState);
             resourceAllocationModel.setLimitingResourceAllocationController(this);
@@ -114,12 +116,10 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
             // change them
             boolean existsDaysAssignments = existsResourceAllocationWithDayAssignments();
             tabLimitingWorkerSearch.setDisabled(existsDaysAssignments);
-            limitingNewAllocationSelectorCombo
-                    .setDisabled(existsDaysAssignments);
+            limitingNewAllocationSelectorCombo.setDisabled(existsDaysAssignments);
 
             limitingNewAllocationSelector.setAllocationsAdder(resourceAllocationModel);
-            limitingNewAllocationSelectorCombo
-                    .setAllocationsAdder(resourceAllocationModel);
+            limitingNewAllocationSelectorCombo.setAllocationsAdder(resourceAllocationModel);
 
             initializeTaskInformationComponent();
 
@@ -130,11 +130,9 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
     }
 
     private void initializeTaskInformationComponent() {
-        limitingTaskInformation.initializeGridTaskRows(resourceAllocationModel
-                .getHoursAggregatedByCriteria());
+        limitingTaskInformation.initializeGridTaskRows(resourceAllocationModel.getHoursAggregatedByCriteria());
         limitingTaskInformation.hideRecomendedAllocationButton();
-        limitingTaskInformation
-                .onCalculateTotalHours(new ITotalHoursCalculationListener() {
+        limitingTaskInformation.onCalculateTotalHours(new ITotalHoursCalculationListener() {
 
                     @Override
                     public Integer getTotalHours() {
@@ -157,7 +155,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         }
     }
 
-    public void closeSelectWorkers() {
+    private void closeSelectWorkers() {
         clear();
         tabLimitingResourceAllocation.setSelected(true);
     }
@@ -174,10 +172,10 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         resourceAllocationModel.confirmSave();
     }
 
-    public class GridLimitingAllocationRenderer implements RowRenderer {
+    private class GridLimitingAllocationRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             LimitingAllocationRow resourceAllocation = (LimitingAllocationRow) data;
 
             row.appendChild(label(resourceAllocation.getAllocationTypeStr()));
@@ -193,6 +191,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         private Intbox intboxHours(final LimitingAllocationRow resourceAllocation) {
             Intbox result = bindToHours(new Intbox(), resourceAllocation);
             result.setDisabled(resourceAllocation.hasDayAssignments() && disableHours);
+
             return result;
         }
 
@@ -211,12 +210,14 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
                     resourceAllocation.setHours(value);
                 }
             });
+
             return intbox;
         }
 
         private Listbox listboxPriority(final LimitingAllocationRow resourceAllocation) {
             Listbox result = bindToPriority(buildPriorityList(resourceAllocation.getPriority()), resourceAllocation);
             result.setDisabled(resourceAllocation.hasDayAssignments());
+
             return result;
         }
 
@@ -231,6 +232,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
                 }
                 item.setParent(result);
             }
+
             return result;
         }
 
@@ -249,28 +251,29 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
                     resourceAllocation.setPriorityStr(priority);
                 }
             });
+
             return listbox;
         }
 
         private String getSelectedValue(Listbox listbox) {
             final Listitem item = listbox.getSelectedItem();
             final Listcell cell = (Listcell) item.getChildren().get(0);
+
             return cell.getLabel();
         }
 
     }
 
-    public boolean existsResourceAllocationWithDayAssignments() {
+    private boolean existsResourceAllocationWithDayAssignments() {
         final LimitingAllocationRow limitingAllocationRow = getLimitingAllocationRow();
-        return (limitingAllocationRow != null) ? limitingAllocationRow
-                .hasDayAssignments() : false;
+
+        return (limitingAllocationRow != null) && limitingAllocationRow.hasDayAssignments();
     }
 
     private LimitingAllocationRow getLimitingAllocationRow() {
-        final List<LimitingAllocationRow> limitingAllocationRows = resourceAllocationModel
-                .getResourceAllocationRows();
-        return (limitingAllocationRows.size() > 0) ? limitingAllocationRows
-                .get(0) : null;
+        final List<LimitingAllocationRow> limitingAllocationRows = resourceAllocationModel.getResourceAllocationRows();
+
+        return (limitingAllocationRows.size() > 0) ? limitingAllocationRows.get(0) : null;
     }
 
     public void setEditTaskController(EditTaskController editTaskController) {

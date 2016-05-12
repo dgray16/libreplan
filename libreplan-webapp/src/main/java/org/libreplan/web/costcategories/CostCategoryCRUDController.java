@@ -61,7 +61,7 @@ import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Hbox;
+import org.zkoss.zul.Hbox;
 
 /**
  * Controller for CRUD actions over a {@link CostCategory}
@@ -114,7 +114,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
     }
 
     private void initializeHoursType() {
-        allHoursType = new SimpleListModel(costCategoryModel.getAllHoursType());
+        allHoursType = new SimpleListModel<>(costCategoryModel.getAllHoursType());
     }
 
     @Override
@@ -172,7 +172,8 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
 
 
     private TypeOfWorkHours getTypeOfWorkHours(Row listitem) {
-        HourCost hourCost = (HourCost) listitem.getValue();
+        HourCost hourCost = listitem.getValue();
+
         return hourCost.getType();
     }
 
@@ -181,7 +182,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
      * @param row
      */
     private void appendTextboxCode(final Row row) {
-        final HourCost hourCost = ((HourCost) row.getValue());
+        final HourCost hourCost = row.getValue();
         final Textbox txtCode = new Textbox();
         txtCode.setWidth("200px");
         if (hourCost != null) {
@@ -216,7 +217,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
      * @param row
      */
     private void appendHoursType(final Row row) {
-        final HourCost hourCost = (HourCost) row.getValue();
+        final HourCost hourCost = row.getValue();
         final Listbox lbHoursType = new Listbox();
         lbHoursType.setMold("select");
         lbHoursType.setModel(allHoursType);
@@ -230,7 +231,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
 
         // First time is rendered, select first item
         TypeOfWorkHours type = hourCost.getType();
-        if (hourCost.isNewObject() && type == null) {
+        if ( hourCost.isNewObject() && type == null ) {
             Listitem item = lbHoursType.getItemAtIndex(0);
             item.setSelected(true);
             setHoursType(hourCost, item);
@@ -258,8 +259,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
     }
 
     private void setHoursType(HourCost hourCost, Listitem item) {
-        TypeOfWorkHours value = item != null ? (TypeOfWorkHours) item
-                .getValue() : null;
+        TypeOfWorkHours value = item != null ? (TypeOfWorkHours) item.getValue() : null;
         hourCost.setType(value);
         if (value != null) {
             final BigDecimal defaultPrice = value.getDefaultPrice();
@@ -270,8 +270,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
             }
         } else if (item != null) {
             hourCost.setPriceCost(BigDecimal.ZERO);
-            throw new WrongValueException(item.getParent(),
-                    _("Please, select an item"));
+            throw new WrongValueException(item.getParent(), _("Please, select an item"));
         }
     }
 
@@ -313,8 +312,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
      * @param boxCost
      * @param hourCost
      */
-    private void bindDecimalboxCost(final Decimalbox boxCost,
-            final HourCost hourCost) {
+    private void bindDecimalboxCost(final Decimalbox boxCost, final HourCost hourCost) {
         Util.bind(boxCost, new Util.Getter<BigDecimal>() {
 
             @Override
@@ -366,8 +364,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
      * @param dateBoxInitDate
      * @param hourCost
      */
-    private void bindDateboxInitDate(final Datebox dateBoxInitDate,
-            final HourCost hourCost) {
+    private void bindDateboxInitDate(final Datebox dateBoxInitDate, final HourCost hourCost) {
         Util.bind(dateBoxInitDate, new Util.Getter<Date>() {
 
             @Override
@@ -419,11 +416,10 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
     /**
      * Binds Datebox "init date" to the corresponding attribute of a {@link HourCost}
      *
-     * @param dateBoxInitDate
+     * @param dateBoxEndDate
      * @param hourCost
      */
-    private void bindDateboxEndDate(final Datebox dateBoxEndDate,
-            final HourCost hourCost) {
+    private void bindDateboxEndDate(final Datebox dateBoxEndDate, final HourCost hourCost) {
         Util.bind(dateBoxEndDate, new Util.Getter<Date>() {
 
             @Override
@@ -452,14 +448,10 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
     }
 
     public void confirmRemove(HourCost hourCost) {
-        try {
-            int status = Messagebox.show(_("Confirm deleting this hour cost. Are you sure?"), _("Delete"),
-                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                removeHourCost(hourCost);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int status = Messagebox.show(_("Confirm deleting this hour cost. Are you sure?"), _("Delete"),
+                Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+        if (Messagebox.OK == status) {
+            removeHourCost(hourCost);
         }
     }
 
@@ -469,15 +461,13 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
 
     /**
      * Adds a new {@link HourCost} to the list of rows
-     *
-     * @param rows
      */
     public void addHourCost() {
         costCategoryModel.addHourCost();
         Util.reloadBindings(listHourCosts);
     }
 
-    public void removeHourCost(HourCost hourCost) {
+    private void removeHourCost(HourCost hourCost) {
         costCategoryModel.removeHourCost(hourCost);
         Util.reloadBindings(listHourCosts);
     }
@@ -488,11 +478,11 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
      * @author Jacobo Aragunde Perez <jaragunde@igalia.com>
      *
      */
-    public class HourCostListRenderer implements RowRenderer {
+    private class HourCostListRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-            HourCost hourCost = (HourCost) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            HourCost hourCost = (HourCost) o;
 
             row.setValue(hourCost);
 
@@ -556,7 +546,7 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
         return costCategoryModel.canRemoveCostCategory(category);
     }
 
-    public boolean canRemoveCostCategory(CostCategory category) {
+    private boolean canRemoveCostCategory(CostCategory category) {
         return costCategoryModel.canRemoveCostCategory(category);
     }
 

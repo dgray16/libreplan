@@ -39,7 +39,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zkoss.util.InvalidValueException;
+import org.zkoss.util.IllegalSyntaxException;
 
 /**
  *
@@ -49,8 +49,7 @@ import org.zkoss.util.InvalidValueException;
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @OnConcurrentModification(goToPage = "/excetiondays/exceptionDays.zul")
-public class CalendarExceptionTypeModel extends IntegrationEntityModel
-        implements ICalendarExceptionTypeModel {
+public class CalendarExceptionTypeModel extends IntegrationEntityModel implements ICalendarExceptionTypeModel {
 
     @Autowired
     private ICalendarExceptionTypeDAO calendarExceptionTypeDAO;
@@ -97,9 +96,11 @@ public class CalendarExceptionTypeModel extends IntegrationEntityModel
 
     @Override
     @Transactional
-    public void confirmDelete(CalendarExceptionType exceptionType) throws InstanceNotFoundException, InvalidValueException {
+    public void confirmDelete(CalendarExceptionType exceptionType) throws InstanceNotFoundException,
+                                                                        IllegalSyntaxException {
         if (calendarExceptionTypeDAO.hasCalendarExceptions(exceptionType)) {
-            throw new InvalidValueException(_("Cannot remove {0}, since it is being used by some exception day", exceptionType.getName()));
+            throw new IllegalSyntaxException(_("Cannot remove {0}, since it is being used by some exception day",
+                    exceptionType.getName()));
         }
         if (!exceptionType.isNewObject()) {
             calendarExceptionTypeDAO.remove(exceptionType.getId());
@@ -120,8 +121,7 @@ public class CalendarExceptionTypeModel extends IntegrationEntityModel
 
     private CalendarExceptionType getFromDB(Long id) {
         try {
-            CalendarExceptionType result = calendarExceptionTypeDAO.find(id);
-            return result;
+            return calendarExceptionTypeDAO.find(id);
         } catch (InstanceNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -132,7 +132,7 @@ public class CalendarExceptionTypeModel extends IntegrationEntityModel
     }
 
     public Set<IntegrationEntity> getChildren() {
-        return new HashSet<IntegrationEntity>();
+        return new HashSet<>();
     }
 
     public IntegrationEntity getCurrentEntity() {

@@ -58,7 +58,7 @@ import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for MonteCarlo graphic generation
@@ -72,9 +72,9 @@ public class MonteCarloController extends GenericForwardComposer {
     @Autowired
     private IMonteCarloModel monteCarloModel;
 
-    private final Integer DEFAULT_ITERATIONS = Integer.valueOf(10000);
+    private final Integer DEFAULT_ITERATIONS = 10000;
 
-    private final Integer MAX_NUMBER_ITERATIONS = Integer.valueOf(100000);
+    private final Integer MAX_NUMBER_ITERATIONS = 100000;
 
     private final RowRenderer gridCriticalPathTasksRender = new CriticalPathTasksRender();
 
@@ -152,17 +152,15 @@ public class MonteCarloController extends GenericForwardComposer {
             }
 
             private int getIterations() {
-                int iterations = ibIterations.getValue() != null ? ibIterations
-                        .getValue().intValue() : 0;
-                if (iterations == 0) {
-                    throw new WrongValueException(ibIterations,
-                            _("cannot be empty"));
+                int iterations = ibIterations.getValue() != null ? ibIterations.getValue().intValue() : 0;
+                if ( iterations == 0 ) {
+                    throw new WrongValueException(ibIterations, _("cannot be empty"));
                 }
-                if (iterations < 0 || iterations > MAX_NUMBER_ITERATIONS) {
-                    throw new WrongValueException(ibIterations,
-                            _("Number of iterations should be between 1 and {0}",
+                if ( iterations < 0 || iterations > MAX_NUMBER_ITERATIONS ) {
+                    throw new WrongValueException(ibIterations, _("Number of iterations should be between 1 and {0}",
                                     MAX_NUMBER_ITERATIONS));
                 }
+
                 return iterations;
             }
 
@@ -175,8 +173,7 @@ public class MonteCarloController extends GenericForwardComposer {
                 Rows rows = gridCriticalPathTasks.getRows();
                 for (Object each : rows.getChildren()) {
                     Row row = (Row) each;
-                    List<org.zkoss.zk.ui.Component> children = row
-                            .getChildren();
+                    List<org.zkoss.zk.ui.Component> children = row.getChildren();
 
                     Integer sum = 0;
                     intbox = (Intbox) children.get(3);
@@ -186,14 +183,13 @@ public class MonteCarloController extends GenericForwardComposer {
                     intbox = (Intbox) children.get(7);
                     sum += intbox.getValue();
 
-                    if (sum != 100) {
+                    if ( sum != 100 ) {
                         gridCriticalPathTasks.setActivePage(page);
-                        throw new WrongValueException(row,
-                                _("Percentages should sum 100"));
+                        throw new WrongValueException(row, _("Percentages should sum 100"));
                     }
 
                     counter++;
-                    if (counter % gridCriticalPathTasks.getPageSize() == 0) {
+                    if ( counter % gridCriticalPathTasks.getPageSize() == 0 ) {
                         page++;
                     }
                 }
@@ -205,12 +201,10 @@ public class MonteCarloController extends GenericForwardComposer {
 
                     @Override
                     public void doUpdate(final Integer percentage) {
-                        updatesEmitter
-                                .doUpdate(showCompletedPercentage(percentage));
+                        updatesEmitter.doUpdate(showCompletedPercentage(percentage));
                     }
 
-                    private IDesktopUpdate showCompletedPercentage(
-                            final Integer value) {
+                    private IDesktopUpdate showCompletedPercentage(final Integer value) {
                         return new IDesktopUpdate() {
                             @Override
                             public void doUpdate() {
@@ -221,8 +215,7 @@ public class MonteCarloController extends GenericForwardComposer {
                 };
             }
 
-            private IDesktopUpdate showCalculatedData(
-                    final Map<LocalDate, BigDecimal> monteCarloData) {
+            private IDesktopUpdate showCalculatedData(final Map<LocalDate, BigDecimal> monteCarloData) {
                 return new IDesktopUpdate() {
 
                     @Override
@@ -234,25 +227,19 @@ public class MonteCarloController extends GenericForwardComposer {
 
             private void showMonteCarloGraph(Map<LocalDate, BigDecimal> data) {
                 monteCarloChartWindow = createMonteCarloGraphWindow(data);
-                try {
-                    monteCarloChartWindow.setMode("modal");
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                monteCarloChartWindow.setMode("modal");
             }
 
-            private Window createMonteCarloGraphWindow(
-                    Map<LocalDate, BigDecimal> data) {
+            private Window createMonteCarloGraphWindow(Map<LocalDate, BigDecimal> data) {
                 HashMap<String, Object> args = new HashMap<String, Object>();
-                args.put("monteCarloGraphController",
-                        new MonteCarloGraphController());
-                Window result = (Window) Executions.createComponents(
-                        "/planner/montecarlo_function.zul", self, args);
-                MonteCarloGraphController controller = (MonteCarloGraphController) result
-                        .getVariable("monteCarloGraphController", true);
+                args.put("monteCarloGraphController", new MonteCarloGraphController());
+                Window result = (Window) Executions.createComponents("/planner/montecarlo_function.zul", self, args);
+                MonteCarloGraphController controller =
+                        (MonteCarloGraphController) result.getAttribute("monteCarloGraphController", true);
 
                 final String orderName = monteCarloModel.getOrderName();
                 final boolean groupByWeeks = cbGroupByWeeks.isChecked();
+
                 controller.generateMonteCarloGraph(orderName, data,
                         groupByWeeks, new IOnClose() {
 
@@ -269,49 +256,47 @@ public class MonteCarloController extends GenericForwardComposer {
     }
 
     private void feedCriticalPathsList() {
-        lbCriticalPaths.setModel(new SimpleListModel(monteCarloModel
-                .getCriticalPathNames()));
-        if (!lbCriticalPaths.getChildren().isEmpty()) {
+        lbCriticalPaths.setModel(new SimpleListModel<>(monteCarloModel.getCriticalPathNames()));
+        if ( !lbCriticalPaths.getChildren().isEmpty() ) {
             lbCriticalPaths.setSelectedIndex(0);
         }
     }
 
     private void reloadGridCritialPathTasks() {
         List<MonteCarloTask> selectedCriticalPath = getSelectedCriticalPath();
-        if (selectedCriticalPath != null) {
-            gridCriticalPathTasks.setModel(new SimpleListModel(
-                    selectedCriticalPath));
+        if ( selectedCriticalPath != null ) {
+            gridCriticalPathTasks.setModel(new SimpleListModel<>(selectedCriticalPath));
         }
-        if (gridCriticalPathTasks.getRowRenderer() == null) {
+        if ( gridCriticalPathTasks.getRowRenderer() == null ) {
             gridCriticalPathTasks.setRowRenderer(gridCriticalPathTasksRender);
             gridCriticalPathTasks.renderAll();
         }
     }
 
-    public List<MonteCarloTask> getSelectedCriticalPath() {
+    private List<MonteCarloTask> getSelectedCriticalPath() {
         Listitem selectedItem = lbCriticalPaths.getSelectedItem();
-        String selectedPath = selectedItem != null ? selectedItem.getLabel()
-                : null;
+        String selectedPath = selectedItem != null ? selectedItem.getLabel() : null;
+
         return monteCarloModel.getCriticalPath(selectedPath);
     }
 
-    public void setCriticalPath(List criticalPath) {
+    public void setCriticalPath(List<org.libreplan.business.planner.entities.TaskElement> criticalPath) {
         monteCarloModel.setCriticalPath(criticalPath);
-        if (lbCriticalPaths != null) {
+        if ( lbCriticalPaths != null ) {
             feedCriticalPathsList();
             reloadGridCritialPathTasks();
         }
-        btnRunMonteCarlo.setDisabled(monteCarloModel.getCriticalPathNames()
-                .isEmpty());
+
+        btnRunMonteCarlo.setDisabled(monteCarloModel.getCriticalPathNames().isEmpty());
     }
 
     private static class CriticalPathTasksRender implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-            row.setValue(data);
+        public void render(Row row, Object o, int i) throws Exception {
+            row.setValue(o);
 
-            MonteCarloTask task = (MonteCarloTask) data;
+            MonteCarloTask task = (MonteCarloTask) o;
 
             row.appendChild(taskName(task));
             row.appendChild(duration(task));
@@ -328,7 +313,8 @@ public class MonteCarloController extends GenericForwardComposer {
         }
 
         private Label duration(final MonteCarloTask task) {
-            Double duration = Double.valueOf(task.getDuration().doubleValue());
+            Double duration = task.getDuration().doubleValue();
+
             return new Label(duration.toString());
         }
 
@@ -351,8 +337,7 @@ public class MonteCarloController extends GenericForwardComposer {
             return result;
         }
 
-        private Intbox pessimisticDurationPercentage(
-                final MonteCarloTask task) {
+        private Intbox pessimisticDurationPercentage(final MonteCarloTask task) {
             Intbox result = new Intbox();
             Util.bind(result, new Util.Getter<Integer>() {
 
@@ -368,6 +353,7 @@ public class MonteCarloController extends GenericForwardComposer {
                     task.setPessimisticDurationPercentage(value);
                 }
             });
+
             return result;
         }
 
@@ -387,6 +373,7 @@ public class MonteCarloController extends GenericForwardComposer {
                     task.setNormalDuration(value);
                 }
             });
+
             return result;
         }
 
@@ -406,6 +393,7 @@ public class MonteCarloController extends GenericForwardComposer {
                     task.setNormalDurationPercentage(value);
                 }
             });
+
             return result;
         }
 
@@ -425,6 +413,7 @@ public class MonteCarloController extends GenericForwardComposer {
                     task.setOptimisticDuration(value);
                 }
             });
+
             return result;
         }
 
@@ -444,9 +433,9 @@ public class MonteCarloController extends GenericForwardComposer {
                     task.setOptimisticDurationPercentage(value);
                 }
             });
+
             return result;
         }
-
     }
 
 }

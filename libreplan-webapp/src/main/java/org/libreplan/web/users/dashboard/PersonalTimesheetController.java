@@ -69,9 +69,9 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Div;
-import org.zkoss.zul.api.Grid;
-import org.zkoss.zul.api.Popup;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Popup;
 
 /**
  * Controller for creation/edition of a personal timesheet
@@ -135,7 +135,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         private LocalDate last;
 
         @Override
-        public void render(Row row, Object data) throws Exception {
+        public void render(Row row, Object data, int i) throws Exception {
             PersonalTimesheetRow personalTimesheetRow = (PersonalTimesheetRow) data;
 
             initPersonalTimesheetDates();
@@ -290,8 +290,8 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
                                 throw new WrongValueException(
                                         personalTimesheetPopupEffort, _("Invalid Effort Duration"));
                             }
-
-                            Events.sendEvent(new InputEvent(Events.ON_CHANGE, textbox, value));
+                            //TODO Check this ?
+                            Events.sendEvent(new InputEvent(Events.ON_CHANGE, textbox, value, new Object()));
                         }
                     });
 

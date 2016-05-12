@@ -117,10 +117,13 @@ public class ResourceAllocationController extends GenericForwardComposer {
     private Decimalbox allResourcesPerDay;
 
     private Label allOriginalEffort;
+
     private Label allTotalEffort;
+
     private Label allConsolidatedEffort;
 
     private Label allTotalResourcesPerDay;
+
     private Label allConsolidatedResourcesPerDay;
 
     private Button applyButton;
@@ -174,7 +177,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
     /**
      * Shows Resource Allocation window
      * @param task
-     * @param ganttTask
+     * @param messagesForUser
      * @param planningState
      */
     public void init(IContextWithPlannerTask<TaskElement> context, Task task, PlanningState planningState,
@@ -225,11 +228,11 @@ public class ResourceAllocationController extends GenericForwardComposer {
         return allocationConfiguration.getTaskWorkableDays();
     }
 
-    public Label getTaskStart() {
+    private Label getTaskStart() {
         return (allocationConfiguration != null) ? allocationConfiguration.getTaskStart() : null;
     }
 
-    public Label getTaskEnd() {
+    private Label getTaskEnd() {
         return (allocationConfiguration != null) ? allocationConfiguration.getTaskEnd() : null;
     }
 
@@ -253,7 +256,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
         allocationConfiguration.initialize(formBinder);
     }
 
-    public enum HoursRendererColumn {
+    enum HoursRendererColumn {
 
         CRITERIONS {
             @Override
@@ -271,23 +274,22 @@ public class ResourceAllocationController extends GenericForwardComposer {
         HOURS {
             @Override
             public Component cell(HoursRendererColumn column, AggregatedHoursGroup data) {
-                Label result = new Label(Integer.toString(data.getHours()));
-                return result;
+                return new Label(Integer.toString(data.getHours()));
             }
         };
 
         private static String asString(ResourceEnum resourceType) {
             switch (resourceType) {
 
-            case MACHINE:
+                case MACHINE:
 
-            case WORKER:
-                return _(resourceType.getDisplayName());
+                case WORKER:
+                    return _(resourceType.getDisplayName());
 
-            default:
-                LOG.warn("no i18n for " + resourceType.name());
-                return resourceType.name();
-            }
+                default:
+                    LOG.warn("no i18n for " + resourceType.name());
+                    return resourceType.name();
+                }
         }
 
         public abstract Component cell(HoursRendererColumn column, AggregatedHoursGroup data);
@@ -297,7 +299,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
      * Pick resources selected from {@link NewAllocationSelector} and add them to
      * resource allocation list
      *
-     * @param e
+     * @param allocationSelector
      */
     public void onSelectWorkers( AllocationSelector allocationSelector) {
         try {
@@ -320,10 +322,8 @@ public class ResourceAllocationController extends GenericForwardComposer {
         applyButton.setVisible(false);
         workerSearchTab.setSelected(true);
 
-        LocalDate start = LocalDate
-                .fromDateFields(resourceAllocationModel.getTaskStart());
-        LocalDate end = LocalDate
-                .fromDateFields(resourceAllocationModel.getTaskEnd());
+        LocalDate start = LocalDate.fromDateFields(resourceAllocationModel.getTaskStart());
+        LocalDate end = LocalDate.fromDateFields(resourceAllocationModel.getTaskEnd());
         newAllocationSelector.open(start, end);
     }
 
@@ -331,7 +331,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
      * Shows the extended view of the resources allocations
      */
     public void onCheckExtendedView() {
-        if (isExtendedView()) {
+        if ( isExtendedView() ) {
             editTaskWindow.setWidth("970px");
         } else {
             editTaskWindow.setWidth("870px");
@@ -340,33 +340,34 @@ public class ResourceAllocationController extends GenericForwardComposer {
         Util.reloadBindings(allocationsGrid);
     }
 
-    public boolean isExtendedView() {
+    private boolean isExtendedView() {
         return extendedViewCheckbox.isChecked();
     }
 
     public int getColspanHours() {
-        if (isExtendedView()) {
+        if ( isExtendedView() ) {
             return 4;
         }
+
         return 1;
     }
 
     public int getColspanResources() {
-        if (isExtendedView()) {
+        if ( isExtendedView() ) {
             return 3;
         }
+
         return 1;
     }
     /**
      * Close search worker in worker search tab
-     * @param e
      */
     public void onCloseSelectWorkers() {
         tbResourceAllocation.setSelected(true);
         applyButton.setVisible(true);
     }
 
-    public enum CalculationTypeRadio {
+    enum CalculationTypeRadio {
 
         WORKABLE_DAYS(CalculatedValue.END_DATE) {
             @Override
@@ -375,8 +376,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
             }
 
             @Override
-            public Component input(
-                    ResourceAllocationController resourceAllocationController) {
+            public Component input(ResourceAllocationController resourceAllocationController) {
                 return resourceAllocationController.getTaskWorkableDays();
             }
         },
@@ -387,8 +387,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
             }
 
             @Override
-            public Component input(
-                    ResourceAllocationController resourceAllocationController) {
+            public Component input(ResourceAllocationController resourceAllocationController) {
                 return resourceAllocationController.assignedEffortComponent;
             }
         },
@@ -400,17 +399,15 @@ public class ResourceAllocationController extends GenericForwardComposer {
             }
 
             @Override
-            public Component input(
-                    ResourceAllocationController resourceAllocationController) {
+            public Component input(ResourceAllocationController resourceAllocationController) {
                 return resourceAllocationController.allResourcesPerDay;
             }
         };
 
         public static CalculationTypeRadio from(CalculatedValue calculatedValue) {
             Validate.notNull(calculatedValue);
-            for (CalculationTypeRadio calculationTypeRadio : CalculationTypeRadio
-                    .values()) {
-                if (calculationTypeRadio.getCalculatedValue() == calculatedValue) {
+            for (CalculationTypeRadio calculationTypeRadio : CalculationTypeRadio.values()) {
+                if ( calculationTypeRadio.getCalculatedValue() == calculatedValue) {
                     return calculationTypeRadio;
                 }
             }
@@ -419,19 +416,19 @@ public class ResourceAllocationController extends GenericForwardComposer {
                     + calculatedValue);
         }
 
-        public abstract Component input(
-                ResourceAllocationController resourceAllocationController);
+        public abstract Component input(ResourceAllocationController resourceAllocationController);
 
         public Radio createRadio() {
             Radio result = new Radio();
             result.setLabel(getName());
             result.setValue(toString());
+
             return result;
         }
 
         private final CalculatedValue calculatedValue;
 
-        private CalculationTypeRadio(CalculatedValue calculatedValue) {
+        CalculationTypeRadio(CalculatedValue calculatedValue) {
             this.calculatedValue = calculatedValue;
 
         }
@@ -444,7 +441,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
 
     }
 
-    public enum DerivedAllocationColumn implements IConvertibleToColumn {
+    enum DerivedAllocationColumn implements IConvertibleToColumn {
         NAME(_("Name")) {
             @Override
             public Component cellFor(DerivedAllocation data) {
@@ -482,7 +479,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
         }
 
         @Override
-        public org.zkoss.zul.api.Column toColumn() {
+        public org.zkoss.zul.Column toColumn() {
             return new Column(getName());
         }
 
@@ -495,8 +492,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
         }
 
         public static RowRenderer createRenderer() {
-            return OnColumnsRowRenderer.create(cellRenderer, Arrays
-                    .asList(DerivedAllocationColumn.values()));
+            return OnColumnsRowRenderer.create(cellRenderer, Arrays.asList(DerivedAllocationColumn.values()));
         }
 
         private static final ICellForDetailItemRenderer<DerivedAllocationColumn, DerivedAllocation> cellRenderer= new ICellForDetailItemRenderer<DerivedAllocationColumn, DerivedAllocation>() {
@@ -516,7 +512,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
         return Arrays.asList(CalculationTypeRadio.values());
     }
 
-    public List<? extends Object> getResourceAllocations() {
+    public List<?> getResourceAllocations() {
         return formBinder != null ? plusAggregatingRow(formBinder
                 .getCurrentRows()) : Collections
                 .<AllocationRow> emptyList();
@@ -544,7 +540,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
     }
 
     public void clear() {
-        allocationsGrid.setModel(new SimpleListModel(Collections.emptyList()));
+        allocationsGrid.setModel(new SimpleListModel<>(Collections.emptyList()));
     }
 
     /**
@@ -554,44 +550,40 @@ public class ResourceAllocationController extends GenericForwardComposer {
      */
     public boolean accept() {
         boolean mustExit = formBinder.accept();
-        if (mustExit) {
+        if ( mustExit ) {
             clear();
         }
+
         return mustExit;
     }
 
     private class ResourceAllocationRenderer implements RowRenderer {
 
         @Override
-        public void render(Row item, Object data) {
-            if (data instanceof AllocationRow) {
-                AllocationRow row = (AllocationRow) data;
+        public void render(Row item, Object o, int i) throws Exception {
+            if ( o instanceof AllocationRow ) {
+                AllocationRow row = (AllocationRow) o;
                 renderResourceAllocation(item, row);
             } else {
                 renderAggregatingRow(item);
             }
         }
 
-        private void renderResourceAllocation(Row row, final AllocationRow data)
-                {
+
+        private void renderResourceAllocation(Row row, final AllocationRow data) {
             row.setValue(data);
             append(row, data.createDetail());
             append(row, new Label(data.getName()));
             append(row, new Label(data.getOriginalEffort().toFormattedString()));
             append(row, new Label(data.getTotalEffort().toFormattedString()));
-            append(row, new Label(data.getConsolidatedEffort()
-                    .toFormattedString()));
+            append(row, new Label(data.getConsolidatedEffort().toFormattedString()));
             append(row, data.getEffortInput());
-            append(row, new Label(data.getTotalResourcesPerDay().getAmount()
-                    .toString()));
-            append(row, new Label(data.getConsolidatedResourcesPerDay()
-                    .getAmount().toString()));
+            append(row, new Label(data.getTotalResourcesPerDay().getAmount().toString()));
+            append(row, new Label(data.getConsolidatedResourcesPerDay().getAmount().toString()));
 
             Div resourcesPerDayContainer = append(row, new Div());
-            append(resourcesPerDayContainer,
-                    data.getIntendedResourcesPerDayInput());
-            Label realResourcesPerDay = append(resourcesPerDayContainer,
-                    data.getRealResourcesPerDay());
+            append(resourcesPerDayContainer, data.getIntendedResourcesPerDayInput());
+            Label realResourcesPerDay = append(resourcesPerDayContainer, data.getRealResourcesPerDay());
             realResourcesPerDay.setStyle("float: right; padding-right: 1em;");
 
             Listbox assignmentFunctionListbox = data.getAssignmentFunctionListbox();
@@ -632,12 +624,10 @@ public class ResourceAllocationController extends GenericForwardComposer {
             append(row, allOriginalEffort);
             append(row, allTotalEffort);
             append(row, allConsolidatedEffort);
-            append(row, CalculationTypeRadio.NUMBER_OF_HOURS
-                        .input(controller));
+            append(row, CalculationTypeRadio.NUMBER_OF_HOURS.input(controller));
             append(row, allTotalResourcesPerDay);
             append(row, allConsolidatedResourcesPerDay);
-            append(row, CalculationTypeRadio.RESOURCES_PER_DAY
-                        .input(controller));
+            append(row, CalculationTypeRadio.RESOURCES_PER_DAY.input(controller));
             append(row, new Label());
         }
 
@@ -652,11 +642,13 @@ public class ResourceAllocationController extends GenericForwardComposer {
             button.setImage("/common/img/ico_borrar1.png");
             button.setHoverImage("/common/img/ico_borrar.png");
             button.setTooltiptext(_("Delete"));
+
             return append(row, button);
         }
 
         private <T extends Component> T append(Component parent, T component) {
             parent.appendChild(component);
+
             return component;
         }
     }
@@ -677,12 +669,8 @@ public class ResourceAllocationController extends GenericForwardComposer {
         return formBinder != null && formBinder.isAnyNotFlat();
     }
 
-    public boolean isAnyManualOrTaskUpdatedFromTimesheets() {
-        if (formBinder == null) {
-            return false;
-        }
-        return formBinder.isAnyManual()
-                || formBinder.isTaskUpdatedFromTimesheets();
+    private boolean isAnyManualOrTaskUpdatedFromTimesheets() {
+        return formBinder != null && (formBinder.isAnyManual() || formBinder.isTaskUpdatedFromTimesheets());
     }
 
 }

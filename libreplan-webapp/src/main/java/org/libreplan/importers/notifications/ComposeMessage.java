@@ -76,8 +76,8 @@ public class ComposeMessage {
 
         UserRole currentUserRole = getCurrentUserRole(notification.getType());
 
-        if ( currentWorker.getUser().isInRole(currentUserRole) ){
-            if ( currentWorker.getUser().getApplicationLanguage().equals(Language.BROWSER_LANGUAGE) ) {
+        if (currentWorker != null && currentWorker.getUser().isInRole(currentUserRole)) {
+            if (currentWorker.getUser().getApplicationLanguage().equals(Language.BROWSER_LANGUAGE)) {
                 locale = new Locale(System.getProperty("user.language"));
             } else {
                 locale = new Locale(currentWorker.getUser().getApplicationLanguage().getLocale().getLanguage());
@@ -105,7 +105,7 @@ public class ComposeMessage {
                     });
 
             // Send message
-            try{
+            try {
                 MimeMessage message = new MimeMessage(mailSession);
 
                 message.setFrom(new InternetAddress(sender));
@@ -122,12 +122,10 @@ public class ComposeMessage {
 
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
-            } catch (NullPointerException e){
-                if (receiver == null) try {
+            } catch (NullPointerException e) {
+                if (receiver == null) {
                     Messagebox.show(_(currentWorker.getUser().getLoginName() + " - this user have not filled E-mail"), _("Error"),
                             Messagebox.OK, Messagebox.ERROR);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
                 }
             }
         }
@@ -136,9 +134,10 @@ public class ComposeMessage {
 
     private Worker getCurrentWorker(Long resourceID){
         List<Worker> workerList = workerModel.getWorkers();
-        for(int i = 0; i < workerList.size(); i++)
-            if ( workerList.get(i).getId().equals(resourceID) )
-                return workerList.get(i);
+        for (Worker aWorkerList : workerList)
+            if (aWorkerList.getId().equals(resourceID))
+                return aWorkerList;
+
         return null;
     }
 
@@ -148,6 +147,7 @@ public class ComposeMessage {
         for (EmailTemplate item : emailTemplates)
             if ( item.getType().equals(templateEnum) && item.getLanguage().getLocale().equals(locale) )
                 return item;
+
         return null;
     }
 
@@ -231,6 +231,7 @@ public class ComposeMessage {
 
             case TEMPLATE_ENTER_DATA_IN_TIMESHEET: return UserRole.ROLE_EMAIL_TIMESHEET_DATA_MISSING;
         }
+
         return null;
     }
 

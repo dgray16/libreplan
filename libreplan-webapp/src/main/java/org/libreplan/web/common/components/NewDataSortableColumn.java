@@ -28,7 +28,7 @@ import org.apache.commons.lang3.Validate;
 import org.libreplan.business.INewObject;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Column;
-import org.zkoss.zul.api.Grid;
+import org.zkoss.zul.Grid;
 
 /**
  * {@link NewDataSortableColumn} is a macrocomponent which extends {@link Column}
@@ -54,7 +54,7 @@ public class NewDataSortableColumn extends Column implements AfterCompose {
     private static class NewObjectDecoratorComparator implements Comparator<Object> {
         private Comparator<Object> decoratedComparator;
 
-        public NewObjectDecoratorComparator(Comparator<Object> c) {
+        NewObjectDecoratorComparator(Comparator<Object> c) {
             Validate.notNull(c);
             this.decoratedComparator = c;
         }

@@ -43,8 +43,9 @@ public abstract class BandboxFinder implements IBandboxFinder {
     @Transactional(readOnly = true)
     public ListModel getModel() {
         if (model == null) {
-            model = new SimpleListModel(getAll());
+            model = new SimpleListModel<>(getAll());
         }
+
         return model;
     }
 
@@ -78,7 +79,7 @@ public abstract class BandboxFinder implements IBandboxFinder {
     private final ListitemRenderer _defRend = new ListitemRenderer() {
 
         @Override
-        public void render(Listitem item, Object data) {
+        public void render(Listitem item, Object data, int i) {
             item.setLabel(objectToString(data));
             item.setValue(data);
         }

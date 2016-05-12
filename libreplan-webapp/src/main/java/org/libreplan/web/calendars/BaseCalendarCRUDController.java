@@ -46,13 +46,13 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.SimpleTreeNode;
+import org.zkoss.zul.DefaultTreeNode;
 import org.zkoss.zul.Treecell;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.TreeitemRenderer;
 import org.zkoss.zul.Treerow;
-import org.zkoss.zul.api.Caption;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Caption;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for CRUD actions over a {@link BaseCalendar}
@@ -94,7 +94,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         messagesForUser = new MessagesForUser(messagesContainer);
-        comp.setVariable("calendarController", this, true);
+        comp.setAttribute("calendarController", this, true);
         getVisibility().showOnly(listWindow);
     }
 
@@ -134,8 +134,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             validateCalendarExceptionCodes();
             baseCalendarModel.confirmSave();
             messagesForUser.showMessage(Level.INFO, _(
-                    "Base calendar \"{0}\" saved", baseCalendarModel
-                            .getBaseCalendar().getName()));
+                    "Base calendar \"{0}\" saved", baseCalendarModel.getBaseCalendar().getName()));
             goToList();
         } catch (ValidationException e) {
             messagesForUser.showInvalidValues(e);
@@ -150,8 +149,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             validateCalendarExceptionCodes();
             baseCalendarModel.confirmSaveAndContinue();
             messagesForUser.showMessage(Level.INFO, _(
-                    "Base calendar \"{0}\" saved", baseCalendarModel
-                            .getBaseCalendar().getName()));
+                    "Base calendar \"{0}\" saved", baseCalendarModel.getBaseCalendar().getName()));
         } catch (ValidationException e) {
             messagesForUser.showInvalidValues(e);
         }
@@ -168,7 +166,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         updateWindowTitle();
     }
 
-    public void setSelectedDay(LocalDate date) {
+    private void setSelectedDay(LocalDate date) {
         baseCalendarModel.setSelectedDay(date);
 
         reloadDayInformation();
@@ -244,6 +242,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         if (visibility == null) {
             visibility = new OnlyOneVisible(listWindow, editWindow);
         }
+
         return visibility;
     }
 
@@ -252,7 +251,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         highlightDaysOnCalendar();
     }
 
-    public void goToCreateDerivedForm(BaseCalendar baseCalendar) {
+    private void goToCreateDerivedForm(BaseCalendar baseCalendar) {
         state = CRUDControllerState.CREATE;
         baseCalendarModel.initCreateDerived(baseCalendar);
         assignCreateController();
@@ -267,7 +266,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         return baseCalendarModel.isEditing();
     }
 
-    public void goToCreateCopyForm(BaseCalendar baseCalendar) {
+    private void goToCreateCopyForm(BaseCalendar baseCalendar) {
         state = CRUDControllerState.CREATE;
         baseCalendarModel.initCreateCopy(baseCalendar);
         assignCreateController();
@@ -279,8 +278,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
     }
 
     public BaseCalendarsTreeModel getBaseCalendarsTreeModel() {
-        return new BaseCalendarsTreeModel(new BaseCalendarTreeRoot(
-                baseCalendarModel.getBaseCalendars()));
+        return new BaseCalendarsTreeModel(new BaseCalendarTreeRoot(baseCalendarModel.getBaseCalendars()));
     }
 
     public BaseCalendarsTreeitemRenderer getBaseCalendarsTreeitemRenderer() {
@@ -290,10 +288,9 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
     public class BaseCalendarsTreeitemRenderer implements TreeitemRenderer {
 
         @Override
-        public void render(Treeitem item, Object data) {
-            SimpleTreeNode simpleTreeNode = (SimpleTreeNode) data;
-            final BaseCalendar baseCalendar = (BaseCalendar) simpleTreeNode
-                    .getData();
+        public void render(Treeitem item, Object data, int i) {
+            DefaultTreeNode simpleTreeNode = (DefaultTreeNode) data;
+            final BaseCalendar baseCalendar = (BaseCalendar) simpleTreeNode.getData();
             item.setValue(data);
 
             Treerow treerow = new Treerow();
@@ -306,13 +303,10 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             // append start date of the current work week
             Treecell startDateTreecell = new Treecell();
             Label startDateLabel = new Label("---");
-            CalendarData version = baseCalendar.getCalendarData(LocalDate
-                    .fromDateFields(new Date()));
+            CalendarData version = baseCalendar.getCalendarData(LocalDate.fromDateFields(new Date()));
             CalendarData prevVersion = baseCalendar.getPrevious(version);
-            if ((prevVersion != null)
-                    && (prevVersion.getExpiringDate() != null)) {
-                startDateLabel.setValue(prevVersion
-                        .getExpiringDate().toString());
+            if ((prevVersion != null) && (prevVersion.getExpiringDate() != null)) {
+                startDateLabel.setValue(prevVersion.getExpiringDate().toString());
             }
             startDateTreecell.appendChild(startDateLabel);
             treerow.appendChild(startDateTreecell);
@@ -321,8 +315,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             Treecell expiringDateTreecell = new Treecell();
             Label expiringDateLabel = new Label("---");
             if (version.getExpiringDate() != null) {
-                expiringDateLabel
-                        .setValue(version.getExpiringDate().toString());
+                expiringDateLabel.setValue(version.getExpiringDate().toString());
             }
             expiringDateTreecell.appendChild(expiringDateLabel);
             treerow.appendChild(expiringDateTreecell);
@@ -446,14 +439,10 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
     }
 
     private int showConfirmDeleteCalendar(BaseCalendar calendar) {
-        try {
-            return Messagebox
-                    .show(_("Confirm deleting {0}. Are you sure?",
-                            calendar.getName()), _("Delete"), Messagebox.OK
-                            | Messagebox.CANCEL, Messagebox.QUESTION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        return Messagebox
+                .show(_("Confirm deleting {0}. Are you sure?",
+                        calendar.getName()), _("Delete"), Messagebox.OK
+                        | Messagebox.CANCEL, Messagebox.QUESTION);
     }
 
     private boolean isReferencedByOtherEntities(BaseCalendar calendar) {
@@ -464,23 +453,20 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             showCannotDeleteCalendarDialog(e.getInvalidValue().getMessage(),
                     calendar);
         }
+
         return true;
     }
 
     private void showCannotDeleteCalendarDialog(String message, BaseCalendar calendar) {
-        try {
-            Messagebox.show(_(message), _("Warning"), Messagebox.OK,
-                    Messagebox.EXCLAMATION);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Messagebox.show(_(message), _("Warning"), Messagebox.OK,
+                Messagebox.EXCLAMATION);
     }
 
     public boolean isDefault(BaseCalendar calendar) {
         return baseCalendarModel.isDefaultCalendar(calendar);
     }
 
-    public boolean hasParent(BaseCalendar calendar) {
+    private boolean hasParent(BaseCalendar calendar) {
         return baseCalendarModel.isParent(calendar);
     }
 
@@ -507,20 +493,20 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
 
             String title;
             switch (state) {
-            case CREATE:
-                if (StringUtils.isEmpty(humanId)) {
-                    title = _("Create {0}", entityType);
-                } else {
-                    title = _("Create {0}: {1}", entityType, humanId);
+                case CREATE:
+                    if (StringUtils.isEmpty(humanId)) {
+                        title = _("Create {0}", entityType);
+                    } else {
+                        title = _("Create {0}: {1}", entityType, humanId);
+                    }
+                    break;
+                case EDIT:
+                    title = _("Edit {0}: {1}", entityType, humanId);
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            "You should be in creation or edition mode to use this method");
                 }
-                break;
-            case EDIT:
-                title = _("Edit {0}: {1}", entityType, humanId);
-                break;
-            default:
-                throw new IllegalStateException(
-                        "You should be in creation or edition mode to use this method");
-            }
             ((Caption) editWindow.getFellow("caption")).setLabel(title);
         }
     }

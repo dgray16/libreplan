@@ -50,7 +50,7 @@ import org.zkoss.zul.SimpleCategoryModel;
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class MonteCarloGraphController extends GenericForwardComposer {
+class MonteCarloGraphController extends GenericForwardComposer {
 
     private Chart monteCarloChart;
 
@@ -64,24 +64,24 @@ public class MonteCarloGraphController extends GenericForwardComposer {
 
     private Map<LocalDate, BigDecimal> monteCarloValues;
 
-    public MonteCarloGraphController() {
+    MonteCarloGraphController() {
 
     }
 
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) throws Exception {
         super.doAfterCompose(comp);
-        self.setVariable("monteCarloGraphController", this, true);
+        self.setAttribute("monteCarloGraphController", this, true);
     }
 
-    public interface IOnClose {
+    interface IOnClose {
 
-        public void montecarloGraphClosed();
+        void montecarloGraphClosed();
     }
 
     private IOnClose onClose = null;
 
-    public void generateMonteCarloGraph(String orderName,
-            Map<LocalDate, BigDecimal> data, boolean byWeek, IOnClose onClose) {
+    void generateMonteCarloGraph(String orderName,
+                                 Map<LocalDate, BigDecimal> data, boolean byWeek, IOnClose onClose) {
         this.onClose = onClose;
 
         CategoryModel xymodel;
@@ -110,7 +110,7 @@ public class MonteCarloGraphController extends GenericForwardComposer {
     }
 
     private void initializeDates(Map<LocalDate, BigDecimal> monteCarloValues) {
-        dates = new ArrayList(monteCarloValues.keySet());
+        dates = new ArrayList<>(monteCarloValues.keySet());
         Collections.sort(dates);
     }
 
@@ -123,6 +123,7 @@ public class MonteCarloGraphController extends GenericForwardComposer {
             String labelDate = i.toString();
             result.setValue(orderName, labelDate, data.get(i));
         }
+
         return result;
     }
 
@@ -152,9 +153,9 @@ public class MonteCarloGraphController extends GenericForwardComposer {
         LocalDate first = getFirstDate();
         LocalDate last = getLastDate();
         for (LocalDate i = first; i.compareTo(last) <= 0; i = i.plusDays(1)) {
-            plotWeekValue(result, orderName, weekLabelFor(i),
-                    data.get(weekAndYearLabelFor(i)));
+            plotWeekValue(result, orderName, weekLabelFor(i), data.get(weekAndYearLabelFor(i)));
         }
+
         return result;
     }
 
@@ -175,6 +176,7 @@ public class MonteCarloGraphController extends GenericForwardComposer {
             value = (value != null) ? value.add(data.get(date)) : data.get(date);
             result.put(weekLabel, value);
         }
+
         return result;
     }
 
@@ -186,6 +188,7 @@ public class MonteCarloGraphController extends GenericForwardComposer {
             if (value == null) {
                 continue;
             }
+
             result = result.add(value);
         }
         return result;
@@ -194,10 +197,8 @@ public class MonteCarloGraphController extends GenericForwardComposer {
     public void showProbabilityDensity(Datebox startDatebox, Datebox endDatebox) {
         LocalDate start, end;
 
-        start = (startDatebox.getValue() != null) ? new LocalDate(
-                startDatebox.getValue()) : getFirstDate();
-        end = (endDatebox.getValue() != null) ? new LocalDate(
-                endDatebox.getValue()) : getLastDate();
+        start = (startDatebox.getValue() != null) ? new LocalDate(startDatebox.getValue()) : getFirstDate();
+        end = (endDatebox.getValue() != null) ? new LocalDate(endDatebox.getValue()) : getLastDate();
         BigDecimal probabilityDensity = calculateProbabilityDensity(start, end);
         dbIntervalProbability.setValue(probabilityDensity);
     }

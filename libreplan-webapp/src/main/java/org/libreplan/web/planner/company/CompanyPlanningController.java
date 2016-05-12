@@ -85,11 +85,15 @@ public class CompanyPlanningController implements Composer {
     private Planner planner;
 
     private Vbox orderFilter;
+
     private Datebox filterStartDate;
+
     private Datebox filterFinishDate;
+
     private Textbox filterProjectName;
 
     private BandboxMultipleSearch bdFilters;
+
     private Checkbox checkIncludeOrderElements;
 
     private ICommandOnTask<TaskElement> doubleClickCommand;
@@ -98,18 +102,18 @@ public class CompanyPlanningController implements Composer {
 
     private MultipleTabsPlannerController tabsController;
 
+    private Combobox cbProgressTypes;
+
+    private Button btnShowAdvances;
+
     public CompanyPlanningController() {
     }
-
-    private Combobox cbProgressTypes;
-    private Button btnShowAdvances;
 
     @Override
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) {
         planner = (Planner) comp;
         String zoomLevelParameter = null;
-        if ( (parameters != null) && (parameters.get("zoom") != null)
-                && !(parameters.isEmpty()) ) {
+        if ( (parameters != null) && (parameters.get("zoom") != null) && !(parameters.isEmpty()) ) {
             zoomLevelParameter = parameters.get("zoom")[0];
         }
         if ( zoomLevelParameter != null ) {
@@ -128,7 +132,7 @@ public class CompanyPlanningController implements Composer {
         // Configuration of the order filter
         Component filterComponent = Executions.createComponents("/orders/_orderFilter.zul", orderFilter,
                                                                 new HashMap<String, String>());
-        filterComponent.setVariable("orderFilterController", this, true);
+        filterComponent.setAttribute("orderFilterController", this, true);
         filterStartDate = (Datebox) filterComponent.getFellow("filterStartDate");
         filterFinishDate = (Datebox) filterComponent.getFellow("filterFinishDate");
         filterProjectName = (Textbox) filterComponent.getFellow("filterProjectName");
@@ -150,9 +154,9 @@ public class CompanyPlanningController implements Composer {
             bdFilters.addSelectedElements(sessionFilterPairs);
         } else if ( (user != null) && (user.getProjectsFilterLabel() != null) ) {
             bdFilters.clear();
-            bdFilters.addSelectedElement(new FilterPair(TaskGroupFilterEnum.Label, user.getProjectsFilterLabel()
-                                                                                        .getFinderPattern(),
-                                                                                    user.getProjectsFilterLabel()) );
+            bdFilters.addSelectedElement(new FilterPair(TaskGroupFilterEnum.Label,
+                    user.getProjectsFilterLabel().getFinderPattern(),
+                    user.getProjectsFilterLabel()) );
         }
 
         // Calculate filter based on user preferences
@@ -196,7 +200,7 @@ public class CompanyPlanningController implements Composer {
             btnShowAdvances = (Button) planner.getFellow("showAdvances");
         }
 
-        cbProgressTypes.setModel(new ListModelList(ProgressType.getAll()));
+        cbProgressTypes.setModel(new ListModelList<>(ProgressType.getAll()));
         cbProgressTypes.setItemRenderer(new ProgressTypeRenderer());
 
         // Update completion of tasks on selecting new progress type
@@ -226,7 +230,7 @@ public class CompanyPlanningController implements Composer {
     private class ProgressTypeRenderer implements ComboitemRenderer {
 
         @Override
-        public void render(Comboitem item, Object data) {
+        public void render(Comboitem item, Object data, int i) {
             final ProgressType progressType = (ProgressType) data;
             item.setValue(progressType);
             item.setLabel(_(progressType.getValue()));
@@ -239,7 +243,7 @@ public class CompanyPlanningController implements Composer {
         }
     }
 
-    public ProgressType getProgressTypeFromConfiguration() {
+    private ProgressType getProgressTypeFromConfiguration() {
         return model.getProgressTypeFromConfiguration();
     }
 

@@ -25,7 +25,6 @@ import static org.libreplan.web.I18nHelper._;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,9 +85,8 @@ import org.zkoss.zul.TreeModel;
 import org.zkoss.zul.Treechildren;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.Vbox;
-import org.zkoss.zul.api.Treecell;
-import org.zkoss.zul.api.Treerow;
-import org.zkoss.zul.impl.api.InputElement;
+import org.zkoss.zul.Treerow;
+import org.zkoss.zul.impl.InputElement;
 
 /**
  * Controller for {@link OrderElement} tree view of {@link Order} entities <br />
@@ -149,8 +147,10 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         return renderer;
     }
 
-    public OrderElementTreeController(IOrderModel orderModel, OrderElementController orderElementController,
+    public OrderElementTreeController(IOrderModel orderModel,
+                                      OrderElementController orderElementController,
                                       IMessagesForUser messagesForUser) {
+
         super(OrderElement.class);
         this.orderModel = orderModel;
         this.orderElementController = orderElementController;
@@ -234,11 +234,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         Util.reloadBindings(tree);
     }
 
-    public void disabledCodeBoxes(boolean disabled) {
+    void disabledCodeBoxes(boolean disabled) {
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren treeChildren = tree.getTreechildren();
         if ( treeChildren != null ) {
-            childrenSet.addAll((Collection<Treeitem>) treeChildren.getItems());
+            childrenSet.addAll(treeChildren.getItems());
         }
         for (Treeitem each : childrenSet) {
             disableCodeBoxes(each, disabled);
@@ -247,14 +247,14 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
     private void disableCodeBoxes(Treeitem item, boolean disabled) {
         Treerow row = item.getTreerow();
-        InputElement codeBox = (InputElement) ((Treecell) row.getChildren().get(1)).getChildren().get(0);
+        InputElement codeBox = (InputElement) (row.getChildren().get(1)).getChildren().get(0);
         codeBox.setDisabled(disabled);
         codeBox.invalidate();
 
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = item.getTreechildren();
         if ( children != null ) {
-            childrenSet.addAll((Collection<Treeitem>) children.getItems());
+            childrenSet.addAll(children.getItems());
         }
 
         for (Treeitem each : childrenSet) {
@@ -274,7 +274,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                 orderElementFilter,
                 new HashMap<String, String>());
 
-        filterComponent.setVariable("treeController", this, true);
+        filterComponent.setAttribute("treeController", this, true);
         bdFiltersOrderElement = (BandboxMultipleSearch) filterComponent.getFellow("bdFiltersOrderElement");
         filterOptionsPopup = (Popup) filterComponent.getFellow("filterOptionsPopup");
         filterStartDateOrderElement = (Datebox) filterOptionsPopup.getFellow("filterStartDateOrderElement");
@@ -308,15 +308,15 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
     private FilterPair toOrderFilterEnum(FilterPair each) {
         switch ((TaskElementFilterEnum) each.getType()) {
-        case Label:
-            return new FilterPair(OrderElementFilterEnum.Label, each.getPattern(), each.getValue());
+            case Label:
+                return new FilterPair(OrderElementFilterEnum.Label, each.getPattern(), each.getValue());
 
-        case Criterion:
-            return new FilterPair(OrderElementFilterEnum.Criterion, each.getPattern(), each.getValue());
+            case Criterion:
+                return new FilterPair(OrderElementFilterEnum.Criterion, each.getPattern(), each.getValue());
 
-        case Resource:
-            // Resources are discarded on WBS filter
-        }
+            case Resource:
+                // Resources are discarded on WBS filter
+            }
         return null;
     }
 
@@ -364,11 +364,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         children.add(expandAllButton);
     }
 
-    public void expandAll() {
+    private void expandAll() {
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = tree.getTreechildren();
         if ( children != null ) {
-            childrenSet.addAll((Collection<Treeitem>) children.getItems());
+            childrenSet.addAll(children.getItems());
         }
         for (Treeitem each: childrenSet) {
             expandAll(each);
@@ -381,7 +381,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = item.getTreechildren();
         if ( children != null ) {
-            childrenSet.addAll((Collection<Treeitem>) children.getItems());
+            childrenSet.addAll(children.getItems());
         }
 
         for (Treeitem each: childrenSet) {
@@ -389,20 +389,26 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         }
     }
 
-    public void collapseAll() {
+    private void collapseAll() {
         Treechildren children = tree.getTreechildren();
-        for (Treeitem each: (Collection<Treeitem>) children.getItems()) {
+        for (Treeitem each: (children.getItems())) {
             each.setOpen(false);
         }
     }
 
-    public Map<OrderElement, Textbox> getOrderElementCodeTextboxes() {
+    Map<OrderElement, Textbox> getOrderElementCodeTextboxes() {
         return getRenderer().getCodeTextboxByElement();
     }
 
-    public class OrderElementTreeitemRenderer extends Renderer {
+    class OrderElementTreeitemRenderer extends Renderer {
 
-        public OrderElementTreeitemRenderer() {
+        OrderElementTreeitemRenderer() {
+        }
+
+        //TODO Check this ?
+        @Override
+        public void render(Treeitem treeitem, Object o) throws Exception {
+
         }
 
         @Override
@@ -574,7 +580,8 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         }
 
         private Button createEditButton(final Treeitem item) {
-            Button editbutton = createButton("/common/img/ico_editar1.png",
+
+            return createButton("/common/img/ico_editar1.png",
                     _("Edit"), "/common/img/ico_editar.png", "icono",
                     new EventListener() {
                         @Override
@@ -582,8 +589,6 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                             showEditionOrderElement(item);
                         }
                     });
-
-            return editbutton;
         }
 
         @Override
@@ -591,13 +596,12 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
             super.removeCodeTextbox(key);
         }
 
-        public void addResourcesBudgetCell(final OrderElement currentElement) {
+        void addResourcesBudgetCell(final OrderElement currentElement) {
             BigDecimal value = currentElement.getSubstractedBudget();
             Textbox autoBudgetCell = new Textbox(Util.addCurrencySymbol(value));
             autoBudgetCell.setDisabled(true);
             addCell(autoBudgetCell);
         }
-
     }
 
     @Override
@@ -647,10 +651,10 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     private OrderElementPredicate createPredicate() {
-        List<FilterPair> listFilters = (List<FilterPair>) bdFiltersOrderElement.getSelectedElements();
+        List<FilterPair> listFilters = bdFiltersOrderElement.getSelectedElements();
         Date startDate = filterStartDateOrderElement.getValue();
         Date finishDate = filterFinishDateOrderElement.getValue();
-        boolean ignoreLabelsInheritance = Boolean.valueOf(labelsWithoutInheritance.isChecked());
+        boolean ignoreLabelsInheritance = labelsWithoutInheritance.isChecked();
         String name = filterNameOrderElement.getValue();
 
         if ( listFilters.isEmpty() && startDate == null && finishDate == null && name == null ) {
@@ -659,7 +663,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         return new OrderElementPredicate(listFilters, startDate, finishDate, name, ignoreLabelsInheritance);
     }
 
-    public TreeModel getFilteredTreeModel() {
+    TreeModel getFilteredTreeModel() {
         OrderElementTreeModel filteredModel = getFilteredModel();
         if ( filteredModel == null ) {
             return null;
@@ -667,7 +671,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         return filteredModel.asTree();
     }
 
-    public OrderElementTreeModel getFilteredModel() {
+    private OrderElementTreeModel getFilteredModel() {
         if ( orderModel == null ) {
             return null;
         }
@@ -688,7 +692,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         tree.invalidate();
     }
 
-    public void showAllOrderElements() {
+    private void showAllOrderElements() {
         this.predicate = null;
         tree.setModel(orderModel.getOrderElementTreeModel().asTree());
         tree.invalidate();
@@ -709,7 +713,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         predicate = null;
     }
 
-    Tab tabGeneralData;
+    private Tab tabGeneralData;
 
     private TemplateFinderPopup templateFinderPopup;
 
@@ -720,7 +724,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     @Override
     protected String createTooltipText(OrderElement elem) {
         StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(elem.getName() + ". ");
+        tooltipText.append(elem.getName()).append(". ");
 
         if ( (elem.getDescription() != null) && (!elem.getDescription().equals("")) ) {
             tooltipText.append(elem.getDescription());
@@ -728,7 +732,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         }
 
         if ( (elem.getLabels() != null) && (!elem.getLabels().isEmpty()) ) {
-            tooltipText.append(" " + _("Labels") + ":");
+            tooltipText.append(" ").append(_("Labels")).append(":");
             tooltipText.append(StringUtils.join(elem.getLabels(), ","));
             tooltipText.append(".");
         }
@@ -758,15 +762,15 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         return tooltipText.toString();
     }
 
-    public void showEditionOrderElement(final Treeitem item) {
-        OrderElement currentOrderElement = (OrderElement) item.getValue();
+    void showEditionOrderElement(final Treeitem item) {
+        OrderElement currentOrderElement = item.getValue();
         markModifiedTreeitem(item.getTreerow());
         IOrderElementModel model = orderModel.getOrderElementModel(currentOrderElement);
         orderElementController.openWindow(model);
         refreshRow(item);
     }
 
-    public void refreshRow(Treeitem item) {
+    void refreshRow(Treeitem item) {
         try {
             getRenderer().updateColumnsFor((OrderElement) item.getValue());
             getRenderer().render(item, item.getValue());
@@ -775,14 +779,15 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         }
     }
 
-    public Treeitem getTreeitemByOrderElement(OrderElement element) {
+    Treeitem getTreeitemByOrderElement(OrderElement element) {
         List<Treeitem> listItems = new ArrayList<>(this.tree.getItems());
         for (Treeitem item : listItems) {
-            OrderElement orderElement = (OrderElement) item.getValue();
+            OrderElement orderElement = item.getValue();
             if ( orderElement.getId().equals(element.getId()) ) {
                 return item;
             }
         }
+
         return null;
     }
 

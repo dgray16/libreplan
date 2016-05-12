@@ -42,6 +42,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
     private static final String CONTROLLER_NAME = "treeController";
 
     public static abstract class Column {
+
         private String label;
 
         private String cssClass;
@@ -77,8 +78,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
             return cssClass.equals("name") ? "1" : "min";
         }
 
-        public abstract <T extends ITreeNode<T>> void doCell(
-                TreeController<T>.Renderer renderer,
+        public abstract <T extends ITreeNode<T>> void doCell(TreeController<T>.Renderer renderer,
                 Treeitem item, T currentElement);
     }
 
@@ -129,19 +129,18 @@ public abstract class TreeComponent extends HtmlMacroComponent {
     public abstract List<Column> getColumns();
 
     public void clear() {
-        OrderElementTreeController controller = (OrderElementTreeController) getVariable(
-                CONTROLLER_NAME, true);
+        OrderElementTreeController controller = (OrderElementTreeController) getAttribute(CONTROLLER_NAME, true);
         controller.clear();
     }
 
     public void useController(TreeController<?> controller) {
         doAfterComposeOnController(controller);
         controller.setColumns(getColumns());
-        this.setVariable(CONTROLLER_NAME, controller, true);
+        this.setAttribute(CONTROLLER_NAME, controller, true);
     }
 
     public TreeController<?> getController() {
-        return (TreeController<?>) getVariable(CONTROLLER_NAME, true);
+        return (TreeController<?>) getAttribute(CONTROLLER_NAME, true);
     }
 
     private void doAfterComposeOnController(Composer controller) {

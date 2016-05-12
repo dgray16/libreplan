@@ -61,7 +61,7 @@ import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for workReportQuery.zul. A kind of report to filter and look for
@@ -129,13 +129,11 @@ public class WorkReportQueryController extends GenericForwardComposer {
             public void validate(Component comp, Object value)
                     throws WrongValueException {
                 Date finishDateLine = (Date) value;
-                if ((finishDateLine != null)
-                        && (filterStartDateLine.getValue() != null)
-                        && (finishDateLine.compareTo(filterStartDateLine
-                                .getValue()) < 0)) {
+                if ((finishDateLine != null) && (filterStartDateLine.getValue() != null) &&
+                        (finishDateLine.compareTo(filterStartDateLine.getValue()) < 0)) {
+
                     filterFinishDateLine.setValue(null);
-                    throw new WrongValueException(comp,
-                            _("must be after start date"));
+                    throw new WrongValueException(comp, _("must be after start date"));
                 }
             }
         };
@@ -147,13 +145,11 @@ public class WorkReportQueryController extends GenericForwardComposer {
             public void validate(Component comp, Object value)
                     throws WrongValueException {
                 Date startDateLine = (Date) value;
-                if ((startDateLine != null)
-                        && (filterFinishDateLine.getValue() != null)
-                        && (startDateLine.compareTo(filterFinishDateLine
-                                .getValue()) > 0)) {
+                if ((startDateLine != null) && (filterFinishDateLine.getValue() != null) &&
+                        (startDateLine.compareTo(filterFinishDateLine.getValue()) > 0)) {
+
                     filterStartDateLine.setValue(null);
-                    throw new WrongValueException(comp,
-                            _("must be lower than end date"));
+                    throw new WrongValueException(comp, _("must be lower than end date"));
                 }
             }
         };
@@ -173,8 +169,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
      */
     public void onApplyFilterWorkReportLines(Event event) {
         OrderElement selectedOrder = getSelectedOrderElement();
-        List<WorkReportLine> workReportLines = workReportModel
-                .getAllWorkReportLines();
+        List<WorkReportLine> workReportLines = workReportModel.getAllWorkReportLines();
 
         if (selectedOrder == null) {
             createPredicateLines(filterOrderElements(workReportLines));
@@ -197,7 +192,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
     }
 
     private Integer totalTasks(List<WorkReportLine> workReportLines) {
-        return Integer.valueOf(workReportLines.size());
+        return workReportLines.size();
     }
 
     private EffortDuration totalHours(List<WorkReportLine> workReportLines) {
@@ -205,6 +200,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
         for (WorkReportLine each : workReportLines) {
             result = result.plus(each.getEffort());
         }
+
         return result;
     }
 
@@ -214,8 +210,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
             filterWorkReportLines.addAll(workReportModel
                     .getFilterWorkReportLines(each));
         }
-        gridListQuery.setModel(new SimpleListModel(filterWorkReportLines
-                .toArray()));
+        gridListQuery.setModel(new SimpleListModel<>(filterWorkReportLines.toArray()));
         gridListQuery.invalidate();
     }
 
@@ -225,6 +220,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
         for (WorkReportLine each : workReportLines) {
             result.add(each.getOrderElement());
         }
+
         return result;
     }
 
@@ -242,63 +238,60 @@ public class WorkReportQueryController extends GenericForwardComposer {
         }
     }
 
-    private Collection<? extends WorkReportLinePredicate> createWRLPredicates(
-            String type, Resource resource, Date startDate, Date finishDate,
-            OrderElement orderElement, TypeOfWorkHours hoursType) {
+    private Collection<? extends WorkReportLinePredicate> createWRLPredicates(String type,
+                                                                              Resource resource,
+                                                                              Date startDate,
+                                                                              Date finishDate,
+                                                                              OrderElement orderElement,
+                                                                              TypeOfWorkHours hoursType) {
 
-        Set<WorkReportLinePredicate> result = new HashSet<WorkReportLinePredicate>();
+        Set<WorkReportLinePredicate> result = new HashSet<>();
         if (type.equals(_("All"))) {
-            result.add(new WorkReportLinePredicate(resource, startDate,
-                    finishDate, orderElement, hoursType));
+            result.add(new WorkReportLinePredicate(resource, startDate, finishDate, orderElement, hoursType));
             if (orderElement != null) {
                 for (OrderElement each : orderElement.getChildren()) {
-                    result.add(new WorkReportLinePredicate(resource, startDate,
-                            finishDate, each, hoursType));
+                    result.add(new WorkReportLinePredicate(resource, startDate, finishDate, each, hoursType));
                 }
             }
         } else if (type.equals(_("Direct"))) {
-            result.add(new WorkReportLinePredicate(resource, startDate,
-                    finishDate, orderElement, hoursType));
+            result.add(new WorkReportLinePredicate(resource, startDate, finishDate, orderElement, hoursType));
         } else if (type.equals(_("Indirect")) && orderElement != null) {
             for (OrderElement each : orderElement.getChildren()) {
-                result.add(new WorkReportLinePredicate(resource, startDate,
-                        finishDate, each, hoursType));
+                result.add(new WorkReportLinePredicate(resource, startDate, finishDate, each, hoursType));
             }
         }
+
         return result;
     }
 
     private Resource getSelectedResource() {
         Comboitem itemSelected = filterResource.getSelectedItem();
-        if ((itemSelected != null)
-                && (((Resource) itemSelected.getValue()) != null)) {
+        if (itemSelected != null && itemSelected.getValue() != null) {
             return (Resource) itemSelected.getValue();
         }
+
         return null;
     }
 
     private OrderElement getSelectedOrderElement() {
-        OrderElement orderElement = (OrderElement) this.bandboxFilterOrderElement
-                .getSelectedElement();
-        if ((orderElement != null)
-                && ((orderElement.getCode() != null) && (!orderElement
-                        .getCode().isEmpty()))) {
+        OrderElement orderElement = (OrderElement) this.bandboxFilterOrderElement.getSelectedElement();
+        if ((orderElement != null) && ((orderElement.getCode() != null) && (!orderElement.getCode().isEmpty()))) {
             try {
                 return workReportModel.findOrderElement(orderElement.getCode());
             } catch (InstanceNotFoundException e) {
-                throw new WrongValueException(bandboxFilterOrderElement,
-                        _("Task not found"));
+                throw new WrongValueException(bandboxFilterOrderElement, _("Task not found"));
             }
         }
+
         return null;
     }
 
     private TypeOfWorkHours getSelectedHoursType() {
         Comboitem itemSelected = filterHoursType.getSelectedItem();
-        if ((itemSelected != null)
-                && (((TypeOfWorkHours) itemSelected.getValue()) != null)) {
+        if ((itemSelected != null) && ((itemSelected.getValue()) != null)) {
             return (TypeOfWorkHours) itemSelected.getValue();
         }
+
         return null;
     }
 
@@ -308,6 +301,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
     public List<WorkReportLine> getQueryWorkReportLines() {
         List<WorkReportLine> result = workReportModel.getAllWorkReportLines();
         updateSummary(result);
+
         return result;
     }
 
@@ -331,16 +325,15 @@ public class WorkReportQueryController extends GenericForwardComposer {
         } else if (SecurityUtils.isUserInRole(UserRole.ROLE_BOUND_USER)
                 && workReportModel.isPersonalTimesheet(workReport)
                 && belongsToCurrentUser(line)) {
-            personalTimesheetController
-                    .goToCreateOrEditForm(line.getLocalDate());
+            personalTimesheetController.goToCreateOrEditForm(line.getLocalDate());
         } else {
-            messagesForUser.showMessage(Level.WARNING,
-                    _("You do not have permissions to edit this timesheet"));
+            messagesForUser.showMessage(Level.WARNING, _("You do not have permissions to edit this timesheet"));
         }
     }
 
     private boolean belongsToCurrentUser(WorkReportLine line) {
         User user = UserUtil.getUserFromSession();
+        assert user != null;
         return line.getResource().getId().equals(user.getWorker().getId());
     }
 
@@ -349,19 +342,18 @@ public class WorkReportQueryController extends GenericForwardComposer {
      * @author Diego Pino García <dpino@igalia.com>
      *
      */
-    class WorkReportLineSummary {
+    private class WorkReportLineSummary {
 
         private Integer totalTasks;
 
         private EffortDuration totalHours;
 
-        private WorkReportLineSummary(Integer totalTasks,
-                EffortDuration totalHours) {
+        private WorkReportLineSummary(Integer totalTasks, EffortDuration totalHours) {
             this.totalTasks = totalTasks;
             this.totalHours = totalHours;
         }
 
-        public String getTotalTasks() {
+        String getTotalTasks() {
             return totalTasks.toString();
         }
 
@@ -370,8 +362,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
         }
 
         public String toString() {
-            return _("Tasks") + " " + getTotalTasks() + ". "
-                    + _("Total hours") + " " + getTotalHours() + ".";
+            return _("Tasks") + " " + getTotalTasks() + ". " + _("Total hours") + " " + getTotalHours() + ".";
         }
 
     }

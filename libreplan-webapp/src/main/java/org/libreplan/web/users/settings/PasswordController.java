@@ -34,7 +34,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for password changes
@@ -56,7 +56,7 @@ public class PasswordController extends GenericForwardComposer {
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("passwordController", this, true);
+        comp.setAttribute("passwordController", this, true);
         messages = new MessagesForUser(messagesContainer);
         passwordModel.initEditLoggedUser();
     }
@@ -83,8 +83,7 @@ public class PasswordController extends GenericForwardComposer {
     }
 
     public boolean isLdapUser() {
-        return (!UserUtil.getUserFromSession().isLibrePlanUser() && passwordModel
-                .isLdapAuthEnabled());
+        return !UserUtil.getUserFromSession().isLibrePlanUser() && passwordModel.isLdapAuthEnabled();
     }
 
     public Constraint validatePasswordConfirmation() {

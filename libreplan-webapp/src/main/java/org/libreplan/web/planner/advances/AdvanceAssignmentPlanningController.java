@@ -54,8 +54,7 @@ import org.zkoss.zul.Window;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AdvanceAssignmentPlanningController extends GenericForwardComposer {
 
-    private static final Log LOG = LogFactory
-            .getLog(AdvanceAssignmentPlanningController.class);
+    private static final Log LOG = LogFactory.getLog(AdvanceAssignmentPlanningController.class);
 
     private ManageOrderElementAdvancesController manageOrderElementAdvancesController;
 
@@ -77,11 +76,11 @@ public class AdvanceAssignmentPlanningController extends GenericForwardComposer 
     }
 
     public void showWindow(IContextWithPlannerTask<TaskElement> context,
-            TaskElement task,
-            PlanningState planningState) {
+                           TaskElement task,
+                           PlanningState planningState) {
+
         this.context = context;
-        advanceAssignmentPlanningModel.initAdvancesFor(task, context,
-                planningState);
+        advanceAssignmentPlanningModel.initAdvancesFor(task, context, planningState);
         showAdvanceWindow(advanceAssignmentPlanningModel.getOrderElement());
 
         try {
@@ -90,16 +89,13 @@ public class AdvanceAssignmentPlanningController extends GenericForwardComposer 
             this.window.setMode("modal");
         } catch (SuspendNotAllowedException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private void setupAdvanceController() {
-        Component orderElementAdvances = window
-                .getFellowIfAny("orderElementAdvances");
+        Component orderElementAdvances = window.getFellowIfAny("orderElementAdvances");
         manageOrderElementAdvancesController = (ManageOrderElementAdvancesController) orderElementAdvances
-                .getVariable("manageOrderElementAdvancesController", true);
+                .getAttribute("manageOrderElementAdvancesController", true);
     }
 
     private void showAdvanceWindow(OrderElement orderElement) {
@@ -137,13 +133,11 @@ public class AdvanceAssignmentPlanningController extends GenericForwardComposer 
     private void updateTaskComponents() {
         if (context.getRelativeTo() instanceof TaskComponent) {
             // update the current taskComponent
-            TaskComponent taskComponent = (TaskComponent) context
-                    .getRelativeTo();
+            TaskComponent taskComponent = (TaskComponent) context.getRelativeTo();
             updateTaskComponent(taskComponent);
 
             // update the current taskComponent's parents
-            List<Task> parents = new ArrayList<Task>(context.getMapper()
-                    .getParents(taskComponent.getTask()));
+            List<Task> parents = new ArrayList<Task>(context.getMapper().getParents(taskComponent.getTask()));
             TaskList taskList = taskComponent.getTaskList();
             for (Task task : parents) {
                 TaskComponent parentComponent = taskList.find(task);
@@ -166,10 +160,10 @@ public class AdvanceAssignmentPlanningController extends GenericForwardComposer 
 
     public String getTitle(){
         String title = "Advance Assignments";
-        if ((advanceAssignmentPlanningModel != null)
-                && (advanceAssignmentPlanningModel.getOrderElement() != null)) {
+        if ((advanceAssignmentPlanningModel != null) && (advanceAssignmentPlanningModel.getOrderElement() != null)) {
             title = advanceAssignmentPlanningModel.getOrderElement().getName();
         }
+
         return title;
     }
 

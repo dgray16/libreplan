@@ -38,7 +38,7 @@ import org.libreplan.web.common.components.CapacityPicker;
 import org.libreplan.web.common.components.EffortDurationPicker;
 import org.libreplan.web.common.components.NewDataSortableGrid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zkoss.util.InvalidValueException;
+import org.zkoss.util.IllegalSyntaxException;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.CheckEvent;
@@ -81,7 +81,7 @@ public class CalendarExceptionTypeCRUDController extends
 
     private static ListitemRenderer calendarExceptionTypeColorRenderer = new ListitemRenderer() {
         @Override
-        public void render(Listitem item, Object data) throws Exception {
+        public void render(Listitem item, Object data, int i) throws Exception {
             CalendarExceptionTypeColor color = (CalendarExceptionTypeColor) data;
             item.setValue(color);
             item.appendChild(new Listcell(_(color.getName())));
@@ -90,7 +90,7 @@ public class CalendarExceptionTypeCRUDController extends
 
     private RowRenderer exceptionDayTypeRenderer = new RowRenderer() {
         @Override
-        public void render(Row row, Object data) throws Exception {
+        public void render(Row row, Object data, int i) throws Exception {
             final CalendarExceptionType calendarExceptionType = (CalendarExceptionType) data;
             row.setValue(calendarExceptionType);
 
@@ -106,8 +106,7 @@ public class CalendarExceptionTypeCRUDController extends
             row.appendChild(new Label(calendarExceptionType.getName()));
             row.appendChild(new Label(_(calendarExceptionType.getColor().getName())));
             row.appendChild(new Label(calendarExceptionType.getOverAssignableStr()));
-            row.appendChild(new Label(calendarExceptionType.getCapacity()
-                    .getStandardEffortString()));
+            row.appendChild(new Label(calendarExceptionType.getCapacity().getStandardEffortString()));
             row.appendChild(new Label(calendarExceptionType.getCapacity().getExtraEffortString()));
 
             Hbox hbox = new Hbox();
@@ -179,7 +178,7 @@ public class CalendarExceptionTypeCRUDController extends
         initializeCapacityPicker();
     }
 
-    public CalendarExceptionType getExceptionDayType() {
+    private CalendarExceptionType getExceptionDayType() {
         return calendarExceptionTypeModel.getExceptionDayType();
     }
 
@@ -221,11 +220,9 @@ public class CalendarExceptionTypeCRUDController extends
             calendarExceptionTypeModel.confirmDelete(calendarExceptionType);
         } catch (InstanceNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (InvalidValueException e) {
-            NewDataSortableGrid listExceptionDayTypes = (NewDataSortableGrid) listWindow
-                    .getFellowIfAny("listExceptionDayTypes");
-            Row row = findRowByValue(listExceptionDayTypes,
-                    calendarExceptionType);
+        } catch (IllegalSyntaxException e) {
+            NewDataSortableGrid listExceptionDayTypes = (NewDataSortableGrid) listWindow.getFellowIfAny("listExceptionDayTypes");
+            Row row = findRowByValue(listExceptionDayTypes, calendarExceptionType);
             throw new WrongValueException(row, e.getMessage());
         }
     }
@@ -237,6 +234,7 @@ public class CalendarExceptionTypeCRUDController extends
                 return row;
             }
         }
+
         return null;
     }
 

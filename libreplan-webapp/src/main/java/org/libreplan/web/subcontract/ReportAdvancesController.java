@@ -56,7 +56,7 @@ import org.zkoss.zul.Hbox;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for operations related with report advances.
@@ -81,7 +81,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         window = (Window) comp;
-        window.setVariable("controller", this, true);
+        window.setAttribute("controller", this, true);
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
@@ -96,7 +96,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
     private class ReportAdvancesOrderRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
+        public void render(Row row, Object data, int i) {
             Order order = (Order) data;
             row.setValue(order);
 
@@ -104,12 +104,9 @@ public class ReportAdvancesController extends GenericForwardComposer {
             appendLabel(row, toString(order.getCustomerReference()));
             appendLabel(row, order.getName());
 
-            DirectAdvanceAssignment directAdvanceAssignment = order
-                    .getDirectAdvanceAssignmentOfTypeSubcontractor();
-
             // append the last advance measurement reported
             AdvanceMeasurement lastAdvanceMeasurementReported = reportAdvancesModel
-                    .getLastAdvanceMeasurementReported(directAdvanceAssignment);
+                    .getLastAdvanceMeasurementReported(order.getDirectAdvanceAssignmentOfTypeSubcontractor());
             if (lastAdvanceMeasurementReported != null) {
                 appendLabel(row, toString(lastAdvanceMeasurementReported.getDate()));
                 appendLabel(row, toString(lastAdvanceMeasurementReported.getValue()));
@@ -120,7 +117,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
 
             // append the last advance measurement not reported
             AdvanceMeasurement lastAdvanceMeasurement = reportAdvancesModel
-                    .getLastAdvanceMeasurement(directAdvanceAssignment);
+                    .getLastAdvanceMeasurement(order.getDirectAdvanceAssignmentOfTypeSubcontractor());
             if (lastAdvanceMeasurement != null) {
                 appendLabel(row, toString(lastAdvanceMeasurement.getDate()));
                 appendLabel(row, toString(lastAdvanceMeasurement.getValue()));
@@ -153,16 +150,14 @@ public class ReportAdvancesController extends GenericForwardComposer {
             row.appendChild(new Label(label));
         }
 
-        private void appendOperations(Row row, Order order,
-                boolean sendButtonDisabled) {
+        private void appendOperations(Row row, Order order,boolean sendButtonDisabled) {
             Hbox hbox = new Hbox();
             hbox.appendChild(getExportButton(order));
             hbox.appendChild(getSendButton(order, sendButtonDisabled));
             row.appendChild(hbox);
         }
 
-        private Button getExportButton(
-                final Order order) {
+        private Button getExportButton(final Order order) {
             Button exportButton = new Button("XML");
             exportButton.addEventListener(Events.ON_CLICK, new EventListener() {
 
@@ -182,8 +177,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
                 @Override
                 public void onEvent(Event event) {
                     String uri = CallbackServlet.registerAndCreateURLFor(
-                            (HttpServletRequest) Executions.getCurrent()
-                                    .getNativeRequest(), requestHandler, false,
+                            (HttpServletRequest) Executions.getCurrent().getNativeRequest(), requestHandler, false,
                             DisposalMode.WHEN_NO_LONGER_REFERENCED);
 
                     Executions.getCurrent().sendRedirect(uri, "_blank");
@@ -194,8 +188,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
             return exportButton;
         }
 
-        private Button getSendButton(final Order order,
-                boolean sendButtonDisabled) {
+        private Button getSendButton(final Order order, boolean sendButtonDisabled) {
             Button sendButton = new Button(_("Send"));
             sendButton.addEventListener(Events.ON_CLICK, new EventListener() {
 
@@ -203,14 +196,11 @@ public class ReportAdvancesController extends GenericForwardComposer {
                 public void onEvent(Event event) {
                     try {
                         reportAdvancesModel.sendAdvanceMeasurements(order);
-                        messagesForUser.showMessage(Level.INFO,
-                                _("Progress sent successfully"));
+                        messagesForUser.showMessage(Level.INFO, _("Progress sent successfully"));
                     } catch (UnrecoverableErrorServiceException e) {
-                        messagesForUser
-                                .showMessage(Level.ERROR, e.getMessage());
+                        messagesForUser.showMessage(Level.ERROR, e.getMessage());
                     } catch (ConnectionProblemsException e) {
-                        messagesForUser
-                                .showMessage(Level.ERROR, e.getMessage());
+                        messagesForUser.showMessage(Level.ERROR, e.getMessage());
                     } catch (ValidationException e) {
                         messagesForUser.showInvalidValues(e);
                     }

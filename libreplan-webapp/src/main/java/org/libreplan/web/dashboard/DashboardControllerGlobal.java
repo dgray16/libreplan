@@ -50,7 +50,7 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component component) throws Exception {
         super.doAfterCompose(component);
-        component.setVariable("dashboardControllerGlobal", this, true);
+        component.setAttribute("dashboardControllerGlobal", this, true);
         fillOrderLists();
         setupPipelineGrid();
         showStoredColumn();
@@ -104,8 +104,15 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
     }
 
     private void setupPipelineGrid() throws ParseException {
-        int rowsCount = findMaxList(preSalesOrders.size(), offeredOrders.size(), outsourcedOrders.size(), acceptedOrders.size(),
-                startedOrders.size(), onHoldOrders.size(), finishedOrders.size(), cancelledOrders.size(), storedOrders.size());
+        int rowsCount = findMaxList(preSalesOrders.size(),
+                offeredOrders.size(),
+                outsourcedOrders.size(),
+                acceptedOrders.size(),
+                startedOrders.size(),
+                onHoldOrders.size(),
+                finishedOrders.size(),
+                cancelledOrders.size(),
+                storedOrders.size());
 
         Rows rows = new Rows();
         for (int i = 0; i < rowsCount; i++){
@@ -239,7 +246,7 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
         return new SimpleDateFormat("EEE MMM dd yyyy").format(order.getDeadline());
     }
 
-    public void showStoredColumn() throws ParseException {
+    private void showStoredColumn() throws ParseException {
         if ( storedColumnVisible.isChecked() ){
             if ( storedOrders.size() > 0 ){
                 for (int i = 0; i < storedOrders.size(); i++){
@@ -263,8 +270,8 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
             }
     }
 
-    private int findMaxList(int preSales, int offered, int outsourced, int accepted, int started, int onHold, int finished,
-                            int cancelled, int stored){
+    private int findMaxList(int preSales, int offered, int outsourced, int accepted, int started, int onHold,
+                            int finished, int cancelled, int stored){
 
         int[] sizes = {preSales, offered, outsourced, accepted, started, onHold, finished, cancelled, stored};
         int max = sizes[0];

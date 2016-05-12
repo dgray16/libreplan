@@ -168,7 +168,9 @@ public class OrderCRUDController extends GenericForwardComposer {
     private Vbox orderElementFilter;
 
     private Button createOrderButton;
+
     private Button saveOrderAndContinueButton;
+
     private Button cancelEditionButton;
 
     private Datebox filterStartDate;
@@ -512,8 +514,7 @@ public class OrderCRUDController extends GenericForwardComposer {
                 initEditOrderElementWindow();
             }
             try {
-                orderElementController.doAfterCompose(self
-                        .getFellow("editOrderElement"));
+                orderElementController.doAfterCompose(self.getFellow("editOrderElement"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -529,7 +530,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
             Tree tree = (Tree) orderElementsTree.getFellowIfAny("tree");
             tree.setModel(null);
-            tree.setTreeitemRenderer(orderElementTreeController.getRenderer());
+            tree.setItemRenderer(orderElementTreeController.getRenderer());
 
             reloadTree(orderElementsTree);
         }
@@ -562,6 +563,7 @@ public class OrderCRUDController extends GenericForwardComposer {
                 }
             }
         }
+
         return true;
     }
 
@@ -765,8 +767,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             OrderFilterEnum type = (OrderFilterEnum) filterPair.getType();
             switch (type) {
                 case Label:
-                    labels.add((org.libreplan.business.labels.entities.Label) filterPair
-                            .getValue());
+                    labels.add((org.libreplan.business.labels.entities.Label) filterPair.getValue());
                     break;
                 case Criterion:
                     criteria.add((Criterion) filterPair.getValue());
@@ -824,7 +825,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             // come back to the current tab after initialize all tabs.
             resetSelectedTab();
             selectTab(previousTab.getId());
-            Events.sendEvent(new SelectEvent<Component, Object>(Events.ON_SELECT, previousTab, null));
+            Events.sendEvent(new SelectEvent<>(Events.ON_SELECT, previousTab, null));
 
             if ( isNewObject ) {
                 this.planningControllerEntryPoints.goToOrderDetails(order);

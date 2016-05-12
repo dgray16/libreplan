@@ -93,7 +93,7 @@ import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Timebox;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Window;
 /**
  * @author Diego Pino García <dpino@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
@@ -101,8 +101,7 @@ import org.zkoss.zul.api.Window;
  *         Controller for CRUD actions over a {@link WorkReport}
  *
  */
-public class WorkReportCRUDController extends GenericForwardComposer implements
-        IWorkReportCRUDControllerEntryPoints {
+public class WorkReportCRUDController extends GenericForwardComposer implements IWorkReportCRUDControllerEntryPoints {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(WorkReportCRUDController.class);
 
@@ -145,7 +144,9 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     private static final String ITEM = "item";
 
     private static final int EXTRA_FIELD_MIN_WIDTH = 70;
+
     private static final int EXTRA_FIELD_MAX_WIDTH = 150;
+
     private static final int EXTRA_FIELD_PX_PER_CHAR = 5;
 
     private transient IPredicate predicate;
@@ -172,14 +173,13 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        listWorkReportLines = (NewDataSortableGrid) createWindow
-                .getFellowIfAny("listWorkReportLines");
+        listWorkReportLines = (NewDataSortableGrid) createWindow.getFellowIfAny("listWorkReportLines");
         messagesForUser = new MessagesForUser(messagesContainer);
         showMessageIfPersonalTimesheetWasSaved();
 
         comp.setAttribute("controller", this);
         goToList();
-        if(listType != null) {
+        if( listType != null ) {
             //listType is null in reports -> work report lines
             listType.setSelectedIndex(0);
         }
@@ -190,39 +190,33 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private void showMessageIfPersonalTimesheetWasSaved() {
-        String timesheetSave = Executions.getCurrent().getParameter(
-                "timesheet_saved");
-        if (!StringUtils.isBlank(timesheetSave)) {
-            messagesForUser.showMessage(Level.INFO,
-                    _("Personal timesheet saved"));
+        String timesheetSave = Executions.getCurrent().getParameter("timesheet_saved");
+        if ( !StringUtils.isBlank(timesheetSave) ) {
+            messagesForUser.showMessage(Level.INFO, _("Personal timesheet saved"));
         }
     }
 
     private void initializeHoursType() {
-        allHoursType = new SimpleListModel(workReportModel.getAllHoursType());
+        allHoursType = new SimpleListModel<>(workReportModel.getAllHoursType());
     }
 
     /**
      * Show confirm window for deleting {@link WorkReport}
      *
-     * @param workReport
+     * @param workReportDTO
      */
     public void showConfirmDelete(WorkReportDTO workReportDTO) {
         WorkReport workReport = workReportDTO.getWorkReport();
-        try {
 
-            final String workReportName = formatWorkReportName(workReport);
-            int status = Messagebox.show(_("Confirm deleting {0}. Are you sure?", workReportName), "Delete",
-                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                workReportModel.remove(workReport);
-                messagesForUser.showMessage(Level.INFO,
-                        _("Timesheet removed successfully"));
-                loadComponentslist(listWindow);
-                Util.reloadBindings(listWindow);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        final String workReportName = formatWorkReportName(workReport);
+        int status = Messagebox.show(_("Confirm deleting {0}. Are you sure?", workReportName), "Delete",
+                Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+        if ( Messagebox.OK == status ) {
+            workReportModel.remove(workReport);
+            messagesForUser.showMessage(Level.INFO,
+                    _("Timesheet removed successfully"));
+            loadComponentslist(listWindow);
+            Util.reloadBindings(listWindow);
         }
     }
 
@@ -235,18 +229,17 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private OnlyOneVisible getVisibility() {
-        return (visibility == null) ? new OnlyOneVisible(createWindow,
-                listWindow) : visibility;
+        return (visibility == null) ? new OnlyOneVisible(createWindow, listWindow) : visibility;
     }
 
     public void saveAndExit() {
-        if (save()) {
+        if ( save() ) {
             goToList();
         }
     }
 
     public void saveAndContinue() {
-        if (save()) {
+        if ( save() ) {
             goToEditForm(getWorkReport());
         }
     }
@@ -261,10 +254,11 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         } catch (ValidationException e) {
             showInvalidValues(e);
         } catch (Exception e) {
-            if(!showInvalidProperty()) {
+            if( !showInvalidProperty() ) {
                 throw new RuntimeException(e);
             }
         }
+
         return false;
     }
 
@@ -276,15 +270,16 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     private void showInvalidValues(ValidationException e) {
         for (InvalidValue invalidValue : e.getInvalidValues()) {
             Object value = invalidValue.getRootBean();
-            if (value instanceof WorkReport) {
-                if (validateWorkReport()) {
+            if ( value instanceof WorkReport ) {
+
+                if ( validateWorkReport() ) {
                     messagesForUser.showInvalidValues(e);
                 }
             }
-            if (value instanceof WorkReportLine) {
+            if ( value instanceof WorkReportLine ) {
                 WorkReportLine workReportLine = (WorkReportLine) invalidValue.getRootBean();
                 Row row = ComponentsFinder.findRowByValue(listWorkReportLines, workReportLine);
-                if (row == null) {
+                if ( row == null ) {
                     messagesForUser.showInvalidValues(e);
                 } else {
                     validateWorkReportLine(row, workReportLine);
@@ -295,16 +290,17 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     private boolean showInvalidProperty() {
         WorkReport workReport = getWorkReport();
-        if (workReport != null) {
-            if (!validateWorkReport()) {
+        if ( workReport != null ) {
+            if ( !validateWorkReport() ) {
                 return true;
             }
             for (WorkReportLine each : workReport.getWorkReportLines()) {
-                if (!validateWorkReportLine(each)) {
+                if ( !validateWorkReportLine(each) ) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -314,24 +310,22 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      */
     private boolean validateWorkReport() {
 
-        if (!getWorkReport()
-.isDateMustBeNotNullIfIsSharedByLinesConstraint()) {
+        if ( !getWorkReport().isDateMustBeNotNullIfIsSharedByLinesConstraint() ) {
             Datebox datebox = (Datebox) createWindow.getFellowIfAny("date");
             showInvalidMessage(datebox, _("cannot be empty"));
+
             return false;
         }
 
-        if (!getWorkReport()
-                .isResourceMustBeNotNullIfIsSharedByLinesConstraint()) {
-            showInvalidMessage(autocompleteResource,
-                    _("cannot be empty"));
+        if ( !getWorkReport().isResourceMustBeNotNullIfIsSharedByLinesConstraint() ) {
+            showInvalidMessage(autocompleteResource, _("cannot be empty"));
+
             return false;
         }
 
-        if (!getWorkReport()
-                .isOrderElementMustBeNotNullIfIsSharedByLinesConstraint()) {
-            showInvalidMessage(bandboxSelectOrderElementInHead,
-                    _("cannot be empty"));
+        if ( !getWorkReport().isOrderElementMustBeNotNullIfIsSharedByLinesConstraint() ) {
+            showInvalidMessage(bandboxSelectOrderElementInHead, _("cannot be empty"));
+
             return false;
         }
 
@@ -339,10 +333,9 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private boolean validateWorkReportLine(WorkReportLine workReportLine) {
-        Row row = ComponentsFinder.findRowByValue(listWorkReportLines,
-                workReportLine);
-        return row != null ? validateWorkReportLine(row, workReportLine)
-                : false;
+        Row row = ComponentsFinder.findRowByValue(listWorkReportLines, workReportLine);
+
+        return row != null && validateWorkReportLine(row, workReportLine);
     }
 
     /**
@@ -351,122 +344,133 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      * @param invalidValue
      */
     @SuppressWarnings("unchecked")
-    private boolean validateWorkReportLine(Row row,
-            WorkReportLine workReportLine) {
+    private boolean validateWorkReportLine(Row row, WorkReportLine workReportLine) {
 
-        if (getWorkReportType().getDateIsSharedByLines()) {
-            if (!validateWorkReport()) {
+        if ( getWorkReportType().getDateIsSharedByLines() ) {
+            if ( !validateWorkReport() ) {
                 return false;
             }
-        } else if (workReportLine.getDate() == null) {
+        } else if ( workReportLine.getDate() == null)  {
             Datebox date = getDateboxDate(row);
-            if (date != null) {
+            if ( date != null ) {
                 String message = _("cannot be empty");
                 showInvalidMessage(date, message);
             }
+
             return false;
         }
 
-        if (getWorkReportType().getResourceIsSharedInLines()) {
-            if (!validateWorkReport()) {
+        if ( getWorkReportType().getResourceIsSharedInLines() ) {
+            if ( !validateWorkReport() ) {
                 return false;
             }
-        } else if (workReportLine.getResource() == null) {
+        } else if ( workReportLine.getResource() == null ) {
             Autocomplete autoResource = getTextboxResource(row);
-            if (autoResource != null) {
+            if ( autoResource != null ) {
                 String message = _("cannot be empty");
                 showInvalidMessage(autoResource, message);
             }
+
             return false;
         }
 
-        if (getWorkReportType().getOrderElementIsSharedInLines()) {
-            if (!validateWorkReport()) {
+        if ( getWorkReportType().getOrderElementIsSharedInLines() ) {
+            if ( !validateWorkReport() ) {
                 return false;
             }
-        } else if (workReportLine.getOrderElement() == null) {
+        } else if ( workReportLine.getOrderElement() == null ) {
             BandboxSearch bandboxOrder = getTextboxOrder(row);
-            if (bandboxOrder != null) {
+
+            if ( bandboxOrder != null ) {
                 String message = _("cannot be empty");
                 bandboxOrder.clear();
                 showInvalidMessage(bandboxOrder, message);
             }
+
             return false;
         }
 
-        if (!workReportLine
-                .isClockStartMustBeNotNullIfIsCalculatedByClockConstraint()) {
+        if ( !workReportLine.isClockStartMustBeNotNullIfIsCalculatedByClockConstraint() ) {
             Timebox timeStart = getTimeboxStart(row);
-            if (timeStart != null) {
+
+            if ( timeStart != null ) {
                 String message = _("cannot be empty");
                 showInvalidMessage(timeStart, message);
             }
+
             return false;
         }
 
-        if (!workReportLine
-                .isClockFinishMustBeNotNullIfIsCalculatedByClockConstraint()) {
+        if ( !workReportLine.isClockFinishMustBeNotNullIfIsCalculatedByClockConstraint() ) {
             Timebox timeFinish = getTimeboxFinish(row);
-            if (timeFinish != null) {
+
+            if ( timeFinish != null ) {
                 String message = _("cannot be empty");
                 showInvalidMessage(timeFinish, message);
             }
+
             return false;
         }
 
-        if (workReportLine.getEffort() == null) {
+        if ( workReportLine.getEffort() == null ) {
             Textbox effort = getEffort(row);
-            if (effort == null) {
+
+            if ( effort == null ) {
                 String message = _("cannot be empty");
-                showInvalidMessage(effort, message);
+                showInvalidMessage(null, message);
             }
-            if (EffortDuration.parseFromFormattedString(effort.getValue())
-                    .compareTo(EffortDuration.zero()) <= 0) {
+
+            if ( EffortDuration.zero().compareTo(EffortDuration.parseFromFormattedString(effort.getValue())) <= 0 ) {
                 String message = _("Effort must be greater than zero");
                 showInvalidMessage(effort, message);
             }
+
             return false;
         }
 
-        if (!workReportLine.isHoursCalculatedByClockConstraint()) {
+        if ( !workReportLine.isHoursCalculatedByClockConstraint() ) {
             Textbox effort = getEffort(row);
-            if (effort != null) {
+
+            if ( effort != null ) {
                 String message = _("effort is not properly calculated based on clock");
                 showInvalidMessage(effort, message);
             }
+
             return false;
         }
 
-        if (workReportLine.getTypeOfWorkHours() == null) {
+        if ( workReportLine.getTypeOfWorkHours() == null ) {
             // Locate TextboxOrder
             Listbox autoTypeOfHours = getTypeOfHours(row);
-            if (autoTypeOfHours != null) {
+
+            if ( autoTypeOfHours != null ) {
                 String message = autoTypeOfHours.getItems().isEmpty() ? _("Hours types are empty. Please, create some hours types before proceeding")
                         : _("cannot be empty");
                 showInvalidMessage(autoTypeOfHours, message);
             }
+
             return false;
         }
 
-        if ((!getWorkReport().isCodeAutogenerated())
-                && (workReportLine.getCode() == null || workReportLine
-                        .getCode().isEmpty())) {
+        if ( (!getWorkReport().isCodeAutogenerated()) &&
+                (workReportLine.getCode() == null || workReportLine.getCode().isEmpty()) ) {
             // Locate TextboxCode
             Textbox txtCode = getCode(row);
-            if (txtCode != null) {
+            if ( txtCode != null ) {
                 String message = _("cannot be empty.");
                 showInvalidMessage(txtCode, message);
             }
+
             return false;
         }
 
-        if (!workReportLine
-                .isOrderElementFinishedInAnotherWorkReportConstraint()) {
+        if ( !workReportLine.isOrderElementFinishedInAnotherWorkReportConstraint() ) {
             Checkbox checkboxFinished = getFinished(row);
-            if (checkboxFinished != null) {
+            if ( checkboxFinished != null ) {
                 String message = _("task is already marked as finished in another timesheet");
                 showInvalidMessage(checkboxFinished, message);
             }
+
             return false;
         }
 
@@ -583,7 +587,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      */
     private Autocomplete getTextboxResource(Row row) {
         int position = 0;
-        if (!getWorkReportType().getDateIsSharedByLines()) {
+        if ( !getWorkReportType().getDateIsSharedByLines() ) {
             position++;
         }
         try {
@@ -601,10 +605,10 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      */
     private BandboxSearch getTextboxOrder(Row row) {
         int position = 0;
-        if (!getWorkReportType().getDateIsSharedByLines()) {
+        if ( !getWorkReportType().getDateIsSharedByLines() ) {
             position++;
         }
-        if (!getWorkReportType().getResourceIsSharedInLines()) {
+        if ( !getWorkReportType().getResourceIsSharedInLines() ) {
             position++;
         }
         try {
@@ -622,7 +626,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     public void cancel() {
-        if (cameBackList || workReportModel.isEditing()) {
+        if ( cameBackList || workReportModel.isEditing() ) {
             goToList();
         } else {
             workReportTypeCRUD.goToList();
@@ -631,7 +635,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     @Override
     public void goToCreateForm(WorkReportType workReportType) {
-        if (workReportType.isPersonalTimesheetsType()) {
+        if ( workReportType.isPersonalTimesheetsType() ) {
             personalTimesheetsPopup.open(listTypeToAssign);
         } else {
             cameBackList = false;
@@ -650,7 +654,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     @Override
     public void goToEditForm(WorkReport workReport) {
-        if (workReportModel.isPersonalTimesheet(workReport)) {
+        if ( workReportModel.isPersonalTimesheet(workReport) ) {
             goToEditPersonalTimeSheet(workReport);
         } else {
             workReportModel.initEdit(workReport);
@@ -666,20 +670,16 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         workReportModel.initEdit(workReport);
         Date date = workReportModel.getFirstWorkReportLine().getDate();
         Resource resource = workReport.getResource();
-        personalTimesheetController.goToCreateOrEditFormForResource(
-                LocalDate.fromDateFields(date), resource);
+        personalTimesheetController.goToCreateOrEditFormForResource(LocalDate.fromDateFields(date), resource);
     }
 
     private void loadComponents(Component window) {
-        listWorkReportLines = (NewDataSortableGrid) window
-                .getFellow("listWorkReportLines");
-        headingFieldsAndLabels = (Grid) window
-                .getFellow("headingFieldsAndLabels");
-        autocompleteResource = (Autocomplete) window
-                .getFellow("autocompleteResource");
-        bandboxSelectOrderElementInHead = (BandboxSearch) window
-                .getFellow("bandboxSelectOrderElementInHead");
+        listWorkReportLines = (NewDataSortableGrid) window.getFellow("listWorkReportLines");
+        headingFieldsAndLabels = (Grid) window.getFellow("headingFieldsAndLabels");
+        autocompleteResource = (Autocomplete) window.getFellow("autocompleteResource");
+        bandboxSelectOrderElementInHead = (BandboxSearch) window.getFellow("bandboxSelectOrderElementInHead");
         bandboxSelectOrderElementInHead.setListboxWidth("750px");
+
         bandboxSelectOrderElementInHead.setListboxEventListener(Events.ON_SELECT,
                 new EventListener() {
             @Override
@@ -715,12 +715,9 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         listTypeToAssign = (Listbox) window.getFellow("listTypeToAssign");
         filterStartDate = (Datebox) window.getFellow("filterStartDate");
         filterFinishDate = (Datebox) window.getFellow("filterFinishDate");
-        personalTimesheetsPopup = (Popup) window
-                .getFellow("personalTimesheetsPopup");
-        personalTimesheetsDatebox = (Datebox) window
-                .getFellow("personalTimesheetsDatebox");
-        personalTimesheetsBandboxSearch = (BandboxSearch) window
-                .getFellow("personalTimesheetsBandboxSearch");
+        personalTimesheetsPopup = (Popup) window.getFellow("personalTimesheetsPopup");
+        personalTimesheetsDatebox = (Datebox) window.getFellow("personalTimesheetsDatebox");
+        personalTimesheetsBandboxSearch = (BandboxSearch) window.getFellow("personalTimesheetsBandboxSearch");
         clearFilterDates();
     }
 
@@ -747,12 +744,9 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
          listWorkReportLines.setPageSize(PAGING);
 
         appendColumns(listWorkReportLines);
-        listWorkReportLines
-                .setSortedColumn((NewDataSortableColumn) listWorkReportLines
-                        .getColumns().getFirstChild());
+        listWorkReportLines.setSortedColumn((NewDataSortableColumn) listWorkReportLines.getColumns().getFirstChild());
 
-        listWorkReportLines.setModel(new SimpleListModel(getWorkReportLines()
-                .toArray()));
+        listWorkReportLines.setModel(new SimpleListModel<>(getWorkReportLines().toArray()));
     }
 
     /**
@@ -764,7 +758,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
         Columns columns = grid.getColumns();
         // Create listhead first time is rendered
-        if (columns == null) {
+        if ( columns == null ) {
             columns = new Columns();
         }
         // Delete all headers
@@ -772,8 +766,8 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         columns.setSizable(true);
 
         // Add static headers
-        if (getWorkReport() != null) {
-            if (!getWorkReport().getWorkReportType().getDateIsSharedByLines()) {
+        if ( getWorkReport() != null ) {
+            if ( !getWorkReport().getWorkReportType().getDateIsSharedByLines() ) {
                 NewDataSortableColumn columnDate = new NewDataSortableColumn();
                 columnDate.setLabel(_("Date"));
                 columnDate.setSclass("date-column");
@@ -788,16 +782,14 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
                 });
                 columns.appendChild(columnDate);
             }
-            if (!getWorkReport().getWorkReportType()
-                    .getResourceIsSharedInLines()) {
+            if ( !getWorkReport().getWorkReportType().getResourceIsSharedInLines() ) {
                 NewDataSortableColumn columnResource = new NewDataSortableColumn();
                 columnResource.setLabel(_("Resource"));
                 columnResource.setSclass("resource-column");
                 // columnResource.setWidth("75px");
                 columns.appendChild(columnResource);
             }
-            if (!getWorkReport().getWorkReportType()
-                    .getOrderElementIsSharedInLines()) {
+            if ( !getWorkReport().getWorkReportType().getOrderElementIsSharedInLines() ) {
                 NewDataSortableColumn columnCode = new NewDataSortableColumn();
                 columnCode.setLabel(_("Task"));
                 columnCode.setSclass("order-code-column");
@@ -805,15 +797,13 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
                 columns.appendChild(columnCode);
             }
 
-            for (Object fieldOrLabel : workReportModel
-                    .getFieldsAndLabelsLineByDefault()) {
+            for (Object fieldOrLabel : workReportModel.getFieldsAndLabelsLineByDefault()) {
                 String columnName;
                 int width = EXTRA_FIELD_MIN_WIDTH;
-                if (fieldOrLabel instanceof DescriptionField) {
-                    columnName = ((DescriptionField) fieldOrLabel)
-                            .getFieldName();
-                    width = Math.max(((DescriptionField) fieldOrLabel)
-                            .getLength()
+
+                if ( fieldOrLabel instanceof DescriptionField ) {
+                    columnName = ((DescriptionField) fieldOrLabel).getFieldName();
+                    width = Math.max(((DescriptionField) fieldOrLabel).getLength()
                             * EXTRA_FIELD_PX_PER_CHAR, EXTRA_FIELD_MIN_WIDTH);
                     width = Math.min(width, EXTRA_FIELD_MAX_WIDTH);
 
@@ -828,8 +818,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
                 columns.appendChild(columnFieldOrLabel);
             }
 
-            if (!getWorkReport().getWorkReportType().getHoursManagement()
-                    .equals(HoursManagementEnum.NUMBER_OF_HOURS)) {
+            if (!getWorkReport().getWorkReportType().getHoursManagement().equals(HoursManagementEnum.NUMBER_OF_HOURS) ){
                 NewDataSortableColumn columnHourStart = new NewDataSortableColumn();
                 columnHourStart.setLabel(_("Start hour"));
                 columnHourStart.setSclass("column-hour-start");
@@ -932,7 +921,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         autocomplete.setFinder("ResourceFinder");
 
         // Getter, show worker selected
-        if (getResource(row) != null) {
+        if ( getResource(row) != null ) {
             autocomplete.setSelectedItem(getResource(row));
         }
 
@@ -942,23 +931,24 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
                 changeResourceInLines(autocomplete, row);
             }
         });
+
         row.appendChild(autocomplete);
     }
 
     private void changeResourceInLines(final Autocomplete autocomplete, Row row) {
-        final WorkReportLine workReportLine = (WorkReportLine) row.getValue();
+        final WorkReportLine workReportLine = row.getValue();
         final Comboitem comboitem = autocomplete.getSelectedItem();
-        if ((comboitem == null) || ((Resource) comboitem.getValue() == null)) {
+        if ( (comboitem == null) || (comboitem.getValue() == null)) {
             workReportLine.setResource(null);
-            throw new WrongValueException(autocomplete,
-                    _("Please, select an item"));
+            throw new WrongValueException(autocomplete, _("Please, select an item"));
         } else {
             workReportLine.setResource((Resource) comboitem.getValue());
         }
     }
 
     private Resource getResource(Row listitem) {
-        WorkReportLine workReportLine = (WorkReportLine) listitem.getValue();
+        WorkReportLine workReportLine = listitem.getValue();
+
         return workReportLine.getResource();
     }
 
@@ -968,10 +958,9 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      * @param row
      */
     private void appendOrderElementInLines(Row row) {
-        final WorkReportLine workReportLine = (WorkReportLine) row.getValue();
+        final WorkReportLine workReportLine = row.getValue();
 
-        final BandboxSearch bandboxSearch = BandboxSearch.create(
-                "OrderElementBandboxFinder", getOrderElements());
+        final BandboxSearch bandboxSearch = BandboxSearch.create("OrderElementBandboxFinder", getOrderElements());
 
         bandboxSearch.setSelectedElement(workReportLine.getOrderElement());
         bandboxSearch.setSclass("bandbox-workreport-task");
@@ -1000,28 +989,25 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private void setOrderElementInWRL(Listitem selectedItem, WorkReportLine line) {
-        OrderElement orderElement = (OrderElement) selectedItem.getValue();
+        OrderElement orderElement = selectedItem.getValue();
         line.setOrderElement(orderElement);
     }
 
     private void appendFieldsAndLabelsInLines(final Row row){
-        final WorkReportLine line = (WorkReportLine)row.getValue();
+        final WorkReportLine line = row.getValue();
         for(Object fieldOrLabel : getFieldsAndLabelsLine(line)){
-            if(fieldOrLabel instanceof DescriptionValue){
+            if( fieldOrLabel instanceof DescriptionValue ){
                 appendNewTextbox(row, (DescriptionValue) fieldOrLabel);
-            } else if (fieldOrLabel instanceof Label) {
-                appendAutocompleteLabelsByTypeInLine(row,
-                        ((Label) fieldOrLabel));
+            } else if ( fieldOrLabel instanceof Label ) {
+                appendAutocompleteLabelsByTypeInLine(row, ((Label) fieldOrLabel));
             }
         }
     }
 
-    private void appendAutocompleteLabelsByTypeInLine(Row row,
-            final Label currentLabel) {
+    private void appendAutocompleteLabelsByTypeInLine(Row row, final Label currentLabel) {
         final LabelType labelType = currentLabel.getType();
-        final WorkReportLine line = (WorkReportLine) row.getValue();
-        final Autocomplete comboLabels = createAutocompleteLabels(labelType,
-                currentLabel);
+        final WorkReportLine line = row.getValue();
+        final Autocomplete comboLabels = createAutocompleteLabels(labelType, currentLabel);
         comboLabels.setParent(row);
 
         comboLabels.addEventListener(Events.ON_CHANGE, new EventListener() {
@@ -1039,7 +1025,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private void appendHoursStartAndFinish(final Row row) {
-        final WorkReportLine line = (WorkReportLine) row.getValue();
+        final WorkReportLine line = row.getValue();
 
         final Timebox timeStart = getNewTimebox();
         final Timebox timeFinish = getNewTimebox();
@@ -1051,9 +1037,10 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public Date get() {
-                if ((line != null) && (line.getClockStart() != null)) {
+                if ( (line != null) && (line.getClockStart() != null) ) {
                     return line.getClockStart().toDateTimeToday().toDate();
                 }
+
                 return null;
             }
 
@@ -1061,7 +1048,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public void set(Date value) {
-                if (line != null) {
+                if ( line != null ) {
                     checkCannotBeHigher(timeStart, timeFinish);
                     setClock(line, timeStart, timeFinish);
                     updateEffort(row);
@@ -1074,9 +1061,10 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public Date get() {
-                if ((line != null) && (line.getClockStart() != null)) {
+                if ( (line != null) && (line.getClockStart() != null) ) {
                     return line.getClockFinish().toDateTimeToday().toDate();
                 }
+
                 return null;
             }
 
@@ -1084,7 +1072,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public void set(Date value) {
-                if (line != null) {
+                if ( line != null ) {
                     checkCannotBeHigher(timeStart, timeFinish);
                     setClock(line, timeStart, timeFinish);
                     updateEffort(row);
@@ -1093,8 +1081,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         });
     }
 
-    protected void setClock(WorkReportLine line, Timebox timeStart,
-            Timebox timeFinish) {
+    private void setClock(WorkReportLine line, Timebox timeStart, Timebox timeFinish) {
         line.setClockStart(timeStart.getValue());
         line.setClockFinish(timeFinish.getValue());
     }
@@ -1104,29 +1091,28 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         timeStart.setWidth("60px");
         timeStart.setFormat("short");
         timeStart.setButtonVisible(true);
+
         return timeStart;
     }
 
     private void updateEffort(final Row row) {
-        WorkReportLine line = (WorkReportLine) row.getValue();
+        WorkReportLine line = row.getValue();
         Textbox effort = getEffort(row);
-        if (effort != null && line.getEffort() != null) {
+        if ( effort != null && line.getEffort() != null ) {
             effort.setValue(line.getEffort().toFormattedString());
             effort.invalidate();
         }
     }
 
-    public void checkCannotBeHigher(Timebox starting, Timebox ending) {
+    private void checkCannotBeHigher(Timebox starting, Timebox ending) {
         starting.clearErrorMessage(true);
         ending.clearErrorMessage(true);
 
         final Date startingDate = starting.getValue();
         final Date endingDate = ending.getValue();
 
-        if (endingDate == null || startingDate == null
-                || startingDate.compareTo(endingDate) > 0) {
-            throw new WrongValueException(starting,
-                    _("Cannot be higher than finish hour"));
+        if ( endingDate == null || startingDate == null || startingDate.compareTo(endingDate) > 0 ) {
+            throw new WrongValueException(starting, _("Cannot be higher than finish hour"));
         }
     }
 
@@ -1136,23 +1122,20 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      * @param row
      */
     private void appendEffortDuration(Row row) {
-        WorkReportLine workReportLine = (WorkReportLine) row.getValue();
+        WorkReportLine workReportLine = row.getValue();
         Textbox effort = new Textbox();
         effort.setConstraint(new Constraint() {
 
             @Override
             public void validate(Component comp, Object value)
                     throws WrongValueException {
-                if (!Pattern.matches("(\\d+)(\\s*:\\s*\\d+\\s*)*",
-                        (String) value))
-                    throw new WrongValueException(comp,
-                            _("Please, enter a valid effort"));
+                if ( !Pattern.matches("(\\d+)(\\s*:\\s*\\d+\\s*)*", (String) value))
+                    throw new WrongValueException(comp, _("Please, enter a valid effort"));
             }
         });
         bindEffort(effort, workReportLine);
 
-        if (getWorkReportType().getHoursManagement().equals(
-                HoursManagementEnum.HOURS_CALCULATED_BY_CLOCK)) {
+        if ( getWorkReportType().getHoursManagement().equals(HoursManagementEnum.HOURS_CALCULATED_BY_CLOCK) ) {
             effort.setDisabled(true);
         }
         row.appendChild(effort);
@@ -1164,28 +1147,29 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      * @param row
      */
     private void appendHoursType(final Row row) {
-        final WorkReportLine workReportLine = (WorkReportLine) row.getValue();
+        final WorkReportLine workReportLine = row.getValue();
         final Listbox lbHoursType = new Listbox();
         lbHoursType.setMold("select");
         lbHoursType.setModel(allHoursType);
         lbHoursType.renderAll();
         lbHoursType.applyProperties();
 
-        if (lbHoursType.getItems().isEmpty()) {
+        if ( lbHoursType.getItems().isEmpty() ) {
             row.appendChild(lbHoursType);
+
             return;
         }
 
         // First time is rendered, select first item
         TypeOfWorkHours type = workReportLine.getTypeOfWorkHours();
-        if (workReportLine.isNewObject() && type == null) {
+        if ( workReportLine.isNewObject() && type == null)  {
             Listitem item = lbHoursType.getItemAtIndex(0);
             item.setSelected(true);
             setHoursType(workReportLine, item);
         } else {
             // If workReportLine has a type, select item with that type
             Listitem item = ComponentsFinder.findItemByValue(lbHoursType, type);
-            if (item != null) {
+            if ( item != null ) {
                 lbHoursType.selectItem(item);
             }
         }
@@ -1195,7 +1179,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
             @Override
             public void onEvent(Event event) {
                 Listitem item = lbHoursType.getSelectedItem();
-                if (item != null) {
+                if ( item != null ) {
                     setHoursType((WorkReportLine) row.getValue(), item);
                 }
             }
@@ -1206,22 +1190,20 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private void setHoursType(WorkReportLine workReportLine, Listitem item) {
-        TypeOfWorkHours value = item != null ? (TypeOfWorkHours) item
-                .getValue() : null;
+        TypeOfWorkHours value = item != null ? (TypeOfWorkHours) item.getValue() : null;
         workReportLine.setTypeOfWorkHours(value);
-        if (value == null) {
-            throw new WrongValueException(item.getParent(),
-                    _("Please, select an item"));
+        if (value == null && item != null) {
+            throw new WrongValueException(item.getParent(), _("Please, select an item"));
         }
     }
 
     private void appendCode(final Row row) {
-        final WorkReportLine line = (WorkReportLine) row.getValue();
+        final WorkReportLine line = row.getValue();
         final Textbox code = new Textbox();
         code.setDisabled(getWorkReport().isCodeAutogenerated());
         code.applyProperties();
 
-         if (line.getCode() != null) {
+         if ( line.getCode() != null ) {
              code.setValue(line.getCode());
          }
 
@@ -1236,7 +1218,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private void appendFinished(final Row row) {
-        final WorkReportLine line = (WorkReportLine) row.getValue();
+        final WorkReportLine line = row.getValue();
 
         Checkbox finished = Util.bind(new Checkbox(), new Getter<Boolean>() {
             @Override
@@ -1250,8 +1232,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
             }
         });
 
-        if (!line.isFinished()
-                && workReportModel.isFinished(line.getOrderElement())) {
+        if ( !line.isFinished() && workReportModel.isFinished(line.getOrderElement()) ) {
             finished.setDisabled(true);
         }
 
@@ -1274,18 +1255,15 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
                 confirmRemove((WorkReportLine) row.getValue());
             }
         });
+
         row.appendChild(delete);
     }
 
     public void confirmRemove(WorkReportLine workReportLine) {
-        try {
-            int status = Messagebox.show(_("Confirm deleting {0}. Are you sure?", getWorkReportLineName(workReportLine)), _("Delete"),
-                    Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-            if (Messagebox.OK == status) {
-                removeWorkReportLine(workReportLine);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int status = Messagebox.show(_("Confirm deleting {0}. Are you sure?", getWorkReportLineName(workReportLine)),
+                _("Delete"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+        if ( Messagebox.OK == status ) {
+            removeWorkReportLine(workReportLine);
         }
     }
 
@@ -1293,9 +1271,10 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         final Resource resource = workReportLine.getResource();
         final OrderElement orderElement = workReportLine.getOrderElement();
 
-        if (resource == null || orderElement == null) {
+        if ( resource == null || orderElement == null ) {
             return ITEM;
         }
+
         return resource.getShortDescription() + " - " + orderElement.getCode();
     }
 
@@ -1305,13 +1284,12 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
      * @param effort
      * @param workReportLine
      */
-    private void bindEffort(final Textbox box,
-         final WorkReportLine workReportLine) {
+    private void bindEffort(final Textbox box, final WorkReportLine workReportLine) {
         Util.bind(box, new Util.Getter<String>() {
 
             @Override
             public String get() {
-                if (workReportLine.getEffort() != null)
+                if ( workReportLine.getEffort() != null )
                     return workReportLine.getEffort().toFormattedString();
                 else
                     return EffortDuration.zero().toFormattedString();
@@ -1321,8 +1299,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public void set(String value) {
-                workReportLine.setEffort(EffortDuration
-                        .parseFromFormattedString(value));
+                workReportLine.setEffort(EffortDuration.parseFromFormattedString(value));
             }
         });
      }
@@ -1331,16 +1308,16 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         return workReportListRenderer;
     }
 
-    /**
-     * RowRenderer for a @{WorkReportLine} element
-     * @author Diego Pino García <dpino@igalia.com>
-     * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
-     */
     public class WorkReportListRenderer implements RowRenderer {
 
+        /**
+         * RowRenderer for a @{WorkReportLine} element
+         * @author Diego Pino García <dpino@igalia.com>
+         * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
+         */
         @Override
-        public void render(Row row, Object data) {
-            WorkReportLine workReportLine = (WorkReportLine) data;
+        public void render(Row row, Object o, int i) throws Exception {
+            WorkReportLine workReportLine = (WorkReportLine) o;
 
             row.setValue(workReportLine);
 
@@ -1377,18 +1354,18 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         return orderedFieldsAndLabelsRowRenderer;
     }
 
-    public class OrderedFieldsAndLabelsRowRenderer implements RowRenderer {
+    private class OrderedFieldsAndLabelsRowRenderer implements RowRenderer {
 
         @Override
-        public void render(Row row, Object data) {
-            row.setValue(data);
+        public void render(Row row, Object o, int i) throws Exception {
+            row.setValue(o);
 
-            if (data instanceof DescriptionValue) {
-                appendNewLabel(row, ((DescriptionValue) data).getFieldName());
-                appendNewTextbox(row, ((DescriptionValue) data));
+            if ( o instanceof DescriptionValue ) {
+                appendNewLabel(row, ((DescriptionValue) o).getFieldName());
+                appendNewTextbox(row, ((DescriptionValue) o));
             } else {
-                appendNewLabel(row, ((Label) data).getType().getName());
-                appendAutocompleteLabelsByType(row, ((Label) data));
+                appendNewLabel(row, ((Label) o).getType().getName());
+                appendAutocompleteLabelsByType(row, ((Label) o));
             }
         }
     }
@@ -1399,8 +1376,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         labelName.setValue(label);
     }
 
-    private void appendNewTextbox(Row row,
-            final DescriptionValue descriptionValue) {
+    private void appendNewTextbox(Row row, final DescriptionValue descriptionValue) {
         Textbox textbox = new Textbox();
         Integer length = workReportModel.getLength(descriptionValue);
         textbox.setCols(length);
@@ -1411,7 +1387,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public String get() {
-                if (descriptionValue != null) {
+                if ( descriptionValue != null ) {
                     return descriptionValue.getValue();
                 }
                 return "";
@@ -1421,15 +1397,14 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
             @Override
             public void set(String value) {
-                if (descriptionValue != null) {
+                if ( descriptionValue != null ) {
                     descriptionValue.setValue(value);
                 }
             }
         });
     }
 
-    private void appendAutocompleteLabelsByType(Row row,
-            final Label currentLabel) {
+    private void appendAutocompleteLabelsByType(Row row, final Label currentLabel) {
         final LabelType labelType = currentLabel.getType();
         final Autocomplete comboLabels = createAutocompleteLabels(labelType,
                 currentLabel);
@@ -1438,11 +1413,9 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         comboLabels.addEventListener(Events.ON_CHANGE, new EventListener() {
             @Override
             public void onEvent(Event event) {
-                if(comboLabels.getSelectedItem() != null){
-                    Label newLabel = (Label) comboLabels.getSelectedItem()
-                            .getValue();
-                    workReportModel.changeLabelInWorkReport(currentLabel,
-                            newLabel);
+                if( comboLabels.getSelectedItem() != null ){
+                    Label newLabel = comboLabels.getSelectedItem().getValue();
+                    workReportModel.changeLabelInWorkReport(currentLabel, newLabel);
                 }
                 Util.reloadBindings(headingFieldsAndLabels);
             }
@@ -1454,9 +1427,8 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         comboLabels.setButtonVisible(true);
         comboLabels.setWidth("100px");
 
-        if (labelType != null) {
-            final List<Label> listLabel = getMapLabelTypes()
-                    .get(labelType);
+        if ( labelType != null ) {
+            final List<Label> listLabel = getMapLabelTypes().get(labelType);
 
             for (Label label : listLabel) {
                 Comboitem comboItem = new Comboitem();
@@ -1464,12 +1436,12 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
                 comboItem.setLabel(label.getName());
                 comboItem.setParent(comboLabels);
 
-                if ((selectedLabel != null)
-                        && (selectedLabel.equals(label))) {
+                if ( (selectedLabel != null) && (selectedLabel.equals(label)) ) {
                     comboLabels.setSelectedItem(comboItem);
                 }
             }
         }
+
         return comboLabels;
     }
 
@@ -1477,7 +1449,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
         return workReportModel.getFieldsAndLabelsHeading();
     }
 
-    public List<Object> getFieldsAndLabelsLine(WorkReportLine workReportLine) {
+    private List<Object> getFieldsAndLabelsLine(WorkReportLine workReportLine) {
         return workReportModel.getFieldsAndLabelsLine(workReportLine);
     }
 
@@ -1486,7 +1458,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     public void changeResource(Comboitem selectedItem) {
-        if (selectedItem != null) {
+        if ( selectedItem != null ) {
             getWorkReport().setResource((Resource) selectedItem.getValue());
         } else {
             getWorkReport().setResource(null);
@@ -1499,18 +1471,16 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     private void sortWorkReportLines() {
-        listWorkReportLines.setModel(new SimpleListModel(getWorkReportLines()
-                .toArray()));
+        listWorkReportLines.setModel(new SimpleListModel<>(getWorkReportLines().toArray()));
     }
 
     public void sortWorkReports() {
-        Column columnDateStart = (Column) listWindow
-                .getFellow("columnDateStart");
-        if (columnDateStart != null) {
-            if (columnDateStart.getSortDirection().equals("ascending")) {
+        Column columnDateStart = (Column) listWindow.getFellow("columnDateStart");
+        if ( columnDateStart != null ) {
+            if ( columnDateStart.getSortDirection().equals("ascending"))  {
                 columnDateStart.sort(false, false);
                 columnDateStart.setSortDirection("ascending");
-            } else if (columnDateStart.getSortDirection().equals("descending")) {
+            } else if ( columnDateStart.getSortDirection().equals("descending") ) {
                 columnDateStart.sort(true, false);
                 columnDateStart.setSortDirection("descending");
             }
@@ -1519,23 +1489,27 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     public List<WorkReportType> getFilterWorkReportTypes() {
         List<WorkReportType> result = workReportModel.getWorkReportTypes();
-        if (result.isEmpty()) {
+
+        if ( result.isEmpty() ) {
             result.add(getDefaultWorkReportType());
         } else {
             result.add(0, getDefaultWorkReportType());
         }
+
         return result;
     }
 
     public List<WorkReportType> getWorkReportTypes() {
         List<WorkReportType> result = workReportModel.getWorkReportTypes();
-        if (!result.isEmpty()) {
+
+        if ( !result.isEmpty() ) {
             this.firstType = result.get(0);
         }
+
         return result;
     }
 
-    public WorkReportType getDefaultWorkReportType() {
+    private WorkReportType getDefaultWorkReportType() {
         return workReportModel.getDefaultType();
     }
 
@@ -1558,12 +1532,10 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
             public void validate(Component comp, Object value)
                     throws WrongValueException {
                 Date finishDate = (Date) value;
-                if ((finishDate != null)
-                        && (filterStartDate.getValue() != null)
-                        && (finishDate.compareTo(filterStartDate.getValue()) < 0)) {
+                if ( (finishDate != null) && (filterStartDate.getValue() != null) &&
+                        (finishDate.compareTo(filterStartDate.getValue()) < 0) ) {
                     filterFinishDate.setValue(null);
-                    throw new WrongValueException(comp,
-                            _("must be later than start date"));
+                    throw new WrongValueException(comp, _("must be later than start date"));
                 }
             }
         };
@@ -1575,12 +1547,10 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
             public void validate(Component comp, Object value)
                     throws WrongValueException {
                 Date startDate = (Date) value;
-                if ((startDate != null)
-                        && (filterFinishDate.getValue() != null)
-                        && (startDate.compareTo(filterFinishDate.getValue()) > 0)) {
+                if ( (startDate != null) && (filterFinishDate.getValue() != null) &&
+                        (startDate.compareTo(filterFinishDate.getValue()) > 0) ) {
                     filterStartDate.setValue(null);
-                    throw new WrongValueException(comp,
-                            _("must be before end date"));
+                    throw new WrongValueException(comp, _("must be before end date"));
                 }
             }
         };
@@ -1595,18 +1565,18 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     private WorkReportType getSelectedType() {
         Listitem itemSelected = listType.getSelectedItem();
-        if ((itemSelected != null)
-                && (!((WorkReportType) itemSelected.getValue())
-                        .equals(getDefaultWorkReportType()))) {
+
+        if ( (itemSelected != null) &&
+                (!java.util.Objects.equals((itemSelected.getValue()), getDefaultWorkReportType())) ) {
             return (WorkReportType) itemSelected.getValue();
         }
+
         return null;
     }
 
     private void filterByPredicate() {
-        List<WorkReportDTO> filterWorkReports = workReportModel
-                .getFilterWorkReportDTOs(predicate);
-        listing.setModel(new SimpleListModel(filterWorkReports.toArray()));
+        List<WorkReportDTO> filterWorkReports = workReportModel.getFilterWorkReportDTOs(predicate);
+        listing.setModel(new SimpleListModel<>(filterWorkReports.toArray()));
         listing.invalidate();
     }
 
@@ -1627,15 +1597,13 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     public void onCreateNewWorkReport() {
         Listitem selectedItem = listTypeToAssign.getSelectedItem();
-        if (selectedItem == null) {
-            throw new WrongValueException(listTypeToAssign,
-                    _("please, select a timesheet template type"));
+        if ( selectedItem == null ) {
+            throw new WrongValueException(listTypeToAssign, _("please, select a timesheet template type"));
         }
 
-        WorkReportType type = (WorkReportType) selectedItem.getValue();
-        if (type == null) {
-            throw new WrongValueException(listTypeToAssign,
-                    _("please, select a timesheet template type"));
+        WorkReportType type = selectedItem.getValue();
+        if ( type == null ) {
+            throw new WrongValueException(listTypeToAssign, _("please, select a timesheet template type"));
         }
 
         goToCreateForm(type);
@@ -1654,7 +1622,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
     }
 
     public void newWorkReportWithSameType() {
-        if (save()) {
+        if ( save() ) {
             goToCreateForm(workReportModel.getWorkReportType());
             cameBackList = true;
         }
@@ -1662,7 +1630,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     public void onCheckGenerateCode(Event e) {
         CheckEvent ce = (CheckEvent) e;
-        if(ce.isChecked()) {
+        if( ce.isChecked() ) {
             //we have to auto-generate the code for new objects
             try {
                 workReportModel.setCodeAutogenerated(ce.isChecked());
@@ -1680,19 +1648,15 @@ public class WorkReportCRUDController extends GenericForwardComposer implements
 
     public void createOrEditPersonalTimesheet() {
         Date date = personalTimesheetsDatebox.getValue();
-        if (date == null) {
-            throw new WrongValueException(personalTimesheetsDatebox,
-                    _("Please set a date"));
+        if ( date == null ) {
+            throw new WrongValueException(personalTimesheetsDatebox, _("Please set a date"));
         }
-        Resource resource = (Resource) personalTimesheetsBandboxSearch
-                .getSelectedElement();
-        if (resource == null) {
-            throw new WrongValueException(personalTimesheetsBandboxSearch,
-                    _("Please select a worker"));
+        Resource resource = (Resource) personalTimesheetsBandboxSearch.getSelectedElement();
+        if ( resource == null ) {
+            throw new WrongValueException(personalTimesheetsBandboxSearch, _("Please select a worker"));
         }
 
-        personalTimesheetController.goToCreateOrEditFormForResource(
-                LocalDate.fromDateFields(date), resource);
+        personalTimesheetController.goToCreateOrEditFormForResource(LocalDate.fromDateFields(date), resource);
     }
 
 }

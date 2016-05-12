@@ -58,18 +58,17 @@ import org.zkoss.zul.Popup;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.api.Groupbox;
-import org.zkoss.zul.api.Window;
+import org.zkoss.zul.Groupbox;
+import org.zkoss.zul.Window;
 
 /**
  * Controller for JIRA synchronization
  *
  * @author Miciele Ghiorghis <m.ghiorghis@antoniusziekenhuis.nl>
  */
-public class JiraSynchronizationController extends GenericForwardComposer {
+class JiraSynchronizationController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(JiraSynchronizationController.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(JiraSynchronizationController.class);
 
     private OrderCRUDController orderController;
 
@@ -79,8 +78,7 @@ public class JiraSynchronizationController extends GenericForwardComposer {
 
     private Popup jirasyncPopup;
 
-    private Button startJiraSyncButton, cancelJiraSyncButton,
-            syncWithJiraButton;
+    private Button startJiraSyncButton, cancelJiraSyncButton, syncWithJiraButton;
 
     private Textbox txtImportedLabel, txtLastSyncDate;
 
@@ -102,7 +100,7 @@ public class JiraSynchronizationController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("jiraSynchroniaztionController", this, true);
+        comp.setAttribute("jiraSynchroniaztionController", this, true);
         loadComponentsEditWindow();
         showOrHideJiraEditWindow();
         updateOrderLastSyncInfoScreen();
@@ -116,13 +114,10 @@ public class JiraSynchronizationController extends GenericForwardComposer {
     }
 
     private void loadComponentsEditWindow() {
-        txtLastSyncDate = (Textbox) editWindow
-                .getFellowIfAny("txtLastSyncDate");
-        txtImportedLabel = (Textbox) editWindow
-                .getFellowIfAny("txtImportedLabel");
+        txtLastSyncDate = (Textbox) editWindow.getFellowIfAny("txtLastSyncDate");
+        txtImportedLabel = (Textbox) editWindow.getFellowIfAny("txtImportedLabel");
         jiraGroupBox = (Groupbox) editWindow.getFellowIfAny("jiraGroupBox");
-        syncWithJiraButton = (Button) editWindow
-                .getFellow("syncWithJiraButton");
+        syncWithJiraButton = (Button) editWindow.getFellow("syncWithJiraButton");
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
@@ -138,12 +133,11 @@ public class JiraSynchronizationController extends GenericForwardComposer {
      * Updates the UI text last synchronized date and the text imported label
      */
     private void updateOrderLastSyncInfoScreen() {
-        OrderSyncInfo orderSyncInfo = jiraOrderElementSynchronizer
-                .getOrderLastSyncInfo(getOrder());
+        OrderSyncInfo orderSyncInfo = jiraOrderElementSynchronizer.getOrderLastSyncInfo(getOrder());
 
-        if (orderSyncInfo != null) {
+        if ( orderSyncInfo != null ) {
             txtLastSyncDate.setValue(Util.formatDateTime(orderSyncInfo
-                        .getLastSyncDate()));
+                    .getLastSyncDate()));
             txtImportedLabel.setValue(orderSyncInfo.getKey());
         }
     }
@@ -151,13 +145,9 @@ public class JiraSynchronizationController extends GenericForwardComposer {
     /**
      * Returns true if jira is Activated. Used to show/hide Jira edit window
      */
-    public boolean isJiraActivated() {
-        Connector connector = connectorDAO
-                .findUniqueByName(PredefinedConnectors.JIRA.getName());
-        if (connector == null) {
-            return false;
-        }
-        return connector.isActivated();
+    private boolean isJiraActivated() {
+        Connector connector = connectorDAO.findUniqueByName(PredefinedConnectors.JIRA.getName());
+        return connector != null && connector.isActivated();
     }
 
     /**
@@ -168,8 +158,9 @@ public class JiraSynchronizationController extends GenericForwardComposer {
             List<String> items = jiraOrderElementSynchronizer
                     .getAllJiraLabels();
 
-            if (!(txtImportedLabel.getText()).isEmpty()) {
+            if ( !(txtImportedLabel.getText()).isEmpty() ) {
                 startSyncWithJira(txtImportedLabel.getText());
+
                 return;
             }
 
@@ -178,12 +169,10 @@ public class JiraSynchronizationController extends GenericForwardComposer {
             jirasyncPopup.open(syncWithJiraButton, "before_start");
 
         } catch (ConnectorException e) {
-            messagesForUser.showMessage(Level.ERROR,
-                    _("Failed: {0}", e.getMessage()));
+            messagesForUser.showMessage(Level.ERROR, _("Failed: {0}", e.getMessage()));
         } catch (WebApplicationException e) {
             LOG.info(e);
-            messagesForUser.showMessage(Level.ERROR,
-                    _("Cannot connect to JIRA server"));
+            messagesForUser.showMessage(Level.ERROR, _("Cannot connect to JIRA server"));
         }
     }
 
@@ -193,23 +182,20 @@ public class JiraSynchronizationController extends GenericForwardComposer {
      * @param label
      *            the jira label
      */
-    public void startSyncWithJira(String label) {
+    private void startSyncWithJira(String label) {
         try {
             Order order = getOrder();
 
-            List<IssueDTO> issues = jiraOrderElementSynchronizer
-                    .getJiraIssues(label);
+            List<IssueDTO> issues = jiraOrderElementSynchronizer.getJiraIssues(label);
 
-            if (issues == null || issues.isEmpty()) {
-                messagesForUser.showMessage(Level.ERROR,
-                        _("No JIRA issues to import"));
+            if ( issues == null || issues.isEmpty() ) {
+                messagesForUser.showMessage(Level.ERROR, _("No JIRA issues to import"));
                 return;
             }
 
             order.setCodeAutogenerated(false);
 
-            jiraOrderElementSynchronizer.syncOrderElementsWithJiraIssues(
-                    issues, order);
+            jiraOrderElementSynchronizer.syncOrderElementsWithJiraIssues(issues, order);
 
             orderController.saveAndContinue(false);
 
@@ -217,7 +203,7 @@ public class JiraSynchronizationController extends GenericForwardComposer {
 
             updateOrderLastSyncInfoScreen();
 
-            if (jirasyncPopup != null) {
+            if ( jirasyncPopup != null ) {
                 jirasyncPopup.close();
             }
 
@@ -231,12 +217,10 @@ public class JiraSynchronizationController extends GenericForwardComposer {
             orderController.initEdit(order);
             orderController.selectTab(previousTab.getId());
         } catch (ConnectorException e) {
-            messagesForUser.showMessage(Level.ERROR,
-                    _("Failed: {0}", e.getMessage()));
+            messagesForUser.showMessage(Level.ERROR, _("Failed: {0}", e.getMessage()));
         } catch (WebApplicationException e) {
             LOG.info(e);
-            messagesForUser.showMessage(Level.ERROR,
-                    _("Cannot connect to JIRA server"));
+            messagesForUser.showMessage(Level.ERROR, _("Cannot connect to JIRA server"));
         }
     }
 
@@ -244,47 +228,37 @@ public class JiraSynchronizationController extends GenericForwardComposer {
      * Shows the success or failure info of synchronization
      */
     private void showSyncInfo() {
-        Map<String, Object> args = new HashMap<String, Object>();
+        Map<String, Object> args = new HashMap<>();
 
-        SynchronizationInfo syncOrderElementInfo = jiraOrderElementSynchronizer
-                .getSynchronizationInfo();
+        SynchronizationInfo syncOrderElementInfo = jiraOrderElementSynchronizer.getSynchronizationInfo();
 
         boolean succeeded = isSyncSucceeded(syncOrderElementInfo);
 
         args.put("syncOrderElementSuccess", succeeded);
-        if (syncOrderElementInfo != null) {
-            args.put("syncOrderElementFailedReasons", new SimpleListModel(
-                    syncOrderElementInfo.getFailedReasons()));
+        if ( syncOrderElementInfo != null ) {
+            args.put("syncOrderElementFailedReasons", new SimpleListModel<>(syncOrderElementInfo.getFailedReasons()));
         }
 
-        SynchronizationInfo jiraSyncInfoTimesheet = jiraTimesheetSynchronizer
-                .getSynchronizationInfo();
+        SynchronizationInfo jiraSyncInfoTimesheet = jiraTimesheetSynchronizer.getSynchronizationInfo();
 
         succeeded = isSyncSucceeded(jiraSyncInfoTimesheet);
 
         args.put("syncTimesheetSuccess", succeeded);
-        if (jiraSyncInfoTimesheet != null) {
-                args.put("syncTimesheetFailedReasons", new SimpleListModel(
-                    jiraSyncInfoTimesheet.getFailedReasons()));
+        if ( jiraSyncInfoTimesheet != null ) {
+            args.put("syncTimesheetFailedReasons", new SimpleListModel<>(jiraSyncInfoTimesheet.getFailedReasons()));
         }
 
-        Window jiraSyncInfoWindow = (Window) Executions.createComponents(
-                "/orders/_jiraSyncInfo.zul", null, args);
+        Window jiraSyncInfoWindow = (Window) Executions.createComponents("/orders/_jiraSyncInfo.zul", null, args);
 
         try {
             jiraSyncInfoWindow.doModal();
         } catch (SuspendNotAllowedException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private boolean isSyncSucceeded(SynchronizationInfo syncInfo) {
-        if (syncInfo == null) {
-            return false;
-        }
-        return syncInfo.isSuccessful();
+        return syncInfo != null && syncInfo.isSuccessful();
     }
 
     /**
@@ -309,8 +283,10 @@ public class JiraSynchronizationController extends GenericForwardComposer {
                         startSyncWithJira(comboJiraLabel.getValue());
                     }
                 });
+
         cancelJiraSyncButton = (Button) comp.getFellow("cancelJiraSyncButton");
         cancelJiraSyncButton.setLabel(_("Cancel"));
+
         cancelJiraSyncButton.addEventListener(Events.ON_CLICK,
                 new EventListener() {
 
@@ -331,25 +307,28 @@ public class JiraSynchronizationController extends GenericForwardComposer {
      */
     private class SimpleListModelExt extends SimpleListModel {
 
-        public SimpleListModelExt(List data) {
+        SimpleListModelExt(List data) {
             super(data);
         }
 
         public ListModel getSubModel(Object value, int nRows) {
+            //TODO chagne deprecated method
             final String idx = value == null ? "" : objectToString(value);
-            if (nRows < 0) {
+
+            if ( nRows < 0 ) {
                 nRows = 10;
             }
             final LinkedList data = new LinkedList();
             for (int i = 0; i < getSize(); i++) {
-                if (idx.equals("")
-                        || entryMatchesText(getElementAt(i).toString(), idx)) {
-                    data.add(getElementAt(i));
-                    if (--nRows <= 0) {
+                if ( idx.equals("") || entryMatchesText(getElementAt(i).toString(), idx) ) {
+
+
+                    if ( --nRows <= 0 ) {
                         break;
                     }
                 }
             }
+
             return new SimpleListModelExt(data);
         }
 

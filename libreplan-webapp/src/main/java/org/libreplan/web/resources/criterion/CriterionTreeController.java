@@ -51,7 +51,7 @@ import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.TreeitemRenderer;
 import org.zkoss.zul.Treerow;
 import org.zkoss.zul.Vbox;
-import org.zkoss.zul.api.Tree;
+import org.zkoss.zul.Tree;
 
 public class CriterionTreeController extends GenericForwardComposer {
 
@@ -84,7 +84,7 @@ public class CriterionTreeController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         messagesForUser = new MessagesForUser(messagesContainer);
-        comp.setVariable("criterionTreeController", this, true);
+        comp.setAttribute("criterionTreeController", this, true);
         criterionName = (Textbox) ((Vbox) self).getFellowIfAny("criterionName");
         clearCriterionName();
     }
@@ -97,6 +97,7 @@ public class CriterionTreeController extends GenericForwardComposer {
         if (getModel() == null) {
             return null;
         }
+
         return getModel().asTree();
     }
 
@@ -104,13 +105,13 @@ public class CriterionTreeController extends GenericForwardComposer {
         return criterionsModel.getCriterionTreeModel();
     }
 
-    public class CriterionTreeitemRenderer implements TreeitemRenderer {
+    private class CriterionTreeitemRenderer implements TreeitemRenderer {
 
-        public CriterionTreeitemRenderer() {
+        CriterionTreeitemRenderer() {
         }
 
         @Override
-        public void render(Treeitem item, Object data) {
+        public void render(Treeitem item, Object data, int i) {
             final CriterionDTO criterionForThisRow = (CriterionDTO) data;
             item.setValue(data);
 
@@ -165,7 +166,7 @@ public class CriterionTreeController extends GenericForwardComposer {
                 }
             });
 
-            Treerow tr = null;
+            Treerow tr;
             /*
              * Since only one treerow is allowed, if treerow is not null, append
              * treecells to it. If treerow is null, contruct a new treerow and
@@ -270,9 +271,7 @@ public class CriterionTreeController extends GenericForwardComposer {
                             public void onEvent(Event event) {
                 getModel().removeNode(criterionForThisRow);
                                 if (!criterionForThisRow.isNewObject()) {
-                                    criterionsModel
-                                            .addForRemoval(criterionForThisRow
-                                                    .getCriterion());
+                                    criterionsModel.addForRemoval(criterionForThisRow.getCriterion());
                                 }
                 reloadTree();
                 }
@@ -286,8 +285,7 @@ public class CriterionTreeController extends GenericForwardComposer {
                 public void onEvent(org.zkoss.zk.ui.event.Event arg0)
  {
                     DropEvent dropEvent = (DropEvent) arg0;
-                    move((Component) dropEvent.getTarget(),
-                            (Component) dropEvent.getDragged());
+                    move(dropEvent.getTarget(), dropEvent.getDragged());
                 }
             });
         }
@@ -295,8 +293,7 @@ public class CriterionTreeController extends GenericForwardComposer {
 
     private CostCategory getCostCategory(Treeitem listitem) {
 
-        return ((CriterionDTO) listitem.getValue()).getCriterion()
-                .getCostCategory();
+        return ((CriterionDTO) listitem.getValue()).getCriterion().getCostCategory();
     }
 
     private Autocomplete appendAutocompleteType(final Treeitem row) {
@@ -319,11 +316,8 @@ public class CriterionTreeController extends GenericForwardComposer {
 
                 if (comboitem != null) {
                     // Update resourcesCostCategoryAssignment
-                    CriterionDTO assignment = (CriterionDTO) row
-                            .getValue();
-                    assignment.getCriterion().setCostCategory(
-                            (CostCategory) comboitem
-                            .getValue());
+                    CriterionDTO assignment = row.getValue();
+                    assignment.getCriterion().setCostCategory((CostCategory) comboitem.getValue());
                     row.setValue(assignment);
                 }
             }
@@ -335,7 +329,7 @@ public class CriterionTreeController extends GenericForwardComposer {
             public void onEvent(Event event) {
                 if (autocomplete.getText().isEmpty()) {
                     autocomplete.clear();
-                    CriterionDTO assignment = (CriterionDTO) row.getValue();
+                    CriterionDTO assignment = row.getValue();
                     assignment.getCriterion().setCostCategory(null);
                 }
             }
@@ -355,6 +349,7 @@ public class CriterionTreeController extends GenericForwardComposer {
             unindentbutton.setTooltiptext(_("Not indentable"));
         }
         unindentbutton.setSclass("icono");
+
         return unindentbutton;
     }
 
@@ -369,14 +364,14 @@ public class CriterionTreeController extends GenericForwardComposer {
             indentbutton.setTooltiptext(_("Not indentable"));
         }
         indentbutton.setSclass("icono");
+
         return indentbutton;
     }
 
     private Button createButtonRemove(CriterionDTO criterion){
         Button removebutton;
 
-        int num = criterionsModel.numberOfRelatedEntities(criterion
-                .getCriterion());
+        int num = criterionsModel.numberOfRelatedEntities(criterion.getCriterion());
 
         if (criterionsModel.isDeletable(criterion.getCriterion())) {
             removebutton = new Button("", "/common/img/ico_borrar1.png");
@@ -384,12 +379,13 @@ public class CriterionTreeController extends GenericForwardComposer {
             removebutton.setTooltiptext(_("Delete"));
         } else {
             removebutton = new Button("", "/common/img/ico_borrar_out.png");
-            removebutton.setTooltiptext(criterion.getCriterion().getChildren()
-                    .isEmpty() ? (num + " " + _("references"))
+            removebutton.setTooltiptext(criterion.getCriterion().getChildren().isEmpty()
+                    ? (num + " " + _("references"))
                     : _("Criterion has subelements"));
         }
 
         removebutton.setSclass("icono");
+
         return removebutton;
     }
 
@@ -410,25 +406,23 @@ public class CriterionTreeController extends GenericForwardComposer {
     public void move(Component dropedIn, Component dragged) {
         snapshotOfOpenedNodes = TreeViewStateSnapshot.snapshotOpened(tree);
         Treerow from = (Treerow) dragged;
-        CriterionDTO fromNode = (CriterionDTO) ((Treeitem) from.getParent())
-                .getValue();
+        CriterionDTO fromNode = ((Treeitem) from.getParent()).getValue();
         if (dropedIn instanceof Tree) {
             getModel().moveToRoot(fromNode,0);
         }
         if (dropedIn instanceof Treerow) {
             Treerow to = (Treerow) dropedIn;
-            CriterionDTO toNode = (CriterionDTO) ((Treeitem) to.getParent())
-                    .getValue();
+            CriterionDTO toNode = ((Treeitem) to.getParent()).getValue();
             getModel().move(fromNode, toNode,0);
         }
+
         reloadTree();
     }
 
     public void addCriterion() {
         snapshotOfOpenedNodes = TreeViewStateSnapshot.snapshotOpened(tree);
         try {
-            if((tree.getSelectedCount() == 1)
-                && (this.criterionsModel.getAllowHierarchy())){
+            if((tree.getSelectedCount() == 1) && (this.criterionsModel.getAllowHierarchy())){
                 getModel().addCriterionAt(getSelectedNode(),getName());
             } else {
                 getModel().addCriterion(getName());
@@ -443,19 +437,19 @@ public class CriterionTreeController extends GenericForwardComposer {
         }
     }
 
-    public void disabledHierarchy() {
+    void disabledHierarchy() {
         snapshotOfOpenedNodes = TreeViewStateSnapshot.snapshotOpened(tree);
         getModel().flattenTree();
         reloadTree();
     }
 
-    public void updateEnabledCriterions(boolean isChecked){
+    void updateEnabledCriterions(boolean isChecked){
         snapshotOfOpenedNodes = TreeViewStateSnapshot.snapshotOpened(tree);
         getModel().updateEnabledCriterions(isChecked);
         reloadTree();
     }
 
-    public void setCriterionCodeEditionDisabled(boolean disabled) {
+    void setCriterionCodeEditionDisabled(boolean disabled) {
         codeEditionDisabled = disabled;
     }
 
@@ -463,7 +457,7 @@ public class CriterionTreeController extends GenericForwardComposer {
         getModel().regenerateCodeForUnsavedCriteria(numberOfDigits);
     }
 
-    public void reloadTree(){
+    void reloadTree(){
         Util.reloadBindings(tree);
     }
 
@@ -475,11 +469,13 @@ public class CriterionTreeController extends GenericForwardComposer {
     }
 
     private CriterionDTO getSelectedNode() {
-        return (CriterionDTO) tree.getSelectedItemApi().getValue();
+        return (CriterionDTO) tree.getSelectedItem().getValue();
     }
 
     private static class TreeViewStateSnapshot {
+
         private final Set<Object> all;
+
         private final Set<Object> dataOpen;
 
         private TreeViewStateSnapshot(Set<Object> dataOpen, Set<Object> all) {
@@ -487,21 +483,21 @@ public class CriterionTreeController extends GenericForwardComposer {
             this.all = all;
         }
 
-        public static TreeViewStateSnapshot snapshotOpened(Tree tree) {
-            Set<Object> dataOpen = new HashSet<Object>();
-            Set<Object> all = new HashSet<Object>();
-            if (tree != null && tree.getTreechildrenApi() != null) {
-                Iterator<Treeitem> itemsIterator = tree.getTreechildrenApi()
-                        .getItems().iterator();
-                while (itemsIterator.hasNext()) {
-                    Treeitem treeitem = (Treeitem) itemsIterator.next();
+        static TreeViewStateSnapshot snapshotOpened(Tree tree) {
+            Set<Object> dataOpen = new HashSet<>();
+            Set<Object> all = new HashSet<>();
+            if (tree != null && tree.getTreechildren() != null) {
+
+                for (Treeitem treeitem : tree.getTreechildren().getItems()) {
                     Object value = getAssociatedValue(treeitem);
+
                     if (treeitem.isOpen()) {
                         dataOpen.add(value);
                     }
                     all.add(value);
                 }
             }
+
             return new TreeViewStateSnapshot(dataOpen, all);
         }
 
@@ -509,7 +505,7 @@ public class CriterionTreeController extends GenericForwardComposer {
             return treeitem.getValue();
         }
 
-        public void openIfRequired(Treeitem item) {
+        void openIfRequired(Treeitem item) {
             Object value = getAssociatedValue(item);
             item.setOpen(isNewlyCreated(value) || wasOpened(value));
         }

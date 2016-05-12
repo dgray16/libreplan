@@ -49,7 +49,7 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Rows;
-import org.zkoss.zul.api.Bandbox;
+import org.zkoss.zul.Bandbox;
 
 
 /**
@@ -66,8 +66,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
 
     private Grid configurationUnitsGrid;
 
-    private static final Log LOG = LogFactory
-            .getLog(MachineConfigurationController.class);
+    private static final Log LOG = LogFactory.getLog(MachineConfigurationController.class);
 
     public MachineConfigurationController() {
 
@@ -76,14 +75,13 @@ public class MachineConfigurationController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        comp.setVariable("configurationController", this, true);
+        comp.setAttribute("configurationController", this, true);
         messages = new MessagesForUser(messagesContainer);
     }
 
     public void addConfigurationUnit() {
         MachineWorkersConfigurationUnit unit = MachineWorkersConfigurationUnit
-                .create(machineModel.getMachine(), "New configuration unit",
-                        new BigDecimal(1));
+                .create(machineModel.getMachine(), "New configuration unit", new BigDecimal(1));
         machineModel.getMachine().addMachineWorkersConfigurationUnit(unit);
         Util.reloadBindings(configurationUnitsGrid);
     }
@@ -100,7 +98,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
         this.machineModel = machineModel;
     }
 
-    public void initConfigurationController(IMachineModel machineModel) {
+    void initConfigurationController(IMachineModel machineModel) {
         this.machineModel = machineModel;
         Util.reloadBindings(configurationUnitsGrid);
     }
@@ -110,14 +108,14 @@ public class MachineConfigurationController extends GenericForwardComposer {
     }
 
     public List<MachineWorkerAssignment> getWorkerAssignments() {
-        MachineWorkersConfigurationUnit unit = (MachineWorkersConfigurationUnit) this.machineModel
-                .getConfigurationUnitsOfMachine().iterator().next();
+        MachineWorkersConfigurationUnit unit = (MachineWorkersConfigurationUnit) this
+                .machineModel.getConfigurationUnitsOfMachine().iterator().next();
         return (List<MachineWorkerAssignment>) unit.getWorkerAssignments();
     }
 
     public List<Criterion> getRequiredCriterions() {
-        MachineWorkersConfigurationUnit unit = (MachineWorkersConfigurationUnit) this.machineModel
-                .getConfigurationUnitsOfMachine().iterator().next();
+        MachineWorkersConfigurationUnit unit = (MachineWorkersConfigurationUnit) this
+                .machineModel.getConfigurationUnitsOfMachine().iterator().next();
         return (List<Criterion>) unit.getRequiredCriterions();
     }
 
@@ -133,8 +131,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
         }
     }
 
-    public boolean checkExistingCriterion(MachineWorkersConfigurationUnit unit,
-            Criterion criterion) {
+    private boolean checkExistingCriterion(MachineWorkersConfigurationUnit unit, Criterion criterion) {
         boolean repeated = false;
         for (Criterion each : unit.getRequiredCriterions()) {
             if (each.getId().equals(criterion.getId())) {
@@ -144,21 +141,16 @@ public class MachineConfigurationController extends GenericForwardComposer {
         return repeated;
     }
 
-    public void addCriterionRequirement(MachineWorkersConfigurationUnit unit,
-            Button button) {
+    public void addCriterionRequirement(MachineWorkersConfigurationUnit unit, Button button) {
         Bandbox bandbox = (Bandbox) button.getPreviousSibling();
-        Listitem item = ((Listbox) bandbox.getFirstChild().getFirstChild())
-                .getSelectedItem();
+        Listitem item = ((Listbox) bandbox.getFirstChild().getFirstChild()).getSelectedItem();
         if (item != null) {
-            CriterionWithItsType criterionAndType = (CriterionWithItsType) item
-                    .getValue();
+            CriterionWithItsType criterionAndType = item.getValue();
             bandbox.setValue(criterionAndType.getNameAndType());
             if (checkExistingCriterion(unit, criterionAndType.getCriterion())) {
-                messages.showMessage(Level.ERROR,
-                        _("Criterion previously selected"));
+                messages.showMessage(Level.ERROR, _("Criterion previously selected"));
             } else {
-                machineModel.addCriterionRequirementToConfigurationUnit(unit,
-                        criterionAndType.getCriterion());
+                machineModel.addCriterionRequirementToConfigurationUnit(unit, criterionAndType.getCriterion());
                 bandbox.setValue("");
             }
         }
@@ -167,8 +159,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
 
     public void selectCriterionRequirement(Listitem item, Bandbox bandbox) {
         if (item != null) {
-            CriterionWithItsType criterionAndType = (CriterionWithItsType) item
-                    .getValue();
+            CriterionWithItsType criterionAndType = item.getValue();
             bandbox.setValue(criterionAndType.getNameAndType());
         } else {
             bandbox.setValue("");
@@ -185,17 +176,15 @@ public class MachineConfigurationController extends GenericForwardComposer {
 
 
     public void deleteWorkerAssignment(Component component) {
-        MachineWorkerAssignment assignment = (MachineWorkerAssignment) ((Row) component)
-                .getValue();
-        MachineWorkersConfigurationUnit conf = assignment
-                .getMachineWorkersConfigurationUnit();
+        MachineWorkerAssignment assignment = ((Row) component).getValue();
+        MachineWorkersConfigurationUnit conf = assignment.getMachineWorkersConfigurationUnit();
         conf.removeMachineWorkersConfigurationUnit(assignment);
         Util.reloadBindings(component.getParent().getParent());
     }
 
 
     public void deleteRequiredCriterion(Criterion criterion, Rows component) {
-        MachineWorkersConfigurationUnit unit = (MachineWorkersConfigurationUnit) ((Row) component
+        MachineWorkersConfigurationUnit unit = ((Row) component
                 .getParent().getParent().getParent().getParent().getParent())
                 .getValue();
         unit.removeRequiredCriterion(criterion);
@@ -217,8 +206,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
         if (startDateBox != null) {
             if (startDateBox.getValue() != null) {
                 if (startDateBox.getValue().compareTo((Date) value) > 0) {
-                    throw new WrongValueException(
-                            comp,
+                    throw new WrongValueException(comp,
                             _("End date is not valid, the new end date must be after start date"));
                 }
             }
