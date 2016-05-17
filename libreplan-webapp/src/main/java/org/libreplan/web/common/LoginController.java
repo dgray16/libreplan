@@ -45,6 +45,7 @@ public class LoginController extends GenericForwardComposer {
 
     @Override
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) throws Exception {
+
         super.doAfterCompose(comp);
         comp.setAttribute("loginController", this, true);
     }

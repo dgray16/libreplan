@@ -321,7 +321,6 @@ public class BandboxMultipleSearch extends HtmlMacroComponent {
     /**
      * Clears {@link Bandbox} Fills bandbox list model, clear bandbox textbox,
      * and set selected label to null
-     * @param bandbox
      */
     public void clear() {
         clearSelectedElement();

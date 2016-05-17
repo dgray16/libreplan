@@ -20,15 +20,6 @@
  */
 package org.libreplan.web.planner.tabs;
 
-import static org.libreplan.web.I18nHelper._;
-import static org.libreplan.web.planner.tabs.MultipleTabsPlannerController.BREADCRUMBS_SEPARATOR;
-import static org.libreplan.web.planner.tabs.MultipleTabsPlannerController.getSchedulingLabel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.orders.daos.IOrderDAO;
 import org.libreplan.business.orders.entities.Order;
@@ -48,6 +39,15 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Image;
 import org.zkoss.zul.Label;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.libreplan.web.I18nHelper._;
+import static org.libreplan.web.planner.tabs.MultipleTabsPlannerController.BREADCRUMBS_SEPARATOR;
+import static org.libreplan.web.planner.tabs.MultipleTabsPlannerController.getSchedulingLabel;
+
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
@@ -55,7 +55,7 @@ import org.zkoss.zul.Label;
  */
 public class PlanningTabCreator {
 
-    public static final int MAX_ORDERNAME_LENGHT = 90;
+    private static final int MAX_ORDERNAME_LENGHT = 90;
 
     private final Mode mode;
     private final CompanyPlanningController companyPlanningController;
@@ -122,15 +122,11 @@ public class PlanningTabCreator {
 
                 companyPlanningController.setAdditional(commands);
                 companyPlanningController.setTabsController(tabsController);
-                companyPlanningController
-                        .setDoubleClickCommand(scheduleCommand);
-                HashMap<String, Object> args = new HashMap<String, Object>();
-                args
-                        .put("companyPlanningController",
+                companyPlanningController.setDoubleClickCommand(scheduleCommand);
+                HashMap<String, Object> args = new HashMap<>();args.put("companyPlanningController",
                                 companyPlanningController);
                 companyPlanningController.setURLParameters(parameters);
-                return Executions.createComponents("/planner/_company.zul",
-                        parent, args);
+                return Executions.createComponents("/planner/_company.zul", parent, args);
             }
 
             private ICommandOnTask<TaskElement> buildScheduleCommand() {

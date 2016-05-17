@@ -223,9 +223,8 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
      */
 
     private void prepareAllCategoriesTree() {
-        if (allCategoriesTree.getTreeitemRenderer() == null) {
-            allCategoriesTree
-                    .setTreeitemRenderer(getMaterialCategoryRenderer());
+        if (allCategoriesTree.getItemRenderer() == null) {
+            allCategoriesTree.setItemRenderer(getMaterialCategoryRenderer());
         }
         allCategoriesTree.setModel(getAllMaterialCategories());
     }

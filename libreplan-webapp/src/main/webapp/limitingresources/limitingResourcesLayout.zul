@@ -86,19 +86,19 @@
         <!-- List of queues -->
         <center border="0">
             <borderlayout sclass="resourcesload limitingresources">
-                <west size="250px" flex="true" collapsible="true"
+                <west size="250px" hflex="1" vflex="true" collapsible="true"
                     splittable="true" autoscroll="true">
 
                     <borderlayout >
-                        <north border="0" height="31px" flex="true" collapsible="true">
-                            <tree fixedLayout="true">
+                        <north border="0" height="31px" vflex="1" hflex="1" collapsible="true">
+                            <tree>
                                 <treecols>
                                     <treecol label="${i18n:_('Name')}" height="26px"/>
                                 </treecols>
                             </tree>
                         </north>
                         <center border="0" style="overflow-x:scroll">
-                            <div sclass="leftpanelgap" id="insertionPointLeftPanel"></div>
+                            <div sclass="leftpanelgap" id="insertionPointLeftPanel"/>
                         </center>
                     </borderlayout>
                 </west>

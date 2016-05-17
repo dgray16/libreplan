@@ -32,7 +32,7 @@
                 <vbox sclass="allocation-criterion-selector">
 
                     <tree id="criterionsTree" width="420px"
-                            height="412px" vflex="true" multiple="true"
+                            height="412px" vflex="1" multiple="true"
                             model="@{selectorController.criterions}"
                             zclass="z-dottree" style="margin-top:5px;margin-bottom:5px;">
                         <treecols>
@@ -73,7 +73,7 @@
                         }
                      </style>
                      <listbox id="listBoxResources" width="420px" height="340px"
-                            vflex="true" multiple="@{selectorController.allowSelectMultipleResources}" style="margin:5px;"
+                            vflex="1" multiple="@{selectorController.allowSelectMultipleResources}" style="margin:5px;"
                             itemRenderer="@{selectorController.listitemRenderer}" >
                         <listhead>
                             <listheader label="${i18n:_('Found resources')}"
@@ -90,7 +90,7 @@
 
             <!-- Assignment Type -->
             <vbox width="100%">
-                <grid fixedLayout="true" span="1" width="100%">
+                <grid span="1" width="100%">
                     <columns>
                         <column width="200px" />
                         <column  />

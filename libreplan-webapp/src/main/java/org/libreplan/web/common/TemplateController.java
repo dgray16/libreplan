@@ -21,11 +21,6 @@
 
 package org.libreplan.web.common;
 
-import static org.libreplan.web.I18nHelper._;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.VersionInformation;
@@ -44,6 +39,11 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Window;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller to manage UI operations from main template.
@@ -72,6 +72,7 @@ public class TemplateController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
         if ( templateModel.isScenariosVisible() ) {
             window = (Window) comp.getFellow("changeScenarioWindow");
             windowMessages = new MessagesForUser(window.getFellow("messagesContainer"));

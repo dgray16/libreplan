@@ -44,7 +44,7 @@
                     onClick="assignedMaterialsController.clearSelectionCategoriesTree()" />
                   <separator spacing="5px" orient="horizontal" />
                   <tree id="categoriesTree" fixedLayout="false"
-                    width="280px" rows="10" vflex="true" multiple="false"
+                    width="280px" rows="10" vflex="1" multiple="false"
                     onSelect="assignedMaterialsController.refreshMaterialAssigments()">
                     <treecols>
                       <treecol label="Name" hflex="1"/>
@@ -78,7 +78,7 @@
                         <panelchildren>
                             <toolbarbutton style="text-decoration: none" label="${i18n:_('Unselect')}"
                                 onClick="assignedMaterialsController.clearSelectionAllCategoriesTree()" />
-                            <tree id="allCategoriesTree" rows="10" vflex="true" multiple="false"
+                            <tree id="allCategoriesTree" rows="10" vflex="1" multiple="false"
                                 sizedByContent="false">
                                 <treecols>
                                     <treecol label="Name" hflex="1" />
