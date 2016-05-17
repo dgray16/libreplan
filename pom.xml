@@ -816,7 +816,7 @@
                 <!-- TODO  Change version for JDK8 -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.16.v20160414</version>
+                <version>9.3.8.v20160314</version>
                 <configuration>
                     <systemProperties>
                         <systemProperty>

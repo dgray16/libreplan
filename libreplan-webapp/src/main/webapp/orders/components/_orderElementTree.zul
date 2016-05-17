@@ -26,7 +26,7 @@
 
 <vbox width="100%">
     <vbox width="100%">
-        <hbox style="margin-bottom:4px;" width="100%" hflex="true">
+        <hbox style="margin-bottom:4px;" width="100%" >
 
         <hbox align="center" pack="center">
             <templateFinderPopup id="templateFinderPopupAtTree" />
@@ -44,7 +44,7 @@
                 visible="${treeComponent.createFromTemplateEnabled}"/>
         </hbox>
 
-        <hbox width="100%" style="float:right" hflex="1" align="right" pack="right"
+        <hbox width="100%" style="float:right" align="right" pack="right"
                 id="selectedRowButtons" visible="false">
             <label value="${i18n:_('Selected node')}:" />
             <button id="editOrderElementButton" sclass="icono" image="/common/img/ico_editar1.png"

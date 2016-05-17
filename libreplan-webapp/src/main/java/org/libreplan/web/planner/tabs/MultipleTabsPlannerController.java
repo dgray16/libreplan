@@ -134,16 +134,16 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
             proxiedTab.show();
         }
 
-        public void toggleToNoFeedback() {
+        void toggleToNoFeedback() {
             feedback = false;
         }
 
-        public void toggleToFeedback() {
+        void toggleToFeedback() {
             feedback = true;
         }
     }
 
-    public static String getSchedulingLabel() {
+    static String getSchedulingLabel() {
         return _("Planning");
     };
 

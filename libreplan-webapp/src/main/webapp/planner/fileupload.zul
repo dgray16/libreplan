@@ -49,7 +49,7 @@ Copyright (C) 2005 Potix Corporation. All Rights Reserved.
     <fileupload id="fileupload" forward="onUpload=" label="${c:l('mesg:org.zkoss.zul.mesg.MZul:UPLOAD_BROWSE')}"
                 upload="zul.fud.ModalFileViewer,maxsize=${arg.maxsize}${arg.native ? ',native':''}"/>
     <separator bar="true"/>
-    <div id="uploaded" visible="false"></div>
+    <div id="uploaded" visible="false"/>
     <div id="btns">
         <submit id="submit" label="${c:l('mesg:org.zkoss.zul.mesg.MZul:UPLOAD_SUBMIT')}"
                 w:onClick="this.submit()"/>

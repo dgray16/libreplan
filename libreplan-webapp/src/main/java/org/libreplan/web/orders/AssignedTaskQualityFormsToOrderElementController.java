@@ -21,7 +21,6 @@
 
 package org.libreplan.web.orders;
 
-import com.igalia.java.zk.components.customdetailrowcomponent.Detail;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.advance.exceptions.DuplicateAdvanceAssignmentForOrderElementException;
 import org.libreplan.business.advance.exceptions.DuplicateValueTrueReportGlobalAdvanceException;
@@ -32,15 +31,30 @@ import org.libreplan.business.qualityforms.entities.QualityForm;
 import org.libreplan.business.qualityforms.entities.TaskQualityForm;
 import org.libreplan.business.qualityforms.entities.TaskQualityFormItem;
 import org.libreplan.business.resources.entities.CriterionSatisfaction;
-import org.libreplan.web.common.*;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
+import org.libreplan.web.common.IMessagesForUser;
+import org.libreplan.web.common.MessagesForUser;
+import org.libreplan.web.common.Util;
+import org.libreplan.web.common.Level;
+import org.libreplan.web.common.ConstraintChecker;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Column;
+import org.zkoss.zul.Columns;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.RowRenderer;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Detail;
+import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.Constraint;
 
 import java.util.Date;
 import java.util.List;

@@ -21,37 +21,17 @@
 
 package org.libreplan.web.planner.allocation;
 
-import static org.libreplan.business.workingday.EffortDuration.zero;
-import static org.libreplan.web.I18nHelper._;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.calendars.entities.AvailabilityTimeLine;
 import org.libreplan.business.calendars.entities.AvailabilityTimeLine.Interval;
-import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.CapacityAvailable;
-import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.CapacityResult;
+import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.*;
 import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.CapacityResult.IMatcher;
-import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.ResourcesPerDayIsZero;
-import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.ThereAreNoValidPeriods;
-import org.libreplan.business.calendars.entities.ThereAreHoursOnWorkHoursCalculator.ValidPeriodsDontHaveCapacity;
-import org.libreplan.business.planner.entities.AssignedEffortForResource;
+import org.libreplan.business.planner.entities.*;
 import org.libreplan.business.planner.entities.AssignedEffortForResource.IAssignedEffortForResource;
 import org.libreplan.business.planner.entities.AssignedEffortForResource.WithTheLoadOf;
-import org.libreplan.business.planner.entities.AssignmentFunction;
 import org.libreplan.business.planner.entities.AssignmentFunction.AssignmentFunctionName;
-import org.libreplan.business.planner.entities.CalculatedValue;
-import org.libreplan.business.planner.entities.DerivedAllocation;
-import org.libreplan.business.planner.entities.GenericResourceAllocation;
-import org.libreplan.business.planner.entities.ResourceAllocation;
-import org.libreplan.business.planner.entities.Task;
 import org.libreplan.business.planner.entities.Task.ModifiedAllocation;
 import org.libreplan.business.planner.entities.allocationalgorithms.AllocationModification;
 import org.libreplan.business.planner.entities.allocationalgorithms.AllocationModification.IByType;
@@ -81,8 +61,13 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.SimpleConstraint;
 import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.Detail;
 
-import com.igalia.java.zk.components.customdetailrowcomponent.Detail;
+import java.math.BigDecimal;
+import java.util.*;
+
+import static org.libreplan.business.workingday.EffortDuration.zero;
+import static org.libreplan.web.I18nHelper._;
 
 /**
  * It connects the GUI widgets of the allocation row in the GUI with the

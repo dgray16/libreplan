@@ -55,7 +55,7 @@
             <row>
                 <label value="${i18n:_('Work description')}" />
                 <textbox value="@{subController.subcontractedTaskData.workDescription}"
-                    readonly="@{subController.sent}" hflex="1"/>
+                    readonly="@{subController.sent}" hflex="min"/>
             </row>
             <row>
                 <label value="${i18n:_('Subcontract price')}" />

@@ -149,7 +149,7 @@
             model="@{criterionRequirementsController.hoursGroups}"
             itemRenderer="@{criterionRequirementsController.renderer}">
             <listhead>
-                <listheader label="${i18n:_('Criterion Requirements')}" width="500px" hflex="1"/>
+                <listheader label="${i18n:_('Criterion Requirements')}" width="500px" />
                 <listheader label="${i18n:_('Type')}" align="center" width="150px" />
                 <listheader label="${i18n:_('Hours')}" align="center" width="150px" />
             </listhead>

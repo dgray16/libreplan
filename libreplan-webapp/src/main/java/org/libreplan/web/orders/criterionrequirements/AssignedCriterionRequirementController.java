@@ -42,7 +42,6 @@ import org.libreplan.business.resources.entities.CriterionWithItsType;
 import org.libreplan.business.resources.entities.ResourceEnum;
 import org.libreplan.business.workreports.entities.WorkReportLine;
 import org.libreplan.web.common.IMessagesForUser;
-import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.NewDataSortableGrid;
@@ -73,8 +72,7 @@ import org.zkoss.zul.Panel;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.SimpleListModel;
-
-import com.igalia.java.zk.components.customdetailrowcomponent.Detail;
+import org.zkoss.zul.Detail;
 
 /**
  * Controller for showing OrderElement assigned labels
@@ -704,9 +702,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     private Grid getHoursGroupDetailsGrid(Component self) {
         try {
-            Detail detail = ((Detail) ((Row) self.getParent().getParent())
-                    .getFirstChild());
+            Detail detail = ((Detail) (self.getParent().getParent()).getFirstChild());
             Panel panel = (Panel) detail.getFirstChild();
+
             return (Grid) panel.getFirstChild().getFirstChild();
         } catch (Exception e) {
             return null;

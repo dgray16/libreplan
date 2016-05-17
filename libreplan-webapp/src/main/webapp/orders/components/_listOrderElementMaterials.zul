@@ -107,7 +107,7 @@
                                 model="@{assignedMaterialsController.matchingMaterials}" >
                                 <listhead sizable="false" >
                                     <listheader label="${i18n:_('Code')}" width="230px"/>
-                                    <listheader label="${i18n:_('Name')}" width="100px" hflex="1"/>
+                                    <listheader label="${i18n:_('Name')}" width="100px" />
                                     <listheader label="${i18n:_('Unit type')}" width="70px" />
                                     <listheader label="${i18n:_('Unit price')}" width="70px"/>
                                     <listheader label="${i18n:_('Category')}" width="120px"/>
