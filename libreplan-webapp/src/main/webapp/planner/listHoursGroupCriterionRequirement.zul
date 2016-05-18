@@ -20,7 +20,7 @@
 -->
 
 <vbox>
-    <grid fixedLayout="true" model="@{hoursGroup.criterionRequirements}">
+    <grid sizedByContent="true" model="@{hoursGroup.criterionRequirements}">
                     <columns>
                         <column label="Criterion Name"/>
                         <column label="Hours"/>

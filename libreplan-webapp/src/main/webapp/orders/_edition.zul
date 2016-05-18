@@ -41,6 +41,7 @@
     <tabbox id="tabboxOrder">
         <tabs>
             <tab id="tabOrderElements" label="${i18n:_('WBS (tasks)')}"
+                onSelect = "controller.setupOrderElementTreeController();"
             />
             <tab id="tabGeneralData" label="${i18n:_('General data')}" selected="true"
                 onSelect = "controller.setupOrderDetails();"/>
@@ -73,7 +74,7 @@
 
                     <separator spacing="10px"/>
 
-                    <grid fixedLayout="true" hflex="1">
+                    <grid sizedByContent="true" hflex="1">
                         <columns>
                             <column width="200px" />
                             <column  />
@@ -122,7 +123,7 @@
 
                     <separator spacing="10px"/>
 
-                    <grid fixedLayout="true">
+                    <grid sizedByContent="true">
                         <columns>
                             <column width="180px" />
                             <column />
@@ -171,7 +172,7 @@
 
                     <separator spacing="10px"/>
 
-                    <grid fixedLayout="true">
+                    <grid sizedByContent="true">
                         <columns>
                             <column width="120px" />
                             <column  />
@@ -240,7 +241,7 @@
                    <hbox width="100%">
                        <separator spacing="10px" width="100%"/>
 
-                       <grid fixedLayout="true" hflex="1">
+                       <grid sizedByContent="true" hflex="1">
                            <columns>
                                <column width="200px" />
                                <column  />

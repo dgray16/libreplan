@@ -62,7 +62,7 @@ resourcesLoadPanel = self;
                     <borderlayout>
                         <north border="0" height="35px" hflex="1" vflex="1" collapsible="true">
                             <vbox pack="top" align="center">
-                            <tree hflex="true" sclass="resourceloaddetailsContainer">
+                            <tree sizedByContent="true" hflex="true" sclass="resourceloaddetailsContainer">
                                 <treecols>
                                     <treecol label="${ganttzk_i18n:_('Name')}" height="29px"/>
                                 </treecols>

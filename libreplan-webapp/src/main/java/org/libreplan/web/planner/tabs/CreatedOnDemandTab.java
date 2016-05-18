@@ -36,16 +36,15 @@ public class CreatedOnDemandTab implements ITab {
     private Component component;
     private final String cssClass;
 
-    public interface IComponentCreator {
-        public Component create(Component parent);
+    interface IComponentCreator {
+        Component create(Component parent);
     }
 
     public CreatedOnDemandTab(String name, IComponentCreator componentCreator) {
         this(name, null, componentCreator);
     }
 
-    public CreatedOnDemandTab(String name, String cssClass,
-            IComponentCreator componentCreator) {
+    CreatedOnDemandTab(String name, String cssClass, IComponentCreator componentCreator) {
         Validate.notNull(name);
         Validate.notNull(componentCreator);
         this.componentCreator = componentCreator;

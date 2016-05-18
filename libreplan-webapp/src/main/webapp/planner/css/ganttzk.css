@@ -1307,9 +1307,7 @@ div.z-grid-header .second_level_ tr {
 
 #ganttpanel .start, #ganttpanel .end,
 #listlimitingdependencies .mid {
-    background-image:
-        url("../../zkau/web/ganttz/img/solid-black-hor.png");
-        background-repeat:repeat-x;
+    background: url("../../zkau/web/ganttz/img/solid-black-hor.png") repeat-x;
 }
 
 #ganttpanel .mid,

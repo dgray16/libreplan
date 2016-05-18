@@ -29,9 +29,9 @@
 </zscript>
 
     <menubar id="menubar" top="0px" left="0px"
-            ctrlKeys="^k#f2" onCtrlKey="doCtrlKey()" sclass="mainmenu" autodrop="true">
+            ctrlKeys="^k#f2" onCtrlKey="doCtrlKey()" sclass="mainmenu z-menubar" autodrop="true">
 
-            <menu forEach="${menuContainer.customMenuItems}" label="${i18n:_(each.name)}" class="${each.activeParent?'current-section':''}" >
+            <menu forEach="${menuContainer.customMenuItems}" label="${i18n:_(each.name)}" sclass="${each.activeParent?'current-section':''}" >
                 <menupopup sclass="submenu">
                     <menuitem forEach="${each.children}" label="${i18n:_(each.name)}"
                         href='${each.url}' visible="${each.hasNotChildren}" />
@@ -51,10 +51,11 @@
   <n:tr>
     <n:td class="migas_linea"><n:table border="0" cellspacing="0" cellpadding="0">
         <n:tr class="ruta">
-          <n:td width="10" height="25"></n:td>
+            <n:td width="10" height="25"/>
           <n:td><n:strong>${i18n:_('START')}</n:strong></n:td>
-          <n:td width="5"></n:td>
-          <n:td><hbox id="breadcrumbs"></hbox>
+            <n:td width="5"/>
+          <n:td>
+              <hbox id="breadcrumbs"/>
           <hbox>
           <hbox forEach="${menuContainer.breadcrumbsPath}">
             <n:div align="center"><n:img src="${contextPath}/common/img/migas_separacion.gif" /></n:div>

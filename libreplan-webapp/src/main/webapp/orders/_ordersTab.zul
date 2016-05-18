@@ -40,7 +40,7 @@
        </hbox>
        </north>
 
-        <center border="0" class="orderslayout-area">
+        <center border="0" sclass="orderslayout-area">
             <div>
                 <vbox id="messagesContainer" />
                 <list top_id="listWindow" />

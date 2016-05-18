@@ -22,7 +22,7 @@
     <grid id="listJobSchedulings"
         rowRenderer="@{controller.jobSchedulingRenderer}"
         model="@{controller.jobSchedulerConfigurations}"
-        mold="paging" pageSize="10" fixedLayout="true">
+        mold="paging" pageSize="10" sizedByContent="true">
         <columns>
             <column label="${i18n:_('Job group')}" />
             <column label="${i18n:_('Job name')}" />

@@ -24,6 +24,6 @@
 top = self;
 ]]>
 </zscript>
-<tree id="loadsTree" sclass="limitingresourcesleftpane" fixedLayout="true">
+<tree id="loadsTree" sclass="limitingresourcesleftpane" sizedByContent="true">
 </tree>
 </zk>

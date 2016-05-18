@@ -58,7 +58,9 @@ public class PlanningTabCreator {
     private static final int MAX_ORDERNAME_LENGHT = 90;
 
     private final Mode mode;
+
     private final CompanyPlanningController companyPlanningController;
+
     private final Component breadcrumbs;
 
     private final OrderPlanningController orderPlanningController;
@@ -70,12 +72,13 @@ public class PlanningTabCreator {
     private MultipleTabsPlannerController tabsController;
 
     public static ITab create(Mode mode,
-            CompanyPlanningController companyPlanningController,
-            OrderPlanningController orderPlanningController,
-            IOrderDAO orderDAO,
-            Component breadcrumbs,
-            Map<String, String[]> parameters,
-            MultipleTabsPlannerController tabsController) {
+                              CompanyPlanningController companyPlanningController,
+                              OrderPlanningController orderPlanningController,
+                              IOrderDAO orderDAO,
+                              Component breadcrumbs,
+                              Map<String, String[]> parameters,
+                              MultipleTabsPlannerController tabsController) {
+
         return new PlanningTabCreator(mode, companyPlanningController,
                 orderPlanningController, breadcrumbs, orderDAO, parameters,
                 tabsController)
@@ -83,11 +86,13 @@ public class PlanningTabCreator {
     }
 
     private PlanningTabCreator(Mode mode,
-            CompanyPlanningController companyPlanningController,
-            OrderPlanningController orderPlanningController,
-            Component breadcrumbs, IOrderDAO orderDAO,
-            Map<String, String[]> parameters,
-            MultipleTabsPlannerController tabsController) {
+                               CompanyPlanningController companyPlanningController,
+                               OrderPlanningController orderPlanningController,
+                               Component breadcrumbs,
+                               IOrderDAO orderDAO,
+                               Map<String, String[]> parameters,
+                               MultipleTabsPlannerController tabsController) {
+
         this.mode = mode;
         this.companyPlanningController = companyPlanningController;
         this.orderPlanningController = orderPlanningController;
@@ -108,9 +113,8 @@ public class PlanningTabCreator {
         final IComponentCreator componentCreator = new IComponentCreator() {
 
             @Override
-            public org.zkoss.zk.ui.Component create(
-                    org.zkoss.zk.ui.Component parent) {
-                List<ICommandOnTask<TaskElement>> commands = new ArrayList<ICommandOnTask<TaskElement>>();
+            public org.zkoss.zk.ui.Component create(org.zkoss.zk.ui.Component parent) {
+                List<ICommandOnTask<TaskElement>> commands = new ArrayList<>();
 
                 ICommandOnTask<TaskElement> scheduleCommand = buildScheduleCommand();
                 commands.add(scheduleCommand);
@@ -133,10 +137,9 @@ public class PlanningTabCreator {
                 return new ICommandOnTask<TaskElement>() {
 
                     @Override
-                    public void doAction(
-                            IContextWithPlannerTask<TaskElement> context,
-                            TaskElement task) {
+                    public void doAction(IContextWithPlannerTask<TaskElement> context, TaskElement task) {
                         OrderElement orderElement = task.getOrderElement();
+
                         if (orderElement instanceof Order) {
                             Order order = (Order) orderElement;
                             mode.goToOrderMode(order);
@@ -164,10 +167,9 @@ public class PlanningTabCreator {
                 return new ICommandOnTask<TaskElement>() {
 
                     @Override
-                    public void doAction(
-                            IContextWithPlannerTask<TaskElement> context,
-                            TaskElement task) {
+                    public void doAction(IContextWithPlannerTask<TaskElement> context, TaskElement task) {
                         OrderElement orderElement = task.getOrderElement();
+
                         if (orderElement instanceof Order) {
                             Order order = (Order) orderElement;
                             tabsController.goToOrderDetails(order);
@@ -192,20 +194,16 @@ public class PlanningTabCreator {
             }
 
         };
-        return new CreatedOnDemandTab(_("Projects Planning"),
-                "company-scheduling",
-                componentCreator) {
+        return new CreatedOnDemandTab(_("Projects Planning"), "company-scheduling", componentCreator) {
             @Override
             protected void beforeShowAction() {
-                if (!SecurityUtils
-                        .isSuperuserOrRolePlanningOrHasAnyAuthorization()) {
+                if (!SecurityUtils.isSuperuserOrRolePlanningOrHasAnyAuthorization()) {
                     Util.sendForbiddenStatusCodeInHttpServletResponse();
                 }
             }
 
             private boolean checkFiltersChanged() {
-                return (FilterUtils.sessionExists() && FilterUtils
-                        .hasProjectFilterChanged());
+                return (FilterUtils.sessionExists() && FilterUtils.hasProjectFilterChanged());
             }
 
             private void setFiltersUnchanged() {
@@ -215,8 +213,7 @@ public class PlanningTabCreator {
             @Override
             protected void afterShowAction() {
                 if (checkFiltersChanged()) {
-                    companyPlanningController
-                            .readSessionVariablesIntoComponents();
+                    companyPlanningController.readSessionVariablesIntoComponents();
                     setFiltersUnchanged();
                 }
 
@@ -237,28 +234,25 @@ public class PlanningTabCreator {
             @Override
             public org.zkoss.zk.ui.Component create(
                     org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<String, Object>();
-                arguments.put("orderPlanningController",
-                        orderPlanningController);
+                Map<String, Object> arguments = new HashMap<>();
+                arguments.put("orderPlanningController", orderPlanningController);
                 orderPlanningController.setURLParameters(parameters);
-                org.zkoss.zk.ui.Component result = Executions.createComponents(
-                        "/planner/order.zul", parent, arguments);
+                Component result = Executions.createComponents("/planner/order.zul", parent, arguments);
                 Util.createBindingsFor(result);
                 return result;
             }
 
         };
-        return new CreatedOnDemandTab(_("Project Scheduling"),
-                "order-scheduling", componentCreator) {
+        return new CreatedOnDemandTab(_("Project Scheduling"), "order-scheduling", componentCreator) {
             @Override
             protected void afterShowAction() {
 
                 orderPlanningController.setOrder(reload(mode.getOrder()));
                 orderPlanningController.setShowedTask(null);
                 Order order = orderPlanningController.getOrder();
-                Map<String, Object> arguments = new HashMap<String, Object>();
-                arguments.put("orderPlanningController",
-                        orderPlanningController);
+                Map<String, Object> arguments = new HashMap<>();
+
+                arguments.put("orderPlanningController", orderPlanningController);
 
                 if (breadcrumbs.getChildren() != null) {
                     breadcrumbs.getChildren().clear();
@@ -276,11 +270,9 @@ public class PlanningTabCreator {
                             + order.getDescription());
                     nameLabel.setMaxlength(MAX_ORDERNAME_LENGHT);
 
-                    Label schedulingStateLabel = new Label(_(order.getState()
-                            .toString()));
+                    Label schedulingStateLabel = new Label(_(order.getState().toString()));
 
-                    schedulingStateLabel.setSclass("scheduling-state "
-                            + order.getSchedulingState().getCssClass());
+                    schedulingStateLabel.setSclass("scheduling-state " + order.getSchedulingState().getCssClass());
                     schedulingStateLabel.setTooltiptext(_(order
                             .getSchedulingState().getStateName()));
 

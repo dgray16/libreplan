@@ -25,7 +25,7 @@ top = self;
 ]]>
 </zscript>
 <grid width="${top.horizontalSize+2}" model="${top.tableModel}"
-    rowRenderer="${top.rowRenderer}" fixedLayout="${true}">
+    rowRenderer="${top.rowRenderer}" sizedByContent="${true}">
     <columns visible="${false}">
         <column label="${each.name}" width="${each.size}px"
                     forEach="${top.detailsSecondLevel}"></column>

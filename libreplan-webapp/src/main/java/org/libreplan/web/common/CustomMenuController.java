@@ -25,10 +25,7 @@ package org.libreplan.web.common;
 
 import static org.libreplan.web.I18nHelper._;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,11 +63,17 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
     public static class CustomMenuItem {
 
         private final String name;
+
         private final String unencodedURL;
+
         private final String encodedURL;
+
         private final List<CustomMenuItem> children;
+
         private boolean activeParent;
+
         private String helpLink;
+
         private boolean disabled;
 
         public String getName() {
@@ -588,7 +591,7 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
 
             if ( ci.isActiveParent() ) {
 
-                if ( (ci.name != null) && (ci.name != _("Planning")) ) {
+                if ( (ci.name != null) && (!Objects.equals(ci.name, _("Planning"))) ) {
 
                     breadcrumbsPath.add(ci);
 
@@ -648,7 +651,7 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
     private Button currentOne = null;
 
     @Override
-    public Object addMenuItem(String name, String cssClass, org.zkoss.zk.ui.event.EventListener eventListener) {
+    public Object addMenuItem(String name, String cssClass, EventListener eventListener) {
         Vbox insertionPoint = getRegisteredItemsInsertionPoint();
         Button button = new Button();
         button.setLabel(_(name));
@@ -764,9 +767,7 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
     }
 
     public boolean isScenariosVisible() {
-        return Registry.getConfigurationDAO()
-                .getConfigurationWithReadOnlyTransaction()
-                .isScenariosVisible();
+        return Registry.getConfigurationDAO().getConfigurationWithReadOnlyTransaction().isScenariosVisible();
     }
 
 }

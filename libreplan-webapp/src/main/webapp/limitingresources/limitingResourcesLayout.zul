@@ -91,7 +91,7 @@
 
                     <borderlayout >
                         <north border="0" height="31px" hflex="1" collapsible="true">
-                            <tree>
+                            <tree sizedByContent="true">
                                 <treecols>
                                     <treecol label="${i18n:_('Name')}" height="26px"/>
                                 </treecols>
@@ -105,9 +105,10 @@
 
                 <center sclass="taskspanel">
                     <borderlayout>
-                        <north border="0"><div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"></div></north>
+                        <north border="0">
+                            <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/></north>
                         <center autoscroll="true" border="0" sclass="rightpanellayout">
-                            <div id="insertionPointRightPanel" sclass="taskspanelgap"></div>
+                            <div id="insertionPointRightPanel" sclass="taskspanelgap"/>
                         </center>
                     </borderlayout>
                 </center>

@@ -1,14 +1,10 @@
 body {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
+    margin: 0px;
 }
 
 .menuup {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
     text-decoration: none;
-    background-image: url(../img/pestana1.gif);
     font-size: 11px;
     color: #0081C2;
     display: block;
@@ -16,8 +12,7 @@ body {
     padding-left: 6px;
     width: 125px;
     font-weight: bold;
-    background-repeat: no-repeat;
-    background-position: -4px 0px;
+    background: url(../img/pestana1.gif) no-repeat -4px 0px;
     padding-bottom: 5px;
 }
 
@@ -34,10 +29,8 @@ a.menuup:hover {
         padding-top: 10px;
         padding-left: 6px;
         width: 125px;
-        background-repeat: no-repeat;
-        background-position: -4px 4px;
         padding-bottom: 5px;
-        background-image: url(../img/pestana_desactivada.gif);
+        background: url(../img/pestana_desactivada.gif) no-repeat -4px 4px;
 }
 
 .sub_menu {
@@ -143,9 +136,7 @@ a.sub_menu:hover {
 }
 
 .fondo_cabecera {
-    background-image: url(../img/cabecera.jpg);
-    background-position: right top;
-    background-repeat: no-repeat;
+    background: url(../img/cabecera.jpg) no-repeat right top;
 }
 
 .migas_linea {

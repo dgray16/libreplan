@@ -46,8 +46,7 @@
             </tabs>
             <tabpanels>
                 <tabpanel id="panelConfiguration">
-                    <grid fixedLayout="true"
-                        id="configurationVariables">
+                    <grid id="configurationVariables">
                         <columns>
                             <column width="200px" />
                             <column />

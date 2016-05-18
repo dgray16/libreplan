@@ -110,7 +110,7 @@ public class CompanyPlanningController implements Composer {
     }
 
     @Override
-    public void doAfterCompose(org.zkoss.zk.ui.Component comp) {
+    public void doAfterCompose(Component comp) {
         planner = (Planner) comp;
         String zoomLevelParameter = null;
         if ( (parameters != null) && (parameters.get("zoom") != null) && !(parameters.isEmpty()) ) {

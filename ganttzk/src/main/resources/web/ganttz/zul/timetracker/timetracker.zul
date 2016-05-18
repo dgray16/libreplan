@@ -32,7 +32,7 @@ top = self;
         <grid id="firstleveldetails" width="${top.horizontalSizePixels}px;">
             <columns>
                 <column label="${each.name}" width="${each.size}px"
-                    forEach="${top.detailsFirstLevel}"></column>
+                        forEach="${top.detailsFirstLevel}"/>
             </columns>
         </grid>
     </vbox>
