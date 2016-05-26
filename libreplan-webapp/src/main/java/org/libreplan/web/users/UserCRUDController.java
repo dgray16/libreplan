@@ -53,6 +53,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
@@ -80,10 +81,8 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     @Resource
     private IWorkerCRUDControllerEntryPoints workerCRUD;
 
-    @Autowired
     private ILimitsModel limitsModel;
 
-    @Autowired
     private IUserModel userModel;
 
     private Textbox passwordBox;
@@ -99,6 +98,14 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     private Button showCreateForm;
 
     private IURLHandlerRegistry URLHandlerRegistry;
+
+    public UserCRUDController(){
+        userModel = (IUserModel) SpringUtil.getBean("userModel");
+        limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
+       // workerCRUD = (IWorkerCRUDControllerEntryPoints) SpringUtil.getBean("workerCRUDControllerEntryPoints");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+
+    }
 
     private RowRenderer usersRenderer = new RowRenderer() {
 

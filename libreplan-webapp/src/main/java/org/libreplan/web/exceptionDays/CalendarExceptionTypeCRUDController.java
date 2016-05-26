@@ -45,6 +45,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Grid;
@@ -63,10 +64,8 @@ import org.zkoss.zul.Textbox;
  * @author Diego Pino <dpino@igalia.com>
  *
  */
-public class CalendarExceptionTypeCRUDController extends
-        BaseCRUDController<CalendarExceptionType> {
+public class CalendarExceptionTypeCRUDController extends BaseCRUDController<CalendarExceptionType> {
 
-    @Autowired
     private ICalendarExceptionTypeModel calendarExceptionTypeModel;
 
     private Textbox tbName;
@@ -137,6 +136,8 @@ public class CalendarExceptionTypeCRUDController extends
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        calendarExceptionTypeModel = (ICalendarExceptionTypeModel) SpringUtil.getBean("calendarExceptionTypeModel");
         initializeEditWindowComponents();
     }
 

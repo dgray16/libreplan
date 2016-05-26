@@ -47,6 +47,7 @@
         editController = editTaskController;
     ]]>
     </zscript>
+
     <borderlayout sclass="resourcesloadlayout" width="auto">
 
         <!-- Top control button bar -->
@@ -86,11 +87,11 @@
         <!-- List of queues -->
         <center border="0">
             <borderlayout sclass="resourcesload limitingresources">
-                <west size="250px" hflex="1" vflex="true" collapsible="true"
+                <west size="250px" vflex="min" hflex="min" collapsible="true"
                     splittable="true" autoscroll="true">
 
                     <borderlayout >
-                        <north border="0" height="31px" hflex="1" collapsible="true">
+                        <north border="0" height="31px" vflex="min" hflex="min" collapsible="true">
                             <tree sizedByContent="true">
                                 <treecols>
                                     <treecol label="${i18n:_('Name')}" height="26px"/>
@@ -114,7 +115,6 @@
                 </center>
             </borderlayout>
         </center>
-
         <south height="170px" collapsible="true" title="${i18n:_('Tasks input buffer')}" sclass="limiting-resources-buffer">
             <vbox width="100%">
                 <!-- Assign selected elements -->

@@ -105,17 +105,19 @@ public abstract class AssignedLabelsModel<T> implements IAssignedLabelsModel<T> 
 
     @Transactional(readOnly = true)
     public List<Label> getLabels() {
-        List<Label> result = new ArrayList<Label>();
+        List<Label> result = new ArrayList<>();
+
         if (element != null && getLabels(element) != null) {
             reattachLabels();
             result.addAll(getLabels(element));
         }
+
         return result;
     }
 
     @Transactional(readOnly = true)
     public List<Label> getInheritedLabels() {
-        List<Label> result = new ArrayList<Label>();
+        List<Label> result = new ArrayList<>();
         if (element != null) {
             reattachLabels();
             T parent = getParent(element);

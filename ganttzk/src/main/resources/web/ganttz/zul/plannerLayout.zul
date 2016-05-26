@@ -18,7 +18,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<zk xmlns:n="http://www.zkoss.org/2005/zk/native" >
+<zk xmlns:n="http://www.zkoss.org/2005/zk/native">
 <?component name="button" extends="button" mold="trendy"?>
 <?xel-method prefix="ganttzk_i18n" name="_" class="org.zkoss.ganttz.i18n.I18nHelper"
     signature="java.lang.String _(java.lang.String name)" ?>
@@ -71,7 +71,7 @@ planner = self;
             tooltiptext="${ganttzk_i18n:_('Flatten/Unflatten tree')}"
             sclass="planner-command" />
 
-        <hbox sclass="show-advances" align="center">
+        <hbox class="show-advances" align="center">
             <button id="showAdvances" onClick="planner.showAdvances();"
                 image="/common/img/ico_progress.png"
                 style="width:46px"
@@ -102,7 +102,7 @@ planner = self;
 
         <center border="0">
             <borderlayout sclass="plannerlayout_center" height="100%">
-                <west vflex="0" collapsible="true" splittable="true" width="375px"
+                <west flex="false" collapsible="true" splittable="true" width="375px"
                     id="taskdetailsContainer" sclass="taskdetailsContainer">
                     <div sclass="leftpanelgap" id="insertionPointLeftPanel"/>
                 </west>

@@ -99,6 +99,7 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
     public static String WELCOME_URL = "-- no URL provided --";
 
     private final class TabWithLoadingFeedback extends TabProxy {
+
         private boolean feedback = true;
 
         private TabWithLoadingFeedback(ITab tab) {
@@ -156,8 +157,6 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     @Autowired
     private OrderCRUDController orderCRUDController;
-
-
 
     @Autowired
     private PlanningStateCreator planningStateCreator;
@@ -503,14 +502,16 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) {
 
         Execution execution = Executions.getCurrent();
-        WELCOME_URL = "http://" + execution.getServerName() + ":" + execution.getServerPort() + Executions.encodeURL("/planner/index.zul");
+        WELCOME_URL = "http://" + execution.getServerName() + ":"
+                + execution.getServerPort() + Executions.encodeURL("/planner/index.zul");
 
         tabsSwitcher = (TabSwitcher) comp;
         breadcrumbs = comp.getPage().getFellow("breadcrumbs");
-        tabsSwitcher
-                .setConfiguration(buildTabsConfiguration(comp.getDesktop()));
+
+        tabsSwitcher.setConfiguration(buildTabsConfiguration(comp.getDesktop()));
         final EntryPointsHandler<IGlobalViewEntryPoints> handler = registry
                 .getRedirectorFor(IGlobalViewEntryPoints.class);
+
         if (!handler.applyIfMatches(this)) {
             planningTab.toggleToNoFeedback();
             goToCompanyScheduling();

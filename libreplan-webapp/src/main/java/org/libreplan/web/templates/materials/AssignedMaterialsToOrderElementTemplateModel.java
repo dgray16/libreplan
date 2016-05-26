@@ -37,6 +37,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
@@ -76,8 +77,7 @@ public class AssignedMaterialsToOrderElementTemplateModel extends
 
     @Override
     protected List<MaterialAssignmentTemplate> getAssignments() {
-        return new ArrayList<MaterialAssignmentTemplate>(template
-                .getMaterialAssignments());
+        return new ArrayList<>(template.getMaterialAssignments());
     }
 
     @Override

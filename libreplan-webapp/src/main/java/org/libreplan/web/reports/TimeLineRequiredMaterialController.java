@@ -31,6 +31,7 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.*;
@@ -67,6 +68,11 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
 
     List<Material> filterMaterials = new ArrayList<>();
 
+    public TimeLineRequiredMaterialController(){
+        timeLineRequiredMaterialModel =
+                (ITimeLineRequiredMaterialModel) SpringUtil.getBean("timeLineRequiredMaterialModel");
+    }
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -79,7 +85,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         return timeLineRequiredMaterialModel.getOrders();
     }
 
-    private List<Order> getSelectedOrders() {
+    public List<Order> getSelectedOrders() {
         return Collections.unmodifiableList(timeLineRequiredMaterialModel.getSelectedOrders());
     }
 
@@ -192,7 +198,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         return _("All");
     }
 
-    private String getSelectedStatus(){
+    public String getSelectedStatus(){
         return selectedStatus;
     }
 
@@ -200,7 +206,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         selectedStatus = status;
     }
 
-    private MaterialStatusEnum getCorrespondentStatus(String status) {
+    public MaterialStatusEnum getCorrespondentStatus(String status) {
         for (MaterialStatusEnum matStatus : MaterialStatusEnum.values()) {
             if (status.equals(matStatus.name())) {
                 return matStatus;
@@ -210,7 +216,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         return null;
     }
 
-    private String getSelectedStatusName() {
+    public String getSelectedStatusName() {
         if (getSelectedStatus().equals(getDefaultStatus())) {
             return null;
         }
@@ -276,11 +282,11 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         }
     }
 
-    private ITimeLineRequiredMaterialModel getModel() {
+    public ITimeLineRequiredMaterialModel getModel() {
         return this.timeLineRequiredMaterialModel;
     }
 
-    private List<MaterialCategory> getSelectedCategories() {
+    public List<MaterialCategory> getSelectedCategories() {
         filterCategories.clear();
         Set<Treeitem> setItems = allCategoriesTree.getSelectedItems();
 
@@ -301,7 +307,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         }
     }
 
-    private List<Material> getSelectedMaterials() {
+    public List<Material> getSelectedMaterials() {
         List<Material> materials = new ArrayList<>();
         Set<Treeitem> setItems = allCategoriesTree.getSelectedItems();
         for (Treeitem ti : setItems) {

@@ -56,18 +56,18 @@
         <tabpanel>
             <advancesAssignment id="advancesAssignment" />
         </tabpanel>
-        <tabpanel>
-            <listOrderElementLabels id="listOrderElementLabels"/>
-        </tabpanel>
-        <tabpanel>
-            <listOrderElementCriterionRequirements id="listOrderElementCriterionRequirements"/>
-        </tabpanel>
-        <tabpanel>
-            <listOrderElementMaterials id="listOrderElementMaterials"/>
-        </tabpanel>
-        <tabpanel>
-            <assignedQualityForms id="assignedQualityForms"/>
-        </tabpanel>
+           <tabpanel>
+                <listOrderElementLabels id="listOrderElementLabels"/>
+            </tabpanel>
+              <tabpanel>
+                 <listOrderElementCriterionRequirements id="listOrderElementCriterionRequirements"/>
+             </tabpanel>
+             <tabpanel>
+                 <listOrderElementMaterials id="listOrderElementMaterials"/>
+             </tabpanel>
+             <tabpanel>
+                 <assignedQualityForms id="assignedQualityForms"/>
+             </tabpanel>
     </tabpanels>
 </tabbox>
 

@@ -25,6 +25,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.util.Locales;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
 
@@ -39,12 +40,16 @@ public class HoursWorkedPerWorkerInAMonthController extends LibrePlanReportContr
 
     private static final String REPORT_NAME = "hoursWorkedPerWorkerInAMonthReport";
 
-    @Autowired
     private IHoursWorkedPerWorkerInAMonthModel hoursWorkedPerWorkerInAMonthModel;
 
     private Listbox lbYears;
 
     private Listbox lbMonths;
+
+    public HoursWorkedPerWorkerInAMonthController(){
+        hoursWorkedPerWorkerInAMonthModel =
+                (IHoursWorkedPerWorkerInAMonthModel) SpringUtil.getBean("hoursWorkedPerWorkerInAMonthModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

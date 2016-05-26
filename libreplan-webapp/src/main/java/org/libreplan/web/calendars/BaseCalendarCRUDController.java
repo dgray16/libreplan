@@ -43,6 +43,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
@@ -61,8 +62,6 @@ import org.zkoss.zul.Window;
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
 public class BaseCalendarCRUDController extends GenericForwardComposer {
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(BaseCalendarCRUDController.class);
 
     private IBaseCalendarModel baseCalendarModel;
 
@@ -93,6 +92,8 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        baseCalendarModel = (IBaseCalendarModel) SpringUtil.getBean("baseCalendarModel");
         messagesForUser = new MessagesForUser(messagesContainer);
         comp.setAttribute("calendarController", this, true);
         getVisibility().showOnly(listWindow);

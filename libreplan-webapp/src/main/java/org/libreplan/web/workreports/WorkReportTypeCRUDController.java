@@ -54,6 +54,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Combobox;
@@ -74,6 +75,8 @@ import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vbox;
 import org.zkoss.zul.Window;
 
+import javax.swing.*;
+
 /**
  * Controller for CRUD actions over a {@link WorkReportType}
  *
@@ -81,8 +84,6 @@ import org.zkoss.zul.Window;
  */
 public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportType>
         implements IWorkReportTypeCRUDControllerEntryPoints {
-
-     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(WorkReportTypeCRUDController.class);
 
     private NewDataSortableGrid listDescriptionFields;
 
@@ -113,6 +114,13 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
     private WorkReportLabelTypeAssigmentRowRenderer workReportLabelTypeAssigmentRowRenderer = new WorkReportLabelTypeAssigmentRowRenderer();
 
     private OrderedFieldsAndLabelsRowRenderer orderedFieldsAndLabesRowRenderer = new OrderedFieldsAndLabelsRowRenderer();
+
+    public WorkReportTypeCRUDController(){
+        workReportTypeModel = (IWorkReportTypeModel) SpringUtil.getBean("workReportTypeModel");
+        workReportCRUD =
+                (IWorkReportCRUDControllerEntryPoints) SpringUtil.getBean("workReportCRUDControllerEntryPoints");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+    }
 
     public List<WorkReportType> getWorkReportTypes() {
         return workReportTypeModel.getWorkReportTypesExceptPersonalAndJiraTimesheets();
@@ -548,7 +556,7 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
         return HoursManagementEnum.values();
     }
 
-    private PositionInWorkReportEnum[] getPositionInWorkReportEnums() {
+    public PositionInWorkReportEnum[] getPositionInWorkReportEnums() {
         return PositionInWorkReportEnum.values();
     }
 

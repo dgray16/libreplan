@@ -44,9 +44,10 @@ import org.zkoss.zul.Label;
 public class LimitingResourcesTabCreator {
 
     public static ITab create(Mode mode,
-            LimitingResourcesController LimitingResourcesController,
-            LimitingResourcesController LimitingResourcesControllerGlobal,
-            Component breadcrumbs) {
+                              LimitingResourcesController LimitingResourcesController,
+                              LimitingResourcesController LimitingResourcesControllerGlobal,
+                              Component breadcrumbs) {
+
         return new LimitingResourcesTabCreator(mode,
                 LimitingResourcesController, LimitingResourcesControllerGlobal,
                 breadcrumbs)
@@ -62,9 +63,10 @@ public class LimitingResourcesTabCreator {
     private final Component breadcrumbs;
 
     private LimitingResourcesTabCreator(Mode mode,
-            LimitingResourcesController LimitingResourcesController,
-            LimitingResourcesController LimitingResourcesControllerGlobal,
-            Component breadcrumbs) {
+                                        LimitingResourcesController LimitingResourcesController,
+                                        LimitingResourcesController LimitingResourcesControllerGlobal,
+                                        Component breadcrumbs) {
+
         this.mode = mode;
         this.limitingResourcesController = LimitingResourcesController;
         this.limitingResourcesControllerGlobal = LimitingResourcesControllerGlobal;
@@ -72,9 +74,7 @@ public class LimitingResourcesTabCreator {
     }
 
     private ITab build() {
-        return TabOnModeType.forMode(mode)
-                .forType(ModeType.GLOBAL, createGlobalLimitingResourcesTab())
-                .create();
+        return TabOnModeType.forMode(mode).forType(ModeType.GLOBAL, createGlobalLimitingResourcesTab()).create();
     }
 
     private ITab createGlobalLimitingResourcesTab() {
@@ -85,21 +85,16 @@ public class LimitingResourcesTabCreator {
             public org.zkoss.zk.ui.Component create(
                     org.zkoss.zk.ui.Component parent) {
                 Map<String, Object> arguments = new HashMap<String, Object>();
-                arguments.put("LimitingResourcesController",
-                        limitingResourcesControllerGlobal);
-                return Executions.createComponents(
-                        "/limitingresources/_limitingresources.zul", parent,
-                        arguments);
+                arguments.put("LimitingResourcesController", limitingResourcesControllerGlobal);
+
+                return Executions.createComponents("/limitingresources/_limitingresources.zul", parent, arguments);
             }
 
         };
-        return new CreatedOnDemandTab(_("Queue-based Resources Planning"),
-                "limiting-resources",
-                componentCreator) {
+        return new CreatedOnDemandTab(_("Queue-based Resources Planning"), "limiting-resources", componentCreator) {
             @Override
             protected void beforeShowAction() {
-                if (!SecurityUtils
-                        .isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING)) {
+                if (!SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING)) {
                     Util.sendForbiddenStatusCodeInHttpServletResponse();
                 }
             }
@@ -107,14 +102,15 @@ public class LimitingResourcesTabCreator {
             @Override
             protected void afterShowAction() {
                 limitingResourcesControllerGlobal.reload();
+
                 if (breadcrumbs.getChildren() != null) {
                     breadcrumbs.getChildren().clear();
                 }
+
                 breadcrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
                 breadcrumbs.appendChild(new Label(getSchedulingLabel()));
                 breadcrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
-                breadcrumbs.appendChild(new Label(
-                        _("Queue-based Resources Planning")));
+                breadcrumbs.appendChild(new Label(_("Queue-based Resources Planning")));
             }
         };
     }

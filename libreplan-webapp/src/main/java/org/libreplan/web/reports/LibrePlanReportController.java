@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.libreplan.business.common.Registry;
 import org.zkoss.util.Locales;
 import org.zkoss.zk.au.out.AuDownload;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.A;
@@ -51,7 +52,7 @@ import com.igalia.java.zk.components.JasperreportComponent;
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  *
  */
-public abstract class LibrePlanReportController extends GenericForwardComposer {
+public abstract class LibrePlanReportController extends GenericForwardComposer<Component> {
 
     private static final String HTML = "html";
 

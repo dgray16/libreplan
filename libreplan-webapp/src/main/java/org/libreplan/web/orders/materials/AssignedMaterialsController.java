@@ -33,6 +33,7 @@ import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 import org.zkoss.zul.impl.MessageboxDlg;
 
@@ -45,9 +46,7 @@ import static org.libreplan.web.I18nHelper._;
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  *
  */
-public abstract class AssignedMaterialsController<T, A> extends GenericForwardComposer {
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(AssignedMaterialsController.class);
+public abstract class AssignedMaterialsController<T, A> extends GenericForwardComposer<Component> {
 
     private Tree categoriesTree;
 
@@ -68,6 +67,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
         getModel().loadUnitTypes();
         createAssignmentsBoxComponent(assignmentsBox);
     }
@@ -123,13 +123,15 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         reloadGridMaterials();
     }
 
-    private List<A> getAssignedMaterials() {
+    public List<A> getAssignedMaterials() {
         final Treeitem treeitem = categoriesTree.getSelectedItem();
+
         return getAssignedMaterials(treeitem);
     }
 
     private List<A> getAssignedMaterials(Treeitem treeitem) {
         final MaterialCategory materialCategory = (treeitem != null) ? (MaterialCategory) treeitem.getValue() : null;
+
         return getAssignedMaterials(materialCategory);
     }
 
@@ -435,7 +437,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         final String message = _("Do you want to split the material assignment {0}?",
                 getMaterial(materialAssignment).getCode());
 
-        Map args = new HashMap();
+        Map<String, java.io.Serializable> args = new HashMap<String, java.io.Serializable>();
         args.put("message", message);
         args.put("title", _("Split new assignment"));
         args.put("OK", Messagebox.OK);

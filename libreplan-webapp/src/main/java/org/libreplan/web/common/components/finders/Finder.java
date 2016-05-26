@@ -47,8 +47,8 @@ public abstract class Finder implements IFinder {
     }
 
     @Transactional(readOnly = true)
-    public SimpleListModelExt getModel() {
-        return new SimpleListModelExt(getAll());
+    public SimpleListModel getModel() {
+        return new SimpleListModel(getAll());
     }
 
     /**

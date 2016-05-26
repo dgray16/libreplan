@@ -219,13 +219,14 @@ public class SchedulingProgressPerOrderModel implements ISchedulingProgressPerOr
     @Override
     @Transactional(readOnly = true)
     public List<AdvanceType> getAdvanceTypes() {
-        List<AdvanceType> result = new ArrayList<AdvanceType>();
+        List<AdvanceType> result = new ArrayList<>();
         result.addAll(advanceTypeDAO.getAll());
+
         return result;
     }
 
     private List<Task> getTasks(Order order) {
-        List<Task> result = new ArrayList<Task>();
+        List<Task> result = new ArrayList<>();
         final List<TaskElement> taskElements = order
                 .getAllChildrenAssociatedTaskElements();
         for (TaskElement each : taskElements) {

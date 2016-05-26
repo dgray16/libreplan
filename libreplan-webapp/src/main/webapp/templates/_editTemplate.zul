@@ -35,7 +35,7 @@
 
 <window id="${arg.top_id}" title="${i18n:_('Edit Template')}">
     <editTemplateWindow />
-    <tabbox>
+  <!--  <tabbox>
         <tabs>
             <tab id="tabGeneralData" label="${i18n:_('General data')}"
                 onSelect="templatesForOrdersController.reloadBudget()" />
@@ -52,7 +52,7 @@
         </tabs>
         <tabpanels>
             <tabpanel id="tabPanelGeneralData">
-                <grid fixedLayout="true">
+                <grid sizedByContent="true">
                     <columns>
                         <column width="200px" />
                         <column  />
@@ -120,7 +120,7 @@
                 <historicalStatistics id="historicalStatistics"/>
             </tabpanel>
         </tabpanels>
-    </tabbox>
+    </tabbox>-->
     <hbox>
         <button label="${i18n:_('Save')}" onClick="templatesForOrdersController.saveAndExit()" autodisable="self"
             sclass="save-button global-action" />

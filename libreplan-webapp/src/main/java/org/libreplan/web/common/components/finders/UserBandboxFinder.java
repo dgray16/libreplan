@@ -22,10 +22,13 @@ package org.libreplan.web.common.components.finders;
 import org.apache.commons.lang3.StringUtils;
 import org.libreplan.business.users.daos.IUserDAO;
 import org.libreplan.business.users.entities.User;
+import org.libreplan.web.resources.worker.WorkerCRUDController;
+import org.libreplan.web.workreports.WorkReportCRUDController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.lang.Strings;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Bandbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
@@ -73,8 +76,11 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
         return original.toLowerCase().contains(text);
     }
 
+    //TODO Doesn't work cast (User) for obj
     @Override
     public String objectToString(Object obj) {
+     /*   WorkerCRUDController crud = new WorkerCRUDController();
+        User us = (User) crud;*/
         User user = (User) obj;
 
         String fullName = user.getFullName();

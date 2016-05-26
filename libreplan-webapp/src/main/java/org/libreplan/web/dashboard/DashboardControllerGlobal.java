@@ -8,6 +8,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Label;
@@ -31,21 +32,33 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DashboardControllerGlobal extends GenericForwardComposer {
 
-    @Autowired
     private IOrderModel orderModel;
 
     private Grid pipelineGrid;
+
     private Checkbox storedColumnVisible;
 
-    private List<Order> preSalesOrders = new ArrayList<Order>();
-    private List<Order> offeredOrders = new ArrayList<Order>();
-    private List<Order> outsourcedOrders = new ArrayList<Order>();
-    private List<Order> acceptedOrders = new ArrayList<Order>();
-    private List<Order> startedOrders = new ArrayList<Order>();
-    private List<Order> onHoldOrders = new ArrayList<Order>();
-    private List<Order> finishedOrders = new ArrayList<Order>();
-    private List<Order> cancelledOrders = new ArrayList<Order>();
-    private List<Order> storedOrders = new ArrayList<Order>();
+    private List<Order> preSalesOrders = new ArrayList<>();
+
+    private List<Order> offeredOrders = new ArrayList<>();
+
+    private List<Order> outsourcedOrders = new ArrayList<>();
+
+    private List<Order> acceptedOrders = new ArrayList<>();
+
+    private List<Order> startedOrders = new ArrayList<>();
+
+    private List<Order> onHoldOrders = new ArrayList<>();
+
+    private List<Order> finishedOrders = new ArrayList<>();
+
+    private List<Order> cancelledOrders = new ArrayList<>();
+
+    private List<Order> storedOrders = new ArrayList<>();
+
+    public DashboardControllerGlobal(){
+        orderModel = (IOrderModel) SpringUtil.getBean("orderModel");
+    }
 
     @Override
     public void doAfterCompose(Component component) throws Exception {

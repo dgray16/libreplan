@@ -51,6 +51,7 @@ import org.zkoss.zk.ui.event.InputEvent;
 import org.zkoss.zk.ui.event.KeyEvent;
 import org.zkoss.zk.ui.event.MouseEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Bandbox;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Column;
@@ -90,6 +91,9 @@ public class CriterionsMachineController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        assignedMachineCriterionsModel =
+                (IAssignedMachineCriterionsModel) SpringUtil.getBean("assignedMachineCriterionsModel");
         comp.setAttribute("assignedCriterionsController", this, true);
         messages = new MessagesForUser(messagesContainer);
     }

@@ -131,17 +131,14 @@ public class Util {
      * @param toReload
      *            the components to reload
      */
-    public static void reloadBindings(ReloadStrategy reloadStrategy,
-            Component... toReload) {
+    public static void reloadBindings(ReloadStrategy reloadStrategy, Component... toReload) {
         reloadBindings(ReloadStrategy.isForced(reloadStrategy), toReload);
     }
 
-    private static void reloadBindings(boolean forceReload,
-            Component... toReload) {
+    private static void reloadBindings(boolean forceReload, Component... toReload) {
         for (Component reload : toReload) {
             DataBinder binder = Util.getBinder(reload);
-            if (binder != null
-                    && (forceReload || notReloadedInThisRequest(reload))) {
+            if (binder != null && (forceReload || notReloadedInThisRequest(reload))) {
                 binder.loadComponent(reload);
                 markAsReloadedForThisRequest(reload);
             }
@@ -154,13 +151,13 @@ public class Util {
 
     private static Set<Component> getReloadedComponents(Component component) {
         Execution execution = component.getDesktop().getExecution();
-        @SuppressWarnings("unchecked")
-        Set<Component> result = (Set<Component>) execution
-                .getAttribute(RELOADED_COMPONENTS_ATTR);
+      //  @SuppressWarnings("unchecked")
+        Set<Component> result = (Set<Component>) execution.getAttribute(RELOADED_COMPONENTS_ATTR);
         if (result == null) {
-            result = new HashSet<Component>();
+            result = new HashSet<>();
             execution.setAttribute(RELOADED_COMPONENTS_ATTR, result);
         }
+
         return result;
     }
 
@@ -178,8 +175,8 @@ public class Util {
 
     @SuppressWarnings("unchecked")
     private static List<Component> getAllDescendants(Component component) {
-        List<Component> result = new ArrayList<Component>();
-        for (Component each : (List<Component>) component.getChildren()) {
+        List<Component> result = new ArrayList<>();
+        for (Component each : component.getChildren()) {
             result.add(each);
             result.addAll(getAllDescendants(each));
         }

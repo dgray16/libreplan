@@ -81,7 +81,7 @@ import org.zkoss.zul.Rows;
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class LimitingResourcesController extends GenericForwardComposer {
+public class LimitingResourcesController extends GenericForwardComposer<org.zkoss.zk.ui.Component> {
 
     @Autowired
     private ILimitingResourceQueueModel limitingResourceQueueModel;
@@ -161,8 +161,7 @@ public class LimitingResourcesController extends GenericForwardComposer {
         gridUnassignedLimitingResourceQueueElements = (Grid) limitingResourcesPanel
                 .getFellowIfAny("gridUnassignedLimitingResourceQueueElements");
         gridUnassignedLimitingResourceQueueElements
-                .setModel(new SimpleListModel<LimitingResourceQueueElementDTO>(
-                        getUnassignedLimitingResourceQueueElements()));
+                .setModel(new SimpleListModel<>(getUnassignedLimitingResourceQueueElements()));
         gridUnassignedLimitingResourceQueueElements
                 .setRowRenderer(getLimitingResourceQueueElementsRenderer());
         getEarlierStartingDateColumn().sort(true, true);

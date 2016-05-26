@@ -44,6 +44,7 @@ import org.zkoss.ganttz.extensions.IContextWithPlannerTask;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabbox;
@@ -59,7 +60,6 @@ import org.zkoss.zul.Window;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class EditTaskController extends GenericForwardComposer {
 
-    @Autowired
     private TaskPropertiesController taskPropertiesController;
 
     @Autowired
@@ -100,6 +100,10 @@ public class EditTaskController extends GenericForwardComposer {
     private IContextWithPlannerTask<TaskElement> context;
 
     private PlanningState planningState;
+
+    public EditTaskController(){
+        taskPropertiesController = (TaskPropertiesController) SpringUtil.getBean("taskPropertiesController");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

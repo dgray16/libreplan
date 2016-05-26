@@ -246,8 +246,7 @@ public class EntryPointsHandler<T> {
         return result.toString();
     }
 
-    private static void callMethod(Object target, Method superclassMethod,
-            Object[] params) {
+    private static void callMethod(Object target, Method superclassMethod, Object[] params) {
         try {
             Method method = target.getClass().getMethod(
                     superclassMethod.getName(),
@@ -284,19 +283,16 @@ public class EntryPointsHandler<T> {
         return applyIfMatches(controller, matrixParams);
     }
 
-    private <S> boolean applyIfMatches(final S controller,
-            Map<String, String> matrixParams) {
+    private <S> boolean applyIfMatches(final S controller, Map<String, String> matrixParams) {
         flagAlreadyExecutedInThisRequest();
         Set<String> matrixParamsNames = matrixParams.keySet();
         for (Entry<String, EntryPointMetadata> entry : metadata.entrySet()) {
             final EntryPointMetadata entryPointMetadata = entry.getValue();
             EntryPoint entryPointAnnotation = entryPointMetadata.annotation;
-            HashSet<String> requiredParams = new HashSet<String>(Arrays
-                    .asList(entryPointAnnotation.value()));
+            HashSet<String> requiredParams = new HashSet<>(Arrays.asList(entryPointAnnotation.value()));
             if (matrixParamsNames.equals(requiredParams)) {
                 final Object[] arguments = retrieveArguments(matrixParams,
-                        entryPointAnnotation, entryPointMetadata.method
-                                .getParameterTypes());
+                        entryPointAnnotation, entryPointMetadata.method.getParameterTypes());
                 Util.executeIgnoringCreationOfBindings(new Runnable() {
                     public void run() {
                         callMethod(controller, entryPointMetadata.method,

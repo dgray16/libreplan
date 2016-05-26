@@ -71,6 +71,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.ComboitemRenderer;
@@ -102,21 +103,16 @@ import org.zkoss.zul.Window;
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
  */
-public class WorkerCRUDController extends GenericForwardComposer implements IWorkerCRUDControllerEntryPoints {
+public class WorkerCRUDController extends GenericForwardComposer<Component> implements IWorkerCRUDControllerEntryPoints {
 
-    @Autowired
     private IDBPasswordEncoderService dbPasswordEncoderService;
 
-    @Autowired
     private ILimitsModel limitsModel;
 
-    @Autowired
     private IWorkerModel workerModel;
 
-    @Autowired
     private IResourceDAO resourceDAO;
 
-    @Resource
     private IUserCRUDController userCRUD;
 
     private Window listWindow;
@@ -206,6 +202,12 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     public WorkerCRUDController() {
+        workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
+        dbPasswordEncoderService = (IDBPasswordEncoderService) SpringUtil.getBean("DBPasswordEncoderService");
+        limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
+        resourceDAO = (IResourceDAO) SpringUtil.getBean("resourceDAO");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+        userCRUD = (IUserCRUDController) SpringUtil.getBean("userCRUDController");
     }
 
     public WorkerCRUDController(Window listWindow,

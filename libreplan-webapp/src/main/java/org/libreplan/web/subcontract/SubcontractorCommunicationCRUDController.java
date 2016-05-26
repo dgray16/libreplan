@@ -37,6 +37,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import javax.annotation.Resource;
@@ -52,12 +53,10 @@ import static org.libreplan.web.I18nHelper._;
 @SuppressWarnings("serial")
 public class SubcontractorCommunicationCRUDController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(SubcontractorCommunicationCRUDController.class);
-
     private ISubcontractorCommunicationModel subcontractorCommunicationModel;
 
-    private SubcontractorCommunicationRenderer subcontractorCommunicationRenderer = new SubcontractorCommunicationRenderer();
+    private SubcontractorCommunicationRenderer subcontractorCommunicationRenderer =
+            new SubcontractorCommunicationRenderer();
 
     protected IMessagesForUser messagesForUser;
 
@@ -70,6 +69,11 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     private Label labelValue;
 
     private Popup pp;
+
+    public SubcontractorCommunicationCRUDController(){
+        subcontractorCommunicationModel =
+                (ISubcontractorCommunicationModel) SpringUtil.getBean("subcontractorCommunicationModel");
+    }
 
     @Resource
     private IGlobalViewEntryPoints globalView;

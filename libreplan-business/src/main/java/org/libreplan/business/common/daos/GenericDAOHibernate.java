@@ -65,7 +65,7 @@ public class GenericDAOHibernate<E extends BaseEntity, PK extends Serializable> 
     @Autowired
     private SessionFactory sessionFactory;
 
-    @SuppressWarnings("unchecked")
+  //  @SuppressWarnings("unchecked")
     public GenericDAOHibernate() {
         this.entityClass =
                 (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];

@@ -30,6 +30,7 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Listbox;
 
@@ -60,6 +61,11 @@ public class CompletedEstimatedHoursPerTaskController extends LibrePlanReportCon
     private Listbox lbLabels;
 
     private BandboxSearch bdCriterions;
+
+    public CompletedEstimatedHoursPerTaskController(){
+        completedEstimatedHoursPerTaskModel =
+                (ICompletedEstimatedHoursPerTaskModel) SpringUtil.getBean("completedEstimatedHoursPerTaskModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

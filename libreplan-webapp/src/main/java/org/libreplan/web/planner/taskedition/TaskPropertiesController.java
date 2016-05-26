@@ -25,7 +25,6 @@ import static org.libreplan.web.I18nHelper._;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.joda.time.LocalDate;
@@ -67,6 +66,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Decimalbox;
 import org.zkoss.zul.Intbox;
@@ -87,9 +87,8 @@ import org.zkoss.zul.Tabpanel;
  */
 @org.springframework.stereotype.Component("taskPropertiesController")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class TaskPropertiesController extends GenericForwardComposer {
+public class TaskPropertiesController extends GenericForwardComposer<Component> {
 
-    @Autowired
     private IScenarioManager scenarioManager;
 
     private TaskEditFormComposer taskEditFormComposer = new TaskEditFormComposer();
@@ -136,6 +135,11 @@ public class TaskPropertiesController extends GenericForwardComposer {
 
     private boolean isResourcesAdded = false;
 
+    public TaskPropertiesController(){
+        emailNotificationModel = (IEmailNotificationModel) SpringUtil.getBean("emailNotificationModel");
+        workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
+        scenarioManager = (IScenarioManager) SpringUtil.getBean("scenarioManager");
+    }
 
     public void init(final EditTaskController editTaskController,
                      IContextWithPlannerTask<TaskElement> context,
@@ -422,7 +426,7 @@ public class TaskPropertiesController extends GenericForwardComposer {
         return getOldState() != null && !getOldState().equals(newState);
     }
 
-    private TaskDTO getGanttTaskDTO() {
+    public TaskDTO getGanttTaskDTO() {
         if ( taskEditFormComposer == null ) {
             return null;
         }
@@ -799,7 +803,7 @@ public class TaskPropertiesController extends GenericForwardComposer {
         isResourcesAdded = resourcesAdded;
     }
 
-    private TaskPropertiesController getObject(){
+    public TaskPropertiesController getObject(){
         return this;
     }
 

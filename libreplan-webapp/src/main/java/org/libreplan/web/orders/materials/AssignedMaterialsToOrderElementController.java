@@ -30,6 +30,7 @@ import org.libreplan.business.materials.entities.MaterialAssignment;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.TreeModel;
 
 /**
@@ -50,8 +51,7 @@ public class AssignedMaterialsToOrderElementController extends
 
     @Override
     protected void createAssignmentsBoxComponent(Component parent) {
-        Executions.createComponents("/orders/_assignmentsBox.zul", parent,
-                new HashMap<String, String>());
+        Executions.createComponents("/orders/_assignmentsBox.zul", parent, new HashMap<String, String>());
     }
 
     @Override

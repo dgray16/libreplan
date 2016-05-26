@@ -67,7 +67,7 @@
                 <tab id="resourceAllocationTab" label="${i18n:_('Normal resource allocation')}" />
                 <tab id="limitingResourceAllocationTab" label="${i18n:_('Queue-based resource allocation')}" />
                 <tab id="subcontractTab" label="${i18n:_('Subcontract')}"
-                    onSelect = "subController.refressGridEndDates();"/>
+                    onSelect = "subController.refreshGridEndDates();"/>
             </tabs>
             <tabpanels>
                 <tabPanelTaskProperties id="taskPropertiesTabpanel" />
@@ -87,7 +87,7 @@
     </window>
 
     <zscript><![CDATA[
-        editTaskWindow.setVariable("editController", editController, true);
+        editTaskWindow.setAttribute("editController", editController, true);
     ]]>
     </zscript>
 

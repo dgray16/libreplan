@@ -31,6 +31,7 @@ import org.libreplan.web.common.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.ArrayList;
@@ -48,11 +49,13 @@ import static org.libreplan.web.I18nHelper._;
 @SuppressWarnings("serial")
 public class ProfileCRUDController extends BaseCRUDController<Profile> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(ProfileCRUDController.class);
-
     private IProfileModel profileModel;
 
     private Combobox userRolesCombo;
+
+    public ProfileCRUDController(){
+        profileModel = (IProfileModel) SpringUtil.getBean("profileModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

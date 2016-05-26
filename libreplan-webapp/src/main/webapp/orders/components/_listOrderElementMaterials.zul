@@ -18,10 +18,10 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <zk>
   <zscript><![CDATA[
-    Object[] materialStatus = org.libreplan.business.materials.entities.MaterialStatusEnum
-                            .values();
+    Object[] materialStatus = org.libreplan.business.materials.entities.MaterialStatusEnum.values();
     materialAssignmentComponent = self;
     assignedMaterialsController = materialAssignmentComponent.controller;
 ]]>
@@ -43,7 +43,7 @@
                   <button label="${i18n:_('Unselect')}"
                     onClick="assignedMaterialsController.clearSelectionCategoriesTree()" />
                   <separator spacing="5px" orient="horizontal" />
-                  <tree id="categoriesTree" fixedLayout="false"
+                  <tree id="categoriesTree" sizedByContent="false"
                     width="280px" rows="10" vflex="1" multiple="false"
                     onSelect="assignedMaterialsController.refreshMaterialAssigments()">
                     <treecols>

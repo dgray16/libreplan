@@ -34,14 +34,14 @@ import org.libreplan.business.materials.entities.UnitType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.ganttz.util.MutableTreeModel;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.TreeModel;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  *
  */
-public abstract class AssignedMaterialsModel<T, A> implements
-        IAssignedMaterialsModel<T, A> {
+public abstract class AssignedMaterialsModel<T, A> implements IAssignedMaterialsModel<T, A> {
 
     @Autowired
     private IMaterialCategoryDAO categoryDAO;
@@ -52,15 +52,19 @@ public abstract class AssignedMaterialsModel<T, A> implements
     @Autowired
     private IUnitTypeDAO unitTypeDAO;
 
-    private MutableTreeModel<MaterialCategory> materialCategories = MutableTreeModel
-            .create(MaterialCategory.class);
+    private MutableTreeModel<MaterialCategory> materialCategories = MutableTreeModel.create(MaterialCategory.class);
 
-    private MutableTreeModel<MaterialCategory> allMaterialCategories = MutableTreeModel
-            .create(MaterialCategory.class);
+    private MutableTreeModel<MaterialCategory> allMaterialCategories = MutableTreeModel.create(MaterialCategory.class);
 
-    private List<Material> matchingMaterials = new ArrayList<Material>();
+    private List<Material> matchingMaterials = new ArrayList<>();
 
-    private List<UnitType> unitTypes = new ArrayList<UnitType>();
+    private List<UnitType> unitTypes = new ArrayList<>();
+
+//    public AssignedMaterialsModel(){
+//        categoryDAO = (IMaterialCategoryDAO) SpringUtil.getBean("categoryDAO");
+//        materialDAO = (IMaterialDAO) SpringUtil.getBean("materialDAO");
+//        unitTypeDAO = (IUnitTypeDAO) SpringUtil.getBean("unitTypeDAO");
+//    }
 
     @Transactional(readOnly = true)
     public void initEdit(T element) {
@@ -166,25 +170,28 @@ public abstract class AssignedMaterialsModel<T, A> implements
 
     protected abstract boolean isInitialized();
 
+    //TODO Doesn't work with generic type!
     public List<A> getAssignedMaterials(MaterialCategory materialCategory) {
-        List<A> result = new ArrayList<A>();
+        List<A> result = new ArrayList<>();
+
         if (isInitialized()) {
+
             for (A each : getAssignments()) {
+
                 final Material material = getMaterial(each);
-                if (materialCategory == null
-                        || materialCategory.getId().equals(
-                                material.getCategory().getId())) {
+
+                if (materialCategory == null || materialCategory.getId().equals(material.getCategory().getId())) {
                     result.add(each);
                 }
             }
         }
+
         return result;
     }
 
     @Transactional(readOnly = true)
     public void searchMaterials(String text, MaterialCategory materialCategory) {
-        matchingMaterials = materialDAO
-                .findMaterialsInCategoryAndSubCategories(text, materialCategory);
+        matchingMaterials = materialDAO.findMaterialsInCategoryAndSubCategories(text, materialCategory);
         initializeMaterials(matchingMaterials);
     }
 

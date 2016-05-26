@@ -33,7 +33,7 @@
             <tabpanel>
                 <vbox sclass="mybox" width="100%">
                   <!-- Work report type details  -->
-                    <grid fixedLayout="false" width="100%" span="1">
+                    <grid sizedByContent="false" width="100%" span="1">
                         <columns>
                             <column width="200px" />
                             <column />

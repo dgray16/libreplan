@@ -41,6 +41,7 @@ import org.libreplan.web.common.components.Autocomplete;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Datebox;
@@ -69,7 +70,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
     private static final Log LOG = LogFactory.getLog(MachineConfigurationController.class);
 
     public MachineConfigurationController() {
-
+        machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
     }
 
     @Override

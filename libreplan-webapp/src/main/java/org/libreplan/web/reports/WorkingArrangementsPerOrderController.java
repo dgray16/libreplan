@@ -31,6 +31,7 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
@@ -63,6 +64,11 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
     private BandboxSearch bdCriterions;
 
     private Listbox lbCriterions;
+
+    public WorkingArrangementsPerOrderController(){
+        workingArrangementsPerOrderModel =
+                (IWorkingArrangementsPerOrderModel) SpringUtil.getBean("workingArrangementsPerOrderModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

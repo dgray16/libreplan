@@ -61,9 +61,9 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     private Language applicationLanguage = Language.BROWSER_LANGUAGE;
 
-    private Set<UserRole> roles = new HashSet<UserRole>();
+    private Set<UserRole> roles = new HashSet<>();
 
-    private Set<Profile> profiles = new HashSet<Profile>();
+    private Set<Profile> profiles = new HashSet<>();
 
     private String email;
 
@@ -104,8 +104,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
     public User() {
     }
 
-    private User(String loginName, String password, Set<UserRole> roles,
-            Set<Profile> profiles) {
+    private User(String loginName, String password, Set<UserRole> roles, Set<Profile> profiles) {
         this.loginName = loginName;
         this.password = password;
         this.roles = roles;
@@ -118,13 +117,11 @@ public class User extends BaseEntity implements IHumanIdentifiable{
         this.email = email;
     }
 
-    public static User create(String loginName, String password,
-            Set<UserRole> roles) {
+    public static User create(String loginName, String password, Set<UserRole> roles) {
         return create(loginName, password, roles, new HashSet<Profile>());
     }
 
-    public static User create(String loginName, String password,
-            Set<UserRole> roles, Set<Profile> profiles) {
+    public static User create(String loginName, String password, Set<UserRole> roles, Set<Profile> profiles) {
         return create(new User(loginName, password, roles, profiles));
     }
 
@@ -180,10 +177,12 @@ public class User extends BaseEntity implements IHumanIdentifiable{
      * @return A list of UserRole objects
      */
     public Set<UserRole> getAllRoles() {
-        Set<UserRole> allRoles = new HashSet<UserRole>(roles);
+        Set<UserRole> allRoles = new HashSet<>(roles);
+
         for (Profile profile : getProfiles()) {
             allRoles.addAll(profile.getRoles());
         }
+
         return allRoles;
     }
 
@@ -199,6 +198,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
                 return true;
             }
         }
+
         return false;
     }
 
@@ -226,6 +226,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
                 return true;
             }
         }
+
         return false;
     }
 
@@ -292,8 +293,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
         return expandCompanyPlanningViewCharts;
     }
 
-    public void setExpandOrderPlanningViewCharts(
-            boolean expandOrderPlanningViewCharts) {
+    public void setExpandOrderPlanningViewCharts(boolean expandOrderPlanningViewCharts) {
         this.expandOrderPlanningViewCharts = expandOrderPlanningViewCharts;
     }
 
@@ -301,8 +301,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
         return expandOrderPlanningViewCharts;
     }
 
-    public void setExpandResourceLoadViewCharts(
-            boolean expandResourceLoadViewCharts) {
+    public void setExpandResourceLoadViewCharts(boolean expandResourceLoadViewCharts) {
         this.expandResourceLoadViewCharts = expandResourceLoadViewCharts;
     }
 
@@ -310,8 +309,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
         return expandResourceLoadViewCharts;
     }
 
-    public void setExpandCompanyPlanningViewCharts(
-            boolean expandCompanyPlanningViewCharts) {
+    public void setExpandCompanyPlanningViewCharts(boolean expandCompanyPlanningViewCharts) {
         this.expandCompanyPlanningViewCharts = expandCompanyPlanningViewCharts;
     }
 
@@ -342,6 +340,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     public void setWorker(Worker worker) {
         this.worker = worker;
+
         if (worker == null) {
             roles.remove(UserRole.ROLE_BOUND_USER);
         } else {
@@ -363,7 +362,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
         private String name;
 
-        private UserAuthenticationType(String name) {
+        UserAuthenticationType(String name) {
             this.name = name;
         }
 
@@ -383,8 +382,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
                 .runOnAnotherReadOnlyTransaction(new IOnTransaction<Boolean>() {
                     @Override
                     public Boolean execute() {
-                        Configuration configuration = Registry
-                                .getConfigurationDAO().getConfiguration();
+                        Configuration configuration = Registry.getConfigurationDAO().getConfiguration();
                         if (configuration == null) {
                             return true;
                         }
@@ -424,6 +422,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
     public Integer getProjectsFilterPeriodSince() {
         return projectsFilterPeriodSince;
     }
+
     public void setProjectsFilterPeriodSince(Integer period) {
         projectsFilterPeriodSince = period;
     }

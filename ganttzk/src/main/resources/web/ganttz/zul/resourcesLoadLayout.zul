@@ -22,7 +22,7 @@
 <?xel-method prefix="ganttzk_i18n" name="_" class="org.zkoss.ganttz.i18n.I18nHelper"
     signature="java.lang.String _(java.lang.String name)" ?>
 
-<zk xmlns:n="http://www.zkoss.org/2005/zk/native" height="100%">
+<zk xmlns:n="http://www.zkoss.org/2005/zk/native">
 <zscript><![CDATA[
 resourcesLoadPanel = self;
 ]]>
@@ -57,10 +57,10 @@ resourcesLoadPanel = self;
 
         <center border="0">
             <borderlayout sclass="resourcesload">
-                <west size="250px" hflex="1" vflex="1" collapsible="true"
+                <west size="250px" vflex="1" hflex="1" collapsible="true"
                     splittable="true" autoscroll="false" border="0">
                     <borderlayout>
-                        <north border="0" height="35px" hflex="1" vflex="1" collapsible="true">
+                        <north border="0" height="35px" flex="true" collapsible="true">
                             <vbox pack="top" align="center">
                             <tree sizedByContent="true" hflex="true" sclass="resourceloaddetailsContainer">
                                 <treecols>

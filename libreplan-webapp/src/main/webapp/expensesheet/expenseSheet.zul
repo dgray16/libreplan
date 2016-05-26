@@ -27,7 +27,7 @@
 <zk>
     <window self="@{define(content)}"
         apply="org.libreplan.web.expensesheet.ExpenseSheetCRUDController">
-        <vbox id="messagesContainer"></vbox>
+        <vbox id="messagesContainer"/>
 
         <window id="listWindow" title="${i18n:_('Expense Sheets List')}">
             <div align="left">
@@ -66,7 +66,7 @@
                 <caption label="${i18n:_('Identification')}" />
                 <separator bar="false" spacing="5px" orient="horizontal"/>
                 <vbox>
-                    <grid fixedLayout="true">
+                    <grid sizedByContent="true">
                         <columns>
                             <column width="100px" />
                             <column />

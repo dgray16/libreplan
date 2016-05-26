@@ -32,6 +32,7 @@ import org.libreplan.web.users.PasswordUtil;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
@@ -53,6 +54,10 @@ public class PasswordController extends GenericForwardComposer {
     private IPasswordModel passwordModel;
 
     private Textbox password;
+
+    public PasswordController(){
+        passwordModel = (IPasswordModel) SpringUtil.getBean("passwordModel");
+    }
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);

@@ -46,6 +46,7 @@ import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Listbox;
 
 import com.igalia.java.zk.components.JasperreportComponent;
@@ -77,6 +78,10 @@ public class ProjectStatusReportController extends LibrePlanReportController {
     private IMessagesForUser messagesForUser;
 
     private Component messagesContainer;
+
+    public ProjectStatusReportController(){
+        projectStatusReportModel = (IProjectStatusReportModel) SpringUtil.getBean("projectStatusReportModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

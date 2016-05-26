@@ -28,6 +28,7 @@ import org.libreplan.web.common.components.Autocomplete;
 import org.libreplan.web.common.components.finders.Finder.SimpleListModelExt;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.ComboitemRenderer;
+import org.zkoss.zul.SimpleListModel;
 
 /**
  * Interface for providing, displaying and matching elements for an
@@ -70,7 +71,7 @@ public interface IFinder {
      *
      * @return
      */
-    SimpleListModelExt getModel();
+    SimpleListModel getModel();
 
     /**
      * Boolean function to evaluate whether an entry matches with input text

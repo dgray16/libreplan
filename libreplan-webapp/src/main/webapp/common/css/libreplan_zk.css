@@ -645,6 +645,7 @@ div.z-grid {
 }
 
 .taskTreeCols div.z-tree-header, .taskTreeCols div.z-tree-header tr {
+    width: 100% !important;
     overflow: visible;
 }
 
@@ -1502,6 +1503,8 @@ tr.z-tree-row-seld .z-row-cnt {
 /* Expand vertical boxes for non-ffox browsers */
 .z-vbox {
     width:100%;
+    display: inline  !important;
+    height: 100% !important;
 }
 
 .earned-parameter-column .z-label,

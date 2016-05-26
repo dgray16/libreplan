@@ -32,6 +32,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.math.BigDecimal;
@@ -49,6 +50,10 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(AdvanceTypeCRUDController.class);
 
     private IAdvanceTypeModel advanceTypeModel;
+
+    public AdvanceTypeCRUDController(){
+        advanceTypeModel = (IAdvanceTypeModel) SpringUtil.getBean("advanceTypeModel");
+    }
 
     public List<AdvanceType> getAdvanceTypes() {
         return advanceTypeModel.getAdvanceTypes();

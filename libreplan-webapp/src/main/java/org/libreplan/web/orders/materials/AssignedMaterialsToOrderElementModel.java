@@ -37,15 +37,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class AssignedMaterialsToOrderElementModel extends
-        AssignedMaterialsModel<OrderElement, MaterialAssignment> implements
-        IAssignedMaterialsToOrderElementModel {
+public class AssignedMaterialsToOrderElementModel extends AssignedMaterialsModel<OrderElement, MaterialAssignment>
+        implements IAssignedMaterialsToOrderElementModel {
 
     @Autowired
     private IOrderElementDAO orderElementDAO;
@@ -79,8 +79,7 @@ public class AssignedMaterialsToOrderElementModel extends
 
     @Override
     protected List<MaterialAssignment> getAssignments() {
-        return new ArrayList<MaterialAssignment>(orderElement
-                .getMaterialAssignments());
+        return new ArrayList<>(orderElement.getMaterialAssignments());
     }
 
     @Override

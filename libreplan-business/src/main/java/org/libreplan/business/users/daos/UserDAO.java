@@ -48,8 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
  */
 @Repository
-public class UserDAO extends GenericDAOHibernate<User, Long>
-    implements IUserDAO {
+public class UserDAO extends GenericDAOHibernate<User, Long> implements IUserDAO {
 
     @Autowired
     private IOrderAuthorizationDAO orderAuthorizationDAO;

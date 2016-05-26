@@ -218,7 +218,7 @@
 
         <hbox style="display: none" id="URItext">
             <label value="${i18n:_('Click on this')}" />
-            <a id="URIlink" class="z-label"
+            <a id="URIlink" sclass="z-label"
                     label="${i18n:_('direct link')}" />
             <label value="${i18n:_('if the report is not opened automatically')}" />
         </hbox>

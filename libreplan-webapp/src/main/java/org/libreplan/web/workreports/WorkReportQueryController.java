@@ -53,6 +53,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
@@ -91,9 +92,9 @@ public class WorkReportQueryController extends GenericForwardComposer {
 
     private Autocomplete filterHoursType;
 
-    private Set<IPredicate> predicates = new HashSet<IPredicate>();
+    private Set<IPredicate> predicates = new HashSet<>();
 
-    private List<WorkReportLine> filterWorkReportLines = new ArrayList<WorkReportLine>();
+    private List<WorkReportLine> filterWorkReportLines = new ArrayList<>();
 
     private Grid gridListQuery;
 
@@ -110,6 +111,10 @@ public class WorkReportQueryController extends GenericForwardComposer {
 
     @javax.annotation.Resource
     private IPersonalTimesheetController personalTimesheetController;
+
+    public WorkReportQueryController(){
+        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

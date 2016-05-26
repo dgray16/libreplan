@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Combobox;
@@ -56,7 +57,6 @@ public class QualityFormCRUDController extends BaseCRUDController<QualityForm> {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(QualityFormCRUDController.class);
 
-    @Autowired
     private IQualityFormModel qualityFormModel;
 
     private Grid gridQualityForms;
@@ -70,7 +70,7 @@ public class QualityFormCRUDController extends BaseCRUDController<QualityForm> {
     private Textbox txtFilter;
 
     public QualityFormCRUDController() {
-
+        qualityFormModel = (IQualityFormModel) SpringUtil.getBean("qualityFormModel");
     }
 
     @Override

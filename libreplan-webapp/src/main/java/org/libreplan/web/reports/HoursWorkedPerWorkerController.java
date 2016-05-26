@@ -35,6 +35,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.*;
@@ -75,6 +76,10 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     private Radio filterByOrderElements;
 
     private Radio filterByBoth;
+
+    public HoursWorkedPerWorkerController(){
+        hoursWorkedPerWorkerModel = (IHoursWorkedPerWorkerModel) SpringUtil.getBean("hoursWorkedPerWorkerModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

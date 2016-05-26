@@ -21,8 +21,7 @@
 
 <panel title="${i18n:_('Materials')}" border="normal">
     <panelchildren>
-        <newdatasortablegrid id="gridMaterials"
-            fixedLayout="false"
+        <newdatasortablegrid id="gridMaterials" fixedLayout="false"
             model="@{assignedMaterialsController.assignedMaterials}">
             <columns>
                 <newdatasortablecolumn label="${i18n:_('Code')}" />

@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.ConcurrentModificationException;
@@ -48,10 +49,8 @@ import static org.libreplan.web.I18nHelper._;
  */
 public class CriterionAdminController extends BaseCRUDController<CriterionType> {
 
-    private static final Log LOG = LogFactory
-            .getLog(CriterionAdminController.class);
+    private static final Log LOG = LogFactory.getLog(CriterionAdminController.class);
 
-    @Autowired
     private ICriterionsModel criterionsModel;
 
     private Checkbox cbHierarchy;
@@ -61,6 +60,9 @@ public class CriterionAdminController extends BaseCRUDController<CriterionType> 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        criterionsModel = (ICriterionsModel) SpringUtil.getBean("criterionsModel");
+
         cbHierarchy = (Checkbox) editWindow.getFellow("cbHierarchy");
         setupResourceCombobox((Combobox) editWindow.getFellowIfAny("resourceCombobox"));
     }

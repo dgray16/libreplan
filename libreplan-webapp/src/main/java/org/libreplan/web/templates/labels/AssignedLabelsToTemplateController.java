@@ -23,6 +23,7 @@ package org.libreplan.web.templates.labels;
 import org.libreplan.business.templates.entities.OrderElementTemplate;
 import org.libreplan.web.orders.labels.AssignedLabelsController;
 import org.libreplan.web.templates.IOrderTemplatesModel;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
@@ -37,11 +38,18 @@ public class AssignedLabelsToTemplateController extends
 
     private OrderElementTemplate template;
 
+    public AssignedLabelsToTemplateController(){
+        assignedLabelsToTemplateModel =
+                (IAssignedLabelsToTemplateModel) SpringUtil.getBean("assignedLabelsToTemplateModel");
+    }
+
+
     @Override
     protected OrderElementTemplate getElement() {
         if (template != null) {
             return template;
         }
+
         return templatesModel.getTemplate();
     }
 

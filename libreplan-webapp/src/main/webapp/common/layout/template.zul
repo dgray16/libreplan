@@ -115,15 +115,17 @@
             <borderlayout width="auto" height="100%">
                 <!-- borderlayout class="main-layout" height="2000px" width="2000px"-->
                 <west sclass="perspectives-column" width="90px" >
-                    <vbox height="100%" vflex="min">
+                    <vbox vflex="1">
                         <hbox id="perspectiveButtonsInsertionPoint" sclass="toolbar-box global-commands" height="30px" width="100%">
                             <button id="createOrderButton" image="/common/img/ico_add.png" sclass="planner-icon"
                                     tooltiptext="${i18n:_('Create New Project')}" />
                         </hbox>
-                        <vbox id="registeredItemsInsertionPoint" width="90px" style="overflow-y:auto;overflow-x:hidden;display:block" height="100%" />
+                        <vbox id="registeredItemsInsertionPoint" width="90px" style="overflow-y:auto;overflow-x:hidden;display:block" vflex="1" />
                     </vbox>
                 </west>
-                <center self="@{insert(content)}" sclass="main-area" autoscroll="true" />
+                <center id="mainContent"  sclass="main-area" autoscroll="true">
+                    <div self="@{insert(content)}"/>
+                </center>
 
             </borderlayout>
 

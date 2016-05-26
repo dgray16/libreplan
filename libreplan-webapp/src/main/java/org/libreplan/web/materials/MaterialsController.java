@@ -34,6 +34,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.*;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.*;
@@ -50,7 +51,6 @@ public class MaterialsController extends GenericForwardComposer {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(MaterialsController.class);
 
-    @Autowired
     private IMaterialsModel materialsModel;
 
     private Tree categoriesTree;
@@ -72,6 +72,8 @@ public class MaterialsController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
         comp.setAttribute("materialsController", this, true);
         messagesForUser = new MessagesForUser(messagesContainer);
 

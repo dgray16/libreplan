@@ -145,14 +145,14 @@
         <panel
             title="${i18n:_('Percentage of estimated budget hours / hours consumed')}">
             <panelchildren>
-                <grid fixedLayout="true">
+                <grid sizedByContent="true">
                     <columns>
                         <column />
                         <column />
                     </columns>
                     <rows>
                         <row>
-                            <grid fixedLayout="true">
+                            <grid sizedByContent="true">
                                 <columns>
                                     <column width="200px" />
                                     <column width="200px" />
@@ -193,14 +193,14 @@
         <panel
             title="${i18n:_('Percentage of estimated budget in money / money spent')}">
             <panelchildren>
-                <grid fixedLayout="true">
+                <grid sizedByContent="true">
                     <columns>
                         <column />
                         <column />
                     </columns>
                     <rows>
                          <row>
-                            <grid fixedLayout="true">
+                            <grid sizedByContent="true">
                                 <columns>
                                     <column width="20px" />
                                     <column width="200px" />
@@ -209,7 +209,7 @@
                                 <rows>
                                     <row>
                                         <detailrow open="true">
-                                            <grid fixedLayout="true">
+                                            <grid sizedByContent="true">
                                                 <columns>
                                                     <column width="200px" />
                                                     <column align="right"/>
@@ -243,7 +243,7 @@
 
                                     <row>
                                         <detailrow open="true">
-                                            <grid fixedLayout="true">
+                                            <grid sizedByContent="true">
                                                 <columns>
                                                     <column width="200px" />
                                                     <column align="right"/>

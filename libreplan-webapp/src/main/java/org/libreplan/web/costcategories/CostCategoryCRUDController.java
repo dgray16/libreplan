@@ -48,6 +48,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Decimalbox;
@@ -83,6 +84,10 @@ public class CostCategoryCRUDController extends BaseCRUDController<CostCategory>
     private ListModel allHoursType;
 
     private HourCostListRenderer hourCostListRenderer = new HourCostListRenderer();
+
+    public CostCategoryCRUDController(){
+        costCategoryModel = (ICostCategoryModel) SpringUtil.getBean("costCategoryModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

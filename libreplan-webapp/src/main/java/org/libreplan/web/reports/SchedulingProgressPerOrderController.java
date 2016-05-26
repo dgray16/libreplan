@@ -31,6 +31,7 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
@@ -64,16 +65,18 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+        schedulingProgressPerOrderModel =
+                (ISchedulingProgressPerOrderModel) SpringUtil.getBean("schedulingProgressPerOrderModel");
         comp.setAttribute("controller", this, true);
         lbAdvanceType.setSelectedIndex(0);
         schedulingProgressPerOrderModel.init();
     }
 
-    private List<Order> getAllOrders() {
+    public List<Order> getAllOrders() {
         return schedulingProgressPerOrderModel.getOrders();
     }
 
-    private List<Order> getSelectedOrdersToFilter() {
+    public List<Order> getSelectedOrdersToFilter() {
         return (getSelectedOrders().isEmpty()) ? Collections
                 .unmodifiableList(getAllOrders())
                 : getSelectedOrders();
@@ -83,9 +86,8 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
      * Return selected orders, if none are selected return all orders in listbox
      * @return
      */
-    private List<Order> getSelectedOrders() {
-        return Collections.unmodifiableList(schedulingProgressPerOrderModel
-                .getSelectedOrders());
+    public List<Order> getSelectedOrders() {
+        return Collections.unmodifiableList(schedulingProgressPerOrderModel.getSelectedOrders());
     }
 
     public void onSelectOrder() {
@@ -121,7 +123,7 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
                         new LocalDate(getReferenceDate()));
    }
 
-    private Date getReferenceDate() {
+    public Date getReferenceDate() {
         Date result = referenceDate.getValue();
         if (result == null) {
             referenceDate.setValue(new Date());
@@ -130,11 +132,11 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
         return referenceDate.getValue();
     }
 
-    private Date getStartingDate() {
+    public Date getStartingDate() {
         return startingDate.getValue();
     }
 
-    private Date getEndingDate() {
+    public Date getEndingDate() {
         return endingDate.getValue();
     }
 
@@ -150,7 +152,7 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
         return result;
     }
 
-    private AdvanceTypeDTO getSelectedAdvanceType() {
+    public AdvanceTypeDTO getSelectedAdvanceType() {
         final Listitem item = lbAdvanceType.getSelectedItem();
 
         return (AdvanceTypeDTO) item.getValue();
@@ -165,7 +167,7 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
         return (advanceTypeDTO != null) ? advanceTypeDTO.getAdvanceType() : null;
     }
 
-    private String getSelectedOrderNames() {
+    public String getSelectedOrderNames() {
         List<String> orderNames = new ArrayList<>();
 
         final List<Listitem> listItems = lbOrders.getItems();

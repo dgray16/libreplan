@@ -45,6 +45,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Datebox;
@@ -76,6 +77,10 @@ public class ResourcesCostCategoryAssignmentController extends GenericForwardCom
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        resourcesCostCategoryAssignmentModel =
+                (IResourcesCostCategoryAssignmentModel) SpringUtil.getBean("resourcesCostCategoryAssignmentModel");
+
         comp.setAttribute("assignmentController", this, true);
         this.listResourcesCostCategoryAssignments = (Grid) comp.getFellowIfAny("listResourcesCostCategoryAssignments");
         messagesForUser = new MessagesForUser(messagesContainer);

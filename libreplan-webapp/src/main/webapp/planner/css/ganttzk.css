@@ -1277,13 +1277,81 @@ body .perspectives-column {
 
 /* Workaround for zk 100% height just root components */
 .main-area {height: 100%;}
-.main-area .z-center-body > span {height: 100%; display: block;}
-.main-area .z-center-body > span > div > span { height: 100%; display: block;}
-.main-area .z-center-body > span > div { height: 100%;}
-.main-area .z-center-body > span > div > div  { height: 100%;}
-.main-area .z-center-body > span > div > div > span { height: 100%; display: block;}
-.main-area .z-center-body > span > div > div > div { height: 100%;}
-.main-area .z-center-body > span > div > div > div > span { height: 100%; display: block;}
+.main-area .z-center-body > div {height: 100%;
+    display: block !important;
+}
+.main-area .z-center-body > div > div { height: 100%; display: block; width: 1803px;}
+.main-area .z-center-body > div > div > div  { height: 100%;
+display: block !important;}
+.main-area .z-center-body > div > div > div > div { height: 100%;}
+
+
+.toolbar-box > div {
+    height: 30px;
+    width: 100%;
+    overflow: hidden;
+
+}
+
+.z-west-splitter::after {
+    display: none !important;
+}
+
+.plannerlayout_center > div {
+    display: block !important;
+    width: 1803px !important;
+}
+
+.taskdetailsContainer .z-west {
+    width: 300px !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 345px !important;
+}
+
+.z-west-body {
+    width: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+/*    height: 345px !important;*/
+    overflow: hidden;
+}
+
+
+.z-tree-header > table {
+    table-layout: inherit !important;
+}
+.taskTreeCols .z-tree {
+    width: 100% !important;
+}
+
+
+
+.z-tree-header-border {
+
+}
+
+.z-center .z-center-noborder {
+    height: 100% !important;
+}
+
+.z-center > div {
+    height: 100% !important;
+}
+
+.z-center > div > div {
+    height: 100% !important;
+}
+
+/*.z-div {
+    height: 100%;
+    display: block;
+}
+
+.z-div > div {
+    height: 100%;
+    display: block;
+}*/
 
 .main-area > span {height: 100%; display: block;}
 .main-area > span > div { height: 100%;}
@@ -1295,6 +1363,7 @@ body .perspectives-column {
 .main-area .advanced-assignment-area .z-center-body > span > div > div {
     height: auto;
 }
+
 
 .advanced-allocation-layout {
     height: 100%;

@@ -297,9 +297,8 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     private Component getToolbar() {
-        Component toolbar = getFellow("toolbar");
 
-        return toolbar;
+        return getFellow("toolbar");
     }
 
     private MutableTreeModel<LoadTimeLine> createModelForTree() {

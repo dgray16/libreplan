@@ -34,6 +34,7 @@ import org.libreplan.web.common.BaseCRUDController;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.components.Autocomplete;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Textbox;
 
@@ -45,11 +46,7 @@ import org.zkoss.zul.Textbox;
  * @author Javier Moran Rua <jmoran@igalia.com>
  */
 @SuppressWarnings("serial")
-public class ExternalCompanyCRUDController extends
-        BaseCRUDController<ExternalCompany> {
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(ExternalCompanyCRUDController.class);
+public class ExternalCompanyCRUDController extends BaseCRUDController<ExternalCompany> {
 
     private IExternalCompanyModel externalCompanyModel;
 
@@ -59,13 +56,16 @@ public class ExternalCompanyCRUDController extends
 
     private Textbox ourCompanyPassword;
 
+    public ExternalCompanyCRUDController(){
+        externalCompanyModel = (IExternalCompanyModel) SpringUtil.getBean("externalCompanyModel");
+    }
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         appURI = (Textbox) editWindow.getFellow("appURI");
         ourCompanyLogin = (Textbox) editWindow.getFellow("ourCompanyLogin");
-        ourCompanyPassword = (Textbox) editWindow
-                .getFellow("ourCompanyPassword");
+        ourCompanyPassword = (Textbox) editWindow.getFellow("ourCompanyPassword");
     }
 
     private void clearAutocompleteUser() {

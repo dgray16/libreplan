@@ -43,8 +43,7 @@ import org.zkoss.zul.Textbox;
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  *
  */
-public abstract class AssignedLabelsController<T, M> extends
-        GenericForwardComposer {
+public abstract class AssignedLabelsController<T, M> extends GenericForwardComposer {
 
     private Autocomplete cbLabelType;
 

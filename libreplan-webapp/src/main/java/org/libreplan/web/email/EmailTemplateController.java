@@ -30,7 +30,6 @@ import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.security.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zk.ui.Component;
 
@@ -38,6 +37,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
@@ -55,9 +55,12 @@ import static org.libreplan.web.I18nHelper._;
  * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
  * on 25.09.15.
  */
-public class EmailTemplateController extends GenericForwardComposer{
 
-    @Autowired
+/*@org.springframework.stereotype.Component
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)*/
+
+public class EmailTemplateController extends GenericForwardComposer<Component>{
+
     private IUserDAO userDAO;
 
     private User user;
@@ -72,6 +75,11 @@ public class EmailTemplateController extends GenericForwardComposer{
 
     private Textbox subjectTextbox;
 
+
+    public EmailTemplateController(){
+        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
+        emailTemplateModel = (IEmailTemplateModel) SpringUtil.getBean("emailTemplateModel");
+    }
 
     private static ListitemRenderer languagesRenderer = new ListitemRenderer() {
         @Override

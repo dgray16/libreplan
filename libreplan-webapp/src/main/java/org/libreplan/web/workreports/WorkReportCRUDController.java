@@ -75,6 +75,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Column;
@@ -94,6 +95,9 @@ import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Timebox;
 import org.zkoss.zul.Window;
+
+import javax.swing.*;
+
 /**
  * @author Diego Pino García <dpino@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
@@ -101,9 +105,8 @@ import org.zkoss.zul.Window;
  *         Controller for CRUD actions over a {@link WorkReport}
  *
  */
-public class WorkReportCRUDController extends GenericForwardComposer implements IWorkReportCRUDControllerEntryPoints {
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(WorkReportCRUDController.class);
+public class WorkReportCRUDController extends GenericForwardComposer<Component>
+        implements IWorkReportCRUDControllerEntryPoints {
 
     private boolean cameBackList = false;
 
@@ -169,6 +172,13 @@ public class WorkReportCRUDController extends GenericForwardComposer implements 
     private Datebox personalTimesheetsDatebox;
 
     private BandboxSearch personalTimesheetsBandboxSearch;
+
+    public WorkReportCRUDController(){
+        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+        workReportTypeCRUD =
+                (IWorkReportTypeCRUDControllerEntryPoints) SpringUtil.getBean("workReportTypeCRUDControllerEntryPoints");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -752,7 +762,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements 
     /**
      * Appends list headers to {@link WorkReportLine} list
      *
-     * @param listBox
+     * @param grid
      */
     private void appendColumns(Grid grid) {
 
@@ -866,8 +876,6 @@ public class WorkReportCRUDController extends GenericForwardComposer implements 
 
     /**
      * Adds a new {@link WorkReportLine} to the list of rows
-     *
-     * @param rows
      */
     public void addWorkReportLine() {
         workReportModel.addWorkReportLine();
@@ -1281,7 +1289,7 @@ public class WorkReportCRUDController extends GenericForwardComposer implements 
     /**
      * Binds Textbox effort to a {@link WorkReportLine} numHours
      *
-     * @param effort
+     * @param box
      * @param workReportLine
      */
     private void bindEffort(final Textbox box, final WorkReportLine workReportLine) {
@@ -1325,20 +1333,17 @@ public class WorkReportCRUDController extends GenericForwardComposer implements 
             if (!getWorkReport().getWorkReportType().getDateIsSharedByLines()) {
                 appendDateInLines(row);
             }
-            if (!getWorkReport().getWorkReportType()
-                    .getResourceIsSharedInLines()) {
+            if (!getWorkReport().getWorkReportType().getResourceIsSharedInLines()) {
                 appendResourceInLines(row);
             }
-            if (!getWorkReport().getWorkReportType()
-                    .getOrderElementIsSharedInLines()) {
+            if (!getWorkReport().getWorkReportType().getOrderElementIsSharedInLines()) {
                 appendOrderElementInLines(row);
             }
 
             // Create the fields and labels
             appendFieldsAndLabelsInLines(row);
 
-            if (!getWorkReport().getWorkReportType().getHoursManagement()
-                    .equals(HoursManagementEnum.NUMBER_OF_HOURS)) {
+            if (!getWorkReport().getWorkReportType().getHoursManagement().equals(HoursManagementEnum.NUMBER_OF_HOURS)) {
                 appendHoursStartAndFinish(row);
             }
 

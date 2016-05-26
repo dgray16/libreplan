@@ -79,7 +79,7 @@ public final class SecurityUtils {
         return false;
     }
 
-    public final static String getSessionUserLoginName() {
+    public static String getSessionUserLoginName() {
         HttpServletRequest request = (HttpServletRequest)Executions
             .getCurrent().getNativeRequest();
         Principal principal = request.getUserPrincipal();

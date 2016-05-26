@@ -45,6 +45,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Groupbox;
@@ -64,11 +65,9 @@ import org.zkoss.zul.Window;
  *
  * @author Miciele Ghiorghis <m.ghiorghis@antoniusziekenhuis.nl>
  */
-public class JobSchedulerController extends
-        BaseCRUDController<JobSchedulerConfiguration> {
+public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfiguration> {
 
-    private static final Log LOG = LogFactory
-            .getLog(JobSchedulerController.class);
+    private static final Log LOG = LogFactory.getLog(JobSchedulerController.class);
 
     private Grid listJobSchedulings;
 
@@ -97,6 +96,10 @@ public class JobSchedulerController extends
     private Textbox cronExpressionYear;
 
     private IJobSchedulerModel jobSchedulerModel;
+
+    public JobSchedulerController(){
+        jobSchedulerModel = (IJobSchedulerModel) SpringUtil.getBean("jobSchedulerModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

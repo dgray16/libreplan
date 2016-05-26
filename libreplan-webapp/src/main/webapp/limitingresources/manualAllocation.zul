@@ -21,12 +21,12 @@
 
 <!-- Manual allocation -->
 <window id="manualAllocationWindow"
-    apply="org.libreplan.web.limitingresources.ManualAllocationController"
-    title="${i18n:_('Manual allocation')}"
-    width="600px" left="50px" top="50px"
-    visible="false"
-    closable="true"
-    onClose="manualAllocationController.close(event)">
+        apply="org.libreplan.web.limitingresources.ManualAllocationController"
+        title="${i18n:_('Manual allocation')}"
+        width="600px" left="50px" top="50px"
+        visible="false"
+        closable="true"
+        onClose="manualAllocationController.close(event)">
 
     <!-- Queue element general information  -->
     <panel title="${i18n:_('Queue Element Information')}:" border="normal">

@@ -48,6 +48,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Grid;
@@ -84,6 +85,10 @@ public class SubcontractController extends GenericForwardComposer {
     private Grid gridEndDates;
 
     private TaskEditFormComposer taskEditFormComposer = new TaskEditFormComposer();
+
+    public SubcontractController(){
+        subcontractModel = (ISubcontractModel) SpringUtil.getBean("subcontractModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -314,10 +319,10 @@ public class SubcontractController extends GenericForwardComposer {
             taskEditFormComposer.getTaskDTO().endDate = date;
         }
 
-        refressGridEndDates();
+        refreshGridEndDates();
     }
 
-    private void refressGridEndDates() {
+    private void refreshGridEndDates() {
         Util.reloadBindings(gridEndDates);
     }
 

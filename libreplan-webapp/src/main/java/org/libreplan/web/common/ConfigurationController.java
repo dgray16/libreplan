@@ -40,6 +40,7 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
 
+import javax.swing.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -90,6 +91,7 @@ import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 
 
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Grid;
@@ -141,22 +143,16 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private IOrderModel orderModel;
 
-    @Autowired
     private IWorkReportModel workReportModel;
 
-    @Autowired
     private IWorkerModel workerModel;
 
-    @Autowired
     private IMachineModel machineModel;
 
-    @Autowired
     private IExpenseSheetModel expenseSheetModel;
 
-    @Autowired
     private IMaterialsModel materialsModel;
 
-    @Autowired
     private IAssignedTaskQualityFormsToOrderElementModel assignedQualityFormsModel;
 
     private IMessagesForUser messages;
@@ -190,6 +186,20 @@ public class ConfigurationController extends GenericForwardComposer {
     private Textbox emailPasswordTextbox;
 
     private Textbox emailSenderTextbox;
+
+    public ConfigurationController(){
+        configurationModel = (IConfigurationModel) SpringUtil.getBean("configurationModel");
+        configurationDAO = (IConfigurationDAO) SpringUtil.getBean("configurationDAO");
+        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
+        orderModel = (IOrderModel) SpringUtil.getBean("orderModel");
+        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
+        workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
+        machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
+        expenseSheetModel = (IExpenseSheetModel) SpringUtil.getBean("expenseSheetModel");
+        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
+        assignedQualityFormsModel =
+                (IAssignedTaskQualityFormsToOrderElementModel) SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

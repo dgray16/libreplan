@@ -24,6 +24,7 @@ package org.libreplan.web.orders.labels;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.web.orders.IOrderElementModel;
 import org.libreplan.web.orders.IOrderModel;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * Controller for showing OrderElement assigned labels
@@ -38,6 +39,12 @@ public class AssignedLabelsToOrderElementController extends
 
 
     IOrderElementModel orderElementModel;
+
+    public AssignedLabelsToOrderElementController(){
+        assignedLabelsToOrderElementModel =
+                (IAssignedLabelsToOrderElementModel) SpringUtil.getBean("assignedLabelsToOrderElementModel");
+
+    }
 
     @Override
     protected IAssignedLabelsToOrderElementModel getModel() {

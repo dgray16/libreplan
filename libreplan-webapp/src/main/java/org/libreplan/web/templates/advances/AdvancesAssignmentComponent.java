@@ -73,8 +73,7 @@ public class AdvancesAssignmentComponent extends HtmlMacroComponent {
             return new Label(assignment.getMaxValue().toPlainString());
         }
 
-        private Checkbox createReportGlobalCheckbox(
-                AdvanceAssignmentTemplate assignment) {
+        private Checkbox createReportGlobalCheckbox(AdvanceAssignmentTemplate assignment) {
             Checkbox result = new Checkbox();
             result.setChecked(assignment.isReportGlobalAdvance());
             result.setDisabled(true);
@@ -88,8 +87,7 @@ public class AdvancesAssignmentComponent extends HtmlMacroComponent {
         useModel(model, model.getTemplate());
     }
 
-    public void useModel(IOrderTemplatesModel model,
-            OrderElementTemplate template) {
+    public void useModel(IOrderTemplatesModel model, OrderElementTemplate template) {
         this.template = template;
     }
 
@@ -97,8 +95,7 @@ public class AdvancesAssignmentComponent extends HtmlMacroComponent {
         if (template == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<AdvanceAssignmentTemplate>(template
-                .getAdvanceAssignmentTemplates());
+        return new ArrayList<AdvanceAssignmentTemplate>(template.getAdvanceAssignmentTemplates());
     }
 
     public ListitemRenderer getAdvancesRenderer() {

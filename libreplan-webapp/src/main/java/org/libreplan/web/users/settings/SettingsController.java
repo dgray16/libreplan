@@ -35,6 +35,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
@@ -66,6 +67,10 @@ public class SettingsController extends GenericForwardComposer {
     private BandboxSearch projectsFilterLabelBandboxSearch;
 
     private BandboxSearch resourcesLoadFilterCriterionBandboxSearch;
+
+    public SettingsController(){
+        settingsModel = (ISettingsModel) SpringUtil.getBean("settingsModel");
+    }
 
     private static ListitemRenderer languagesRenderer = new ListitemRenderer() {
         @Override

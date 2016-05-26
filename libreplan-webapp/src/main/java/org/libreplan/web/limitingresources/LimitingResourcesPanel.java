@@ -319,11 +319,11 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
                 .setSelectedIndex(timeTracker.getDetailLevel().ordinal() - 2);
 
         // Insert leftPane component with limitingresources list
-        insertionPointLeftPanel.appendChild(leftPane);
+        // insertionPointLeftPanel.appendChild(leftPane);
         leftPane.afterCompose();
 
         // Initialize queues
-        insertionPointRightPanel.appendChild(queueListComponent);
+    /*    insertionPointRightPanel.appendChild(queueListComponent);*/
         queueListComponent.afterCompose();
 
         // Initialize dependencies
@@ -344,7 +344,7 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         for (LimitingResourceQueueElement each : getLimitingResourceQueueElements()) {
             dependencyList.addDependenciesFor(each);
         }
-        insertionPointRightPanel.appendChild(dependencyList);
+      /*  insertionPointRightPanel.appendChild(dependencyList);*/
     }
 
     private Set<LimitingResourceQueueElement> getLimitingResourceQueueElements() {
@@ -371,8 +371,8 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         });
         timeTrackerHeader = createTimeTrackerHeader();
         timeTrackerComponent = createTimeTrackerComponent();
-        insertionPointTimetracker.appendChild(timeTrackerHeader);
-        insertionPointRightPanel.appendChild(timeTrackerComponent);
+      /*  insertionPointTimetracker.appendChild(timeTrackerHeader);
+        insertionPointRightPanel.appendChild(timeTrackerComponent);*/
         timeTrackerHeader.afterCompose();
         timeTrackerComponent.afterCompose();
     }
@@ -439,9 +439,9 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         paginationUpButton = (Button) getFellow("paginationUpButton");
         paginationDownButton = (Button) getFellow("paginationDownButton");
 
-        insertionPointLeftPanel = getFellow("insertionPointLeftPanel");
-        insertionPointRightPanel = getFellow("insertionPointRightPanel");
-        insertionPointTimetracker = getFellow("insertionPointTimetracker");
+       /* insertionPointLeftPanel = getFellow("insertionPointLeftPanel");*/
+/*        insertionPointRightPanel = getFellow("insertionPointRightPanel");*/
+        /*insertionPointTimetracker = getFellow("insertionPointTimetracker");*/
     }
 
     Map<LimitingResourceQueueElement, QueueTask> getQueueTaskMap() {

@@ -104,8 +104,7 @@ public class IntegrationEntityDAO<E extends IntegrationEntity>
     @SuppressWarnings("unchecked")
     @Override
     public List<E> findAll() {
-        return getSession().createCriteria(getEntityClass()).
-            addOrder(Order.asc("code")).list();
+        return getSession().createCriteria(getEntityClass()).addOrder(Order.asc("code")).list();
     }
 
 }

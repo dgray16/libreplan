@@ -29,6 +29,7 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Listbox;
@@ -66,6 +67,10 @@ public class OrderCostsPerResourceController extends LibrePlanReportController {
 
     private BandboxSearch bdCriterions;
 
+    public OrderCostsPerResourceController(){
+        orderCostsPerResourceModel = (IOrderCostsPerResourceModel) SpringUtil.getBean("orderCostsPerResourceModel");
+    }
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -98,7 +103,7 @@ public class OrderCostsPerResourceController extends LibrePlanReportController {
         return orderCostsPerResourceModel.getOrders();
     }
 
-    private List<Order> getSelectedOrders() {
+    public List<Order> getSelectedOrders() {
         return Collections.unmodifiableList(orderCostsPerResourceModel
                 .getSelectedOrders());
     }

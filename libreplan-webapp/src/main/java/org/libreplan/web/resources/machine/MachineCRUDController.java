@@ -57,6 +57,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.ComboitemRenderer;
@@ -83,13 +84,10 @@ import org.zkoss.zul.Window;
  */
 public class MachineCRUDController extends BaseCRUDController<Machine> {
 
-    @Autowired
     private ILimitsModel limitsModel;
 
-    @Autowired
     private IMachineModel machineModel;
 
-    @Autowired
     private IResourceDAO resourceDAO;
 
     private Component configurationUnits;
@@ -125,6 +123,11 @@ public class MachineCRUDController extends BaseCRUDController<Machine> {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
+        limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
+        resourceDAO = (IResourceDAO) SpringUtil.getBean("resourceDAO");
+
         setupCriterionsController();
         setupConfigurationController();
         setupResourcesCostCategoryAssignmentController(comp);

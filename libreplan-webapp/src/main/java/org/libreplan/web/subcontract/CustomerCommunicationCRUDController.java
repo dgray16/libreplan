@@ -33,6 +33,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import javax.annotation.Resource;
@@ -48,9 +49,6 @@ import static org.libreplan.web.I18nHelper._;
 @SuppressWarnings("serial")
 public class CustomerCommunicationCRUDController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(CustomerCommunicationCRUDController.class);
-
     private ICustomerCommunicationModel customerCommunicationModel;
 
     private CustomerCommunicationRenderer customerCommunicationRenderer = new CustomerCommunicationRenderer();;
@@ -60,6 +58,10 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
     private Component messagesContainer;
 
     private Grid listing;
+
+    public CustomerCommunicationCRUDController(){
+        customerCommunicationModel = (ICustomerCommunicationModel) SpringUtil.getBean("customerCommunicationModel");
+    }
 
     @Resource
     private IGlobalViewEntryPoints globalView;

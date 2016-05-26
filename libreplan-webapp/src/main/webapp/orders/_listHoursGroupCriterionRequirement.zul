@@ -19,6 +19,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<!--
 <panel title="${i18n:_('Criteria Requirement')}" border="normal">
 <panelchildren >
     <newdatasortablegrid mold="paging" pageSize="5" fixedLayout="true"
@@ -36,7 +37,7 @@
                         visible ="@{criterionRequirementWrapper.newDirectAndItsHoursGroupIsWorker}"
                         value = "@{criterionRequirementWrapper.criterionAndType}">
                         <bandpopup>
-                                <listbox width="500px" height="150px" fixedLayout="true"
+                                <listbox width="500px" height="150px" sizedByContent="true"
                                 model="@{assignedCriterionRequirementController.criterionWithItsTypesWorker}"
                                 onSelect="assignedCriterionRequirementController.selectCriterionToHoursGroup(self.selectedItem,
                                     self.parent.parent,self.parent.parent.parent.parent.value);">
@@ -56,7 +57,7 @@
                         visible ="@{criterionRequirementWrapper.newDirectAndItsHoursGroupIsMachine}"
                         value = "@{criterionRequirementWrapper.criterionAndType}">
                         <bandpopup>
-                                <listbox width="500px" height="150px" fixedLayout="true"
+                                <listbox width="500px" height="150px" sizedByContent="true"
                                 model="@{assignedCriterionRequirementController.criterionWithItsTypesMachine}"
                                 onSelect="assignedCriterionRequirementController.selectCriterionToHoursGroup(self.selectedItem,
                                     self.parent.parent,self.parent.parent.parent.parent.value);">
@@ -76,7 +77,7 @@
                         visible ="@{criterionRequirementWrapper.newException}"
                         value = "@{criterionRequirementWrapper.criterionAndType}">
                         <bandpopup>
-                                <listbox width="500px" height="150px" fixedLayout="true"
+                                <listbox width="500px" height="150px" sizedByContent="true"
                                 model="@{hoursGroupWrapper.validCriterions}"
                                 onSelect="assignedCriterionRequirementController.selectCriterionToHoursGroup(self.selectedItem,
                                     self.parent.parent,self.parent.parent.parent.parent.value);">
@@ -112,3 +113,4 @@
 </newdatasortablegrid>
 </panelchildren>
 </panel>
+-->

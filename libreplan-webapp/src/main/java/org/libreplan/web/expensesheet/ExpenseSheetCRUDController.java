@@ -45,6 +45,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,9 +62,6 @@ import static org.libreplan.web.I18nHelper._;
 public class ExpenseSheetCRUDController extends
         BaseCRUDController<ExpenseSheet> implements IExpenseSheetCRUDController {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(ExpenseSheetCRUDController.class);
-
-    @Autowired
     private IExpenseSheetModel expenseSheetModel;
 
     /*
@@ -89,6 +87,11 @@ public class ExpenseSheetCRUDController extends
     private boolean fromUserDashboard = false;
 
     private boolean cancel = false;
+
+    public ExpenseSheetCRUDController(){
+        expenseSheetModel = (IExpenseSheetModel) SpringUtil.getBean("expenseSheetModel");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -460,7 +463,7 @@ public class ExpenseSheetCRUDController extends
         }
     }
 
-    private Constraint checkConstraintExpenseValue() {
+    public Constraint checkConstraintExpenseValue() {
         return new Constraint() {
             @Override
             public void validate(Component comp, Object value) throws WrongValueException {

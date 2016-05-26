@@ -32,6 +32,7 @@ import org.libreplan.web.common.components.NewDataSortableGrid;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Messagebox;
 
 import java.util.ConcurrentModificationException;
@@ -48,12 +49,13 @@ import static org.libreplan.web.I18nHelper._;
 @SuppressWarnings("serial")
 public class TypeOfWorkHoursCRUDController extends BaseCRUDController<TypeOfWorkHours> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(TypeOfWorkHoursCRUDController.class);
-
     private ITypeOfWorkHoursModel typeOfWorkHoursModel;
 
     private NewDataSortableGrid listing;
+
+    public TypeOfWorkHoursCRUDController(){
+        typeOfWorkHoursModel = (ITypeOfWorkHoursModel) SpringUtil.getBean("typeOfWorkHoursModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

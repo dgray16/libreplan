@@ -40,6 +40,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.InputEvent;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Constraint;
@@ -58,7 +59,6 @@ import org.zkoss.zul.ext.Sortable;
  */
 public class LabelTypeCRUDController extends BaseCRUDController<LabelType> {
 
-    @Autowired
     private ILabelTypeModel labelTypeModel;
 
     private Grid gridLabelTypes;
@@ -68,7 +68,7 @@ public class LabelTypeCRUDController extends BaseCRUDController<LabelType> {
     private Textbox newLabelTextbox;
 
     public LabelTypeCRUDController() {
-
+        labelTypeModel = (ILabelTypeModel) SpringUtil.getBean("labelTypeModel");
     }
 
     @Override

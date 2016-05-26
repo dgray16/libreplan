@@ -34,6 +34,7 @@ import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.ConcurrentModificationException;
@@ -54,6 +55,10 @@ public class UnitTypeController extends BaseCRUDController<UnitType> {
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(UnitTypeController.class);
 
     private IUnitTypeModel unitTypeModel;
+
+    public UnitTypeController(){
+        unitTypeModel = (IUnitTypeModel) SpringUtil.getBean("unitTypeModel");
+    }
 
     public List<UnitType> getUnitTypes() {
         return unitTypeModel.getUnitTypes();

@@ -33,7 +33,7 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Textbox;
 
-public class TaskEditFormComposer extends GenericForwardComposer {
+public class TaskEditFormComposer extends GenericForwardComposer<Component> {
 
     public TaskEditFormComposer() {
 
@@ -64,8 +64,7 @@ public class TaskEditFormComposer extends GenericForwardComposer {
         updateComponentValuesForTask(taskDTO);
     }
 
-    private void updateComponentValuesForTask(
-            TaskDTO taskDTO) {
+    private void updateComponentValuesForTask(TaskDTO taskDTO) {
         name.setValue(taskDTO.name);
         startDateBox.setValue(taskDTO.beginDate);
         endDateBox.setValue(taskDTO.endDate);
@@ -96,10 +95,15 @@ public class TaskEditFormComposer extends GenericForwardComposer {
      * @author Manuel Rego Casasnovas <mrego@igalia.com>
      */
     public static class TaskDTO {
+
         public String name;
+
         public Date beginDate;
+
         public Date endDate;
-        public Date deadlineDate;
+
+        Date deadlineDate;
+
         public String notes;
     }
 
@@ -122,16 +126,14 @@ public class TaskEditFormComposer extends GenericForwardComposer {
         return localDate.toDateTimeAtStartOfDay().toDate();
     }
 
-    private void copyFromDTO(final TaskDTO taskDTO, Task currentTask,
-            boolean copyDates) {
+    private void copyFromDTO(final TaskDTO taskDTO, Task currentTask, boolean copyDates) {
         currentTask.setName(taskDTO.name);
         if (copyDates) {
             currentTask.doPositionModifications(new IModifications() {
 
                 @Override
                 public void doIt(IUpdatablePosition position) {
-                    position.setBeginDate(GanttDate
-                            .createFrom(taskDTO.beginDate));
+                    position.setBeginDate(GanttDate.createFrom(taskDTO.beginDate));
                     position.resizeTo(GanttDate.createFrom(taskDTO.endDate));
                 }
             });

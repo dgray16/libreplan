@@ -34,11 +34,11 @@ import org.zkoss.zk.ui.event.EventListener;
 
 public class TabsRegistry {
 
-    private List<ITab> tabs = new ArrayList<ITab>();
+    private List<ITab> tabs = new ArrayList<>();
 
     private final Component parent;
 
-    private Map<ITab, Object> fromTabToMenuKey = new HashMap<ITab, Object>();
+    private Map<ITab, Object> fromTabToMenuKey = new HashMap<>();
 
     private IMenuItemsRegister menu;
 
@@ -52,7 +52,7 @@ public class TabsRegistry {
     }
 
     public interface IBeforeShowAction {
-        public void doAction();
+        void doAction();
     }
 
     private static final IBeforeShowAction DO_NOTHING = new IBeforeShowAction() {

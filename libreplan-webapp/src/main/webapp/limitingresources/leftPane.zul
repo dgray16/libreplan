@@ -20,10 +20,11 @@
 -->
 
 <zk>
-<zscript><![CDATA[
-top = self;
-]]>
-</zscript>
-<tree id="loadsTree" sclass="limitingresourcesleftpane" sizedByContent="true">
-</tree>
+    <zscript>
+        <![CDATA[
+        top = self;
+        ]]>
+    </zscript>
+
+    <tree id="loadsTree" sclass="limitingresourcesleftpane" sizedByContent="true"/>
 </zk>

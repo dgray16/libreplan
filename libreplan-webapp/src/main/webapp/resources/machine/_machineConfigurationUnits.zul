@@ -25,7 +25,7 @@
     <button label="${i18n:_('Add new configuration unit')}"
         onClick="configurationController.addConfigurationUnit();" />
 
-    <grid fixedLayout="true"
+    <grid sizedByContent="true"
         model="@{configurationController.configurationUnits}" id="configurationUnitsGrid">
         <columns>
             <column width="25px" />
@@ -39,7 +39,7 @@
         <rows>
             <!-- To iterate on workersConfiguration Units -->
             <row self="@{each='configurationUnit'}" value="@{configurationUnit}">
-                <detailrow>
+               <!-- <detailrow>-->
                     <!-- Assigned resources -->
                     <panel title="${i18n:_('Worker assignments')}" border="normal">
                         <panelchildren style="padding:10px;">
@@ -47,7 +47,7 @@
                     <button label="${i18n:_('Add new worker assignment')}"
                         onClick="configurationController.addWorkerAssignment(self.parent.parent.parent.parent.value,self)"/>
 
-                            <grid fixedLayout="true"
+                            <grid sizedByContent="true"
                                 model="@{configurationUnit.workerAssignments}" style="margin-top:10px;">
                                 <columns sizable="true">
                                     <column label="${i18n:_('Name')}" />
@@ -84,7 +84,7 @@
                     <textbox value="@{configurationUnit.id}" visible="false" />
                     <bandbox width="300px">
                         <bandpopup>
-                                <listbox width="500px" height="150px" fixedLayout="true"
+                                <listbox width="500px" height="150px" sizedByContent="true"
                                     model="@{assignedCriterionsController.criterionWorkersWithItsTypes}"
                                     onSelect="configurationController.selectCriterionRequirement(self.selectedItem,self.parent.parent)">
                                 <listhead>
@@ -102,7 +102,7 @@
                     <button label="${i18n:_('Add new criterion requirement')}"
                         onClick="configurationController.addCriterionRequirement(self.parent.parent.parent.parent.value,self)" />
 
-                            <grid fixedLayout="true"
+                            <grid sizedByContent="true"
                                 model="@{configurationUnit.requiredCriterions}" style="margin-top:10px;">
                                 <columns sizable="true">
                                     <column label="${i18n:_('Name')}" />
@@ -124,7 +124,7 @@
                         </panelchildren>
                     </panel>
 
-                </detailrow>
+             <!--   </detailrow>-->
                 <textbox value="@{configurationUnit.name}"
                     constraint="no empty:${i18n:_('cannot be empty')}" />
                 <textbox value="@{configurationUnit.alpha}"

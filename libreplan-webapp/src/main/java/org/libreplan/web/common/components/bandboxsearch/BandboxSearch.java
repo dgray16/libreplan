@@ -179,6 +179,10 @@ public class BandboxSearch extends HtmlMacroComponent {
 
     public void setSelectedElement(Object obj) {
         bandbox.setAttribute("selectedElement", obj, true);
+        /*final Object object = getSelectedItem().getValue();
+        if(object != null) {
+
+        }*/
         if ( obj != null ) {
             bandbox.setValue(finder.objectToString(obj));
         } else {
@@ -282,8 +286,6 @@ public class BandboxSearch extends HtmlMacroComponent {
      *
      * Fills bandbox list model, clear bandbox textbox, and set selected label
      * to null
-     *
-     * @param bandbox
      */
     public void clear() {
         listbox.setModel(finder.getModel());
