@@ -39,6 +39,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Fileupload;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
@@ -69,10 +70,8 @@ import static org.libreplan.web.I18nHelper._;
 
 public class OrderFilesController extends GenericForwardComposer {
 
-    @Autowired
     IConfigurationModel configurationModel;
 
-    @Autowired
     IUserDAO userDAO;
 
     private Component messagesContainer;
@@ -84,6 +83,13 @@ public class OrderFilesController extends GenericForwardComposer {
     private IOrderFileModel orderFileModel;
 
     private Listbox filesList;
+
+    public OrderFilesController(){
+        configurationModel = (IConfigurationModel) SpringUtil.getBean("configurationModel");
+        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
+        orderElementModel = (IOrderElementModel) SpringUtil.getBean("orderElementModel");
+        orderFileModel = (IOrderFileModel) SpringUtil.getBean("orderFileModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

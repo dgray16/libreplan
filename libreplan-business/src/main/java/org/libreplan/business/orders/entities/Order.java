@@ -113,24 +113,24 @@ public class Order extends OrderLineGroup implements Comparable {
 
     private String customerReference;
 
-    private Map<Scenario, OrderVersion> scenarios = new HashMap<Scenario, OrderVersion>();
+    private Map<Scenario, OrderVersion> scenarios = new HashMap<>();
 
-    private Set<OrderAuthorization> orderAuthorizations = new HashSet<OrderAuthorization>();
+    private Set<OrderAuthorization> orderAuthorizations = new HashSet<>();
 
     private CurrentVersionInfo currentVersionInfo;
 
-    private Set<CustomerCommunication> customerCommunications = new HashSet<CustomerCommunication>();
+    private Set<CustomerCommunication> customerCommunications = new HashSet<>();
 
     @Valid
-    private SortedSet<DeadlineCommunication> deliveringDates = new TreeSet<DeadlineCommunication>(
-            new DeliverDateComparator());
+    private SortedSet<DeadlineCommunication> deliveringDates = new TreeSet<>(new DeliverDateComparator());
 
     @Valid
-    private SortedSet<EndDateCommunication> endDateCommunicationToCustomer = new TreeSet<EndDateCommunication>(
+    private SortedSet<EndDateCommunication> endDateCommunicationToCustomer = new TreeSet<>(
             new EndDateCommunicationComparator());
 
     public enum SchedulingMode {
-        FORWARD, BACKWARDS;
+        FORWARD,
+        BACKWARDS
     }
 
     private SchedulingMode schedulingMode = SchedulingMode.FORWARD;
@@ -149,8 +149,7 @@ public class Order extends OrderLineGroup implements Comparable {
 
         private final boolean modifyingTheOwnerScenario;
 
-        static CurrentVersionInfo create(Scenario scenario,
-                OrderVersion orderVersion) {
+        static CurrentVersionInfo create(Scenario scenario, OrderVersion orderVersion) {
             return new CurrentVersionInfo(scenario, orderVersion);
         }
 

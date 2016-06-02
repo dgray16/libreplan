@@ -208,7 +208,7 @@
                                 </columns>
                                 <rows>
                                     <row>
-                                        <detailrow open="true">
+                                        <!--<detailrow open="true">-->
                                             <grid sizedByContent="true">
                                                 <columns>
                                                     <column width="200px" />
@@ -231,7 +231,7 @@
                                                     </row>
                                                 </rows>
                                             </grid>
-                                        </detailrow>
+                                        <!--</detailrow>-->
                                         <label
                                             value="${i18n:_('Total calculated budget')}:" />
                                         <hbox>
@@ -242,7 +242,7 @@
 
 
                                     <row>
-                                        <detailrow open="true">
+                                      <!--  <detailrow open="true">-->
                                             <grid sizedByContent="true">
                                                 <columns>
                                                     <column width="200px" />
@@ -265,7 +265,7 @@
                                                     </row>
                                                 </rows>
                                             </grid>
-                                        </detailrow>
+                                       <!-- </detailrow>-->
                                         <label
                                             value="${i18n:_('Money spent')}:" />
                                         <hbox>

@@ -78,7 +78,7 @@
 
     <center border="0">
         <borderlayout>
-            <west size="400px" flex="true" collapsible="true"
+            <west size="400px" hflex="min" collapsible="true"
                 splittable="true" sclass="advancedassignmentdetails">
                         <div sclass="leftpanelgap" id="insertionPointLeftPanel"></div>
             </west>

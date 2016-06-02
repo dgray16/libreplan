@@ -29,7 +29,7 @@
 <zk>
 
     <resourcesLoadPanel id="planner" self="@{define(content)}">
-        <div id="idContextMenuTaskAssignment"></div>
+        <div id="idContextMenuTaskAssignment"/>
     </resourcesLoadPanel>
 
 </zk>

@@ -658,8 +658,9 @@ public class WorkerModel extends IntegrationEntityModel implements IWorkerModel 
     @Override
     @Transactional(readOnly = true)
     public List<User> getPossibleUsersToBound() {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
         users.addAll(userDAO.getUnboundUsers(worker));
+
         return users;
     }
 
@@ -668,6 +669,7 @@ public class WorkerModel extends IntegrationEntityModel implements IWorkerModel 
         if (worker != null) {
             return worker.getUser();
         }
+
         return null;
     }
 

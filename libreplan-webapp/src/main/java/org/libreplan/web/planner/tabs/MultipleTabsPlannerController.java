@@ -519,11 +519,8 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
         }
         handler.registerBookmarkListener(this, comp.getPage());
 
-        if (SecurityUtils
-                .isSuperuserOrUserInRoles(UserRole.ROLE_CREATE_PROJECTS)) {
-            org.zkoss.zk.ui.Component createOrderButton = comp.getPage()
-                    .getFellowIfAny(
-                "createOrderButton");
+        if (SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_CREATE_PROJECTS)) {
+            org.zkoss.zk.ui.Component createOrderButton = comp.getPage().getFellowIfAny("createOrderButton");
             if (createOrderButton != null) {
                 createOrderButton.addEventListener(Events.ON_CLICK,
                 new EventListener() {

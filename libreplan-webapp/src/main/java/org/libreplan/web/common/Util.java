@@ -193,7 +193,8 @@ public class Util {
     }
 
     public static DataBinder getBinder(Component component) {
-        return (DataBinder) component.getAttribute("binder", false);
+        //TODO Check this. It was false at second param
+        return (DataBinder) component.getAttribute("binder", true);
     }
 
     private static final ThreadLocal<Boolean> ignoreCreateBindings = new ThreadLocal<Boolean>() {

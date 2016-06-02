@@ -28,19 +28,19 @@
     <caption id="caption" sclass="caption-title" />
     <tabbox>
         <tabs>
-            <tab id="personalDataTab" label="${i18n:_('Personal data')}"></tab>
-            <tab id="assignedCriteriaTab" label="${i18n:_('Assigned criteria')}"></tab>
-            <tab visible="false" label="${i18n:_('Locations')}"></tab>
-            <tab visible="false" label="${i18n:_('Work record')}"></tab>
-            <tab label="${i18n:_('Calendar')}"></tab>
-            <tab id="costCategoryAssignmentTab" label="${i18n:_('Cost category assignment')}"></tab>
+            <tab id="personalDataTab" label="${i18n:_('Personal data')}"/>
+            <tab id="assignedCriteriaTab" label="${i18n:_('Assigned criteria')}"/>
+            <tab visible="false" label="${i18n:_('Locations')}"/>
+            <tab visible="false" label="${i18n:_('Work record')}"/>
+            <tab label="${i18n:_('Calendar')}"/>
+            <tab id="costCategoryAssignmentTab" label="${i18n:_('Cost category assignment')}"/>
         </tabs>
         <tabpanels>
             <tabpanel id="personalDataTabpanel">
                 <groupbox style="margin-top: 5px" closable="false">
                     <caption label="${i18n:_('Basic data')}" />
 
-                    <grid fixedLayout="true">
+                    <grid sizedByContent="true">
                         <columns>
                             <column width="200px" />
                             <column  />
@@ -106,7 +106,7 @@
                         border="normal"
                         visible="@{controller.existingUser}">
                         <panelchildren>
-                            <grid fixedLayout="true">
+                            <grid sizedByContent="true">
                                 <columns>
                                     <column width="200px" />
                                     <column />
@@ -134,7 +134,7 @@
                     <panel title="${i18n:_('New user')}" border="normal"
                         visible="@{controller.createNewUser}">
                         <panelchildren>
-                            <grid fixedLayout="true">
+                            <grid sizedByContent="true">
                                 <columns>
                                     <column width="200px" />
                                     <column />

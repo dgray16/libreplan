@@ -38,6 +38,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.util.ArrayList;
@@ -57,10 +58,6 @@ import static org.libreplan.web.I18nHelper._;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(IssueLogCRUDController.class);
-
-    @Autowired
     private IIssueLogModel issueLogModel;
 
     private BandboxSearch bdProjectIssueLog;
@@ -68,6 +65,10 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     private BandboxSearch bdUserIssueLog;
 
     private Listbox status;
+
+    public IssueLogCRUDController(){
+        issueLogModel = (IIssueLogModel) SpringUtil.getBean("issueLogModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -368,8 +369,9 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         if (issueLogModel.getIssueLog() == null) {
             return null;
         }
-        return (issueLogModel.getIssueLog().getDateResolved() != null) ? issueLogModel
-                .getIssueLog().getDateResolved()
+
+        return (issueLogModel.getIssueLog().getDateResolved() != null)
+                ? issueLogModel.getIssueLog().getDateResolved()
                 : null;
     }
     /**
@@ -389,8 +391,8 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         if (issueLogModel.getIssueLog() == null) {
             return null;
         }
-        return (issueLogModel.getIssueLog().getDeadline() != null) ? issueLogModel
-                .getIssueLog().getDeadline()    // this is a getIntegrationEntityDAO method
+        return (issueLogModel.getIssueLog().getDeadline() != null)
+                ? issueLogModel.getIssueLog().getDeadline()    // this is a getIntegrationEntityDAO method
                 : null;
     }
 

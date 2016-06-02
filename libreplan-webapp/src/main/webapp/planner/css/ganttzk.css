@@ -526,8 +526,8 @@ table {
     width: 600px;
 }
 
-tr.z-vbox-sep {
-    height: 0px;
+tr.z-vbox-separator {
+
     padding: 0px;
     margin: 0px;
 }
@@ -1276,30 +1276,47 @@ body .perspectives-column {
 }
 
 /* Workaround for zk 100% height just root components */
-.main-area {height: 100%;}
-.main-area .z-center-body > div {height: 100%;
+.main-area {
+    height: 100%;
+}
+
+.main-area .z-center-body > div {
+    height: 100%;
     display: block !important;
 }
-.main-area .z-center-body > div > div { height: 100%; display: block; width: 1803px;}
-.main-area .z-center-body > div > div > div  { height: 100%;
-display: block !important;}
-.main-area .z-center-body > div > div > div > div { height: 100%;}
+
+.main-area .z-center-body > div > div {
+    display: block !important;
+    width: 1803px !important;
+}
+
+.main-area .z-center-body > div > div > div  {
+    height: 100%;
+    display: block !important;
+}
+.main-area .z-center-body > div > div > div > div {
+    height: 100%;
+    display: block !important;
+}
+
+.main-area .z-center-body > div > div > div > div > div {
+    height: 100%;
+    display: block !important;
+}
+
+/*.z-div > div > div > div > div {
+    height: 100%;
+    display: block !important;
+}*/
+
 
 
 .toolbar-box > div {
-    height: 30px;
-    width: 100%;
     overflow: hidden;
-
 }
 
 .z-west-splitter::after {
     display: none !important;
-}
-
-.plannerlayout_center > div {
-    display: block !important;
-    width: 1803px !important;
 }
 
 .taskdetailsContainer .z-west {
@@ -1317,24 +1334,25 @@ display: block !important;}
     overflow: hidden;
 }
 
-
 .z-tree-header > table {
     table-layout: inherit !important;
 }
+
+
 .taskTreeCols .z-tree {
     width: 100% !important;
 }
-
-
-
 .z-tree-header-border {
 
 }
 
-.z-center .z-center-noborder {
-    height: 100% !important;
-}
 
+
+/*.z-center .z-center-noborder {
+    height: 100% !important;
+}*/
+
+/*
 .z-center > div {
     height: 100% !important;
 }
@@ -1342,27 +1360,35 @@ display: block !important;}
 .z-center > div > div {
     height: 100% !important;
 }
+*/
 
 /*.z-div {
     height: 100%;
-    display: block;
-}
+    display: block !important;
+}*/
 
+/*
 .z-div > div {
     height: 100%;
     display: block;
-}*/
+}
+*/
 
-.main-area > span {height: 100%; display: block;}
-.main-area > span > div { height: 100%;}
-.main-area > span > div > span { height: 100%; display: block;}
-.main-area > span > div > div { height: 100%;}
-.main-area > span > div > div > span { height: 100%; display: block;}
+.main-area > div {height: 100%; display: block;}
 
-.main-area .advanced-assignment-area .z-center-body > span,
-.main-area .advanced-assignment-area .z-center-body > span > div > div {
+.main-area > div > div { height: 100%;}
+.main-area > div > div > div { display: block;}
+.main-area > div > div > div { height: 100%;}
+.main-area > div > div > div > div { height: 100%; display: block;}
+.main-area .advanced-assignment-area .z-center-body > div,
+.main-area .advanced-assignment-area .z-center-body > div > div > div {
     height: auto;
 }
+
+/*.plannerlayout_center > div {
+    display: block !important;
+    width: 1803px !important;
+}*/
 
 
 .advanced-allocation-layout {

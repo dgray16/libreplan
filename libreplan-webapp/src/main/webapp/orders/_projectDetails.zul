@@ -19,12 +19,14 @@
 -->
 
 <?taglib uri="/WEB-INF/tld/i18n.tld" prefix="i18n" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 
 <window id="projectCreationWindow"
         title="${i18n:_('Create new project')}"
         width="650px"
         closable="true"
         onClose="self.visible = false; event.stopPropagation();">
+
 
     <grid id="gridProjectDetails">
         <columns>

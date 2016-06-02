@@ -27,6 +27,7 @@ import org.libreplan.business.reports.dtos.WorkReportLineDTO;
 import org.libreplan.web.common.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Progressmeter;
 import org.zkoss.zul.Vbox;
 
@@ -39,8 +40,7 @@ import java.util.List;
  * @author Susana Montes Pedreria <smontes@wirelessgalicia.com>
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  */
-public class AssignedHoursToOrderElementController extends
-        GenericForwardComposer {
+public class AssignedHoursToOrderElementController extends GenericForwardComposer {
 
     private IAssignedHoursToOrderElementModel assignedHoursToOrderElementModel;
 
@@ -53,6 +53,11 @@ public class AssignedHoursToOrderElementController extends
     private Progressmeter moneyCostProgressBar;
 
     private Progressmeter exceedMoneyCostProgressBar;
+
+    public AssignedHoursToOrderElementController(){
+        assignedHoursToOrderElementModel =
+                (IAssignedHoursToOrderElementModel) SpringUtil.getBean("assignedHoursToOrderElementModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

@@ -47,13 +47,14 @@
                                 </columns>
                                 <rows>
                                     <row>
-                                        <label value="${i18n:_('Select template language')}"/>
+                                        <label value = "@{emailTemplateController.test}"/>
                                         <listbox mold="select"
                                                  id="templateLanguageListbox"
                                                  model="@{emailTemplateController.languages}"
                                                  itemRenderer="@{emailTemplateController.languagesRenderer}"
                                                  selectedItem="@{emailTemplateController.selectedLanguage}">
                                         </listbox>
+
                                     </row>
                                     <row>
                                         <label value="${i18n:_('Select template type')}"/>
@@ -130,6 +131,6 @@
             </tabbox>
         <button onClick="emailTemplateController.save()" autodisable="self" label="${i18n:_('Save')}" sclass="save-button global-action"/>
         <button onClick="emailTemplateController.cancel()" label="${i18n:_('Cancel')}" sclass="cancel-button global-action"/>
-
     </window>
+
 </zk>

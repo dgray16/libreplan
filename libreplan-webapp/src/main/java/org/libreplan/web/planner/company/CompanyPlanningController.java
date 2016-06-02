@@ -139,6 +139,7 @@ public class CompanyPlanningController implements Composer {
 
         bdFilters = (BandboxMultipleSearch) filterComponent.getFellow("bdFilters");
         bdFilters.setFinder("taskGroupsMultipleFiltersFinder");
+
         loadPredefinedBandboxFilter();
 
         checkIncludeOrderElements = (Checkbox) filterComponent.getFellow("checkIncludeOrderElements");

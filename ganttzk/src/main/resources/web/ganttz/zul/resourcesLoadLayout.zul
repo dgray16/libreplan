@@ -23,10 +23,10 @@
     signature="java.lang.String _(java.lang.String name)" ?>
 
 <zk xmlns:n="http://www.zkoss.org/2005/zk/native">
-<zscript><![CDATA[
-resourcesLoadPanel = self;
-]]>
-</zscript>
+    <zscript><![CDATA[
+    resourcesLoadPanel = self;
+    ]]>
+    </zscript>
 
     <borderlayout sclass="resourcesloadlayout" width="auto" height="100%">
        <north height="30px" border="0" sclass="toolbar-box">
@@ -57,10 +57,10 @@ resourcesLoadPanel = self;
 
         <center border="0">
             <borderlayout sclass="resourcesload">
-                <west size="250px" vflex="1" hflex="1" collapsible="true"
+                <west size="250px" vflex="1" hflex="min" collapsible="true"
                     splittable="true" autoscroll="false" border="0">
                     <borderlayout>
-                        <north border="0" height="35px" flex="true" collapsible="true">
+                        <north border="0" height="35px" hflex="1" collapsible="true">
                             <vbox pack="top" align="center">
                             <tree sizedByContent="true" hflex="true" sclass="resourceloaddetailsContainer">
                                 <treecols>
@@ -71,14 +71,15 @@ resourcesLoadPanel = self;
                             </vbox>
                         </north>
                         <center border="0" style="overflow-x:scroll">
-                            <div sclass="leftpanelgap" id="insertionPointLeftPanel"></div>
+                            <div sclass="leftpanelgap" id="insertionPointLeftPanel"/>
                         </center>
                     </borderlayout>
                 </west>
 
                 <center sclass="taskspanel">
                     <borderlayout>
-                        <north border="0"><div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"></div></north>
+                        <north border="0">
+                            <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"></div></north>
                         <center autoscroll="true" border="0" sclass="rightpanellayout">
                             <div id="insertionPointRightPanel" sclass="taskspanelgap"></div>
                         </center>

@@ -43,6 +43,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Columns;
 import org.zkoss.zul.Grid;
@@ -67,9 +68,6 @@ import static org.libreplan.web.I18nHelper._;
  */
 public class AssignedTaskQualityFormsToOrderElementController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG =
-            LogFactory.getLog(AssignedTaskQualityFormsToOrderElementController.class);
-
     private IMessagesForUser messagesForUser;
 
     private static final String ITEM = "item";
@@ -87,6 +85,11 @@ public class AssignedTaskQualityFormsToOrderElementController extends GenericFor
     private IMessagesForUser messages;
 
     private Component messagesContainerTaskQualityForms;
+
+    public AssignedTaskQualityFormsToOrderElementController(){
+        assignedTaskQualityFormsToOrderElementModel =
+                (IAssignedTaskQualityFormsToOrderElementModel) SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

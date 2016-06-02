@@ -55,6 +55,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Chart;
 import org.zkoss.zul.Checkbox;
@@ -98,6 +99,11 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
 
     private Tabbox tabboxOrderElement;
 
+    public ManageOrderElementAdvancesController(){
+        manageOrderElementAdvancesModel =
+                (IManageOrderElementAdvancesModel) SpringUtil.getBean("manageOrderElementAdvancesModel");
+    }
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -112,7 +118,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         return measurements;
     }
 
-    private List<AdvanceAssignment> getAdvanceAssignments() {
+    public List<AdvanceAssignment> getAdvanceAssignments() {
         return manageOrderElementAdvancesModel.getAdvanceAssignments();
     }
 

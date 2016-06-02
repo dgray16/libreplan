@@ -7,6 +7,7 @@
  */
 
 /* ----- Predefined Height dependent styles ----- */
+
 .scheduling-graphics {
     height:200px;
 }
@@ -82,7 +83,7 @@ body .advancedallocationlayout .icono .z-button-cm {
 
 .z-button {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: normal;
 }
 
@@ -813,9 +814,9 @@ div.z-listbox-pgi-b {
     float:left;
 }
 
-.orderTree .not-scheduled span.z-button,
-.orderTree .partially-scheduled span.z-button,
-.orderTree .completely-scheduled span.z-button {
+.orderTree .not-scheduled button.z-button,
+.orderTree .partially-scheduled button.z-button,
+.orderTree .completely-scheduled button.z-button {
     margin: 4px 1px 0 0;
 }
 
@@ -868,9 +869,16 @@ span.z-dottree-line {
     background: none;
 }
 
-.z-menu-body {
-    background-color: #d4e1ef;
-    border-radius: 10px 10px 0 0;
+.z-menu-text {
+    font-weight: normal;
+    text-shadow: none;
+    color: #005782;
+    font-size: 11px;
+    line-height: 8px;
+}
+
+.z-menu-icon {
+    display: none !important;
 }
 
 .z-menu-inner-m .z-menu-btn {
@@ -878,18 +886,52 @@ span.z-dottree-line {
     color: #005782;
 }
 
-.z-menu-body-over .z-menu-inner-m .z-menu-btn,
-.z-menu-body-seld .z-menu-inner-m .z-menu-btn,
-.current-section .z-menu-body .z-menu-inner-m .z-menu-btn {
+.z-menu-selected > .z-menu-content > .z-menu-text,
+.current-section  > .z-menu-content > .z-menu-text {
     color: #FFFFFF;
 }
 
 .z-menubar-horizontal li {
-    background-color: #2a83b4;
-    font-weight: normal;
+    /*background-color: #2a83b4;
+    font-weight: normal;*/
+    background-color: #d4e1ef;
+    border-radius: 10px 10px 0 0;
+    margin: 0 4px 0 4px;
+   /* padding-left: 2px;
+    padding-top: 3px;
+    padding-bottom: 2px;
+    padding-right: 1px;
+    text-decoration: none;*/
 }
 
-.current-section .z-menu-body {
+.current-section {
+    background-image: none;
+    background-color: #2a83b4 !important;
+}
+
+.z-menu-content {
+    padding-right: 10px;
+}
+
+.z-menu-selected > .z-menu-content {
+    box-shadow: none;
+    border-color: transparent;
+    background-image: none;
+    background-color: #2a83b4;
+    border-radius: 10px 10px 0 0;
+}
+
+.z-menu-content:hover {
+    border-color: transparent;
+    background-image: none;
+    background-color: #2a83b4;
+    border-radius: 10px 10px 0 0;
+}
+
+.z-menupopup {
+
+}
+.current-section .z-menu {
     background-color: #2a83b4;
     font-weight: normal;
 }
@@ -911,6 +953,7 @@ span.z-dottree-line {
 }
 
 .z-menubar-horizontal {
+    border-top: none;
     border-bottom: 3px solid #2a83b4;
     padding: 0;
 }
@@ -927,8 +970,8 @@ span.z-dottree-line {
 /* ---- Perspectives ------ */
 .perspective, .perspective-active {
     width: 84px;
-    height: 94px;
-    margin: 0 0 4px 4px;
+   /* height: 94px;*/
+    margin: 0 2px;
 }
 
 .perspective tr td, .perspective-active  tr td {
@@ -936,50 +979,47 @@ span.z-dottree-line {
     font-size: 10px;
 }
 
-.perspective .z-button-cm,
-.perspective-active .z-button-cm {
+
+.perspective ,
+.perspective-active {
     padding-top: 60px;
     background: no-repeat 18px 10px;
-    border-radius: 2px;
+   /* border-radius: 2px;*/
 }
 
-.perspective .z-button-cm {
+.perspective {
     border: 1px solid #FFFFFF;
     background-color: #FFFFFF;
-}
-
-.perspective-active .z-button-cm,
-.perspective-active .z-button-cm:hover,
-.perspective-active .z-button-cm:active,
-.perspective .z-button-cm:hover,
-.perspective .z-button-cm:active {
-    border: 1px solid #CCCCCC;
-}
-
-.perspective-active .z-button-cm,
-.perspective-active .z-button-cm:hover,
-.perspective-active .z-button-cm:active,
-.perspective .z-button-cm:active {
-    background-color: #71B0D4;
-}
-
-.perspective .z-button-cm {
     color: #005782;
     background-repeat: no-repeat;
 }
 
-.perspective-active .z-button-cm {
-    border-radius: 2px;
+.perspective-active,
+.perspective-active:hover,
+.perspective-active:active,
+.perspective:hover,
+.perspective:active {
+    border: 1px solid #CCCCCC;
+}
+
+.perspective-active,
+.perspective-active:focus,
+.perspective-active:hover,
+.perspective-active:active {
     color: #FFFFFF;
+    background-color: #71B0D4;
+}
+
+.perspective-active {
+    /*border-radius: 2px;*/
+    color: #FFFFFF;
+    text-shadow: none;
     border-color:#006699 #DFF5FE #DFF5FE #006699;
 }
 
-.perspective .z-button-cm:hover {
+.perspective:hover {
     background-color: #E6F2F9;
-}
-
-span.perspective, span.perspective-active {
-    margin: 4px 2px;
+    text-shadow: none;
 }
 
 .perspectives-label {
@@ -996,66 +1036,80 @@ span.perspective, span.perspective-active {
     margin-left: 5px;
 }
 
-.z-button.perspective .z-button-cm,
-.z-button.perspective-active .z-button-cm {
+.z-button.perspective,
+.z-button.perspective-active {
+    padding-top: 60px;
     white-space:normal;
 }
 
-
-.perspective-active .company-scheduling .z-button {
+.perspective.company-scheduling ,
+.perspective-active.company-scheduling {
     background-image: url(../img/ico_company-scheduling.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-/*.perspective.company-scheduling .z-button-cm,
-.perspective-active.company-scheduling  .z-button-cm {
-    background-image: url(../img/ico_company-scheduling.png);
-}*/
-/*.perspective
-.perspective-active {
-    background-image: url(../img/ico_company-scheduling.png);
-}*/
-
-.perspective.company-load .z-button-cm,
-.perspective-active.company-load .z-button-cm {
+.perspective.company-load ,
+.perspective-active.company-load  {
     background-image: url(../img/ico_company-load.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.orders .z-button-cm,
-.perspective-active.orders .z-button-cm {
+.perspective.orders ,
+.perspective-active.orders {
     background-image: url(../img/ico_orders.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.order-scheduling .z-button-cm,
-.perspective-active.order-scheduling .z-button-cm {
+.perspective.order-scheduling ,
+.perspective-active.order-scheduling  {
     background-image: url(../img/ico_order-scheduling.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.order-load .z-button-cm,
-.perspective-active.order-load .z-button-cm {
+.perspective.order-load ,
+.perspective-active.order-load {
     background-image: url(../img/ico_order-load.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.limiting-resources .z-button-cm,
-.perspective-active.limiting-resources .z-button-cm {
+.perspective.limiting-resources,
+.perspective-active.limiting-resources {
     background-image: url(../img/ico_limiting-resources.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
 .perspective.hidden {
     display: none;
 }
-.perspective.order-data .z-button-cm,
-.perspective-active.order-data .z-button-cm {
+.perspective.order-data,
+.perspective-active.order-data {
     background-image: url(../img/ico_order-data.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.advanced-allocation .z-button-cm,
-.perspective-active.advanced-allocation .z-button-cm {
+.perspective.advanced-allocation,
+.perspective-active.advanced-allocation  {
     background-image: url(../img/ico_advanced-allocation.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.montecarlo-simulation .z-button-cm,
-.perspective-active.montecarlo-simulation .z-button-cm {
+.perspective.montecarlo-simulation,
+.perspective-active.montecarlo-simulation {
     background-image: url(../img/ico_montecarlo-simulation.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.global-dashboard .z-button-cm,
-.perspective-active.global-dashboard .z-button-cm {
+.perspective.global-dashboard,
+.perspective-active.global-dashboard{
     background-image: url(../img/ico_global-dashboard.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
-.perspective.order-dashboard .z-button-cm,
-.perspective-active.order-dashboard .z-button-cm{
+.perspective.order-dashboard ,
+.perspective-active.order-dashboard {
     background-image: url(../img/ico_order-dashboard.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
 
 .label-highlight:hover{
@@ -1066,18 +1120,18 @@ span.perspective, span.perspective-active {
     margin-top: 5px;
 }
 
-.perspective.logs-global .z-button-cm {
+.perspective.logs-global ,
+.perspective-active.logs-global {
     background-image: url(../img/ico_logs-global.png);
-}
-.perspective-active.logs-global .z-button-cm {
-    background-image: url(../img/ico_logs-global.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
 
-.perspective.logs-order .z-button-cm {
+.perspective.logs-order ,
+.perspective-active.logs-order {
     background-image: url(../img/ico_logs-order.png);
-}
-.perspective-active.logs-order .z-button-cm {
-    background-image: url(../img/ico_logs-order.png);
+    background-repeat: no-repeat;
+    background-position: 18px 10px;
 }
 
 .perspectives-column {
@@ -1095,21 +1149,27 @@ span.perspective, span.perspective-active {
     padding-left:4px;
 }
 
-.toolbar-box span.z-button {
-    margin: 0 0 0 0;
+.toolbar-box button.z-button {
+    margin: 2px 3px 0 0;
 }
 
-.toolbar-box .z-button-cm  {
+.z-button {
+    background-image: none;
+   /* border: 1px solid transparent;*/
+}
+
+.toolbar-box .z-button  {
     background-color: transparent;
     border-color:transparent;
 }
 
-.toolbar-box .z-button-cm:hover  {
+.toolbar-box .z-button:hover  {
+    background-image: none;
     background-color: #E6F2F9;
     border-color:#006699 #DFF5FE #DFF5FE #006699;
 }
 
-.toolbar-box .z-button.z-button-disd .z-button-cm {
+.toolbar-box .z-button.z-button-disd .z-button {
     background-color: transparent;
     border-color: transparent;
 }
@@ -1127,7 +1187,7 @@ span.perspective, span.perspective-active {
 }
 
 
-.toolbar-box .z-button-cm {
+.toolbar-box .z-button {
     font-size:11px;
     color: #0068B1;
 }
@@ -1619,7 +1679,7 @@ input.z-datebox-text-disd {
     font-weight: bold;
 }
 
-.add-resources-or-criteria span {
+.add-resources-or-criteria div {
     white-space: nowrap;
 }
 

@@ -32,8 +32,7 @@
 <zk>
     <window self="@{define(content)}"
         apply="org.libreplan.web.resources.worker.WorkerCRUDController">
-        <vbox id="messagesContainer">
-        </vbox>
+        <vbox id="messagesContainer"/>
 
         <list top_id="listWindow" />
 

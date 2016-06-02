@@ -57,8 +57,8 @@
                 <groupbox closable="false">
                     <caption label="${i18n:_('Progress')}" />
                     <hbox>
-                        <n:div id="global-progress" style="height:230px; width:500px;"></n:div>
-                        <n:div id="task-status" style="height:200px; width:400px; margin-left: 100px;"></n:div>
+                        <n:div id="global-progress" style="height:230px; width:500px;"/>
+                        <n:div id="task-status" style="height:200px; width:400px; margin-left: 100px;"/>
                     </hbox>
                 </groupbox>
 
@@ -75,7 +75,7 @@
                 <groupbox closable="false">
                     <caption label="${i18n:_('Resources')}" />
                     <hbox>
-                        <n:div id="estimation-accuracy" style="height:200px; width:580px;"></n:div>
+                        <n:div id="estimation-accuracy" style="height:200px; width:580px;"/>
 
                         <vbox>
                         <hbox hflex="1" pack="center" vflex="1" style="margin-bottom:5px">
@@ -95,7 +95,7 @@
                             </hbox>
 
                         </n:div>
-                        <n:div style="height:20px"></n:div >
+                            <n:div style="height:20px"/>
                         <label sclass="dashboard-label"
                         value="${i18n:_('Load percentage of resources participating in the project while they are assigned')}"/>
                         </vbox>
@@ -107,9 +107,9 @@
                 <groupbox closable="false">
                     <caption label="${i18n:_('Time')}" />
                     <hbox>
-                        <n:div id="task-completation-lag" style="height:200px; width:580px;"></n:div>
+                        <n:div id="task-completation-lag" style="height:200px; width:580px;"/>
                         <vbox>
-                            <n:div id="deadline-violation" style="height:200px; width:400px;"></n:div>
+                            <n:div id="deadline-violation" style="height:200px; width:400px;"/>
                             <label id="lblAbsolute" sclass="dashboard-label" />
                         </vbox>
                     </hbox>

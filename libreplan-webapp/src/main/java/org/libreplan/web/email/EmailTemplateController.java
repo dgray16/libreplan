@@ -126,8 +126,12 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         Executions.getCurrent().sendRedirect("../planner/index.zul");
     }
 
-    private Language getSelectedLanguage() {
+    public Language getSelectedLanguage() {
         return emailTemplateModel.getLanguage();
+    }
+
+    public String getTest(){
+        return "Test";
     }
 
     private void setSelectedLanguage(Language language){
@@ -140,6 +144,7 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
     public static ListitemRenderer getLanguagesRenderer() {
         return languagesRenderer;
     }
+
     public List<Language> getLanguages() {
         List<Language> languages = new LinkedList<>(Arrays.asList(Language.values()));
         Collections.sort(languages, new Comparator<Language>() {

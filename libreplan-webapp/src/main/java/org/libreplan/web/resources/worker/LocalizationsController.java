@@ -43,7 +43,7 @@ import org.zkoss.zul.Listitem;
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Fernando Bellas Permuy <fbellas@udc.es>
  */
-class LocalizationsController extends GenericForwardComposer {
+public class LocalizationsController extends GenericForwardComposer {
 
     private IWorkerModel workerModel;
 

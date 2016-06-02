@@ -72,6 +72,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import javax.annotation.Resource;
@@ -94,7 +95,6 @@ public class OrderCRUDController extends GenericForwardComposer {
 
     private static final String DEFAULT_TAB = "tabOrderElements";
 
-    @Autowired
     private IOrderModel orderModel;
 
     private IMessagesForUser messagesForUser;
@@ -108,7 +108,6 @@ public class OrderCRUDController extends GenericForwardComposer {
         prepareEditWindow(_("Create project from Template"));
     }
 
-    @Resource
     private IOrderTemplatesControllerEntryPoints orderTemplates;
 
     private Window editWindow;
@@ -159,7 +158,6 @@ public class OrderCRUDController extends GenericForwardComposer {
 
     private TimSynchronizationController timSynchronizationController;
 
-    @Autowired
     private IOrderDAO orderDAO;
 
     private Grid gridAskedEndDates;
@@ -167,6 +165,13 @@ public class OrderCRUDController extends GenericForwardComposer {
     private EndDatesRenderer endDatesRenderer = new EndDatesRenderer();
 
     private Textbox filterProjectName;
+
+    public OrderCRUDController(){
+        orderModel = (IOrderModel) SpringUtil.getBean("orderModel");
+        orderDAO = (IOrderDAO) SpringUtil.getBean("orderDAO");
+        orderTemplates =
+                (IOrderTemplatesControllerEntryPoints) SpringUtil.getBean("orderTemplatesControllerEntryPoints");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -1118,6 +1123,7 @@ public class OrderCRUDController extends GenericForwardComposer {
         if ( projectDetailsController == null ) {
             projectDetailsController = new ProjectDetailsController();
         }
+
         return projectDetailsController;
     }
 

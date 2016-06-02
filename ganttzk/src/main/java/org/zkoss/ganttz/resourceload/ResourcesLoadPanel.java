@@ -96,6 +96,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     private Boolean filterbyResources;
 
     private boolean refreshNameFilter = true;
+
     private int filterByNamePosition = 0;
 
     private int numberOfGroupsByName = 10;
@@ -120,12 +121,11 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     private Component secondOptionalFilter;
 
-    public ResourcesLoadPanel(
-            List<LoadTimeLine> groups,
-            TimeTracker timeTracker,
-            Component componentOnWhichGiveFeedback,
-            boolean expandResourceLoadViewCharts,
-            PaginationType paginationType) {
+    public ResourcesLoadPanel(List<LoadTimeLine> groups,
+                              TimeTracker timeTracker,
+                              Component componentOnWhichGiveFeedback,
+                              boolean expandResourceLoadViewCharts,
+                              PaginationType paginationType) {
 
         this.componentOnWhichGiveFeedback = componentOnWhichGiveFeedback;
         this.expandResourceLoadViewCharts = expandResourceLoadViewCharts;
@@ -219,6 +219,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         getTimeTrackerComponent().updateDayScroll();
         timeTracker.setZoomLevel(zoomLevel);
     }
+
 
     public void zoomIncrease() {
         savePreviousData();

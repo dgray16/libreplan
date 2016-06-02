@@ -30,6 +30,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Row;
@@ -53,6 +54,10 @@ public class OrderAuthorizationController extends GenericForwardComposer{
     private IOrderAuthorizationModel orderAuthorizationModel;
 
     private IMessagesForUser messagesForUser;
+
+    public OrderAuthorizationController(){
+        orderAuthorizationModel = (IOrderAuthorizationModel) SpringUtil.getBean("orderAuthorizationModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

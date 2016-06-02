@@ -44,6 +44,11 @@ public class AssignedMaterialsToOrderElementController extends
 
     private IAssignedMaterialsToOrderElementModel assignedMaterialsToOrderElementModel;
 
+    public AssignedMaterialsToOrderElementController(){
+        assignedMaterialsToOrderElementModel =
+                (IAssignedMaterialsToOrderElementModel) SpringUtil.getBean("assignedMaterialsToOrderElementModel");
+    }
+
     @Override
     protected IAssignedMaterialsModel<OrderElement, MaterialAssignment> getModel() {
         return assignedMaterialsToOrderElementModel;

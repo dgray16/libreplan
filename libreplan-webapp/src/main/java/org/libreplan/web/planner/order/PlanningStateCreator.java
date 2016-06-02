@@ -728,16 +728,12 @@ public class PlanningStateCreator {
 
         private OrderStatusEnum savedOrderState;
 
-        public PlanningState(Order order,
-                Collection<? extends Resource> initialResources,
-                Scenario currentScenario) {
+        public PlanningState(Order order, Collection<? extends Resource> initialResources, Scenario currentScenario) {
             Validate.notNull(order);
             this.order = order;
             rebuildTasksState();
-            this.scenarioInfo = new ChangeScenarioInfoOnSave(
-                    buildScenarioInfo(order), order);
-            this.resources = OrderPlanningModel
-                    .loadRequiredDataFor(new HashSet<Resource>(initialResources));
+            this.scenarioInfo = new ChangeScenarioInfoOnSave(buildScenarioInfo(order), order);
+            this.resources = OrderPlanningModel.loadRequiredDataFor(new HashSet<>(initialResources));
             associateWithScenario(this.resources);
             this.orderAuthorizations = loadOrderAuthorizations();
             this.savedOrderState = order.getState();

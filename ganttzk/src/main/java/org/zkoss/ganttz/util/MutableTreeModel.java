@@ -52,6 +52,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private static class Node<T> {
+
         private T value;
 
         private List<Node<T>> children = new LinkedList<>();
@@ -201,7 +202,6 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         this.root = root;
     }
 
-
     public int[] getPath(Object parent, Object last) {
         Node<T> parentNode = find(parent);
         Node<T> lastNode = find(last);
@@ -267,6 +267,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     @Override
     public int getChildCount(Object parent) {
         Node<T> node = find(parent);
+
 
         return node.children.size();
     }

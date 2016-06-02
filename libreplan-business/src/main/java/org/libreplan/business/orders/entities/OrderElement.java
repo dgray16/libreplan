@@ -547,11 +547,12 @@ OrderElement extends IntegrationEntity implements ICriterionRequirable, ITreeNod
     public abstract List<OrderElement> getChildren();
 
     private static Date copy(Date date) {
-        return date != null ? new Date(date.getTime()) : date;
+        return date != null ? new Date(date.getTime()) : null;
     }
 
     public Date getInitDate() {
-        return copy(initDate);
+        /*return copy(initDate);*/
+        return initDate;
     }
 
     public void setInitDate(Date initDate) {
@@ -601,7 +602,7 @@ OrderElement extends IntegrationEntity implements ICriterionRequirable, ITreeNod
         this.getInfoComponent().setCode(code);
     }
 
-    @NotEmpty(message = "code not specified")
+
     public String getCode() {
         return getInfoComponent().getCode();
     }

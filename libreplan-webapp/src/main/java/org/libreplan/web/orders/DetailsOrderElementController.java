@@ -25,6 +25,7 @@ import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.web.common.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Datebox;
 
 /**
@@ -38,6 +39,10 @@ public class DetailsOrderElementController extends GenericForwardComposer {
     private IOrderElementModel orderElementModel;
 
     private Datebox deadline;
+
+    public DetailsOrderElementController(){
+        orderElementModel = (IOrderElementModel) SpringUtil.getBean("orderElementModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {

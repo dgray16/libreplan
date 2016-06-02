@@ -166,7 +166,7 @@ public class BandboxSearch extends HtmlMacroComponent {
         updateWidth();
     }
 
-    private void pickElementFromList() {
+    public void pickElementFromList() {
         final Object object = getSelectedItem().getValue();
         bandbox.setValue(finder.objectToString(object));
         setSelectedElement(object);

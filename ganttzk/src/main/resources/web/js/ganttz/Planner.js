@@ -36,7 +36,7 @@ ganttz.Planner = zk.$extends(zk.Macro,{
         DOMTimetracker.width(DOMScrollContainer.innerWidth());
         this.adjustWatermark();
         // Inner divs need recalculation to adjust to new scroll displacement lenght
-        ganttz.GanttPanel.getInstance().reScrollY(jq('#listdetails_container').height());
+     //   ganttz.GanttPanel.getInstance().reScrollY(jq('#listdetails_container').height());
 
         // Inner divs need recalculation to adjust to new scroll displacement lenght
         ganttz.GanttPanel.getInstance().reScrollX(DOMWatermark.outerWidth());

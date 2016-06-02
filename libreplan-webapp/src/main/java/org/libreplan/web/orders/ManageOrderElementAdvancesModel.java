@@ -80,8 +80,7 @@ import org.zkoss.zul.XYModel;
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ManageOrderElementAdvancesModel implements
-        IManageOrderElementAdvancesModel {
+public class ManageOrderElementAdvancesModel implements IManageOrderElementAdvancesModel {
 
     private static final Log LOG = LogFactory
             .getLog(ManageOrderElementAdvancesModel.class);

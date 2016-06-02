@@ -719,7 +719,7 @@ public class WorkerCRUDController extends GenericForwardComposer<Component> impl
         resourceCalendarModel.cancel();
     }
 
-    private boolean isVirtualWorker() {
+    public boolean isVirtualWorker() {
         boolean isVirtual = false;
         if ( this.workerModel != null ) {
             if ( this.workerModel.getWorker() != null ) {
@@ -1044,7 +1044,7 @@ public class WorkerCRUDController extends GenericForwardComposer<Component> impl
         return workerModel.getPossibleUsersToBound();
     }
 
-    private User getBoundUser() {
+    public User getBoundUser() {
         return workerModel.getBoundUser();
     }
 
@@ -1114,7 +1114,7 @@ public class WorkerCRUDController extends GenericForwardComposer<Component> impl
                                 | Messagebox.CANCEL, Messagebox.QUESTION);
     }
 
-    private boolean isNoRoleUserAccounts() {
+    public boolean isNoRoleUserAccounts() {
         return !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_USER_ACCOUNTS);
     }
 
