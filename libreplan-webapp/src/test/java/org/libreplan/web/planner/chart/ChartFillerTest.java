@@ -233,28 +233,19 @@ public class ChartFillerTest {
         project.setResponsible("human");
         project.setCode("code-" + UUID.randomUUID());
 
-        BaseCalendar baseCalendar = adHocTransaction.runOnReadOnlyTransaction(new IOnTransaction<BaseCalendar>() {
-            @Override
-            public BaseCalendar execute() {
-                BaseCalendar result =
-                        configurationDAO.getConfigurationWithReadOnlyTransaction().getDefaultCalendar();
+        BaseCalendar baseCalendar = adHocTransaction.runOnReadOnlyTransaction(() -> {
+            BaseCalendar result =
+                    configurationDAO.getConfigurationWithReadOnlyTransaction().getDefaultCalendar();
 
-                BaseCalendarModel.forceLoadBaseCalendar(result);
-                return result;
-            }
+            BaseCalendarModel.forceLoadBaseCalendar(result);
+            return result;
         });
 
         project.setCalendar(baseCalendar);
 
         // Create planningState
         PlanningState planningState =
-                adHocTransaction.runOnAnotherReadOnlyTransaction(new IOnTransaction<PlanningState>() {
-
-            @Override
-            public PlanningStateCreator.PlanningState execute() {
-                return planningStateCreator.createOn(EasyMock.createNiceMock(Desktop.class), project);
-            }
-        });
+                adHocTransaction.runOnAnotherReadOnlyTransaction(() -> planningStateCreator.createOn(EasyMock.createNiceMock(Desktop.class), project));
 
         orderModel.setPlanningState(planningState);
         orderModel.save();

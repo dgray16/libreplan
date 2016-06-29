@@ -43,7 +43,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.libreplan.business.common.BaseEntity;
 import org.libreplan.business.common.Configuration;
-import org.libreplan.business.common.IOnTransaction;
 import org.libreplan.business.common.Registry;
 import org.zkoss.bind.DefaultBinder;
 import org.zkoss.ganttz.util.ComponentsFinder;
@@ -180,6 +179,7 @@ public class Util {
             result.add(each);
             result.addAll(getAllDescendants(each));
         }
+
         return result;
     }
 
@@ -227,12 +227,12 @@ public class Util {
      * @param <T>
      *           The type of the variable to be returned.
      */
-    public static interface Getter<T> {
+    public interface Getter<T> {
         /**
          * Typical get method that returns a variable.
          * @return A variable of type <T>.
          */
-        public T get();
+        T get();
     }
 
     /**
@@ -241,13 +241,13 @@ public class Util {
      * @param <T>
      *            The type of the variable to be set.
      */
-    public static interface Setter<T> {
+    public interface Setter<T> {
         /**
          * Typical set method to store a variable.
          * @param value
          *            A variable of type <T> to be set.
          */
-        public void set(T value);
+        void set(T value);
     }
 
     /**
@@ -262,6 +262,7 @@ public class Util {
     public static Textbox bind(Textbox textBox, Getter<String> getter) {
         textBox.setValue(getter.get());
         textBox.setDisabled(true);
+
         return textBox;
     }
 
@@ -278,19 +279,15 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Textbox} bound
      */
-    public static Textbox bind(final Textbox textBox,
-            final Getter<String> getter, final Setter<String> setter) {
+    public static Textbox bind(final Textbox textBox, final Getter<String> getter, final Setter<String> setter) {
         textBox.setValue(getter.get());
-        textBox.addEventListener(Events.ON_CHANGE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                InputEvent newInput = (InputEvent) event;
-                String value = newInput.getValue();
-                setter.set(value);
-                textBox.setValue(getter.get());
-            }
+        textBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+            InputEvent newInput = (InputEvent) event;
+            String value = newInput.getValue();
+            setter.set(value);
+            textBox.setValue(getter.get());
         });
+
         return textBox;
     }
 
@@ -306,6 +303,7 @@ public class Util {
     public static Combobox bind(Combobox comboBox, Getter<Comboitem> getter) {
         comboBox.setSelectedItem(getter.get());
         comboBox.setDisabled(true);
+
         return comboBox;
     }
 
@@ -323,16 +321,14 @@ public class Util {
      * @return The {@link Textbox} bound
      */
     public static Combobox bind(final Combobox comboBox,
-            final Getter<Comboitem> getter, final Setter<Comboitem> setter) {
+                                final Getter<Comboitem> getter,
+                                final Setter<Comboitem> setter) {
         comboBox.setSelectedItem(getter.get());
-        comboBox.addEventListener("onSelect", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                setter.set(comboBox.getSelectedItem());
-                comboBox.setSelectedItem(getter.get());
-            }
+        comboBox.addEventListener("onSelect", (EventListener<Event>) event -> {
+            setter.set(comboBox.getSelectedItem());
+            comboBox.setSelectedItem(getter.get());
         });
+
         return comboBox;
     }
 
@@ -348,6 +344,7 @@ public class Util {
     public static Intbox bind(Intbox intBox, Getter<Integer> getter) {
         intBox.setValue(getter.get());
         intBox.setDisabled(true);
+
         return intBox;
     }
 
@@ -364,22 +361,18 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Intbox} bound
      */
-    public static Intbox bind(final Intbox intBox,
-            final Getter<Integer> getter, final Setter<Integer> setter) {
+    public static Intbox bind(final Intbox intBox, final Getter<Integer> getter, final Setter<Integer> setter) {
         intBox.setValue(getter.get());
-        intBox.addEventListener(Events.ON_CHANGE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                InputEvent newInput = (InputEvent) event;
-                String value = newInput.getValue().trim();
-                if (value.isEmpty()) {
-                    value = "0";
-                }
-                setter.set(Integer.valueOf(value));
-                intBox.setValue(getter.get());
+        intBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+            InputEvent newInput = (InputEvent) event;
+            String value = newInput.getValue().trim();
+            if (value.isEmpty()) {
+                value = "0";
             }
+            setter.set(Integer.valueOf(value));
+            intBox.setValue(getter.get());
         });
+
         return intBox;
     }
 
@@ -395,6 +388,7 @@ public class Util {
     public static Datebox bind(final Datebox dateBox, final Getter<Date> getter) {
         dateBox.setValue(getter.get());
         dateBox.setDisabled(true);
+
         return dateBox;
     }
 
@@ -411,17 +405,13 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Datebox} bound
      */
-    public static Datebox bind(final Datebox dateBox,
-            final Getter<Date> getter, final Setter<Date> setter) {
+    public static Datebox bind(final Datebox dateBox, final Getter<Date> getter, final Setter<Date> setter) {
         dateBox.setValue(getter.get());
-        dateBox.addEventListener(Events.ON_CHANGE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                setter.set(dateBox.getValue());
-                dateBox.setValue(getter.get());
-            }
+        dateBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+            setter.set(dateBox.getValue());
+            dateBox.setValue(getter.get());
         });
+
         return dateBox;
     }
 
@@ -437,6 +427,7 @@ public class Util {
     public static Timebox bind(final Timebox timeBox, final Getter<Date> getter) {
         timeBox.setValue(getter.get());
         timeBox.setDisabled(true);
+
         return timeBox;
     }
 
@@ -453,17 +444,13 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Timebox} bound
      */
-    public static Timebox bind(final Timebox timeBox,
-            final Getter<Date> getter, final Setter<Date> setter) {
+    public static Timebox bind(final Timebox timeBox, final Getter<Date> getter, final Setter<Date> setter) {
         timeBox.setValue(getter.get());
-        timeBox.addEventListener(Events.ON_CHANGE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                setter.set(timeBox.getValue());
-                timeBox.setValue(getter.get());
-            }
+        timeBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+            setter.set(timeBox.getValue());
+            timeBox.setValue(getter.get());
         });
+
         return timeBox;
     }
 
@@ -477,10 +464,10 @@ public class Util {
      *            The {@link Getter} interface that will implement a get method.
      * @return The {@link Decimalbox} bound
      */
-    public static Decimalbox bind(final Decimalbox decimalBox,
-            final Getter<BigDecimal> getter) {
+    public static Decimalbox bind(final Decimalbox decimalBox, final Getter<BigDecimal> getter) {
         decimalBox.setValue(getter.get());
         decimalBox.setDisabled(true);
+
         return decimalBox;
     }
 
@@ -497,17 +484,13 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Decimalbox} bound
      */
-    public static Decimalbox bind(final Decimalbox decimalBox,
-            final Getter<BigDecimal> getter, final Setter<BigDecimal> setter) {
+    public static Decimalbox bind(final Decimalbox decimalBox, final Getter<BigDecimal> getter, final Setter<BigDecimal> setter) {
         decimalBox.setValue(getter.get());
-        decimalBox.addEventListener(Events.ON_CHANGE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                setter.set(decimalBox.getValue());
-                decimalBox.setValue(getter.get());
-            }
+        decimalBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+            setter.set(decimalBox.getValue());
+            decimalBox.setValue(getter.get());
         });
+
         return decimalBox;
     }
 
@@ -521,10 +504,10 @@ public class Util {
      *            The {@link Getter} interface that will implement a get method.
      * @return The {@link Checkbox} bound
      */
-    public static Checkbox bind(final Checkbox checkBox,
-            final Getter<Boolean> getter) {
+    public static Checkbox bind(final Checkbox checkBox, final Getter<Boolean> getter) {
         checkBox.setChecked(getter.get());
         checkBox.setDisabled(true);
+
         return checkBox;
     }
 
@@ -540,16 +523,11 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Checkbox} bound
      */
-    public static Checkbox bind(final Checkbox checkBox,
-            final Getter<Boolean> getter, final Setter<Boolean> setter) {
+    public static Checkbox bind(final Checkbox checkBox, final Getter<Boolean> getter, final Setter<Boolean> setter) {
         checkBox.setChecked(getter.get());
-        checkBox.addEventListener(Events.ON_CHECK, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                setter.set(checkBox.isChecked());
-                checkBox.setChecked(getter.get());
-            }
+        checkBox.addEventListener(Events.ON_CHECK, (EventListener<Event>) event -> {
+            setter.set(checkBox.isChecked());
+            checkBox.setChecked(getter.get());
         });
         return checkBox;
     }
@@ -567,6 +545,7 @@ public class Util {
     public static Radio bind(final Radio radio, final Getter<Boolean> getter) {
         radio.setSelected(getter.get());
         radio.setDisabled(true);
+
         return radio;
     }
 
@@ -583,17 +562,13 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Radio} bound
      */
-    public static Radio bind(final Radio radio, final Getter<Boolean> getter,
-            final Setter<Boolean> setter) {
+    public static Radio bind(final Radio radio, final Getter<Boolean> getter, final Setter<Boolean> setter) {
         radio.setSelected(getter.get());
-        radio.addEventListener(Events.ON_CHECK, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                setter.set(radio.isSelected());
-                radio.setChecked(getter.get());
-            }
+        radio.addEventListener(Events.ON_CHECK, event -> {
+            setter.set(radio.isSelected());
+            radio.setChecked(getter.get());
         });
+
         return radio;
     }
 
@@ -627,19 +602,15 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Bandbox} bound
      */
-    public static Bandbox bind(final Bandbox bandBox,
-            final Getter<String> getter, final Setter<String> setter) {
+    public static Bandbox bind(final Bandbox bandBox, final Getter<String> getter, final Setter<String> setter) {
         bandBox.setValue(getter.get());
-        bandBox.addEventListener(Events.ON_CHANGE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                InputEvent newInput = (InputEvent) event;
-                String value = newInput.getValue();
-                setter.set(value);
-                bandBox.setValue(getter.get());
-            }
+        bandBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+            InputEvent newInput = (InputEvent) event;
+            String value = newInput.getValue();
+            setter.set(value);
+            bandBox.setValue(getter.get());
         });
+
         return bandBox;
     }
 
@@ -682,13 +653,12 @@ public class Util {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Component> T findComponentAt(Component container,
-            String idOfComponentToBeFound) {
+    public static <T extends Component> T findComponentAt(Component container, String idOfComponentToBeFound) {
         return (T) container.getFellow(idOfComponentToBeFound);
     }
 
     public interface ICreation<T extends Component> {
-        public T createAt(Component parent);
+        T createAt(Component parent);
     }
 
     public static <T extends Component> T findOrCreate(Component container,
@@ -699,6 +669,7 @@ public class Util {
         if (!existent.isEmpty()) {
             return existent.get(0);
         }
+
         return ifNotFound.createAt(container);
     }
 
@@ -726,9 +697,10 @@ public class Util {
      * @param uniqueListeners
      *            new listeners to add
      */
-    public static void ensureUniqueListeners(Component component,
-            String eventName, EventListener... uniqueListeners) {
+    public static void ensureUniqueListeners(Component component, String eventName, EventListener... uniqueListeners) {
+        //TODO Replace deprecated method
         Iterator<?> listenerIterator = component.getListenerIterator(eventName);
+
         while (listenerIterator.hasNext()) {
             listenerIterator.next();
             listenerIterator.remove();
@@ -754,13 +726,7 @@ public class Util {
      */
     public static String getCurrencySymbol() {
         return Registry.getTransactionService().runOnReadOnlyTransaction(
-                new IOnTransaction<String>() {
-                    @Override
-                    public String execute() {
-                        return Registry.getConfigurationDAO()
-                                .getConfiguration().getCurrencySymbol();
-                    }
-                });
+                () -> Registry.getConfigurationDAO().getConfiguration().getCurrencySymbol());
     }
 
     /**
@@ -770,9 +736,9 @@ public class Util {
      */
     public static String addCurrencySymbol(BigDecimal value) {
         value = (value == null ? BigDecimal.ZERO : value);
-        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat
-                .getInstance();
+        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
         decimalFormat.applyPattern(getMoneyFormat());
+
         return decimalFormat.format(value);
     }
 
@@ -793,9 +759,9 @@ public class Util {
      */
     private static String escapeDecimalFormatSpecialChars(String currencySymbol) {
         for (String specialChar : DECIMAL_FORMAT_SPECIAL_CHARS) {
-            currencySymbol = currencySymbol.replace(specialChar, "'"
-                    + specialChar + "'");
+            currencySymbol = currencySymbol.replace(specialChar, "'" + specialChar + "'");
         }
+
         return currencySymbol;
     }
 
@@ -846,14 +812,14 @@ public class Util {
      * Checks if the <code>entity</code> is contained in the provided
      * <code>list</code>.
      */
-    public static boolean contains(List<? extends BaseEntity> list,
-            BaseEntity entity) {
+    public static boolean contains(List<? extends BaseEntity> list, BaseEntity entity) {
         for (BaseEntity each : list) {
             if (each.getId() != null && entity.getId() != null
                     && each.getId().equals(entity.getId())) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -864,8 +830,7 @@ public class Util {
      */
     public static void sendForbiddenStatusCodeInHttpServletResponse() {
         try {
-            HttpServletResponse response = (HttpServletResponse) Executions
-                    .getCurrent().getNativeResponse();
+            HttpServletResponse response = (HttpServletResponse) Executions.getCurrent().getNativeResponse();
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -880,8 +845,8 @@ public class Util {
         if (date == null) {
             return "";
         }
-        return DateFormat.getDateInstance(DateFormat.DEFAULT,
-                Locales.getCurrent()).format(date);
+
+        return DateFormat.getDateInstance(DateFormat.DEFAULT, Locales.getCurrent()).format(date);
     }
 
     /**
@@ -892,6 +857,7 @@ public class Util {
         if (dateTime == null) {
             return "";
         }
+
         return DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
                 DateFormat.DEFAULT, Locales.getCurrent()).format(dateTime);
     }
@@ -904,6 +870,7 @@ public class Util {
         if (dateTime == null) {
             return "";
         }
+
         return formatDate(dateTime.toDate());
     }
 
@@ -915,6 +882,7 @@ public class Util {
         if (date == null) {
             return "";
         }
+
         return formatDate(date.toDateTimeAtStartOfDay());
     }
 
@@ -926,8 +894,8 @@ public class Util {
         if (time == null) {
             return "";
         }
-        return DateFormat.getTimeInstance(DateFormat.SHORT,
-                Locales.getCurrent()).format(time);
+
+        return DateFormat.getTimeInstance(DateFormat.SHORT, Locales.getCurrent()).format(time);
     }
 
     /**
@@ -938,6 +906,7 @@ public class Util {
         if (time == null) {
             return "";
         }
+
         return formatTime(time.toDateTimeToday().toDate());
     }
 

@@ -27,6 +27,6 @@
         rsController = arg.get("LimitingResourcesController");;
     ]]>
     </zscript>
-    <div apply="${rsController}" self="@{define(content)}">
+    <div apply="${rsController}" sclass="parentLimitingResource" self="@{define(content)}">
     </div>
 </zk>

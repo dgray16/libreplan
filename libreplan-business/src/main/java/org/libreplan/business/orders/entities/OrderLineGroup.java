@@ -493,8 +493,7 @@ public class OrderLineGroup extends OrderElement implements ITreeParentNode<Orde
     }
 
     @Override
-    public DirectAdvanceAssignment calculateFakeDirectAdvanceAssignment(
-            IndirectAdvanceAssignment indirectAdvanceAssignment) {
+    public DirectAdvanceAssignment calculateFakeDirectAdvanceAssignment(IndirectAdvanceAssignment indirectAdvanceAssignment) {
 
         if ( indirectAdvanceAssignment.getAdvanceType().getUnitName().equals(
                 PredefinedAdvancedTypes.CHILDREN.getTypeName()) ) {
@@ -504,7 +503,7 @@ public class OrderLineGroup extends OrderElement implements ITreeParentNode<Orde
             Set<DirectAdvanceAssignment> directAdvanceAssignments =
                     getAllDirectAdvanceAssignments(indirectAdvanceAssignment.getAdvanceType());
 
-            return mergeAdvanceAssignments(new ArrayList<DirectAdvanceAssignment>(directAdvanceAssignments));
+            return mergeAdvanceAssignments(new ArrayList<>(directAdvanceAssignments));
         }
     }
 

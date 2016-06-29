@@ -37,7 +37,7 @@
                     <vbox>
                         <label value="${i18n:_('Password cannot be managed for LDAP users because LDAP authentication is enabled.')}" visible="@{controller.ldapUserLdapConfiguration}" />
                     </vbox>
-                    <grid fixedLayout="false" span="true">
+                    <grid fixedLayout="true" span="true">
                         <columns>
                             <column width="200px" />
                             <column />
@@ -96,7 +96,7 @@
 
                     <groupbox closable="false" id="boundResourceGroupbox">
                     <caption label="${i18n:_('Bound resource')}" />
-                    <grid fixedLayout="false" span="true">
+                    <grid fixedLayout="true" span="true">
                         <columns>
                             <column width="200px" />
                             <column />
@@ -130,7 +130,7 @@
                     </vbox>
                     <hbox align="center">
                         <combobox id="userRolesCombo" autodrop="true" />
-                        <button label="${i18n:_('Add role')}"
+                        <button label="${i18n:_('Add role')}" sclass="createButton"
                             onClick="controller.addSelectedRole()"
                             disabled="@{controller.areRolesAndProfilesDisabled}" />
                     </hbox>
@@ -151,7 +151,7 @@
                     </vbox>
                     <hbox align="center">
                         <combobox id="profilesCombo" autodrop="true" />
-                        <button label="${i18n:_('Add profile')}"
+                        <button label="${i18n:_('Add profile')}" sclass="createButton"
                             onClick="controller.addSelectedProfile()"
                             disabled="@{controller.areRolesAndProfilesDisabled}" />
                     </hbox>

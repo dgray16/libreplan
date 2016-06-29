@@ -155,33 +155,29 @@ public class SubcontractedTasksController extends GenericForwardComposer {
             return subcontractedTaskData.getTask().getName();
         }
 
-        private String getExternalCompany(
-                SubcontractedTaskData subcontractedTaskData) {
+        private String getExternalCompany(SubcontractedTaskData subcontractedTaskData) {
             return subcontractedTaskData.getExternalCompany().getName();
         }
 
-        private void appendOperations(Row row,
-                SubcontractedTaskData subcontractedTaskData) {
+        private void appendOperations(Row row, SubcontractedTaskData subcontractedTaskData) {
             Vbox vbox = new Vbox();
             vbox.appendChild(getExportButton(subcontractedTaskData));
             vbox.appendChild(getSendButton(subcontractedTaskData));
             row.appendChild(vbox);
         }
 
-        private Button getExportButton(
-                final SubcontractedTaskData subcontractedTaskData) {
+        private Button getExportButton(final SubcontractedTaskData subcontractedTaskData) {
             Button exportButton = new Button("XML");
+            exportButton.setClass("createButton");
             exportButton.addEventListener(Events.ON_CLICK, new EventListener() {
 
                 IServletRequestHandler requestHandler = new IServletRequestHandler() {
 
                     @Override
-                    public void handle(HttpServletRequest request,
-                            HttpServletResponse response)
+                    public void handle(HttpServletRequest request, HttpServletResponse response)
                             throws ServletException, IOException {
                         response.setContentType("text/xml");
-                        String xml = subcontractedTasksModel
-                                .exportXML(subcontractedTaskData);
+                        String xml = subcontractedTasksModel.exportXML(subcontractedTaskData);
                         response.getWriter().write(xml);
                     }
 
@@ -190,8 +186,7 @@ public class SubcontractedTasksController extends GenericForwardComposer {
                 @Override
                 public void onEvent(Event event) {
                     String uri = CallbackServlet.registerAndCreateURLFor(
-                            (HttpServletRequest) Executions.getCurrent()
-                                    .getNativeRequest(), requestHandler, false,
+                            (HttpServletRequest) Executions.getCurrent().getNativeRequest(), requestHandler, false,
                             DisposalMode.WHEN_NO_LONGER_REFERENCED);
 
                     Executions.getCurrent().sendRedirect(uri, "_blank");
@@ -202,30 +197,22 @@ public class SubcontractedTasksController extends GenericForwardComposer {
             return exportButton;
         }
 
-        private Button getSendButton(
-                final SubcontractedTaskData subcontractedTaskData) {
+        private Button getSendButton(final SubcontractedTaskData subcontractedTaskData) {
             Button sendButton = new Button(_("Send"));
-            sendButton.addEventListener(Events.ON_CLICK, new EventListener() {
-
-                @Override
-                public void onEvent(Event event) {
-                    try {
-                        subcontractedTasksModel
-                                .sendToSubcontractor(subcontractedTaskData);
-                        messagesForUser.showMessage(Level.INFO,
-                                _("Subcontracted task sent successfully"));
-                    } catch (UnrecoverableErrorServiceException e) {
-                        messagesForUser
-                                .showMessage(Level.ERROR, e.getMessage());
-                    } catch (ConnectionProblemsException e) {
-                        messagesForUser
-                                .showMessage(Level.ERROR, e.getMessage());
-                    } catch (ValidationException e) {
-                        messagesForUser.showInvalidValues(e);
-                    }
-                    reload();
+            sendButton.setClass("createButton");
+            sendButton.addEventListener(Events.ON_CLICK, event -> {
+                try {
+                    subcontractedTasksModel.sendToSubcontractor(subcontractedTaskData);
+                    messagesForUser.showMessage(Level.INFO,
+                            _("Subcontracted task sent successfully"));
+                } catch (UnrecoverableErrorServiceException e) {
+                    messagesForUser.showMessage(Level.ERROR, e.getMessage());
+                } catch (ConnectionProblemsException e) {
+                    messagesForUser.showMessage(Level.ERROR, e.getMessage());
+                } catch (ValidationException e) {
+                    messagesForUser.showInvalidValues(e);
                 }
-
+                reload();
             });
 
             sendButton.setDisabled(!subcontractedTaskData.isSendable());
@@ -239,13 +226,14 @@ public class SubcontractedTasksController extends GenericForwardComposer {
         forceSortGridSatisfaction();
     }
 
-    private void forceSortGridSatisfaction() {
+    public void forceSortGridSatisfaction() {
         Column column = columnBySort;
-        //TODO Check this ? ListModelExt or Sortable
         Sortable model = (Sortable) listing.getModel();
-        if ( "ascending".equals(column.getSortDirection()) ) {
+
+        if ("ascending".equals(column.getSortDirection())) {
             model.sort(column.getSortAscending(), true);
         }
+
         if ( "descending".equals(column.getSortDirection()) ) {
             model.sort(column.getSortDescending(), false);
         }

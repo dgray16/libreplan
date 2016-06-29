@@ -25,11 +25,11 @@
         <hbox align="pack">
                 <separator bar="false" spacing="20px" orient="vertical"/>
                 <label value="${i18n:_('New criterion')}" />
-                <button onClick="assignedCriterionsController.addCriterionSatisfaction();"
+                <button onClick="assignedCriterionsController.addCriterionSatisfaction();" sclass="createButton"
                     label="${i18n:_('Add')}" />
         </hbox>
         <div align="right">
-                <label class="subtitulo" value="${i18n:_('Show only current satisfied criteria')}" />
+                <label sclass="subtitulo" value="${i18n:_('Show only current satisfied criteria')}" />
                 <checkbox id="criterionFilterCheckbox" onCheck="assignedCriterionsController.reload();" />
                 <separator bar="false" spacing="20px" orient="vertical"/>
         </div>

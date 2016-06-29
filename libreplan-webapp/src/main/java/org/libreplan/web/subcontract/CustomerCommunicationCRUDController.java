@@ -19,7 +19,6 @@
 
 package org.libreplan.web.subcontract;
 
-import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.externalcompanies.entities.CommunicationType;
 import org.libreplan.business.externalcompanies.entities.CustomerCommunication;
@@ -30,7 +29,6 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.planner.tabs.IGlobalViewEntryPoints;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
@@ -161,15 +159,10 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
             checkBoxReviewed.setChecked(customerCommunication.getReviewed());
 
             checkBoxReviewed.addEventListener(Events.ON_CHECK,
-                    new EventListener() {
-
-                        @Override
-                        public void onEvent(Event arg0) throws Exception {
-                            customerCommunication.setReviewed(checkBoxReviewed.isChecked());
-                            save(customerCommunication);
-                            updateRowClass(row,checkBoxReviewed.isChecked());
-                        }
-
+                    arg0 -> {
+                        customerCommunication.setReviewed(checkBoxReviewed.isChecked());
+                        save(customerCommunication);
+                        updateRowClass(row,checkBoxReviewed.isChecked());
                     });
 
             row.appendChild(checkBoxReviewed);
@@ -188,12 +181,7 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
             buttonEdit.setImage("/common/img/ico_editar1.png");
             buttonEdit.setHoverImage("/common/img/ico_editar.png");
             buttonEdit.setTooltiptext(_("Edit"));
-            buttonEdit.addEventListener(Events.ON_CLICK, new EventListener() {
-                @Override
-                public void onEvent(Event arg0) throws Exception {
-                    goToEdit(customerCommunication);
-                }
-            });
+            buttonEdit.addEventListener(Events.ON_CLICK, arg0 -> goToEdit(customerCommunication));
             row.appendChild(buttonEdit);
         }
     }

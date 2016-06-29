@@ -31,8 +31,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.collections4.iterators.EntrySetMapIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.zkoss.ganttz.data.TaskLeaf;
 import org.zkoss.zul.AbstractTreeModel;
 import org.zkoss.zul.event.TreeDataEvent;
 
@@ -51,7 +53,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
     }
 
-    private static class Node<T> {
+    public static class Node<T> {
 
         private T value;
 
@@ -59,7 +61,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
         private Node<T> parentNode;
 
-        private Node(T value) {
+        public Node(T value) {
             this.value = value;
         }
 
@@ -177,15 +179,34 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private Node<T> find(Object domainObject) {
+
+        for (Map.Entry<T, Node<T>> item : nodesByDomainObject.entrySet()) {
+            if(item.getKey() != null) {
+                if (item.getKey().equals(domainObject)) {
+                    return item.getValue();
+                }
+            }
+        }
+
+
         return nodesByDomainObject.get(domainObject);
     }
 
     private static <T> T unwrap(Node<T> node) {
+    //TODO To rewrite code correctly
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            for (int i = 0; i < stackTraceElements.length; i++) {
+                if (node.children.size() > 0 && stackTraceElements[i].getMethodName().equals("getAssociatedNode")) {
+
+                    return node.children.get(0).value;
+                }
+            }
+
         return node == null ? null : node.value;
     }
 
     public static <T> MutableTreeModel<T> create(Class<T> type) {
-        return new MutableTreeModel<>(type, new Node<T>(null));
+        return new MutableTreeModel<>(type, new Node<>(null));
     }
 
     public static <T> MutableTreeModel<T> create(Class<T> type, T root) {
@@ -259,14 +280,33 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
     @Override
     public T getChild(Object parent, int index) {
-        Node<T> node = find(parent);
+        Node<T> node;
+
+        if(parent == null){
+            return unwrap(find(null).children.get(index));
+        }
+
+        if(parent instanceof TaskLeaf || parent instanceof MutableTreeModel.Node ||
+                parent.getClass().toString().equals("class org.libreplan.business.orders.entities.OrderLine")){
+            node = find(this.root.value);
+        } else {
+            node = find(parent);
+        }
 
         return unwrap(node.children.get(index));
     }
 
     @Override
     public int getChildCount(Object parent) {
-        Node<T> node = find(parent);
+        //TODO To rewrite code correctly
+        Node<T> node;
+
+            if (parent instanceof MutableTreeModel.Node &&
+                    this.root.value.getClass().toString().equals("class org.libreplan.business.orders.entities.Order")) {
+                node = find(this.root.value);
+            } else {
+                node = find(parent);
+            }
 
 
         return node.children.size();
@@ -275,6 +315,12 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     @Override
     public boolean isLeaf(Object object) {
         Node<T> node = find(object);
+
+   /*     if(object.getClass().toString().equals("class org.libreplan.business.materials.entities.MaterialCategory")){
+            node = find(this.root.value);
+        } else {
+            node = find(object);
+        }*/
 
         return node.children.isEmpty();
     }
@@ -289,13 +335,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private IChildrenExtractor<T> noChildrenExtractor() {
-        return new IChildrenExtractor<T>() {
-
-            @Override
-            public List<? extends T> getChildren(T parent) {
-                return Collections.emptyList();
-            }
-        };
+        return parent -> Collections.emptyList();
     }
 
     private void add(Node<T> parent, Integer position, List<Node<T>> children, IChildrenExtractor<T> extractor) {
@@ -364,8 +404,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         Node<T> found = find(node);
 
         if ( found.isRoot() ) {
-            throw new IllegalArgumentException(node
-                    + " is root. It can't be removed");
+            throw new IllegalArgumentException(node + " is root. It can't be removed");
         }
 
         int positionInParent = found.remove();

@@ -179,17 +179,13 @@ public class BandboxSearch extends HtmlMacroComponent {
 
     public void setSelectedElement(Object obj) {
         bandbox.setAttribute("selectedElement", obj, true);
-        /*final Object object = getSelectedItem().getValue();
-        if(object != null) {
 
-        }*/
         if ( obj != null ) {
             bandbox.setValue(finder.objectToString(obj));
         } else {
             bandbox.setValue("");
         }
 
-        //TODO find new ZK binding org.zkoss.bind!
         DataBinder binder = Util.getBinder(this);
         if (binder != null) {
             binder.saveAttribute(this, "selectedElement");

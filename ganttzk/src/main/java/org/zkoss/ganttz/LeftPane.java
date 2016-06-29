@@ -47,11 +47,11 @@ public class LeftPane extends HtmlMacroComponent {
 
     private Planner planner;
 
-    void setGoingDownInLastArrowCommand(CommandContextualized<?> goingDownInLastArrowCommand) {
+    public void setGoingDownInLastArrowCommand(CommandContextualized<?> goingDownInLastArrowCommand) {
         this.leftTasksTree.setGoingDownInLastArrowCommand(goingDownInLastArrowCommand);
     }
 
-    LeftPane(IDisabilityConfiguration disabilityConfiguration,
+    public LeftPane(IDisabilityConfiguration disabilityConfiguration,
              Planner planner,
             FilterAndParentExpandedPredicates predicate) {
 
@@ -74,7 +74,7 @@ public class LeftPane extends HtmlMacroComponent {
         return getFellow("listdetails_container");
     }
 
-    void taskRemoved(Task task) {
+    public void taskRemoved(Task task) {
         leftTasksTree.taskRemoved(task);
     }
 
@@ -82,7 +82,7 @@ public class LeftPane extends HtmlMacroComponent {
         leftTasksTree.addTask(position, newTask);
     }
 
-    void addTasks(Position position, Collection<? extends Task> newTasks) {
+    public void addTasks(Position position, Collection<? extends Task> newTasks) {
         leftTasksTree.addTasks(position, newTasks);
     }
 

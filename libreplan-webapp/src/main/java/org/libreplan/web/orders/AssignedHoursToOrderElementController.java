@@ -44,6 +44,8 @@ public class AssignedHoursToOrderElementController extends GenericForwardCompose
 
     private IAssignedHoursToOrderElementModel assignedHoursToOrderElementModel;
 
+    private IOrderElementModel orderElementModel;
+
     private Vbox orderElementHours;
 
     private Progressmeter hoursProgressBar;
@@ -57,6 +59,7 @@ public class AssignedHoursToOrderElementController extends GenericForwardCompose
     public AssignedHoursToOrderElementController(){
         assignedHoursToOrderElementModel =
                 (IAssignedHoursToOrderElementModel) SpringUtil.getBean("assignedHoursToOrderElementModel");
+        orderElementModel = (IOrderElementModel) SpringUtil.getBean("orderElementModel");
     }
 
     @Override
@@ -128,8 +131,6 @@ public class AssignedHoursToOrderElementController extends GenericForwardCompose
     public BigDecimal getMoneyCostPercentage() {
         return assignedHoursToOrderElementModel.getMoneyCostPercentage();
     }
-
-    private IOrderElementModel orderElementModel;
 
     public void openWindow(IOrderElementModel orderElementModel) {
         setOrderElementModel(orderElementModel);

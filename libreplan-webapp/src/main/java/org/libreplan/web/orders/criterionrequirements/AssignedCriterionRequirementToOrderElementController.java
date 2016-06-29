@@ -34,6 +34,7 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.orders.CriterionRequirementWrapper;
 import org.libreplan.web.orders.HoursGroupWrapper;
 import org.libreplan.web.orders.IOrderElementModel;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * Controller for showing OrderElement assigned labels
@@ -41,9 +42,16 @@ import org.libreplan.web.orders.IOrderElementModel;
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
 public class AssignedCriterionRequirementToOrderElementController extends
-    AssignedCriterionRequirementController<OrderElement, IOrderElementModel> {
+        AssignedCriterionRequirementController<OrderElement, IOrderElementModel> {
+
 
     protected IAssignedCriterionRequirementToOrderElementModel assignedCriterionRequirementToOrderElementModel;
+
+    public AssignedCriterionRequirementToOrderElementController(){
+        assignedCriterionRequirementToOrderElementModel =
+                (IAssignedCriterionRequirementToOrderElementModel)
+                        SpringUtil.getBean("assignedCriterionRequirementToOrderElementModel");
+    }
 
     @Override
     public OrderElement getElement() {
@@ -78,104 +86,83 @@ public class AssignedCriterionRequirementToOrderElementController extends
     }
 
     public List<CriterionRequirementWrapper> criterionRequirementWrappers() {
-        return assignedCriterionRequirementToOrderElementModel
-                .getCriterionRequirementWrappers();
+        return assignedCriterionRequirementToOrderElementModel.getCriterionRequirementWrappers();
     }
 
     public List<CriterionWithItsType> getCriterionWithItsTypes() {
-        return assignedCriterionRequirementToOrderElementModel
-                .getCriterionWithItsTypes();
+        return assignedCriterionRequirementToOrderElementModel.getCriterionWithItsTypes();
     }
 
     public void addCriterionRequirementWrapper() {
-        assignedCriterionRequirementToOrderElementModel
-                .assignCriterionRequirementWrapper();
+        assignedCriterionRequirementToOrderElementModel.assignCriterionRequirementWrapper();
         reload();
     }
 
     public void remove(CriterionRequirementWrapper requirement) {
-        assignedCriterionRequirementToOrderElementModel
-                .deleteCriterionRequirementWrapper(requirement);
+        assignedCriterionRequirementToOrderElementModel.deleteCriterionRequirementWrapper(requirement);
         reload();
     }
 
     public void invalidate(CriterionRequirementWrapper requirement) {
-        assignedCriterionRequirementToOrderElementModel
-                .setValidCriterionRequirementWrapper(requirement, false);
+        assignedCriterionRequirementToOrderElementModel.setValidCriterionRequirementWrapper(requirement, false);
         reload();
     }
 
     public void validate(CriterionRequirementWrapper requirement) {
-        assignedCriterionRequirementToOrderElementModel
-                .setValidCriterionRequirementWrapper(requirement, true);
+        assignedCriterionRequirementToOrderElementModel.setValidCriterionRequirementWrapper(requirement, true);
         reload();
     }
 
-    protected void changeCriterionAndType(
-            CriterionRequirementWrapper requirementWrapper,
-            CriterionWithItsType newCriterionAndType) {
-        assignedCriterionRequirementToOrderElementModel.changeCriterionAndType(
-                requirementWrapper, newCriterionAndType);
+    protected void changeCriterionAndType(CriterionRequirementWrapper requirementWrapper,
+                                          CriterionWithItsType newCriterionAndType) {
+
+        assignedCriterionRequirementToOrderElementModel.changeCriterionAndType(requirementWrapper, newCriterionAndType);
     }
 
-    protected void updateCriterionsWithDiferentResourceType(
-            HoursGroupWrapper hoursGroupWrapper) {
-        assignedCriterionRequirementToOrderElementModel
-                .updateCriterionsWithDiferentResourceType(hoursGroupWrapper);
+    protected void updateCriterionsWithDiferentResourceType(HoursGroupWrapper hoursGroupWrapper) {
+        assignedCriterionRequirementToOrderElementModel.updateCriterionsWithDiferentResourceType(hoursGroupWrapper);
     }
 
-    protected CriterionRequirementWrapper validateWrappers(
-            List<CriterionRequirementWrapper> list) {
-        return assignedCriterionRequirementToOrderElementModel
-                .validateWrappers(criterionRequirementWrappers());
+    protected CriterionRequirementWrapper validateWrappers(List<CriterionRequirementWrapper> list) {
+        return assignedCriterionRequirementToOrderElementModel.validateWrappers(criterionRequirementWrappers());
     }
 
     protected CriterionRequirementWrapper validateHoursGroupWrappers() {
-        return assignedCriterionRequirementToOrderElementModel
-                .validateHoursGroupWrappers();
+        return assignedCriterionRequirementToOrderElementModel.validateHoursGroupWrappers();
     }
 
     public List<HoursGroupWrapper> getHoursGroupWrappers() {
-        return assignedCriterionRequirementToOrderElementModel
-                .getHoursGroupsWrappers();
+        return assignedCriterionRequirementToOrderElementModel.getHoursGroupsWrappers();
     }
 
     public void addHoursGroup() {
-        assignedCriterionRequirementToOrderElementModel
-                .addNewHoursGroupWrapper();
+        assignedCriterionRequirementToOrderElementModel.addNewHoursGroupWrapper();
         Util.reloadBindings(listHoursGroups);
     }
 
     protected void deleteHoursGroupWrapper(HoursGroupWrapper hoursGroupWrapper) {
-        assignedCriterionRequirementToOrderElementModel
-                .deleteHoursGroupWrapper(hoursGroupWrapper);
+        assignedCriterionRequirementToOrderElementModel.deleteHoursGroupWrapper(hoursGroupWrapper);
     }
 
-    protected void addCriterionToHoursGroupWrapper(
-            HoursGroupWrapper hoursGroupWrapper) {
-        assignedCriterionRequirementToOrderElementModel
-                .addCriterionToHoursGroupWrapper(hoursGroupWrapper);
+    protected void addCriterionToHoursGroupWrapper(HoursGroupWrapper hoursGroupWrapper) {
+        assignedCriterionRequirementToOrderElementModel.addCriterionToHoursGroupWrapper(hoursGroupWrapper);
     }
 
-    protected CriterionRequirementWrapper addExceptionToHoursGroupWrapper(
-            HoursGroupWrapper hoursGroupWrapper) {
-        return assignedCriterionRequirementToOrderElementModel
-                .addExceptionToHoursGroupWrapper(hoursGroupWrapper);
+    protected CriterionRequirementWrapper addExceptionToHoursGroupWrapper(HoursGroupWrapper hoursGroupWrapper) {
+        return assignedCriterionRequirementToOrderElementModel.addExceptionToHoursGroupWrapper(hoursGroupWrapper);
     }
 
-    public void deleteCriterionToHoursGroup(
-            HoursGroupWrapper hoursGroupWrapper,
-            CriterionRequirementWrapper requirementWrapper) {
+    public void deleteCriterionToHoursGroup(HoursGroupWrapper hoursGroupWrapper,
+                                            CriterionRequirementWrapper requirementWrapper) {
 
         assignedCriterionRequirementToOrderElementModel
                 .deleteCriterionToHoursGroup(hoursGroupWrapper,
                         requirementWrapper);
     }
 
-    protected void selectCriterionToHoursGroup(
-            HoursGroupWrapper hoursGroupWrapper,
-            CriterionRequirementWrapper requirementWrapper,
-            CriterionWithItsType criterionAndType) {
+    protected void selectCriterionToHoursGroup(HoursGroupWrapper hoursGroupWrapper,
+                                               CriterionRequirementWrapper requirementWrapper,
+                                               CriterionWithItsType criterionAndType) {
 
         assignedCriterionRequirementToOrderElementModel
                 .selectCriterionToHoursGroup(hoursGroupWrapper,
@@ -183,21 +170,19 @@ public class AssignedCriterionRequirementToOrderElementController extends
     }
 
     public void recalculateHoursGroup() {
-        ((OrderLine) assignedCriterionRequirementToOrderElementModel
-                .getElement()).recalculateHoursGroups();
+        ((OrderLine) assignedCriterionRequirementToOrderElementModel.getElement()).recalculateHoursGroups();
         reload();
     }
 
     public boolean isCodeAutogenerated() {
-        return assignedCriterionRequirementToOrderElementModel
-                .isCodeAutogenerated();
+        return assignedCriterionRequirementToOrderElementModel.isCodeAutogenerated();
     }
 
     public List<HoursGroup> getHoursGroups() {
-        if ((getElement() == null)
-                || (assignedCriterionRequirementToOrderElementModel == null)) {
-            return new ArrayList<HoursGroup>();
+        if ((getElement() == null) || (assignedCriterionRequirementToOrderElementModel == null)) {
+            return new ArrayList<>();
         }
+
         return super.getHoursGroups();
     }
 
@@ -208,8 +193,8 @@ public class AssignedCriterionRequirementToOrderElementController extends
 
     public boolean isEditableHoursGroup() {
         OrderElement element = getElement();
-        return element != null && element instanceof OrderLine
-                && !element.isJiraIssue();
+
+        return element != null && element instanceof OrderLine && !element.isJiraIssue();
     }
 
 }

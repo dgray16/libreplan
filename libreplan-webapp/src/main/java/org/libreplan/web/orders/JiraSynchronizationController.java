@@ -43,14 +43,12 @@ import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.ListModel;
@@ -66,7 +64,7 @@ import org.zkoss.zul.Window;
  *
  * @author Miciele Ghiorghis <m.ghiorghis@antoniusziekenhuis.nl>
  */
-class JiraSynchronizationController extends GenericForwardComposer {
+public class JiraSynchronizationController extends GenericForwardComposer {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(JiraSynchronizationController.class);
 
@@ -88,22 +86,28 @@ class JiraSynchronizationController extends GenericForwardComposer {
 
     private Component messagesContainer;
 
-    @Autowired
     private IJiraOrderElementSynchronizer jiraOrderElementSynchronizer;
 
-    @Autowired
     private IJiraTimesheetSynchronizer jiraTimesheetSynchronizer;
 
-    @Autowired
     private IConnectorDAO connectorDAO;
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        jiraOrderElementSynchronizer = (IJiraOrderElementSynchronizer) SpringUtil.getBean("jiraOrderElementSynchronizer");
+        jiraTimesheetSynchronizer = (IJiraTimesheetSynchronizer) SpringUtil.getBean("jiraTimesheetSynchronizer");
+        connectorDAO = (IConnectorDAO) SpringUtil.getBean("connectorDAO");
+
         comp.setAttribute("jiraSynchroniaztionController", this, true);
         loadComponentsEditWindow();
         showOrHideJiraEditWindow();
         updateOrderLastSyncInfoScreen();
+    }
+
+    public void setOrderController(OrderCRUDController orderController) {
+        this.orderController = orderController;
     }
 
     /**
@@ -145,7 +149,7 @@ class JiraSynchronizationController extends GenericForwardComposer {
     /**
      * Returns true if jira is Activated. Used to show/hide Jira edit window
      */
-    private boolean isJiraActivated() {
+    public boolean isJiraActivated() {
         Connector connector = connectorDAO.findUniqueByName(PredefinedConnectors.JIRA.getName());
         return connector != null && connector.isActivated();
     }
@@ -155,8 +159,7 @@ class JiraSynchronizationController extends GenericForwardComposer {
      */
     public void syncWithJira() {
         try {
-            List<String> items = jiraOrderElementSynchronizer
-                    .getAllJiraLabels();
+            List<String> items = jiraOrderElementSynchronizer.getAllJiraLabels();
 
             if ( !(txtImportedLabel.getText()).isEmpty() ) {
                 startSyncWithJira(txtImportedLabel.getText());
@@ -182,7 +185,7 @@ class JiraSynchronizationController extends GenericForwardComposer {
      * @param label
      *            the jira label
      */
-    private void startSyncWithJira(String label) {
+    public void startSyncWithJira(String label) {
         try {
             Order order = getOrder();
 
@@ -275,26 +278,12 @@ class JiraSynchronizationController extends GenericForwardComposer {
         startJiraSyncButton = (Button) comp.getFellow("startJiraSyncButton");
         startJiraSyncButton.setLabel(_("Start sync"));
 
-        startJiraSyncButton.addEventListener(Events.ON_CLICK,
-                new EventListener() {
-
-                    @Override
-                    public void onEvent(Event event) {
-                        startSyncWithJira(comboJiraLabel.getValue());
-                    }
-                });
+        startJiraSyncButton.addEventListener(Events.ON_CLICK, event -> startSyncWithJira(comboJiraLabel.getValue()));
 
         cancelJiraSyncButton = (Button) comp.getFellow("cancelJiraSyncButton");
         cancelJiraSyncButton.setLabel(_("Cancel"));
 
-        cancelJiraSyncButton.addEventListener(Events.ON_CLICK,
-                new EventListener() {
-
-                    @Override
-                    public void onEvent(Event event) {
-                        jirasyncPopup.close();
-                    }
-                });
+        cancelJiraSyncButton.addEventListener(Events.ON_CLICK, event -> jirasyncPopup.close());
         comboJiraLabel = (Combobox) comp.getFellowIfAny("comboJiraLabel");
         comboJiraLabel.setModel(model);
 
@@ -307,7 +296,7 @@ class JiraSynchronizationController extends GenericForwardComposer {
      */
     private class SimpleListModelExt extends SimpleListModel {
 
-        SimpleListModelExt(List data) {
+        public SimpleListModelExt(List data) {
             super(data);
         }
 

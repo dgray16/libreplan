@@ -25,7 +25,7 @@
     <panel title="${i18n:_('Cost category assignment')}" border="normal">
         <panelchildren>
             <hbox>
-                <button label="${i18n:_('Add new row')}"
+                <button label="${i18n:_('Add new row')}" sclass="createButton"
                     onClick="assignmentController.addCostCategory()" />
             </hbox>
 

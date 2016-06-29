@@ -41,8 +41,6 @@ import org.zkoss.ganttz.util.MutableTreeModel;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.HtmlMacroComponent;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
 import org.zkoss.zul.Tree;
 import org.zkoss.zul.Treeitem;
@@ -57,25 +55,19 @@ import org.zkoss.zul.TreeitemRenderer;
  */
 public class LeftTasksTree extends HtmlMacroComponent {
 
-    private final class TaskBeanRenderer implements TreeitemRenderer {
+    private final class TaskBeanRenderer implements TreeitemRenderer<Task> {
 
         private Map<TaskContainer, IExpandListener> expandListeners = new HashMap<>();
 
         @Override
-        public void render(final Treeitem treeitem, Object o, int i) throws Exception {
+        public void render(final Treeitem treeitem, Task o, int i) throws Exception {
             Task task = (Task) o;
             treeitem.setOpen(isOpened(task));
 
             if ( task instanceof TaskContainer ) {
 
                 final TaskContainer container = (TaskContainer) task;
-                IExpandListener expandListener = new IExpandListener() {
-
-                    @Override
-                    public void expandStateChanged(boolean isNowExpanded) {
-                        treeitem.setOpen(isNowExpanded);
-                    }
-                };
+                IExpandListener expandListener = isNowExpanded -> treeitem.setOpen(isNowExpanded);
 
                 expandListeners.put(container, expandListener);
                 container.addExpandListener(expandListener);
@@ -102,17 +94,14 @@ public class LeftTasksTree extends HtmlMacroComponent {
         }
 
         private void expandWhenOpened(final TaskContainer taskBean, Treeitem item) {
-            item.addEventListener("onOpen", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    OpenEvent openEvent = (OpenEvent) event;
-                    taskBean.setExpanded(openEvent.isOpen());
-                }
+            item.addEventListener("onOpen", event -> {
+                OpenEvent openEvent = (OpenEvent) event;
+                taskBean.setExpanded(openEvent.isOpen());
             });
         }
     }
 
-    boolean isOpened(Task task) {
+    public boolean isOpened(Task task) {
         return task.isLeaf() || task.isExpanded();
     }
 
@@ -131,7 +120,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
             }
         }
 
-        void requestFocusFor(Task task) {
+        public void requestFocusFor(Task task) {
             focusRequested.add(task);
         }
 
@@ -204,6 +193,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
         }
 
         private class ChildAndParent {
+
             private final Task parent;
 
             private final Task child;
@@ -215,11 +205,11 @@ public class LeftTasksTree extends HtmlMacroComponent {
                 this.child = child;
             }
 
-            Task getNextToChild() {
+            public Task getNextToChild() {
                 return tasksTreeModel.getChild(parent, getPositionOfChild() + 1);
             }
 
-            boolean childIsNotLast() {
+            public boolean childIsNotLast() {
                 return getPositionOfChild() < numberOfChildrenForParent() - 1;
             }
 
@@ -274,11 +264,11 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
         private Set<Task> pendingToAddChildren = new HashSet<>();
 
-        void addParentOfPendingToAdd(Task parent) {
+        public void addParentOfPendingToAdd(Task parent) {
             pendingToAddChildren.add(parent);
         }
 
-        void isBeingRendered(final Task parent, final Treeitem item) {
+        public void isBeingRendered(final Task parent, final Treeitem item) {
             if ( !pendingToAddChildren.contains(parent) ) {
                 return;
             }
@@ -331,9 +321,9 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
     private Planner planner;
 
-    LeftTasksTree(IDisabilityConfiguration disabilityConfiguration,
-                  Planner planner,
-                  FilterAndParentExpandedPredicates predicate) {
+    public LeftTasksTree(IDisabilityConfiguration disabilityConfiguration,
+                         Planner planner,
+                         FilterAndParentExpandedPredicates predicate) {
 
         this.disabilityConfiguration = disabilityConfiguration;
         this.tasks = planner.getTaskList().getAllTasks();
@@ -428,7 +418,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
         }
     }
 
-    void taskRemoved(Task taskRemoved) {
+    public void taskRemoved(Task taskRemoved) {
         tasksTreeModel.remove(taskRemoved);
     }
 
@@ -453,7 +443,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
         }
     }
 
-    void addTasks(Position position, Collection<? extends Task> newTasks) {
+    public void addTasks(Position position, Collection<? extends Task> newTasks) {
         Task root = tasksTreeModel.getRoot();
 
         if ( position.isAppendToTop() ) {
@@ -465,11 +455,11 @@ public class LeftTasksTree extends HtmlMacroComponent {
         }
     }
 
-    CommandContextualized<?> getGoingDownInLastArrowCommand() {
+    public CommandContextualized<?> getGoingDownInLastArrowCommand() {
         return goingDownInLastArrowCommand;
     }
 
-    void setGoingDownInLastArrowCommand(CommandContextualized<?> goingDownInLastArrowCommand) {
+    public void setGoingDownInLastArrowCommand(CommandContextualized<?> goingDownInLastArrowCommand) {
         this.goingDownInLastArrowCommand = goingDownInLastArrowCommand;
     }
 

@@ -91,8 +91,7 @@ public class LogsTabCreator {
                     org.zkoss.zk.ui.Component parent) {
                 Map<String, Object> arguments = new HashMap<String, Object>();
                 arguments.put("logsController", logsControllerGlobal);
-                return Executions.createComponents("/logs/_logs.zul",
-                        parent, arguments);
+                return Executions.createComponents("/logs/_logs.zul", parent, arguments);
             }
 
         };

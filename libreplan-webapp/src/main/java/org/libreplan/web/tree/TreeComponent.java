@@ -79,7 +79,11 @@ public abstract class TreeComponent extends HtmlMacroComponent {
         }
 
         public abstract <T extends ITreeNode<T>> void doCell(TreeController<T>.Renderer renderer,
-                Treeitem item, T currentElement);
+                                                             Treeitem item,
+                                                             T currentElement);
+
+
+
     }
 
     protected final Column codeColumn = new Column(_("Code"), "code") {
@@ -87,7 +91,8 @@ public abstract class TreeComponent extends HtmlMacroComponent {
         @Override
         public <T extends ITreeNode<T>> void doCell(
                 TreeController<T>.Renderer renderer,
-                Treeitem item, T currentElement) {
+                Treeitem item,
+                T currentElement) {
             renderer.addCodeCell(currentElement);
         }
     };

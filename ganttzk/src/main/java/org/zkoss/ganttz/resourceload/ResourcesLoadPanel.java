@@ -191,12 +191,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     private void applyFilter() {
-        zoomListeners.fireEvent(new IListenerNotification<IFilterChangedListener>() {
-            @Override
-            public void doNotify(IFilterChangedListener listener) {
-                listener.filterChanged(getFilter());
-            }
-        });
+        zoomListeners.fireEvent(listener -> listener.filterChanged(getFilter()));
     }
 
     public void addFilterListener(IFilterChangedListener listener) {
@@ -273,12 +268,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     private Button asButton(final IToolbarCommand c) {
         Button result = new Button();
 
-        result.addEventListener(Events.ON_CLICK, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                c.doAction();
-            }
-        });
+        result.addEventListener(Events.ON_CLICK, event -> c.doAction());
 
         if ( !StringUtils.isEmpty(c.getImage()) ) {
             result.setImage(c.getImage());
@@ -400,7 +390,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         savePreviousData();
     }
 
-    Component getFirstOptionalFilter() {
+    public Component getFirstOptionalFilter() {
         return firstOptionalFilter;
     }
 
@@ -408,7 +398,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         this.firstOptionalFilter = firstOptionalFilter;
     }
 
-    Component getSecondOptionalFilter() {
+    public Component getSecondOptionalFilter() {
         return secondOptionalFilter;
     }
 
@@ -416,7 +406,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         this.secondOptionalFilter = secondOptionalFilter;
     }
 
-    void clearComponents() {
+    public void clearComponents() {
         getFellow("insertionPointLeftPanel").getChildren().clear();
         getFellow("insertionPointRightPanel").getChildren().clear();
         getFellow("insertionPointTimetracker").getChildren().clear();
@@ -539,12 +529,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
                     leftPane = new ResourceLoadLeftPane(treeModel, resourceLoadList);
                 }
 
-                nameFilterListener.fireEvent(new IListenerNotification<IPaginationFilterChangedListener>() {
-                    @Override
-                    public void doNotify(IPaginationFilterChangedListener listener) {
-                        listener.filterChanged(filterByNamePosition);
-                    }
-                });
+                nameFilterListener.fireEvent(listener -> listener.filterChanged(filterByNamePosition));
 
                 afterCompose();
             }
@@ -571,12 +556,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     public void changeChartVisibility(boolean visible) {
         visibleChart = visible;
 
-        chartVisibilityListeners.fireEvent(new IListenerNotification<IChartVisibilityChangedListener>() {
-            @Override
-            public void doNotify(IChartVisibilityChangedListener listener) {
-                listener.chartVisibilityChanged(visibleChart);
-            }
-        });
+        chartVisibilityListeners.fireEvent(listener -> listener.chartVisibilityChanged(visibleChart));
     }
 
     public boolean isVisibleChart() {

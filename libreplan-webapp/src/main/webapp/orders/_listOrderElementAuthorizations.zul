@@ -30,7 +30,7 @@
                     autodrop="true" finder="ProfileFinder" />
                 <checkbox id="profileReadAuthCheckbox" label="${i18n:_('Read')}" />
                 <checkbox id="profileWriteAuthCheckbox" label="${i18n:_('Write')}" />
-                <button label="${i18n:_('Authorize')}"
+                <button label="${i18n:_('Authorize')}" sclass="createButton"
                     onClick="orderAuthorizationController.addOrderAuthorization(
                         profileAutocomplete.selectedItem, profileReadAuthCheckbox.checked,
                         profileWriteAuthCheckbox.checked);"/>
@@ -55,7 +55,7 @@
                     autodrop="true" finder="UserFinder" />
                 <checkbox id="userReadAuthCheckbox" label="${i18n:_('Read')}" />
                 <checkbox id="userWriteAuthCheckbox" label="${i18n:_('Write')}" />
-                <button label="${i18n:_('Authorize')}"
+                <button label="${i18n:_('Authorize')}" sclass="createButton"
                     onClick="orderAuthorizationController.addOrderAuthorization(
                         usersAutocomplete.selectedItem, userReadAuthCheckbox.checked,
                         userWriteAuthCheckbox.checked);"/>

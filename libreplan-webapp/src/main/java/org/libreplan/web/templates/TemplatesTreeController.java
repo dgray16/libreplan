@@ -45,8 +45,7 @@ import static org.libreplan.web.I18nHelper._;
  * Controller for template element tree <br />
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
-public class TemplatesTreeController extends
-        TreeController<OrderElementTemplate> {
+public class TemplatesTreeController extends TreeController<OrderElementTemplate> {
 
     private final IOrderTemplatesModel model;
 
@@ -70,13 +69,11 @@ public class TemplatesTreeController extends
         private Button createEditButton(final OrderElementTemplate currentTemplate) {
             Button result = createButton("/common/img/ico_editar1.png",
                     _("Edit"), "/common/img/ico_editar.png", "icono",
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event event) {
-                            Treeitem item = getTreeitem(event.getTarget());
-                            operationsForOrderTemplate.showEditElement(item);
-                        }
+                    event -> {
+                        Treeitem item = getTreeitem(event.getTarget());
+                        operationsForOrderTemplate.showEditElement(item);
                     });
+
             return result;
         }
 
@@ -87,18 +84,10 @@ public class TemplatesTreeController extends
         @Override
         protected void addDescriptionCell(final OrderElementTemplate element) {
             Textbox textBox = Util.bind(new Textbox(),
-                    new Util.Getter<String>() {
-
-                        @Override
-                        public String get() {
-                            return element.getName();
-                        }
-                    }, new Util.Setter<String>() {
-
-                        @Override
-                        public void set(String value) {
-                            element.setName(value);
-                        }
+                    () -> {
+                        return element.getName();
+                    }, value -> {
+                        element.setName(value);
                     });
             textBox.setConstraint("no empty:" + _("cannot be empty"));
             addCell(textBox);
@@ -117,54 +106,33 @@ public class TemplatesTreeController extends
 
         void addInitCell(final OrderElementTemplate currentElement) {
             final Intbox intbox = new Intbox();
-            Util.bind(intbox, new Getter<Integer>() {
-
-                @Override
-                public Integer get() {
-                    return currentElement.getStartAsDaysFromBeginning();
-                }
-            }, new Setter<Integer>() {
-
-                @Override
-                public void set(Integer value) {
-                    checkInvalidValues(OrderElementTemplate.class,
-                            "startAsDaysFromBeginning",
-                            value, intbox);
-                    currentElement.setStartAsDaysFromBeginning(value);
-                }
+            Util.bind(intbox, () -> {
+                return currentElement.getStartAsDaysFromBeginning();
+            }, value -> {
+                checkInvalidValues(OrderElementTemplate.class, "startAsDaysFromBeginning", value, intbox);
+                currentElement.setStartAsDaysFromBeginning(value);
             });
             addCell(intbox);
         }
 
         void addEndCell(final OrderElementTemplate currentElement) {
             final Intbox intbox = new Intbox();
-            Util.bind(intbox, new Getter<Integer>() {
-
-                @Override
-                public Integer get() {
-                    return currentElement.getDeadlineAsDaysFromBeginning();
-                }
-            }, new Setter<Integer>() {
-
-                @Override
-                public void set(Integer value) {
-                    checkInvalidValues(OrderElementTemplate.class,
-                            "deadlineAsDaysFromBeginning", value, intbox);
-                    currentElement.setDeadlineAsDaysFromBeginning(value);
-                }
+            Util.bind(intbox, () -> {
+                return currentElement.getDeadlineAsDaysFromBeginning();
+            }, value -> {
+                checkInvalidValues(OrderElementTemplate.class, "deadlineAsDaysFromBeginning", value, intbox);
+                currentElement.setDeadlineAsDaysFromBeginning(value);
             });
             addCell(intbox);
         }
 
         @Override
-        protected void onDoubleClickForSchedulingStateCell(
-                OrderElementTemplate currentElement) {
+        protected void onDoubleClickForSchedulingStateCell(OrderElementTemplate currentElement) {
             // do nothing
         }
 
         @Override
-        protected SchedulingState getSchedulingStateFrom(
-                OrderElementTemplate currentElement) {
+        protected SchedulingState getSchedulingStateFrom(OrderElementTemplate currentElement) {
             return currentElement.getSchedulingState();
         }
 
@@ -172,6 +140,7 @@ public class TemplatesTreeController extends
 
     public TemplatesTreeController(IOrderTemplatesModel model, OrderTemplatesController orderTemplatesController) {
         super(OrderElementTemplate.class);
+
         this.model = model;
         this.orderTemplatesController = orderTemplatesController;
         initializeOperationsForOrderTemplate();
@@ -215,13 +184,16 @@ public class TemplatesTreeController extends
     protected String createTooltipText(OrderElementTemplate elem) {
             StringBuilder tooltipText = new StringBuilder();
             tooltipText.append(elem.getName()).append(". ");
+
             if ((elem.getDescription() != null) && (!elem.getDescription().equals(""))) {
                 tooltipText.append(elem.getDescription());
-                tooltipText.append(". ");
+                tooltipText.
+                        append(". ");
             }
             if ((elem.getLabels() != null) && (!elem.getLabels().isEmpty())) {
+
                 tooltipText.append(" ").append(_("Labels")).append(":");
-            tooltipText.append(StringUtils.join(elem.getLabels(), ","));
+                tooltipText.append(StringUtils.join(elem.getLabels(), ","));
                 tooltipText.append(".");
             }
         // There are no CriterionRequirement or advances in templates
@@ -238,8 +210,7 @@ public class TemplatesTreeController extends
             }
 
             @Override
-            public boolean isTotalHoursValid(OrderElementTemplate line,
-                    Integer value) {
+            public boolean isTotalHoursValid(OrderElementTemplate line, Integer value) {
                 return ((OrderLineTemplate) line).isTotalHoursValid(value);
             }
 
@@ -268,8 +239,7 @@ public class TemplatesTreeController extends
             }
 
             @Override
-            public void setBudgetHours(OrderElementTemplate element,
-                    BigDecimal budget) {
+            public void setBudgetHours(OrderElementTemplate element, BigDecimal budget) {
                 if (element instanceof OrderLineTemplate) {
                     OrderLineTemplate line = (OrderLineTemplate) element;
                     line.setBudget(budget);
@@ -281,26 +251,14 @@ public class TemplatesTreeController extends
 
     @Override
     protected INameHandler<OrderElementTemplate> getNameHandler() {
-        return new INameHandler<OrderElementTemplate>() {
-
-            @Override
-            public String getNameFor(OrderElementTemplate element) {
-                return element.getName();
-            }
-
-        };
+        return element -> element.getName();
     }
 
     @Override
     protected ICodeHandler<OrderElementTemplate> getCodeHandler() {
-        return new ICodeHandler<OrderElementTemplate>() {
-
-            @Override
-            public String getCodeFor(OrderElementTemplate element) {
-                // Empty as OrderElementTemplate doesn't have code
-                return "";
-            }
-
+        return element -> {
+            // Empty as OrderElementTemplate doesn't have code
+            return "";
         };
     }
 

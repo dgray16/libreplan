@@ -196,7 +196,7 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
         return result;
     }
 
-    private void checkCannotBeHigher(Datebox dbStarting, Datebox dbEnding) {
+    public void checkCannotBeHigher(Datebox dbStarting, Datebox dbEnding) {
         dbStarting.clearErrorMessage(true);
         dbEnding.clearErrorMessage(true);
 
@@ -213,17 +213,17 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
         super.showReport(jasperreport);
     }
 
-    private static class AdvanceTypeDTO {
+    public static class AdvanceTypeDTO {
 
         private String name;
 
         private AdvanceType advanceType;
 
-        AdvanceTypeDTO() {
+        public AdvanceTypeDTO() {
 
         }
 
-        AdvanceTypeDTO(AdvanceType advanceType) {
+        public AdvanceTypeDTO(AdvanceType advanceType) {
             this.name = advanceType.getUnitName().toUpperCase();
             this.advanceType = advanceType;
         }

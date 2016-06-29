@@ -19,7 +19,7 @@
 
 <window id="${arg.id}">
     <caption id="caption" sclass="caption-title" />
-    <grid id="jobSchedulerGrid" sizedByContent="true">
+    <grid id="jobSchedulerGrid" fixedLayout="true">
         <columns>
            <column width="200px" />
            <column/>

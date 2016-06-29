@@ -82,22 +82,17 @@ public class OrderBandboxFinder extends BandboxFinder implements IBandboxFinder 
         return orderRenderer;
     }
 
-    private final ListitemRenderer orderRenderer = new ListitemRenderer() {
+    private final ListitemRenderer orderRenderer = (item, data, i) -> {
+        Order order = (Order) data;
+        item.setValue(order);
 
-        @Override
-        public void render(Listitem item, Object data, int i) {
-            Order order = (Order) data;
-            item.setValue(order);
+        Listcell orderCode = new Listcell();
+        orderCode.setLabel(order.getCode());
+        orderCode.setParent(item);
 
-            Listcell orderCode = new Listcell();
-            orderCode.setLabel(order.getCode());
-            orderCode.setParent(item);
-
-            Listcell orderName = new Listcell();
-            orderName.setLabel(order.getName());
-            orderName.setParent(item);
-        }
-
+        Listcell orderName = new Listcell();
+        orderName.setLabel(order.getName());
+        orderName.setParent(item);
     };
 
 }

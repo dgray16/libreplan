@@ -109,7 +109,7 @@
             <one-to-one name="planningData" class="PlanningData" cascade="all" />
 
             <!-- Indexed on the other side -->
-            <list name="taskElements" cascade="all">
+            <list name="taskElements" cascade="all" lazy="false">
                 <key column="parent" not-null="false"></key>
                 <index column="position_in_parent"></index>
                 <one-to-many class="TaskElement" />

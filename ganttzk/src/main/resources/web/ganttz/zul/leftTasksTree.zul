@@ -23,7 +23,7 @@
     signature="java.lang.String _(java.lang.String name)" ?>
 
 <div>
-<tree id="tasksTree" sizedByContent="true" sclass="taskTreeCols">
+<tree id="tasksTree" fixedLayout="true" sclass="taskTreeCols" hflex="1">
     <treecols sizable="false" height="33px">
         <treecol label="${ganttzk_i18n:_('Name')}" sclass="tree-text" />
         <treecol label="${ganttzk_i18n:_('Start')}" width="60px" />

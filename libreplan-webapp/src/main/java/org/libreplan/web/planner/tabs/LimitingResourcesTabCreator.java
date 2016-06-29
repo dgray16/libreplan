@@ -79,17 +79,11 @@ public class LimitingResourcesTabCreator {
 
     private ITab createGlobalLimitingResourcesTab() {
 
-        final IComponentCreator componentCreator = new IComponentCreator() {
+        final IComponentCreator componentCreator = parent -> {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("LimitingResourcesController", limitingResourcesControllerGlobal);
 
-            @Override
-            public org.zkoss.zk.ui.Component create(
-                    org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<String, Object>();
-                arguments.put("LimitingResourcesController", limitingResourcesControllerGlobal);
-
-                return Executions.createComponents("/limitingresources/_limitingresources.zul", parent, arguments);
-            }
-
+            return Executions.createComponents("/limitingresources/_limitingresources.zul", parent, arguments);
         };
         return new CreatedOnDemandTab(_("Queue-based Resources Planning"), "limiting-resources", componentCreator) {
             @Override

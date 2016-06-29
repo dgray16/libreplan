@@ -59,11 +59,11 @@ public class OrdersTreeComponent extends TreeComponent {
         }
 
         @Override
-        public <T extends ITreeNode<T>> void doCell(
-                TreeController<T>.Renderer renderer,
-                Treeitem item, T currentElement) {
-            OrderElementTreeitemRenderer treeRenderer = OrderElementTreeitemRenderer.class
-                    .cast(renderer);
+        public <T extends ITreeNode<T>> void doCell(TreeController<T>.Renderer renderer,
+                                                    Treeitem item,
+                                                    T currentElement) {
+
+            OrderElementTreeitemRenderer treeRenderer = OrderElementTreeitemRenderer.class.cast(renderer);
             doCell(treeRenderer, OrderElement.class.cast(currentElement));
         }
 

@@ -35,14 +35,23 @@ import org.libreplan.business.users.entities.User;
 public class IssueLog extends ProjectLog {
 
     private IssueTypeEnum type = IssueTypeEnum.getDefault();
+
     private String status = "LOW";
+
     private LowMediumHighEnum priority = LowMediumHighEnum.getDefault();
+
     private LowMediumHighEnum severity = LowMediumHighEnum.getDefault();
+
     private Date dateRaised;
+
     private User createdBy;
+
     private String assignedTo;
+
     private Date dateResolved;
+
     private Date deadline;
+
     private String notes;
 
 
@@ -151,7 +160,6 @@ public class IssueLog extends ProjectLog {
 
     @Override
     protected IIntegrationEntityDAO<? extends IntegrationEntity> getIntegrationEntityDAO() {
-        return (IIntegrationEntityDAO<? extends IntegrationEntity>) Registry
-                .getIssueLogDAO();
+        return Registry.getIssueLogDAO();
     }
 }

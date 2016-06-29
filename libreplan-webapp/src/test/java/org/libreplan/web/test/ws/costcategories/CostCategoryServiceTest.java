@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Tests for <code>ICostCategoryService</code>.
+ *
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
 @RunWith(SpringJUnit4ClassRunner.class)

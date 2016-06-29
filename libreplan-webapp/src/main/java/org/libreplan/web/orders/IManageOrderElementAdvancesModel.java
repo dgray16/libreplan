@@ -74,7 +74,7 @@ public interface IManageOrderElementAdvancesModel {
 
     public BigDecimal getUnitPrecision();
 
-    public AdvanceMeasurement getLastAdvanceMeasurement(
+    AdvanceMeasurement getLastAdvanceMeasurement(
             DirectAdvanceAssignment advanceAssignment);
 
     public void sortListAdvanceMeasurement();

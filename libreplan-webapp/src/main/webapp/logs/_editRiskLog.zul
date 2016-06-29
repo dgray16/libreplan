@@ -118,7 +118,7 @@
                 <listbox id="listRiskScores" mold="select" rows="1" width="135px"
                          model="@{riskLogController.riskScoreStatesEnums}"
                          selectedItem="@{riskLogController.riskLog.scoreAfterCM}"
-                         itemRenderer="@{riskLogController.riskScoreStatesEnumRenderer}" />/>
+                         itemRenderer="@{riskLogController.riskScoreStatesEnumRenderer}" />
             </row>
             <row>
                 <label value="${i18n:_('Contingency')}" />

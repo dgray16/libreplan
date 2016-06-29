@@ -114,7 +114,7 @@
         <center border="none">
             <borderlayout width="auto" height="100%">
                 <!-- borderlayout class="main-layout" height="2000px" width="2000px"-->
-                <west class="perspectives-column" width="90px" >
+                <west sclass="perspectives-column" width="90px" >
                     <vbox vflex="1" >
                         <hbox id="perspectiveButtonsInsertionPoint" sclass="toolbar-box global-commands" height="30px" width="90px">
                             <button id="createOrderButton" image="/common/img/ico_add.png" sclass="planner-icon"
@@ -124,7 +124,7 @@
                     </vbox>
                 </west>
                 <center id="mainContent"  sclass="main-area" autoscroll="true">
-                    <div self="@{insert(content)}"/>
+                    <div self="@{insert(content)}" sclass="main-content" height="100%"/>
                 </center>
 
             </borderlayout>

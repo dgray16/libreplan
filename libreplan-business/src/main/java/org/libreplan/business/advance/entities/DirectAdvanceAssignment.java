@@ -62,8 +62,7 @@ public class DirectAdvanceAssignment extends AdvanceAssignment {
     private BigDecimal maxValue;
 
     @Valid
-    private SortedSet<AdvanceMeasurement> advanceMeasurements = new TreeSet<AdvanceMeasurement>(
-            new AdvanceMeasurementComparator());
+    private SortedSet<AdvanceMeasurement> advanceMeasurements = new TreeSet<>(new AdvanceMeasurementComparator());
 
     @Valid
     private Set<NonCalculatedConsolidation> nonCalculatedConsolidations = new HashSet<NonCalculatedConsolidation>();

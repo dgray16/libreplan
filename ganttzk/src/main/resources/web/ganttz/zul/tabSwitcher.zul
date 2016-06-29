@@ -20,6 +20,6 @@
 -->
 
 <zk>
-    <div id="container">
+    <div id="container" sclass="tabSwitcher">
     </div>
 </zk>

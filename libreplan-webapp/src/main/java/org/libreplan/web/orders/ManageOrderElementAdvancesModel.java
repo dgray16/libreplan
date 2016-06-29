@@ -578,11 +578,9 @@ public class ManageOrderElementAdvancesModel implements IManageOrderElementAdvan
 
     @Override
     @Transactional(readOnly = true)
-    public AdvanceMeasurement getLastAdvanceMeasurement(
-            DirectAdvanceAssignment assignment) {
+    public AdvanceMeasurement getLastAdvanceMeasurement(DirectAdvanceAssignment assignment) {
         if (assignment != null) {
-            SortedSet<AdvanceMeasurement> advanceMeasurements = assignment
-                    .getAdvanceMeasurements();
+            SortedSet<AdvanceMeasurement> advanceMeasurements = assignment.getAdvanceMeasurements();
             if (advanceMeasurements.size() > 0) {
                 return advanceMeasurements.first();
             }
@@ -641,16 +639,14 @@ public class ManageOrderElementAdvancesModel implements IManageOrderElementAdvan
 
     @Override
     @Transactional(readOnly = true)
-    public DirectAdvanceAssignment calculateFakeDirectAdvanceAssignment(
-            IndirectAdvanceAssignment indirectAdvanceAssignment) {
+    public DirectAdvanceAssignment calculateFakeDirectAdvanceAssignment(IndirectAdvanceAssignment indirectAdvanceAssignment) {
         if ((orderElement == null) || (orderElement.isLeaf())) {
             return null;
         }
 
         reattachmentOrderElement();
 
-        return orderElement
-                .calculateFakeDirectAdvanceAssignment(indirectAdvanceAssignment);
+        return orderElement.calculateFakeDirectAdvanceAssignment(indirectAdvanceAssignment);
     }
 
     @Override

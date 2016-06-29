@@ -66,13 +66,10 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
 
     private Listbox status;
 
-    public IssueLogCRUDController(){
-        issueLogModel = (IIssueLogModel) SpringUtil.getBean("issueLogModel");
-    }
-
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+        issueLogModel = (IIssueLogModel) SpringUtil.getBean("issueLogModel");
         status = (Listbox)comp.getFellow("editWindow").getFellow("listIssueLogStatus");
         comp.setAttribute("issueLogController", this, true);
         showListWindow();
@@ -89,23 +86,15 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         bdProjectIssueLog = (BandboxSearch) editWindow.getFellow("bdProjectIssueLog");
         Util.createBindingsFor(bdProjectIssueLog);
         bdProjectIssueLog.setListboxEventListener(Events.ON_SELECT,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        final Object object = bdProjectIssueLog
-                                .getSelectedElement();
-                        issueLogModel.setOrder((Order) object);
-                    }
+                event -> {
+                    final Object object = bdProjectIssueLog.getSelectedElement();
+                    issueLogModel.setOrder((Order) object);
                 });
         bdProjectIssueLog.setListboxEventListener(Events.ON_OK,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        final Object object = bdProjectIssueLog
-                                .getSelectedElement();
-                        issueLogModel.setOrder((Order) object);
-                        bdProjectIssueLog.close();
-                    }
+                event -> {
+                    final Object object = bdProjectIssueLog.getSelectedElement();
+                    issueLogModel.setOrder((Order) object);
+                    bdProjectIssueLog.close();
                 });
     }
 
@@ -116,46 +105,32 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         bdUserIssueLog = (BandboxSearch) editWindow.getFellow("bdUserIssueLog");
         Util.createBindingsFor(bdUserIssueLog);
 
-        bdUserIssueLog.setListboxEventListener(Events.ON_SELECT, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                final Object object = bdUserIssueLog.getSelectedElement();
-                issueLogModel.setCreatedBy((User) object);
-            }
+        bdUserIssueLog.setListboxEventListener(Events.ON_SELECT, event -> {
+            final Object object = bdUserIssueLog.getSelectedElement();
+            issueLogModel.setCreatedBy((User) object);
         });
-        bdUserIssueLog.setListboxEventListener(Events.ON_OK, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                final Object object = bdUserIssueLog.getSelectedElement();
-                issueLogModel.setCreatedBy((User) object);
-                bdUserIssueLog.close();
-            }
+        bdUserIssueLog.setListboxEventListener(Events.ON_OK, event -> {
+            final Object object = bdUserIssueLog.getSelectedElement();
+            issueLogModel.setCreatedBy((User) object);
+            bdUserIssueLog.close();
         });
     }
 
     /**
      * Enumerations rendering
      */
-    public static ListitemRenderer issueTypeRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i)
-                throws Exception {
-            IssueTypeEnum issueTypeEnum = (IssueTypeEnum) data;
-            String displayName = issueTypeEnum.getDisplayName();
-            item.setLabel(displayName);
-        }
+    public static ListitemRenderer issueTypeRenderer = (item, data, i) -> {
+        IssueTypeEnum issueTypeEnum = (IssueTypeEnum) data;
+        String displayName = issueTypeEnum.getDisplayName();
+        item.setLabel(displayName);
     };
 
 
 
-    public static ListitemRenderer lowMediumHighEnumRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i)
-                throws Exception {
-            LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
-            String displayName = lowMediumHighEnum.getDisplayName();
-            item.setLabel(displayName);
-        }
+    public static ListitemRenderer lowMediumHighEnumRenderer = (item, data, i) -> {
+        LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
+        String displayName = lowMediumHighEnum.getDisplayName();
+        item.setLabel(displayName);
     };
 
     /**
@@ -164,28 +139,24 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      * @return {@link RowRenderer}
      */
     public RowRenderer getIssueLogsRowRenderer() {
-        return new RowRenderer() {
-
-            @Override
-            public void render(Row row, Object data, int i) throws Exception {
-                final IssueLog issueLog = (IssueLog) data;
-                row.setValue(issueLog);
-                appendObject(row, issueLog.getCode());
-                appendLabel(row, issueLog.getOrder().getName());
-                appendObject(row, issueLog.getType());
-                appendObject(row, issueLog.getStatus());
-                appendLabel(row, issueLog.getDescription());
-                appendLabel(row, issueLog.getPriority().getDisplayName());
-                appendLabel(row, issueLog.getSeverity().getDisplayName());
-                appendDate(row, issueLog.getDateRaised());
-                appendLabel(row, issueLog.getCreatedBy().getLoginName());
-                appendLabel(row, issueLog.getAssignedTo());
-                appendDate(row, issueLog.getDeadline());
-                appendDate(row, issueLog.getDateResolved());
-                appendLabel(row, issueLog.getNotes());
-                appendOperations(row, issueLog);
-                setPriorityCellColor(row, issueLog.getPriority());
-            }
+        return (row, data, i) -> {
+            final IssueLog issueLog = (IssueLog) data;
+            row.setValue(issueLog);
+            appendObject(row, issueLog.getCode());
+            appendLabel(row, issueLog.getOrder().getName());
+            appendObject(row, issueLog.getType());
+            appendObject(row, issueLog.getStatus());
+            appendLabel(row, issueLog.getDescription());
+            appendLabel(row, issueLog.getPriority().getDisplayName());
+            appendLabel(row, issueLog.getSeverity().getDisplayName());
+            appendDate(row, issueLog.getDateRaised());
+            appendLabel(row, issueLog.getCreatedBy().getLoginName());
+            appendLabel(row, issueLog.getAssignedTo());
+            appendDate(row, issueLog.getDeadline());
+            appendDate(row, issueLog.getDateResolved());
+            appendLabel(row, issueLog.getNotes());
+            appendOperations(row, issueLog);
+            setPriorityCellColor(row, issueLog.getPriority());
         };
     }
 
@@ -253,18 +224,8 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
      */
     private void appendOperations(final Row row, final IssueLog issueLog) {
         Hbox hbox = new Hbox();
-        hbox.appendChild(Util.createEditButton(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                goToEditForm(issueLog);
-            }
-        }));
-        hbox.appendChild(Util.createRemoveButton(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                confirmDelete(issueLog);
-            }
-        }));
+        hbox.appendChild(Util.createEditButton(event -> goToEditForm(issueLog)));
+        hbox.appendChild(Util.createRemoveButton(event -> confirmDelete(issueLog)));
         row.appendChild(hbox);
     }
 
@@ -285,7 +246,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     /**
      * Returns {@link ArrayList} values
      */
-    private ArrayList<String> getIssueStatusEnum() {
+    public ArrayList<String> getIssueStatusEnum() {
         ArrayList<String> result = new ArrayList<String>();
         if (getIssueLog().getType() == IssueTypeEnum.REQUEST_FOR_CHANGE){
             result.add(_("Must have"));
@@ -310,7 +271,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
         return result;
     }
 
-    private void updateStatusList(boolean ifNew) {
+    public void updateStatusList(boolean ifNew) {
         ListModelList model = new ListModelList<>(getIssueStatusEnum());
         status.setModel(model);
         if(ifNew)
@@ -403,7 +364,7 @@ public class IssueLogCRUDController extends BaseCRUDController<IssueLog> {
     /**
      * Returns the {@link IssueLog} object
      */
-    private IssueLog getIssueLog() {
+    public IssueLog getIssueLog() {
         return issueLogModel.getIssueLog();
     }
 

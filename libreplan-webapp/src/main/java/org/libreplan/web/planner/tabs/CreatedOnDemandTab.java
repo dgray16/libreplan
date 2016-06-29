@@ -31,9 +31,13 @@ import org.zkoss.zk.ui.Desktop;
 public class CreatedOnDemandTab implements ITab {
 
     private final String name;
+
     private Component parent;
+
     private final IComponentCreator componentCreator;
+
     private Component component;
+
     private final String cssClass;
 
     interface IComponentCreator {
@@ -83,6 +87,7 @@ public class CreatedOnDemandTab implements ITab {
         if (component == null) {
             return null;
         }
+
         return component.getDesktop();
     }
 

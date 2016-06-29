@@ -260,12 +260,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         delete.setHoverImage("/common/img/ico_borrar.png");
         delete.setSclass("icono");
         delete.setTooltiptext(_("Delete"));
-        delete.addEventListener(Events.ON_CLICK, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                onRemoveResource((Resource) item.getValue());
-            }
-        });
+        delete.addEventListener(Events.ON_CLICK, event -> onRemoveResource(item.getValue()));
 
         Listcell deleteResourceCell = new Listcell();
         deleteResourceCell.appendChild(delete);
@@ -282,6 +277,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     private String getType(Resource resource) {
         if (resource instanceof Worker) {
+
             if (((Worker) resource).isReal()) {
                 return _("Worker");
             } else {
@@ -298,10 +294,13 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     public void onSelectLabel() {
         Label label = (Label) bdLabels.getSelectedElement();
+
         if (label == null) {
             throw new WrongValueException(bdLabels, _("please, select a label"));
         }
+
         boolean result = hoursWorkedPerWorkerModel.addSelectedLabel(label);
+
         if (!result) {
             throw new WrongValueException(bdLabels,
                     _("Label has already been added."));
@@ -326,10 +325,13 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     public void onSelectCriterion() {
         Criterion criterion = (Criterion) bdCriterions.getSelectedElement();
+
         if (criterion == null) {
             throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
         }
+
         boolean result = hoursWorkedPerWorkerModel.addSelectedCriterion(criterion);
+
         if (!result) {
             throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));
         } else {

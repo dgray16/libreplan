@@ -124,7 +124,7 @@ public class CriterionsMachineController extends GenericForwardComposer {
         reload();
     }
 
-    private List<CriterionWithItsType> getCriterionWithItsTypes(){
+    public List<CriterionWithItsType> getCriterionWithItsTypes(){
         return assignedMachineCriterionsModel.getCriterionWithItsType();
     }
 
@@ -138,7 +138,7 @@ public class CriterionsMachineController extends GenericForwardComposer {
         forceSortGridSatisfaction();
     }
 
-    private void forceSortGridSatisfaction() {
+    public void forceSortGridSatisfaction() {
         Column column = (Column) listingCriterions.getColumns().getFirstChild();
         Sortable model = (Sortable) listingCriterions.getModel();
         if ("ascending".equals(column.getSortDirection())) {
@@ -154,8 +154,8 @@ public class CriterionsMachineController extends GenericForwardComposer {
         reload();
     }
 
-    private void selectCriterionAndType(Listitem item, Bandbox bandbox,
-                                        CriterionSatisfactionDTO criterionSatisfactionDTO){
+    public void selectCriterionAndType(Listitem item, Bandbox bandbox,
+        CriterionSatisfactionDTO criterionSatisfactionDTO){
         if(item != null){
             CriterionWithItsType criterionAndType = item.getValue();
             bandbox.setValue(criterionAndType.getNameAndType());

@@ -42,6 +42,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Textbox;
@@ -55,8 +56,6 @@ import org.zkoss.zul.Window;
  */
 class TimSynchronizationController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(TimSynchronizationController.class);
-
     private OrderCRUDController orderController;
 
     private Window editWindow;
@@ -67,10 +66,8 @@ class TimSynchronizationController extends GenericForwardComposer {
 
     private Label labelProductCode, labelLastSyncDate;
 
-    @Autowired
     private IExportTimesheetsToTim exportTimesheetsToTim;
 
-    @Autowired
     private IConnectorDAO connectorDAO;
 
     private Component messagesContainer;
@@ -80,10 +77,18 @@ class TimSynchronizationController extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        exportTimesheetsToTim = (IExportTimesheetsToTim) SpringUtil.getBean("exportTimesheetsToTim");
+        connectorDAO = (IConnectorDAO) SpringUtil.getBean("connectorDAO");
+
         comp.setAttribute("timSynchronizationController", this, true);
         loadComponentsEditWindow(comp);
         showOrHideTimEditWindow();
         updateOrderLastSyncInfoScreen();
+    }
+
+    public void setOrderController(OrderCRUDController orderController) {
+        this.orderController = orderController;
     }
 
     /**
@@ -124,11 +129,12 @@ class TimSynchronizationController extends GenericForwardComposer {
     /**
      * Returns true if Tim is Activated. Used to show/hide Tim edit window
      */
-    private boolean isTimActivated() {
+    public boolean isTimActivated() {
         Connector connector = connectorDAO.findUniqueByName(PredefinedConnectors.TIM.getName());
 
         return connector != null && connector.isActivated();
     }
+
 
     public void startExportToTim() {
         txtProductCode.setConstraint("no empty:" + _("cannot be empty"));
@@ -143,7 +149,6 @@ class TimSynchronizationController extends GenericForwardComposer {
             messagesForUser.showMessage(Level.ERROR, _("Exporting timesheets to Tim failed. Check the Tim connector"));
         }
     }
-
 
     private void shwoImpExpInfo() {
         Map<String, Object> args = new HashMap<>();
@@ -161,5 +166,4 @@ class TimSynchronizationController extends GenericForwardComposer {
             throw new RuntimeException(e);
         }
     }
-
 }

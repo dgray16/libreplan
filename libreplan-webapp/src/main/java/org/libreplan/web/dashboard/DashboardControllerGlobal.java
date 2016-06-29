@@ -117,7 +117,8 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
     }
 
     private void setupPipelineGrid() throws ParseException {
-        int rowsCount = findMaxList(preSalesOrders.size(),
+        int rowsCount = findMaxList(
+                preSalesOrders.size(),
                 offeredOrders.size(),
                 outsourcedOrders.size(),
                 acceptedOrders.size(),
@@ -125,12 +126,16 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
                 onHoldOrders.size(),
                 finishedOrders.size(),
                 cancelledOrders.size(),
-                storedOrders.size());
+                storedOrders.size() );
 
         Rows rows = new Rows();
         for (int i = 0; i < rowsCount; i++){
             Row row = new Row();
-            for (int columns = 0; columns < 9; columns++) row.appendChild(new Label());
+
+            for (int columns = 0; columns < 9; columns++) {
+                row.appendChild(new Label());
+            }
+
             rows.appendChild(row);
         }
 
@@ -141,6 +146,7 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
         if ( preSalesOrders.size() > 0 )
             for (int i = 0; i < preSalesOrders.size(); i++){
                 String outputInit = getOrderInitDate(preSalesOrders.get(i));
+                //TODO Constraint for deadLine
                 String outputDeadline = getOrderDeadline(preSalesOrders.get(i));
 
                 ( (Label) pipelineGrid.getCell(i, 0) ).setValue(preSalesOrders.get(i).getName());
@@ -259,11 +265,12 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
         return new SimpleDateFormat("EEE MMM dd yyyy").format(order.getDeadline());
     }
 
-    private void showStoredColumn() throws ParseException {
+    public void showStoredColumn() throws ParseException {
         if ( storedColumnVisible.isChecked() ){
             if ( storedOrders.size() > 0 ){
                 for (int i = 0; i < storedOrders.size(); i++){
                     String outputInit = getOrderInitDate(storedOrders.get(i));
+                    //FIXME If deadline is null what input in method?
                     String outputDeadline = getOrderDeadline(storedOrders.get(i));
 
                     pipelineGrid.getCell(i, 8).setVisible(true);

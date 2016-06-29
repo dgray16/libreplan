@@ -82,7 +82,7 @@ public class OrderLine extends OrderElement {
 
     }
 
-    private Set<HoursGroup> hoursGroups = new HashSet<HoursGroup>();
+    private Set<HoursGroup> hoursGroups = new HashSet<>();
 
     private Integer lastHoursGroupSequenceCode = 0;
 
@@ -95,7 +95,7 @@ public class OrderLine extends OrderElement {
 
     @Override
     public List<OrderElement> getChildren() {
-        return new ArrayList<OrderElement>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -163,7 +163,7 @@ public class OrderLine extends OrderElement {
     @Valid
     @Override
     public List<HoursGroup> getHoursGroups() {
-        return new ArrayList<HoursGroup>(hoursGroups);
+        return new ArrayList<>(hoursGroups);
     }
 
     public Set<HoursGroup> myHoursGroups() {
@@ -346,8 +346,7 @@ public class OrderLine extends OrderElement {
     }
 
     @Override
-    public DirectAdvanceAssignment calculateFakeDirectAdvanceAssignment(
-            IndirectAdvanceAssignment indirectAdvanceAssignment) {
+    public DirectAdvanceAssignment calculateFakeDirectAdvanceAssignment(IndirectAdvanceAssignment indirectAdvanceAssignment) {
         return null;
     }
 

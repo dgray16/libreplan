@@ -342,7 +342,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         return hoursPerDayRenderer;
     }
 
-    private class HoursPerDayRenderer implements ListitemRenderer {
+    public class HoursPerDayRenderer implements ListitemRenderer {
 
         @Override
         public void render(Listitem item, Object data, int i) {
@@ -530,7 +530,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         colorsMap.get(color).add(day);
     }
 
-    void highlightDaysOnCalendar() {
+    public void highlightDaysOnCalendar() {
         Calendar calendar = (Calendar) window.getFellow("calendarWidget");
 
         Clients.response(new AuInvoke(calendar, "resetHighlightedDates"));
@@ -929,7 +929,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         return baseCalendarModel.isFirstVersion(selectedDate);
     }
 
-    private void goToDate(Date date) {
+    public void goToDate(Date date) {
         setSelectedDay(toLocalDate(date));
     }
 
@@ -1022,7 +1022,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         this.newWorkWeekExpiringDate = date;
     }
 
-    private List<BaseCalendar> getParentCalendars() {
+    public List<BaseCalendar> getParentCalendars() {
         return baseCalendarModel.getPossibleParentCalendars();
     }
 
@@ -1044,7 +1044,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         return parentCalendarsComboitemRenderer;
     }
 
-    private class ParentCalendarsComboitemRenderer implements ComboitemRenderer {
+    public class ParentCalendarsComboitemRenderer implements ComboitemRenderer {
 
         @Override
         public void render(Comboitem comboitem, Object o, int i) throws Exception {
@@ -1244,7 +1244,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         reloadDayInformation();
     }
 
-        private String getNameParentCalendar() {
+    public String getNameParentCalendar() {
         BaseCalendar parent = baseCalendarModel.getCurrentParent();
         if ( parent != null ) {
             return parent.getName();
@@ -1440,7 +1440,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         Util.reloadBindings(window.getFellow("calendarAvailabilities"));
     }
 
-    private void reloadExceptionsList() {
+    public void reloadExceptionsList() {
         Util.reloadBindings(window.getFellow("exceptionsList"));
     }
 
@@ -1449,7 +1449,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         return !((baseCalendar == null) || (baseCalendar instanceof ResourceCalendar));
     }
 
-    protected void validateCalendarExceptionCodes(){
+    public void validateCalendarExceptionCodes(){
         Listbox listbox = (Listbox) window.getFellow("exceptionsList");
         if ( listbox != null ) {
 

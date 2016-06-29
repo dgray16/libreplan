@@ -88,6 +88,8 @@ public class MachineCRUDController extends BaseCRUDController<Machine> {
 
     private IMachineModel machineModel;
 
+    private IBaseCalendarModel resourceCalendarModel;
+
     private IResourceDAO resourceDAO;
 
     private Component configurationUnits;
@@ -127,6 +129,7 @@ public class MachineCRUDController extends BaseCRUDController<Machine> {
         machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
         limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
         resourceDAO = (IResourceDAO) SpringUtil.getBean("resourceDAO");
+        resourceCalendarModel = (IBaseCalendarModel) SpringUtil.getBean("resourceCalendarModel");
 
         setupCriterionsController();
         setupConfigurationController();
@@ -269,8 +272,6 @@ public class MachineCRUDController extends BaseCRUDController<Machine> {
     public List<BaseCalendar> getBaseCalendars() {
         return machineModel.getBaseCalendars();
     }
-
-    private IBaseCalendarModel resourceCalendarModel;
 
     private void createCalendar() {
         Combobox combobox = (Combobox) editWindow
@@ -473,8 +474,9 @@ public class MachineCRUDController extends BaseCRUDController<Machine> {
         filterFinishDate.setValue(null);
     }
 
-    private void showAllMachines() {
-        listing.setModel(new SimpleListModel<>(machineModel.getAllMachines().toArray()));
+    public void showAllMachines() {
+        listing.setModel(new SimpleListModel(machineModel.getAllMachines()
+                .toArray()));
         listing.invalidate();
     }
 
@@ -548,43 +550,21 @@ public class MachineCRUDController extends BaseCRUDController<Machine> {
     }
 
     public RowRenderer getMachinesRenderer() {
-        return new RowRenderer() {
+        return (row, data, i) -> {
+            final Machine machine = (Machine) data;
+            row.setValue(machine);
 
-            @Override
-            public void render(Row row, Object data, int i) {
-                final Machine machine = (Machine) data;
-                row.setValue(machine);
+            row.addEventListener(Events.ON_CLICK, event -> goToEditForm(machine));
 
-                row.addEventListener(Events.ON_CLICK,
-                        new EventListener() {
-                            @Override
-                            public void onEvent(Event event) {
-                                goToEditForm(machine);
-                            }
-                        });
+            row.appendChild(new Label(machine.getName()));
+            row.appendChild(new Label(machine.getDescription()));
+            row.appendChild(new Label(machine.getCode()));
+            row.appendChild(new Label((Boolean.TRUE.equals(machine.isLimitingResource())) ? _("yes") : _("no")));
 
-                row.appendChild(new Label(machine.getName()));
-                row.appendChild(new Label(machine.getDescription()));
-                row.appendChild(new Label(machine.getCode()));
-                row.appendChild(new Label((Boolean.TRUE.equals(machine
-                        .isLimitingResource())) ? _("yes") : _("no")));
-
-                Hbox hbox = new Hbox();
-                hbox.appendChild(Util.createEditButton(new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        goToEditForm(machine);
-                    }
-                }));
-                hbox.appendChild(Util.createRemoveButton(new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        confirmDelete(machine);
-                    }
-                }));
-                row.appendChild(hbox);
-            }
-
+            Hbox hbox = new Hbox();
+            hbox.appendChild(Util.createEditButton(event -> goToEditForm(machine)));
+            hbox.appendChild(Util.createRemoveButton(event -> confirmDelete(machine)));
+            row.appendChild(hbox);
         };
     }
 

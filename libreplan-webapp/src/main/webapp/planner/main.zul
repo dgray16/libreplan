@@ -38,10 +38,10 @@
 </zscript>
     <!-- choose lightLoad, mediumLoad or highLoad.
      -->
-    <tabSwitcher self="@{define(content)}" configuration="@{plannerData.lightLoad}">
+    <tabSwitcher self="@{define(content)}" sclass="tabSwitcherTest2" configuration="@{plannerData.lightLoad}">
     </tabSwitcher>
 
-    <div id="idContextMenuTaskAssignment"/>
+    <div id="idContextMenuTaskAssignment" sclass="mainTest"/>
     <popup width="300px" apply="${plannerData.taskEditForm}">
         <grid>
             <rows>

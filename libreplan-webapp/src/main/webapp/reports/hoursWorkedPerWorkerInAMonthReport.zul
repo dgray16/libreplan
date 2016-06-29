@@ -32,7 +32,7 @@
 <?component name="combobox_output_format" macroURI="combobox_output_format.zul"
     class="org.libreplan.web.reports.ComboboxOutputFormat" ?>
 
-<zk id="hoursWorkedPerWorker" xmlns:n="http://www.zkoss.org/2005/zk/native">
+<zk>
 
     <window self="@{define(content)}"
         apply="org.libreplan.web.reports.HoursWorkedPerWorkerInAMonthController"
@@ -86,14 +86,14 @@
 
         <hbox style="display: none" id="URItext">
             <label value="${i18n:_('Click on this')}" />
-            <a id="URIlink" class="z-label" zclass="z-label"
+            <a id="URIlink" sclass="z-label" zclass="z-label"
                     label="${i18n:_('direct link')}" />
             <label value="${i18n:_('if the report is not opened automatically')}" />
         </hbox>
 
         <separator spacing="10px" orient="horizontal" />
 
-        <button label="${i18n:_('Show')}" onClick="controller.showReport(report)" />
+        <button label="${i18n:_('Show')}" sclass="createButton" onClick="controller.showReport(report)" />
 
         <jasperreportcomponent id="report" />
 

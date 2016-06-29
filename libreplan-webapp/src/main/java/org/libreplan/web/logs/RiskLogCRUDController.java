@@ -19,7 +19,6 @@
 
 package org.libreplan.web.logs;
 
-import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.logs.entities.LowMediumHighEnum;
@@ -30,14 +29,12 @@ import org.libreplan.business.users.entities.User;
 import org.libreplan.web.common.BaseCRUDController;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.*;
 
 import java.nio.charset.UnsupportedCharsetException;
@@ -52,14 +49,10 @@ import static org.libreplan.web.I18nHelper._;
  *
  * @author Misha Gozhda <misha@libreplan-enterprise.com>
  */
-@SuppressWarnings("serial")
 @org.springframework.stereotype.Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
+public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(RiskLogCRUDController.class);
-
-    @Autowired
     private IRiskLogModel riskLogModel;
 
     private BandboxSearch bdProjectRiskLog;
@@ -67,6 +60,10 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     private BandboxSearch bdUserRiskLog;
 
     private Textbox riskScore;
+
+    public RiskLogCRUDController(){
+        riskLogModel = (IRiskLogModel) SpringUtil.getBean("riskLogModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -84,24 +81,17 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      * Initializes order component
      */
     private void initializeOrderComponent() {
-        bdProjectRiskLog = (BandboxSearch) editWindow
-                .getFellow("bdProjectRiskLog");
+        bdProjectRiskLog = (BandboxSearch) editWindow.getFellow("bdProjectRiskLog");
         Util.createBindingsFor(bdProjectRiskLog);
         bdProjectRiskLog.setListboxEventListener(Events.ON_SELECT,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        final Object object = bdProjectRiskLog.getSelectedElement();
-                        riskLogModel.setOrder((Order) object);
-                    }
+                event -> {
+                    final Object object = bdProjectRiskLog.getSelectedElement();
+                    riskLogModel.setOrder((Order) object);
                 });
-        bdProjectRiskLog.setListboxEventListener(Events.ON_OK, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                final Object object = bdProjectRiskLog.getSelectedElement();
-                riskLogModel.setOrder((Order) object);
-                bdProjectRiskLog.close();
-            }
+        bdProjectRiskLog.setListboxEventListener(Events.ON_OK, event -> {
+            final Object object = bdProjectRiskLog.getSelectedElement();
+            riskLogModel.setOrder((Order) object);
+            bdProjectRiskLog.close();
         });
     }
 
@@ -112,21 +102,15 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         bdUserRiskLog = (BandboxSearch) editWindow.getFellow("bdUserRiskLog");
         Util.createBindingsFor(bdUserRiskLog);
         bdUserRiskLog.setListboxEventListener(Events.ON_SELECT,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        final Object object = bdUserRiskLog.getSelectedElement();
-                        riskLogModel.setCreatedBy((User) object);
-                    }
+                event -> {
+                    final Object object = bdUserRiskLog.getSelectedElement();
+                    riskLogModel.setCreatedBy((User) object);
                 });
         bdUserRiskLog.setListboxEventListener(Events.ON_OK,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        final Object object = bdUserRiskLog.getSelectedElement();
-                        riskLogModel.setCreatedBy((User) object);
-                        bdUserRiskLog.close();
-                    }
+                event -> {
+                    final Object object = bdUserRiskLog.getSelectedElement();
+                    riskLogModel.setCreatedBy((User) object);
+                    bdUserRiskLog.close();
                 });
     }
 
@@ -136,30 +120,26 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      * @return {@link RowRenderer}
      */
     public RowRenderer getRiskLogsRowRenderer() {
-        return new RowRenderer() {
-
-            @Override
-            public void render(Row row, Object data, int i) throws Exception {
-                final RiskLog riskLog = (RiskLog) data;
-                row.setValue(riskLog);
-                appendObject(row, riskLog.getCode());
-                appendLabel(row, riskLog.getOrder().getName());
-                appendObject(row, riskLog.getProbability());
-                appendObject(row, riskLog.getImpact());
-                appendObject(row, riskLog.getRiskScore());
-                appendLabel(row, riskLog.getStatus());
-                appendLabel(row, riskLog.getDescription());
-                appendDate(row, riskLog.getDateCreated());
-                appendLabel(row, riskLog.getCreatedBy().getFullName() + riskLog.getCreatedBy().getLoginName());
-                appendLabel(row, riskLog.getCounterMeasures());
-                appendLabel(row, riskLog.getScoreAfterCM().getDisplayName());
-                appendLabel(row, riskLog.getContingency());
-                appendLabel(row, riskLog.getResponsible());
-                appendDate(row, riskLog.getActionWhen());
-                appendLabel(row, riskLog.getNotes());
-                appendOperations(row, riskLog);
-                setScoreCellColor(row, riskLog.getRiskScore());
-            }
+        return (row, data, i) -> {
+            final RiskLog riskLog = (RiskLog) data;
+            row.setValue(riskLog);
+            appendObject(row, riskLog.getCode());
+            appendLabel(row, riskLog.getOrder().getName());
+            appendObject(row, riskLog.getProbability());
+            appendObject(row, riskLog.getImpact());
+            appendObject(row, riskLog.getRiskScore());
+            appendLabel(row, riskLog.getStatus());
+            appendLabel(row, riskLog.getDescription());
+            appendDate(row, riskLog.getDateCreated());
+            appendLabel(row, riskLog.getCreatedBy().getFullName() + riskLog.getCreatedBy().getLoginName());
+            appendLabel(row, riskLog.getCounterMeasures());
+            appendLabel(row, riskLog.getScoreAfterCM().getDisplayName());
+            appendLabel(row, riskLog.getContingency());
+            appendLabel(row, riskLog.getResponsible());
+            appendDate(row, riskLog.getActionWhen());
+            appendLabel(row, riskLog.getNotes());
+            appendOperations(row, riskLog);
+            setScoreCellColor(row, riskLog.getRiskScore());
         };
     }
 
@@ -182,49 +162,41 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         }
     }
 
-    private ListitemRenderer lowMediumHighEnumRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i) throws Exception {
-            LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
-            String displayName = lowMediumHighEnum.getDisplayName();
-            item.setLabel(displayName);
-        }
+    public static ListitemRenderer lowMediumHighEnumRenderer = (item, data, i) -> {
+        LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
+        String displayName = lowMediumHighEnum.getDisplayName();
+        item.setLabel(displayName);
     };
-    private ListitemRenderer riskScoreStatesEnumRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i) throws Exception {
-            RiskScoreStatesEnum riskScoreStatesEnum = (RiskScoreStatesEnum) data;
-            String displayName = riskScoreStatesEnum.getDisplayName();
-            item.setLabel(displayName);
-        }
+
+    public static ListitemRenderer riskScoreStatesEnumRenderer = (item, data, i) -> {
+        RiskScoreStatesEnum riskScoreStatesEnum = (RiskScoreStatesEnum) data;
+        String displayName = riskScoreStatesEnum.getDisplayName();
+        item.setLabel(displayName);
     };
 
     /**
      * Renders LOW, MEDIUM, HIGH enums
      *
      * @return {@link ListitemRenderer}
-     */
     public ListitemRenderer getLowMediumHighEnumRenderer() {
         return lowMediumHighEnumRenderer;
     }
 
-    /**
+    *
      * Renders riskScoreState enums
      *
      * @return {@link ListitemRenderer}
-     */
     public ListitemRenderer getRiskScoreStatesEnumRenderer() {
         return riskScoreStatesEnumRenderer;
     }
 
-    /**
+    *
      * Appends the specified <code>object</code> to the specified
      * <code>row</code>
      *
      * @param row
      * @param object
-     */
-    private void appendObject(final Row row, Object object) {
+*/    private void appendObject(final Row row, Object object) {
         String text = "";
         if (object != null) {
             text = object.toString();
@@ -268,18 +240,8 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      */
     private void appendOperations(final Row row, final RiskLog riskLog) {
         Hbox hbox = new Hbox();
-        hbox.appendChild(Util.createEditButton(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                goToEditForm(riskLog);
-            }
-        }));
-        hbox.appendChild(Util.createRemoveButton(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                confirmDelete(riskLog);
-            }
-        }));
+        hbox.appendChild(Util.createEditButton(event -> goToEditForm(riskLog)));
+        hbox.appendChild(Util.createRemoveButton(event -> confirmDelete(riskLog)));
         row.appendChild(hbox);
     }
 
@@ -361,7 +323,7 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     /**
      * Returns the {@link RiskLog} object
      */
-    private RiskLog getRiskLog() {
+    public RiskLog getRiskLog() {
         return riskLogModel.getRiskLog();
     }
 
@@ -381,6 +343,10 @@ class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
 
             return riskLogs;
         }
+    }
+
+    public List<RiskLog> getTest(){
+        return riskLogModel.getRiskLogs();
     }
 
     public Order getOrder() {

@@ -173,7 +173,8 @@
             <key column="order_element_id"></key>
 
             <!-- Indexed the other side -->
-            <set name="hoursGroups" access="field" cascade="all,delete-orphan" inverse="true" batch-size="10">
+            <set name="hoursGroups" access="field" cascade="all,delete-orphan" inverse="true" batch-size="10"
+                 lazy="false">
                 <key column="parent_order_line" not-null="false"></key>
                 <one-to-many class="HoursGroup" />
             </set>

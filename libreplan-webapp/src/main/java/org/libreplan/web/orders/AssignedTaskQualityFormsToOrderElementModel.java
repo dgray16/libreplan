@@ -135,7 +135,7 @@ public class AssignedTaskQualityFormsToOrderElementModel implements IAssignedTas
 
     @Override
     public List<QualityForm> getAssignedQualityForms() {
-        List<QualityForm> result = new ArrayList<QualityForm>();
+        List<QualityForm> result = new ArrayList<>();
         for (QualityForm qualityForm : qualityFormDAO.getAll()) {
             if ( isAssigned(qualityForm) ) {
                 result.add(qualityForm);

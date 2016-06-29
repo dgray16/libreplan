@@ -52,23 +52,19 @@ public class ConcurrentModificationHandling {
     }
 
     private static InvocationHandler handler(final Object toBeWraped, final String goToPage) {
-        return new InvocationHandler() {
+        return (proxy, method, args) -> {
+            try {
+                return method.invoke(toBeWraped, args);
+            } catch (InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if ( cause instanceof OptimisticLockingFailureException ) {
 
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                try {
-                    return method.invoke(toBeWraped, args);
-                } catch (InvocationTargetException e) {
-                    Throwable cause = e.getCause();
-                    if ( cause instanceof OptimisticLockingFailureException ) {
+                    OptimisticLockingFailureException optimisticLockingFailureException =
+                            (OptimisticLockingFailureException) cause;
 
-                        OptimisticLockingFailureException optimisticLockingFailureException =
-                                (OptimisticLockingFailureException) cause;
-
-                        ConcurrentModificationController.showException(optimisticLockingFailureException, goToPage);
-                    }
-                    throw cause;
+                    ConcurrentModificationController.showException(optimisticLockingFailureException, goToPage);
                 }
+                throw cause;
             }
         };
     }
@@ -77,7 +73,7 @@ public class ConcurrentModificationHandling {
     }
 
     @SuppressWarnings("unused")
-    @Pointcut("@within(onConcurrentModification))")
+    @Pointcut(value = "@within(onConcurrentModification))")
     private void methodWithinConcurrentModificationMarkedType(OnConcurrentModification onConcurrentModification) {
     }
 
@@ -92,7 +88,7 @@ public class ConcurrentModificationHandling {
      *            the annotation applied to object's type
      * @return the object that would be originally returned
      */
-    @Around("methodWithinConcurrentModificationMarkedType(onConcurrentModification)" + " && execution(public * * (..))")
+    @Around(value = "methodWithinConcurrentModificationMarkedType(onConcurrentModification)" + " && execution(public * * (..))", argNames = "jointPoint,onConcurrentModification")
     public Object whenConcurrentModification(ProceedingJoinPoint jointPoint,
                                              OnConcurrentModification onConcurrentModification) throws Throwable {
 

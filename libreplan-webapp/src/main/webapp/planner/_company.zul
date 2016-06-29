@@ -26,6 +26,6 @@
     ]]>
     </zscript>
 
-    <planner id="planner" apply="${planningController}">
+    <planner id="planner" sclass="plannerTest" apply="${planningController}">
     </planner>
 </zk>

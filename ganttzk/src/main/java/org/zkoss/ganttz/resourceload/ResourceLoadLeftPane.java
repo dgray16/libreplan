@@ -36,16 +36,7 @@ import org.zkoss.zk.ui.HtmlMacroComponent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Div;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.Popup;
-import org.zkoss.zul.Treecell;
-import org.zkoss.zul.Treechildren;
-import org.zkoss.zul.Treeitem;
-import org.zkoss.zul.TreeitemRenderer;
-import org.zkoss.zul.Treerow;
-import org.zkoss.zul.Tree;
+import org.zkoss.zul.*;
 
 public class ResourceLoadLeftPane extends HtmlMacroComponent {
 
@@ -53,8 +44,7 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
 
     private final ResourceLoadList resourceLoadList;
 
-    private WeakReferencedListeners<ISeeScheduledOfListener> scheduleListeners = WeakReferencedListeners
-            .create();
+    private WeakReferencedListeners<ISeeScheduledOfListener> scheduleListeners = WeakReferencedListeners.create();
 
     public ResourceLoadLeftPane(MutableTreeModel<LoadTimeLine> modelForTree, ResourceLoadList resourceLoadList) {
         this.resourceLoadList = resourceLoadList;
@@ -116,7 +106,7 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 cell.appendChild(buttonPlan);
             }
 
-            void schedule(final LoadTimeLine taskLine) {
+            public void schedule(final LoadTimeLine taskLine) {
 
                 scheduleListeners
                         .fireEvent(new IListenerNotification<ISeeScheduledOfListener>() {
@@ -243,7 +233,7 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
         return result;
     }
 
-    void addSeeScheduledOfListener(ISeeScheduledOfListener seeScheduledOfListener) {
+    public void addSeeScheduledOfListener(ISeeScheduledOfListener seeScheduledOfListener) {
         scheduleListeners.addListener(seeScheduledOfListener);
     }
 }

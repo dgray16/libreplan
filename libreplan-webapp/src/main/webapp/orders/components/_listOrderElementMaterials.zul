@@ -59,7 +59,7 @@
             <groupbox style="margin-top: 5px" closable="false">
               <caption label="${i18n:_('Required materials')}" />
 
-              <button label="${i18n:_('Add materials')}" style="margin-bottom: 5px"
+              <button label="${i18n:_('Add materials')}" style="margin-bottom: 5px" sclass="createButton"
                 onClick="materialsAccordion.setSelectedIndex(1);" />
 
               <!-- Materials -->

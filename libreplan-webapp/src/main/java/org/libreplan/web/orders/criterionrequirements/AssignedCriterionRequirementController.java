@@ -80,9 +80,7 @@ import org.zkoss.zul.Detail;
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
-public abstract class AssignedCriterionRequirementController<T, M> extends GenericForwardComposer {
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(OrderCRUDController.class);
+public abstract class AssignedCriterionRequirementController<T, M> extends GenericForwardComposer<Component> {
 
     private IMessagesForUser messagesForUser;
 
@@ -90,7 +88,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     private Listbox hoursGroupsInOrderLineGroup;
 
-    private List<ResourceEnum> listResourceTypes = new ArrayList<ResourceEnum>();
+    private List<ResourceEnum> listResourceTypes = new ArrayList<>();
 
     private NewDataSortableGrid listingRequirements;
 

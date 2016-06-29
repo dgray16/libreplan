@@ -54,7 +54,7 @@
                     <tree id="categoriesTree" zclass="z-dottree"
                         rows="5" vflex="1" multiple="false"
                         model="@{materialsController.materialCategories}"
-                        treeitemRenderer="@{materialsController.materialCategoryRenderer}"
+                        itemRenderer="@{materialsController.materialCategoryRenderer}"
                         onSelect="materialsController.refreshMaterials()">
                         <treecols>
                             <treecol label="${i18n:_('Name')}" />

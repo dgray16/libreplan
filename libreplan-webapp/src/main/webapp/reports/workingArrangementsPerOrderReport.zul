@@ -91,7 +91,7 @@
                             model="@{controller.allLabels}"
                             widthListbox="380px"
                             widthBandbox="350px"/>
-                        <button label="${i18n:_('Add')}"
+                        <button label="${i18n:_('Add')}" sclass="createButton"
                             onClick="controller.onSelectLabel()"
                             style="margin-top: -4px" />
                     </hbox>
@@ -132,7 +132,7 @@
                             model="@{controller.allCriterions}"
                             widthListbox="380px"
                             widthBandbox="350px"/>
-                        <button label="${i18n:_('Add')}"
+                        <button label="${i18n:_('Add')}" sclass="createButton"
                             onClick="controller.onSelectCriterion()"
                             style="margin-top: -4px" />
                     </hbox>
@@ -186,13 +186,13 @@
 
         <hbox style="display: none" id="URItext">
             <label value="${i18n:_('Click on this')}" />
-            <a id="URIlink" class="z-label" zclass="z-label"
+            <a id="URIlink" sclass="z-label" zclass="z-label"
                     label="${i18n:_('direct link')}" />
             <label value="${i18n:_('if the report is not opened automatically')}" />
         </hbox>
         <separator spacing="10px" orient="horizontal" />
 
-        <button label="${i18n:_('Show')}" onClick="controller.showReport(report)" />
+        <button label="${i18n:_('Show')}" sclass="createButton" onClick="controller.showReport(report)" />
 
         <jasperreportcomponent id="report" />
 

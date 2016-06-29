@@ -49,8 +49,6 @@ import static org.libreplan.web.I18nHelper._;
  */
 public class MaterialsController extends GenericForwardComposer {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(MaterialsController.class);
-
     private IMaterialsModel materialsModel;
 
     private Tree categoriesTree;
@@ -69,11 +67,15 @@ public class MaterialsController extends GenericForwardComposer {
 
     private UnitTypeListRenderer unitTypeListRenderer = new UnitTypeListRenderer();
 
+    public MaterialsController(){
+        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
+    }
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
 
-        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
+
         comp.setAttribute("materialsController", this, true);
         messagesForUser = new MessagesForUser(messagesContainer);
 
@@ -81,23 +83,19 @@ public class MaterialsController extends GenericForwardComposer {
         loadUnitTypes();
 
         // Renders grid and enables delete button is material is new
-        gridMaterials.addEventListener("onInitRender", new EventListener() {
+        gridMaterials.addEventListener("onInitRender", event -> {
+            gridMaterials.renderAll();
 
-            @Override
-            public void onEvent(Event event) {
-                gridMaterials.renderAll();
+            final Rows rows = gridMaterials.getRows();
+            for (Iterator i = rows.getChildren().iterator(); i.hasNext(); ) {
+                final Row row = (Row) i.next();
+                final Material material = row.getValue();
+                Button btnDelete = (Button) row.getChildren().get(6);
 
-                final Rows rows = gridMaterials.getRows();
-                for (Iterator i = rows.getChildren().iterator(); i.hasNext(); ) {
-                    final Row row = (Row) i.next();
-                    final Material material = row.getValue();
-                    Button btnDelete = (Button) row.getChildren().get(6);
-
-                    if (!materialsModel.canRemoveMaterial(material)) {
-                        btnDelete.setDisabled(true);
-                        btnDelete.setImage("/common/img/ico_borrar_out.png");
-                        btnDelete.setHoverImage("/common/img/ico_borrar_out.png");
-                    }
+                if (!materialsModel.canRemoveMaterial(material)) {
+                    btnDelete.setDisabled(true);
+                    btnDelete.setImage("/common/img/ico_borrar_out.png");
+                    btnDelete.setHoverImage("/common/img/ico_borrar_out.png");
                 }
             }
         });
@@ -143,41 +141,37 @@ public class MaterialsController extends GenericForwardComposer {
      * @author Diego Pino Garcia <dpino@igalia.com>
      *
      */
-    private class MaterialCategoryRenderer implements TreeitemRenderer {
+    private class MaterialCategoryRenderer implements TreeitemRenderer<MaterialCategory> {
 
         /**
          * Copied verbatim from org.zkoss.zul.Tree;
          */
+
         @Override
-        public void render(Treeitem ti, Object node, int i) {
-            final MaterialCategory materialCategory = (MaterialCategory) node;
+        public void render(Treeitem treeitem, MaterialCategory node, int i) throws Exception {
+            //TODO Object is null. WHY?!
+            final MaterialCategory materialCategory = node;
 
             final Textbox tb = new Textbox(materialCategory.getName());
             tb.setWidth("90%");
-            tb.addEventListener("onChange", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    final InputEvent ie = (InputEvent) event;
-                    materialCategory.setName(ie.getValue());
-                }
+            tb.addEventListener("onChange", event -> {
+                final InputEvent ie = (InputEvent) event;
+                materialCategory.setName(ie.getValue());
             });
-            tb.addEventListener("onFocus", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    ((Treeitem)tb.getParent().getParent().getParent()).setSelected(true);
-                    refreshMaterials();
-                }
+            tb.addEventListener("onFocus",  event -> {
+                ((Treeitem)tb.getParent().getParent().getParent()).setSelected(true);
+                refreshMaterials();
             });
             Treecell tc = new Treecell();
 
             Treerow tr;
-            ti.setValue(node);
-            if (ti.getTreerow() == null) {
+            treeitem.setValue(node);
+            if (treeitem.getTreerow() == null) {
                 tr = new Treerow();
-                tr.setParent(ti);
-                ti.setOpen(true); // Expand node
+                tr.setParent(treeitem);
+                treeitem.setOpen(true); // Expand node
             } else {
-                tr = ti.getTreerow();
+                tr = treeitem.getTreerow();
                 tr.getChildren().clear();
             }
             tb.setParent(tc);
@@ -186,19 +180,13 @@ public class MaterialsController extends GenericForwardComposer {
             final Textbox codeTb = new Textbox(materialCategory.getCode());
             codeTb.setWidth("95%");
             codeTb.setDisabled(materialCategory.isCodeAutogenerated());
-            codeTb.addEventListener("onChange", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    final InputEvent ie = (InputEvent) event;
-                    materialCategory.setCode(ie.getValue());
-                }
+            codeTb.addEventListener("onChange", event -> {
+                final InputEvent ie = (InputEvent) event;
+                materialCategory.setCode(ie.getValue());
             });
-            codeTb.addEventListener("onFocus", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    ((Treeitem)codeTb.getParent().getParent().getParent()).setSelected(true);
-                    refreshMaterials();
-                }
+            codeTb.addEventListener("onFocus",  event -> {
+                ((Treeitem)codeTb.getParent().getParent().getParent()).setSelected(true);
+                refreshMaterials();
             });
             Treecell codeTc = new Treecell();
             codeTb.setParent(codeTc);
@@ -206,29 +194,26 @@ public class MaterialsController extends GenericForwardComposer {
 
             final Checkbox cb = new Checkbox();
             cb.setChecked(materialCategory.isCodeAutogenerated());
-            cb.addEventListener("onCheck", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    final CheckEvent ce = (CheckEvent) event;
-                    materialCategory.setCodeAutogenerated(ce.isChecked());
-                    if (ce.isChecked()) {
-                        try {
-                            materialsModel.setCodeAutogenerated(ce.isChecked(), materialCategory);
-                        } catch (ConcurrentModificationException err) {
-                            messagesForUser.showMessage(Level.ERROR, err.getMessage());
-                        }
+            cb.addEventListener("onCheck",  event -> {
+                final CheckEvent ce = (CheckEvent) event;
+                materialCategory.setCodeAutogenerated(ce.isChecked());
+                if (ce.isChecked()) {
+                    try {
+                        materialsModel.setCodeAutogenerated(ce.isChecked(), materialCategory);
+                    } catch (ConcurrentModificationException err) {
+                        messagesForUser.showMessage(Level.ERROR, err.getMessage());
                     }
-                    codeTb.setValue(materialCategory.getCode());
-                    codeTb.setDisabled(ce.isChecked());
-                    Util.reloadBindings(codeTb);
-                    Util.reloadBindings(gridMaterials);
                 }
+                codeTb.setValue(materialCategory.getCode());
+                codeTb.setDisabled(ce.isChecked());
+                Util.reloadBindings(codeTb);
+                Util.reloadBindings(gridMaterials);
             });
             Treecell generateCodeTc = new Treecell();
             cb.setParent(generateCodeTc);
             generateCodeTc.setParent(tr);
 
-            appendDeleteButton(ti);
+            appendDeleteButton(treeitem);
         }
     }
 
@@ -239,12 +224,7 @@ public class MaterialsController extends GenericForwardComposer {
         btnDelete.setHoverImage("/common/img/ico_borrar.png");
         btnDelete.setSclass("icono");
         btnDelete.setTooltiptext(_("Delete"));
-        btnDelete.addEventListener(Events.ON_CLICK, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                confirmRemove(materialCategory);
-            }
-        });
+        btnDelete.addEventListener(Events.ON_CLICK, event -> confirmRemove(materialCategory));
         btnDelete.setDisabled(hasSubcategoriesOrMaterials(materialCategory));
         Treecell tc = new Treecell();
         tc.setParent(ti.getTreerow());
@@ -332,7 +312,7 @@ public class MaterialsController extends GenericForwardComposer {
         if (treeitem == null) {
             throw new WrongValueException(btnAddMaterial, _("Cannot insert material in general view. Please, select a category"));
         }
-        final MaterialCategory materialCategory = (MaterialCategory) treeitem.getValue();
+        final MaterialCategory materialCategory = treeitem.getValue();
         materialsModel.addMaterialToMaterialCategory(materialCategory);
         Util.reloadBindings(gridMaterials);
     }
@@ -352,7 +332,7 @@ public class MaterialsController extends GenericForwardComposer {
     private void reloadCategoriesTree(Treeitem treeitem) {
         Util.reloadBindings(categoriesTree);
         if (treeitem != null) {
-            final MaterialCategory materialCategory = (MaterialCategory) treeitem.getValue();
+            final MaterialCategory materialCategory = treeitem.getValue();
             categoriesTree.invalidate();
             locateAndSelectMaterialCategory(materialCategory);
         } else {
@@ -443,7 +423,7 @@ public class MaterialsController extends GenericForwardComposer {
         }
     }
 
-    private void refreshMaterials() {
+    public void refreshMaterials() {
         final List<Material> materials = getMaterials();
         gridMaterials.setModel(new SimpleListModel<>(materials));
         refreshMaterialsListTitle();
@@ -507,7 +487,7 @@ public class MaterialsController extends GenericForwardComposer {
      * RowRenderer for a @{UnitType} element
      * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
      */
-    private static class UnitTypeListRenderer implements ListitemRenderer {
+    public static class UnitTypeListRenderer implements ListitemRenderer {
         @Override
         public void render(Listitem listItem, Object data, int i) {
             final UnitType unitType = (UnitType) data;

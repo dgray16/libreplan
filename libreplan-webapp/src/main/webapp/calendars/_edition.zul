@@ -177,7 +177,7 @@
                   </grid>
 
                   <hbox width="100%" style="margin-left: 5px;">
-                    <button label="${i18n:_('Create exception')}"
+                    <button label="${i18n:_('Create exception')}" sclass="createButton"
                       onClick="calendarController.editionController.createException();"
                       visible="@{calendarController.editionController.isNotOwnExceptionDay}" />
                     <button label="${i18n:_('Update exception')}"
@@ -234,7 +234,7 @@
 
                   <button
                     onClick="calendarController.editionController.createNewVersion();"
-                    label="${i18n:_('Create new Workweek')}"
+                    label="${i18n:_('Create new Workweek')}" sclass="createButton"
                     visible="@{calendarController.editionController.isEditing}"
                     style="margin-left: 5px;" />
 
@@ -278,7 +278,7 @@
                       <listheader label="${i18n:_('Op.')}" />
                     </listhead>
                   </listbox>
-                  <button label="${i18n:_('Create activation period')}"
+                  <button label="${i18n:_('Create activation period')}" sclass="createButton"
                     onClick="calendarController.editionController.createCalendarAvailability();" />
                 </vbox>
 

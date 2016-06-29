@@ -202,7 +202,7 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
         return descriptionFieldRowRenderer;
     }
 
-    private class DescriptionFieldRowRenderer implements RowRenderer {
+    public class DescriptionFieldRowRenderer implements RowRenderer {
 
         @Override
         public void render(Row row, Object data, int i) {
@@ -368,7 +368,7 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
         return workReportLabelTypeAssigmentRowRenderer;
     }
 
-    private class WorkReportLabelTypeAssigmentRowRenderer implements RowRenderer {
+    public class WorkReportLabelTypeAssigmentRowRenderer implements RowRenderer {
 
         @Override
         public void render(Row row, Object data, int i) {
@@ -616,8 +616,8 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
         };
     }
 
-    private void validateIfExistTheSameLabelType(final Combobox comboLabelTypes,
-                                                 final WorkReportLabelTypeAssigment workReportLabelTypeAssigment)
+    public void validateIfExistTheSameLabelType(final Combobox comboLabelTypes,
+            final WorkReportLabelTypeAssigment workReportLabelTypeAssigment)
             throws WrongValueException {
 
         if ((getWorkReportType() != null) &&
@@ -628,7 +628,7 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
         }
     }
 
-    private Constraint validateIfExistTheSameFieldName(
+    public Constraint validateIfExistTheSameFieldName(
             final DescriptionField descriptionField) {
         return new Constraint() {
             @Override
@@ -774,7 +774,7 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
 
     /* Operations to manage the ordered list of fields and labels */
 
-    private void reloadOrderedListFieldsAndLabels() {
+    public void reloadOrderedListFieldsAndLabels() {
         Util.reloadBindings(orderedListFieldsAndLabels);
     }
 
@@ -790,7 +790,7 @@ public class WorkReportTypeCRUDController extends BaseCRUDController<WorkReportT
         return orderedFieldsAndLabesRowRenderer;
     }
 
-    private class OrderedFieldsAndLabelsRowRenderer implements RowRenderer {
+    public class OrderedFieldsAndLabelsRowRenderer implements RowRenderer {
 
         @Override
         public void render(Row row, Object data, int i) {

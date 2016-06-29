@@ -24,7 +24,7 @@
     <caption id="caption" sclass="caption-title" />
     <tabbox>
         <tabs>
-            <tab label="${i18n:_('Category data')}"></tab>
+            <tab label="${i18n:_('Category data')}"/>
         </tabs>
         <tabpanels>
             <tabpanel>
@@ -67,7 +67,7 @@
                         border="normal">
                         <panelchildren>
                             <hbox>
-                                <button label="${i18n:_('Add new row')}"
+                                <button label="${i18n:_('Add new row')}" sclass="createButton"
                                     onClick="controller.addHourCost()" />
                             </hbox>
 

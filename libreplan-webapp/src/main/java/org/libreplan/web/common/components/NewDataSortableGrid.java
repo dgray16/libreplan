@@ -20,13 +20,10 @@
 
 package org.libreplan.web.common.components;
 
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModel;
-import org.zkoss.zul.ListModelExt;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.ext.Sortable;
 
@@ -50,27 +47,21 @@ public class NewDataSortableGrid extends Grid implements AfterCompose {
     private boolean lastSortedColumnAscending;
 
     public NewDataSortableGrid() {
-        addEventListener(Events.ON_SORT, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                    sortByLastColumn();
-            }
-        });
+        addEventListener(Events.ON_SORT, event -> sortByLastColumn());
     }
 
     public void setSortedColumn(Column c) {
         if ( c == null ) {
-            throw new IllegalArgumentException("The column parameter cannot"
-                    + "cannot be null");
+            throw new IllegalArgumentException("The column parameter cannot" + "cannot be null");
         }
         this.lastSortedColumn = c;
     }
 
-    Column getSortedColumn() {
+    public Column getSortedColumn() {
         return lastSortedColumn;
     }
 
-    void setLastSortedColumnAscending(boolean ascending) {
+    public void setLastSortedColumnAscending(boolean ascending) {
         this.lastSortedColumnAscending = ascending;
     }
 
@@ -93,10 +84,10 @@ public class NewDataSortableGrid extends Grid implements AfterCompose {
     }
 
     private void sortByLastColumn() {
-        if (!(getModel() instanceof ListModelExt)) {
+        if (!(getModel() instanceof Sortable)) {
             return;
         }
-        //TODO Checko this ?
+        //TODO Check this ?
         Sortable model = (Sortable) getModel();
 
         if ( lastSortedColumnAscending ) {

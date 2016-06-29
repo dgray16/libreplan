@@ -731,23 +731,20 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
 
     private EventListener doNotCallTwice(final Button button,
                                          final org.zkoss.zk.ui.event.EventListener originalListener) {
-        return new EventListener() {
-
-            @Override
-            public void onEvent(Event event) throws Exception {
-                if ( currentOne == button ) {
-                    return;
-                }
-
-                switchCurrentButtonTo(button);
-                originalListener.onEvent(event);
+        return event -> {
+            if ( currentOne == button ) {
+                return;
             }
+
+            switchCurrentButtonTo(button);
+            originalListener.onEvent(event);
         };
     }
 
     private Component separator() {
         Div div = new Div();
         div.setSclass("vertical-separator");
+
         return div;
     }
 

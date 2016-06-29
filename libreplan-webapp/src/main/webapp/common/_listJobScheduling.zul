@@ -32,5 +32,5 @@
         </columns>
     </grid>
     <button label="${i18n:_('Create')}" onClick="controller.goToCreateForm()"
-        sclass="create-button-global-action"/>
+        sclass="global-action"/>
 </window>

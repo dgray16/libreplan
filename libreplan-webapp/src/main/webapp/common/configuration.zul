@@ -427,7 +427,7 @@
                             <grid id="configurationRoles"
                                 model="@{configurationController.roles}"
                                 rowRenderer="@{configurationController.allUserRolesRenderer}"
-                                mold="paging" pageSize="10" fixedLayout="true">
+                                mold="paging" pageSize="10" sizedByContent="true">
                                 <columns>
                                     <column label="${i18n:_('LibrePlan Role')}" width="200px" />
                                     <column label="${i18n:_('LDAP Roles (separated by ;)')}" />

@@ -33,6 +33,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Label;
 
 /**
@@ -67,6 +68,10 @@ public class CostStatusController extends GenericForwardComposer {
 
     // Estimate To Complete
     public Label lblETC;
+
+    public CostStatusController(){
+        costStatusModel = (ICostStatusModel) SpringUtil.getBean("costStatusModel");
+    }
 
     @Override
     public void doAfterCompose(org.zkoss.zk.ui.Component comp) throws Exception {

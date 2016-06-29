@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zul.Tab;
 import org.zkoss.zul.Window;
 
 
@@ -56,13 +57,14 @@ public class LogsController extends GenericForwardComposer {
         comp.setAttribute("logsController", this, true);
         logWindow = (Window) comp.getFellowIfAny("logWindow");
         Util.createBindingsFor(logWindow);
-        setupIssueLogController();
+        setupRiskLogController();
     }
 
-    private void setupIssueLogController() {
+    public void setupIssueLogController() {
+        //TODO Check this. Doesn't work apply in zul file
         issueLogWindow = (Window) self.getFellowIfAny("issueLogWindow");
 
-        if (issueLogController == null) {
+        if ( issueLogController == null ) {
             issueLogController = new IssueLogCRUDController();
         }
         try {
@@ -87,7 +89,7 @@ public class LogsController extends GenericForwardComposer {
     }
 
     public static void goToOrderMode(Order order) {
-        LogsController.projectNameVisibility =false;
+        LogsController.projectNameVisibility = false;
         LogsController.order = order;
     }
 
@@ -96,7 +98,7 @@ public class LogsController extends GenericForwardComposer {
         order = null;
     }
 
-    static boolean getProjectNameVisibility() {
+    public static boolean getProjectNameVisibility() {
         return projectNameVisibility;
     }
 

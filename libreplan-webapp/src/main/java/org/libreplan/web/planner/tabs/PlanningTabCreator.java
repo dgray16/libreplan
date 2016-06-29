@@ -81,8 +81,7 @@ public class PlanningTabCreator {
 
         return new PlanningTabCreator(mode, companyPlanningController,
                 orderPlanningController, breadcrumbs, orderDAO, parameters,
-                tabsController)
-                .create();
+                tabsController).create();
     }
 
     private PlanningTabCreator(Mode mode,
@@ -229,19 +228,13 @@ public class PlanningTabCreator {
 
     private ITab createOrderPlanningTab() {
 
-        final IComponentCreator componentCreator = new IComponentCreator() {
-
-            @Override
-            public org.zkoss.zk.ui.Component create(
-                    org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<>();
-                arguments.put("orderPlanningController", orderPlanningController);
-                orderPlanningController.setURLParameters(parameters);
-                Component result = Executions.createComponents("/planner/order.zul", parent, arguments);
-                Util.createBindingsFor(result);
-                return result;
-            }
-
+        final IComponentCreator componentCreator = parent -> {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("orderPlanningController", orderPlanningController);
+            orderPlanningController.setURLParameters(parameters);
+            Component result = Executions.createComponents("/planner/order.zul", parent, arguments);
+            Util.createBindingsFor(result);
+            return result;
         };
         return new CreatedOnDemandTab(_("Project Scheduling"), "order-scheduling", componentCreator) {
             @Override
@@ -263,18 +256,15 @@ public class PlanningTabCreator {
                 breadcrumbs.appendChild(new Label(_("Project Scheduling")));
                 if (mode.isOf(ModeType.ORDER)) {
 
-                    orderPlanningController.getOrderCRUDController()
-                            .checkUserCanRead(order);
+                    orderPlanningController.getOrderCRUDController().checkUserCanRead(order);
                     Label nameLabel = new Label(order.getName());
-                    nameLabel.setTooltiptext(order.getName() + "."
-                            + order.getDescription());
+                    nameLabel.setTooltiptext(order.getName() + "." + order.getDescription());
                     nameLabel.setMaxlength(MAX_ORDERNAME_LENGHT);
 
                     Label schedulingStateLabel = new Label(_(order.getState().toString()));
 
                     schedulingStateLabel.setSclass("scheduling-state " + order.getSchedulingState().getCssClass());
-                    schedulingStateLabel.setTooltiptext(_(order
-                            .getSchedulingState().getStateName()));
+                    schedulingStateLabel.setTooltiptext(_(order.getSchedulingState().getStateName()));
 
                     breadcrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
                     breadcrumbs.appendChild(nameLabel);

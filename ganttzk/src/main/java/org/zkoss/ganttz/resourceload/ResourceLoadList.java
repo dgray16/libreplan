@@ -46,21 +46,20 @@ public class ResourceLoadList extends XulElement {
 
     private final IZoomLevelChangedListener zoomListener;
 
-    private Map<LoadTimeLine, ResourceLoadComponent> fromTimeLineToComponent = new HashMap<LoadTimeLine, ResourceLoadComponent>();
+    private Map<LoadTimeLine, ResourceLoadComponent> fromTimeLineToComponent = new HashMap<>();
 
-    public ResourceLoadList(TimeTracker timeTracker,
-            MutableTreeModel<LoadTimeLine> timelinesTree) {
+    public ResourceLoadList(TimeTracker timeTracker, MutableTreeModel<LoadTimeLine> timelinesTree) {
         zoomListener = adjustTimeTrackerSizeListener();
         timeTracker.addZoomListener(zoomListener);
         LoadTimeLine current = timelinesTree.getRoot();
-        List<LoadTimeLine> toInsert = new ArrayList<LoadTimeLine>();
+        List<LoadTimeLine> toInsert = new ArrayList<>();
         fill(timelinesTree, current, toInsert);
         insertAsComponents(timeTracker, toInsert);
     }
 
-    private void fill(MutableTreeModel<LoadTimeLine> timelinesTree,
-            LoadTimeLine current, List<LoadTimeLine> result) {
+    private void fill(MutableTreeModel<LoadTimeLine> timelinesTree, LoadTimeLine current, List<LoadTimeLine> result) {
         final int length = timelinesTree.getChildCount(current);
+
         for (int i = 0; i < length; i++) {
             LoadTimeLine child = timelinesTree.getChild(current, i);
             result.add(child);
@@ -69,23 +68,16 @@ public class ResourceLoadList extends XulElement {
     }
 
     private IZoomLevelChangedListener adjustTimeTrackerSizeListener() {
-        return new IZoomLevelChangedListener() {
-
-            @Override
-            public void zoomLevelChanged(ZoomLevel detailLevel) {
-                response(null, new AuInvoke(ResourceLoadList.this,
-                        "adjustTimeTrackerSize"));
-                response(null, new AuInvoke(ResourceLoadList.this,
-                        "adjustResourceLoadRows"));
-            }
+        return detailLevel -> {
+            response(null, new AuInvoke(ResourceLoadList.this, "adjustTimeTrackerSize"));
+            response(null, new AuInvoke(ResourceLoadList.this, "adjustResourceLoadRows"));
         };
     }
 
-    private void insertAsComponents(TimeTracker timetracker,
-            List<LoadTimeLine> children) {
+    private void insertAsComponents(TimeTracker timetracker, List<LoadTimeLine> children) {
         for (LoadTimeLine loadTimeLine : children) {
-            ResourceLoadComponent component = ResourceLoadComponent.create(
-                    timetracker, loadTimeLine);
+
+            ResourceLoadComponent component = ResourceLoadComponent.create(timetracker, loadTimeLine);
             appendChild(component);
             fromTimeLineToComponent.put(loadTimeLine, component);
         }
@@ -100,8 +92,8 @@ public class ResourceLoadList extends XulElement {
     }
 
     private ResourceLoadComponent getComponentFor(LoadTimeLine l) {
-        ResourceLoadComponent resourceLoadComponent = fromTimeLineToComponent
-                .get(l);
+        ResourceLoadComponent resourceLoadComponent = fromTimeLineToComponent.get(l);
+
         return resourceLoadComponent;
     }
 
@@ -127,10 +119,9 @@ public class ResourceLoadList extends XulElement {
         return childrenOf;
     }
 
-    public void addSeeScheduledOfListener(
-            ISeeScheduledOfListener seeScheduledOfListener) {
-        for (Entry<LoadTimeLine, ResourceLoadComponent> entry : fromTimeLineToComponent
-                .entrySet()) {
+    public void addSeeScheduledOfListener(ISeeScheduledOfListener seeScheduledOfListener) {
+
+        for (Entry<LoadTimeLine, ResourceLoadComponent> entry : fromTimeLineToComponent.entrySet()) {
             entry.getValue().addSeeScheduledOfListener(seeScheduledOfListener);
         }
     }

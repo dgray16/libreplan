@@ -51,8 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class QualityFormDAO extends GenericDAOHibernate<QualityForm, Long>
-        implements IQualityFormDAO {
+public class QualityFormDAO extends GenericDAOHibernate<QualityForm, Long> implements IQualityFormDAO {
 
     @Autowired
     private IAdvanceTypeDAO advanceTypeDAO;

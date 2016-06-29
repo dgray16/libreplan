@@ -45,8 +45,8 @@ import org.zkoss.zul.Window;
  *
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  */
-@SuppressWarnings("serial")
-public abstract class BaseCRUDController<T extends IHumanIdentifiable> extends GenericForwardComposer {
+
+public abstract class BaseCRUDController<T extends IHumanIdentifiable> extends GenericForwardComposer<Component> {
 
     private OnlyOneVisible visibility;
 

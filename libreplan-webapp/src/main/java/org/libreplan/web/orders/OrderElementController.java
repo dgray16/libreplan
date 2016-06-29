@@ -38,6 +38,7 @@ import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabpanel;
 import org.zkoss.zul.Window;
@@ -85,6 +86,13 @@ public class OrderElementController extends GenericForwardComposer {
 
     private AssignedMaterialsToOrderElementController assignedMaterialsController;
 
+    public OrderElementController(){
+        orderElementModel = (IOrderElementModel) SpringUtil.getBean("orderElementModel");
+        assignedCriterionRequirementController =
+                (AssignedCriterionRequirementToOrderElementController)
+                        SpringUtil.getBean("assignedCriterionRequirementToOrderElementController");
+    }
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -118,11 +126,11 @@ public class OrderElementController extends GenericForwardComposer {
         if ((getOrderElement() != null) && (!StringUtils.isBlank(getOrderElement().getName()))) {
             name = ": " + getOrderElement().getName();
         }
+
         return _("Edit task {0}", name);
     }
 
-    public void setupManageOrderElementAdvancesController()
-            {
+    public void setupManageOrderElementAdvancesController() {
         if (manageOrderElementAdvancesController == null) {
             manageOrderElementAdvancesController = (ManageOrderElementAdvancesController) orderElementAdvances
                     .getAttribute("manageOrderElementAdvancesController", true);
@@ -143,20 +151,17 @@ public class OrderElementController extends GenericForwardComposer {
         }
     }
 
-    public void setupAssignedCriterionRequirementToOrderElementController()
-            {
-        if (assignedCriterionRequirementController == null) {
+    public void setupAssignedCriterionRequirementToOrderElementController() {
+        if ( assignedCriterionRequirementController == null ) {
             assignedCriterionRequirementController =
-                    (AssignedCriterionRequirementToOrderElementController) orderElementCriterionRequirements
-                    .getAttribute("assignedCriterionRequirementController", true);
+                    orderElementCriterionRequirements.getController();
             assignedCriterionRequirementController.openWindow(orderElementModel);
         } else {
             redraw(orderElementCriterionRequirements);
         }
     }
 
-    public void setupAssignedMaterialsToOrderElementController()
-            {
+    public void setupAssignedMaterialsToOrderElementController() {
         if (assignedMaterialsController == null) {
             assignedMaterialsController = orderElementMaterials.getController();
             assignedMaterialsController.openWindow(getOrderElement());
@@ -165,8 +170,7 @@ public class OrderElementController extends GenericForwardComposer {
         }
     }
 
-    public void setupAssignedTaskQualityFormsToOrderElementController()
-            {
+    public void setupAssignedTaskQualityFormsToOrderElementController() {
         if (assignedTaskQualityFormsController == null) {
             assignedTaskQualityFormsController = (AssignedTaskQualityFormsToOrderElementController) orderElementTaskQualityForms
                 .getAttribute("assignedTaskQualityFormsController", true);
@@ -211,7 +215,7 @@ public class OrderElementController extends GenericForwardComposer {
         this.orderElementModel = orderElementModel;
     }
 
-    private void clearAll() {
+    public void clearAll() {
         Tabpanel tabPanel = (Tabpanel) self.getFellow("tabPanelDetails");
         Util.createBindingsFor(tabPanel);
         Util.reloadBindings(tabPanel);

@@ -127,8 +127,7 @@ public abstract class EntitiesTree<T extends ITreeNode<T>> {
     }
 
     private void addToTree(ITreeNode<T> parentNode, ITreeNode<T> elementToAdd) {
-        tree.add(parentNode.getThis(), Collections.singletonList(elementToAdd
-                .getThis()),
+        tree.add(parentNode.getThis(), Collections.singletonList(elementToAdd.getThis()),
                 childrenExtractor());
     }
 

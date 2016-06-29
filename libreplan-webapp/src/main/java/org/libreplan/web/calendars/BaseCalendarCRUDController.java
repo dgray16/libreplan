@@ -167,7 +167,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         updateWindowTitle();
     }
 
-    private void setSelectedDay(LocalDate date) {
+    public void setSelectedDay(LocalDate date) {
         baseCalendarModel.setSelectedDay(date);
 
         reloadDayInformation();
@@ -252,7 +252,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         highlightDaysOnCalendar();
     }
 
-    private void goToCreateDerivedForm(BaseCalendar baseCalendar) {
+    public void goToCreateDerivedForm(BaseCalendar baseCalendar) {
         state = CRUDControllerState.CREATE;
         baseCalendarModel.initCreateDerived(baseCalendar);
         assignCreateController();
@@ -267,7 +267,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         return baseCalendarModel.isEditing();
     }
 
-    private void goToCreateCopyForm(BaseCalendar baseCalendar) {
+    public void goToCreateCopyForm(BaseCalendar baseCalendar) {
         state = CRUDControllerState.CREATE;
         baseCalendarModel.initCreateCopy(baseCalendar);
         assignCreateController();
@@ -467,7 +467,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         return baseCalendarModel.isDefaultCalendar(calendar);
     }
 
-    private boolean hasParent(BaseCalendar calendar) {
+    public boolean hasParent(BaseCalendar calendar) {
         return baseCalendarModel.isParent(calendar);
     }
 

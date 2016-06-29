@@ -103,7 +103,7 @@
                           <listcell label="@{workReportType.name}" />
                        </listitem>
                   </listbox>
-                  <button label="${i18n:_('New timesheet')}" style="margin-top: -4px"
+                  <button label="${i18n:_('New timesheet')}" sclass="createButton" style="margin-top: -4px"
                         onClick="controller.onCreateNewWorkReport()"/>
                 </hbox>
                 </div>
@@ -213,14 +213,14 @@
                         <separator bar="false" spacing="80px" orient="vertical"/>
 
                             <!-- Work report lines -->
-                            <groupbox closable="false">
+                            <groupbox closable="false" >
                             <caption label="${i18n:_('Timesheet lines')}" />
                                     <hbox>
-                                        <button label="${i18n:_('Add new row')}"
+                                        <button label="${i18n:_('Add new row')}" sclass="createButton"
                                             onClick="controller.addWorkReportLine()" />
                                     </hbox>
 
-                                   <newdatasortablegrid id="listWorkReportLines" fixedLayout="true"
+                                   <newdatasortablegrid id="listWorkReportLines" fixedLayout="false"
                                         rowRenderer="@{controller.renderer}" sclass="listWorkReportLines"/>
                                 </groupbox>
                         </vbox>

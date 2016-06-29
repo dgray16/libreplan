@@ -78,7 +78,7 @@
                     <hbox>
                         <bandboxSearch id="bdLabels" finder="LabelBandboxFinder"
                             model="@{assignedLabelsController.allLabels}" />
-                        <button label="${i18n:_('Assign')}"
+                        <button label="${i18n:_('Assign')}" sclass="createButton"
                             onClick="assignedLabelsController.onAssignLabel()"
                             style="margin-top: -4px" />
                     </hbox>
@@ -93,7 +93,7 @@
                         finder="LabelTypeFinder" buttonVisible="true" />
                     <textbox id="txtLabelName" />
                     <button id="buttonCreateAndAssign" style="margin-top: -4px"
-                        label="${i18n:_('Create &amp; Assign')}"
+                        label="${i18n:_('Create &amp; Assign')}" sclass="createButton"
                         onClick="assignedLabelsController.onCreateAndAssign()" />
                 </hbox>
             </panelchildren>

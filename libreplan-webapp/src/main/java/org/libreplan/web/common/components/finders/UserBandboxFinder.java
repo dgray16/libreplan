@@ -79,8 +79,6 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
     //TODO Doesn't work cast (User) for obj
     @Override
     public String objectToString(Object obj) {
-     /*   WorkerCRUDController crud = new WorkerCRUDController();
-        User us = (User) crud;*/
         User user = (User) obj;
 
         String fullName = user.getFullName();
@@ -101,15 +99,12 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
         return usersRenderer;
     }
 
-    private final ListitemRenderer usersRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i) {
-            User user = (User) data;
+    private final ListitemRenderer usersRenderer = (item, data, i) -> {
+        User user = (User) data;
 
-            item.setValue(data);
+        item.setValue(data);
 
-            item.appendChild(new Listcell(user.getLoginName()));
-            item.appendChild(new Listcell(user.getFullName()));
-        }
+        item.appendChild(new Listcell(user.getLoginName()));
+        item.appendChild(new Listcell(user.getFullName()));
     };
 }

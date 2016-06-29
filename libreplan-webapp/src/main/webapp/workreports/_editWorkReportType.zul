@@ -125,7 +125,7 @@
                     <separator bar="false" spacing="40px" orient="horizontal"/>
                     <separator bar="false" spacing="20px" orient="vertical"/>
                     <button onClick="controller.addNewDescriptionField();"
-                        label="${i18n:_('Add New Complementary Field')}" />
+                        label="${i18n:_('Add New Complementary Field')}" sclass="createButton"/>
                     <separator bar="false" spacing="40px" orient="vertical"/>
                 </hbox>
                 <newdatasortablegrid id="listDescriptionFields" mold="paging" pageSize="4" fixedLayout="true"
@@ -147,7 +147,7 @@
                     <separator bar="false" spacing="40px" orient="horizontal"/>
                     <separator bar="false" spacing="20px" orient="vertical"/>
                     <button onClick="controller.addNewWorkReportLabelTypeAssigment();"
-                        label="${i18n:_('Add New Label Type Field')}" />
+                        label="${i18n:_('Add New Label Type Field')}" sclass="createButton"/>
                     <separator bar="false" spacing="40px" orient="vertical"/>
                 </hbox>
                 <newdatasortablegrid id="listWorkReportLabelTypeAssigments" mold="paging" pageSize="4" fixedLayout="true"

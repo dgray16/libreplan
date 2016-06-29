@@ -141,7 +141,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     /**
      * returns {@link JobSchedulerConfiguration}
      */
-    private JobSchedulerConfiguration getJobSchedulerConfiguration() {
+    public JobSchedulerConfiguration getJobSchedulerConfiguration() {
         return jobSchedulerModel.getJobSchedulerConfiguration();
     }
 

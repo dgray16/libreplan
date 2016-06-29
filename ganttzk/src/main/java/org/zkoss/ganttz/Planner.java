@@ -63,8 +63,6 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.HtmlMacroComponent;
 import org.zkoss.zk.ui.UiException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Button;
@@ -94,38 +92,30 @@ public class Planner extends HtmlMacroComponent  {
 
     public static boolean guessContainersExpandedByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("expanded");
-        if ( values == null ) {
-            return false;
-        }
 
-        return toLowercaseSet(values).contains("all");
+        return values != null && toLowercaseSet(values).contains("all");
+
     }
 
     public static boolean guessShowAdvancesByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("advances");
-        if ( values == null ) {
-            return false;
-        }
 
-        return toLowercaseSet(values).contains("all");
+        return values != null && toLowercaseSet(values).contains("all");
+
     }
 
     public static boolean guessShowReportedHoursByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("reportedHours");
-        if ( values == null ) {
-            return false;
-        }
 
-        return toLowercaseSet(values).contains("all");
+        return values != null && toLowercaseSet(values).contains("all");
+
     }
 
     public static boolean guessShowMoneyCostBarByDefault(Map<String, String[]> queryURLParameters) {
         String[] values = queryURLParameters.get("moneyCostBar");
-        if ( values == null ) {
-            return false;
-        }
 
-        return toLowercaseSet(values).contains("all");
+        return values != null && toLowercaseSet(values).contains("all");
+
     }
 
     private static Set<String> toLowercaseSet(String[] values) {
@@ -186,6 +176,7 @@ public class Planner extends HtmlMacroComponent  {
             return null;
         }
         List<Component> children = ganttPanel.getChildren();
+
         return ComponentsFinder.findComponentsOfType(TaskList.class, children).get(0);
     }
 
@@ -268,12 +259,12 @@ public class Planner extends HtmlMacroComponent  {
         }
     }
 
-    public ListModel getZoomLevels() {
+    public ListModel<ZoomLevel> getZoomLevels() {
         ZoomLevel[] selectableZoomlevels = { ZoomLevel.DETAIL_ONE,
                 ZoomLevel.DETAIL_TWO, ZoomLevel.DETAIL_THREE,
                 ZoomLevel.DETAIL_FOUR, ZoomLevel.DETAIL_FIVE };
 
-        return new SimpleListModel(selectableZoomlevels);
+        return new SimpleListModel<>(selectableZoomlevels);
     }
 
     public void setZoomLevel(final ZoomLevel zoomLevel, int scrollLeft) {
@@ -559,14 +550,8 @@ public class Planner extends HtmlMacroComponent  {
         listZoomLevels = (Listbox) getFellow("listZoomLevels");
 
         Component westContainer = getFellow("taskdetailsContainer");
-        westContainer.addEventListener(Events.ON_SIZE, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                Clients.evalJavaScript("ganttz.TaskList.getInstance().legendResize();");
-            }
-
-        });
+        westContainer.addEventListener(Events.ON_SIZE,
+                event -> Clients.evalJavaScript("ganttz.TaskList.getInstance().legendResize();"));
 
     }
 

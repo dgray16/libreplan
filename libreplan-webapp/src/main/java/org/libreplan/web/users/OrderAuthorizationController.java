@@ -21,7 +21,17 @@
 
 package org.libreplan.web.users;
 
-import org.libreplan.business.users.entities.*;
+import static org.libreplan.web.I18nHelper._;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.libreplan.business.users.entities.OrderAuthorization;
+import org.libreplan.business.users.entities.OrderAuthorizationType;
+import org.libreplan.business.users.entities.Profile;
+import org.libreplan.business.users.entities.ProfileOrderAuthorization;
+import org.libreplan.business.users.entities.User;
+import org.libreplan.business.users.entities.UserOrderAuthorization;
 import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.Util;
@@ -35,11 +45,6 @@ import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for CRUD actions over an {@link OrderAuthorization}
@@ -100,7 +105,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
             }
             if (comboItem.getValue() instanceof User) {
                 List<OrderAuthorizationType> result =
-                    orderAuthorizationModel.addUserOrderAuthorization((User)comboItem.getValue(), authorizations);
+                    orderAuthorizationModel.addUserOrderAuthorization(comboItem.getValue(), authorizations);
                 if(result != null && result.size()==authorizations.size()) {
                     messagesForUser.showMessage(Level.WARNING,
                             _("Could not add those authorizations to user {0} " +
@@ -110,7 +115,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
             }
             else if (comboItem.getValue() instanceof Profile) {
                 List<OrderAuthorizationType> result =
-                    orderAuthorizationModel.addProfileOrderAuthorization((Profile)comboItem.getValue(), authorizations);
+                    orderAuthorizationModel.addProfileOrderAuthorization(comboItem.getValue(), authorizations);
                 if(result != null && result.size()==authorizations.size()) {
                     messagesForUser.showMessage(Level.WARNING,
                             _("Could not add those authorizations to profile {0} " +
@@ -122,7 +127,7 @@ public class OrderAuthorizationController extends GenericForwardComposer{
         Util.reloadBindings(window);
     }
 
-    private void removeOrderAuthorization(OrderAuthorization orderAuthorization) {
+    public void removeOrderAuthorization(OrderAuthorization orderAuthorization) {
         orderAuthorizationModel.removeOrderAuthorization(orderAuthorization);
         Util.reloadBindings(window);
     }
@@ -132,23 +137,13 @@ public class OrderAuthorizationController extends GenericForwardComposer{
     }
 
     public RowRenderer getOrderAuthorizationRenderer() {
-        return new RowRenderer() {
+        return (row, data, i) -> {
+            final ProfileOrderAuthorization profileOrderAuthorization = (ProfileOrderAuthorization) data;
 
-            @Override
-            public void render(Row row, Object data, int i) {
-                final ProfileOrderAuthorization profileOrderAuthorization = (ProfileOrderAuthorization) data;
+            row.appendChild(new Label(profileOrderAuthorization.getProfile().getProfileName()));
+            row.appendChild(new Label(_(profileOrderAuthorization.getAuthorizationType().getDisplayName())));
 
-                row.appendChild(new Label(profileOrderAuthorization.getProfile().getProfileName()));
-                row.appendChild(new Label(_(profileOrderAuthorization.getAuthorizationType().getDisplayName())));
-
-                row.appendChild(Util.createRemoveButton(new EventListener() {
-
-                    @Override
-                    public void onEvent(Event event) {
-                        removeOrderAuthorization(profileOrderAuthorization);
-                    }
-                }));
-            }
+            row.appendChild(Util.createRemoveButton(event -> removeOrderAuthorization(profileOrderAuthorization)));
         };
     }
 

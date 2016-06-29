@@ -743,7 +743,7 @@ public abstract class TaskElement extends BaseEntity {
 
     public List<TaskElement> getAllChildren() {
         List<TaskElement> children = getChildren();
-        List<TaskElement> result = new ArrayList<TaskElement>();
+        List<TaskElement> result = new ArrayList<>();
         for (TaskElement child : children) {
             result.add(child);
             result.addAll(child.getAllChildren());

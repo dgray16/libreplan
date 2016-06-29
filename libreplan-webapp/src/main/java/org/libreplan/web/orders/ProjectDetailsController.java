@@ -142,10 +142,10 @@ public class ProjectDetailsController extends GenericForwardComposer<Component> 
             } else {
                 orderModel.initEdit(orderController.getOrder(), desktop);
             }
-            orderModel.save();
             if ( tabs != null ) {
                 tabs.goToOrderDetails(orderController.getOrder());
             }
+            orderModel.save();
             orderController.editNewCreatedOrder(window);
         }
     }

@@ -61,9 +61,9 @@ import org.zkoss.zul.Treerow;
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  * @author Jeroen Baten <jeroen@jeroenbaten.nl>
  */
-class LeftTasksTreeRow extends GenericForwardComposer {
+public class LeftTasksTreeRow extends GenericForwardComposer {
 
-    interface ILeftTasksTreeNavigator {
+    public interface ILeftTasksTreeNavigator {
 
         LeftTasksTreeRow getBelowRow();
 
@@ -258,12 +258,7 @@ class LeftTasksTreeRow extends GenericForwardComposer {
         findComponents((Treerow) component);
         registerTextboxesListeners();
         updateComponents();
-        task.addFundamentalPropertiesChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateComponents();
-            }
-        });
+        task.addFundamentalPropertiesChangeListener(evt -> updateComponents());
 
     }
 
@@ -305,54 +300,26 @@ class LeftTasksTreeRow extends GenericForwardComposer {
     }
 
     private void registerKeyboardListener(final Textbox textBox) {
-        textBox.addEventListener("onCtrlKey", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                userWantsToMove(textBox, (KeyEvent) event);
-            }
-        });
+        textBox.addEventListener("onCtrlKey", event -> userWantsToMove(textBox, (KeyEvent) event));
     }
 
     private void registerOnChange(final Component component) {
-        component.addEventListener("onChange", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                updateBean(component);
-            }
-        });
+        component.addEventListener("onChange", event -> updateBean(component));
     }
 
     private void registerOnChangeDatebox(final Datebox datebox, final Textbox textbox) {
-        datebox.addEventListener("onChange", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                textbox.setValue(dateFormat.format(datebox.getValue()));
-                updateBean(textbox);
-            }
+        datebox.addEventListener("onChange", event -> {
+            textbox.setValue(dateFormat.format(datebox.getValue()));
+            updateBean(textbox);
         });
     }
 
     private void registerOnEnterListener(final Textbox textBox) {
-        textBox.addEventListener("onOK", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                userWantsDateBox(textBox);
-            }
-        });
+        textBox.addEventListener("onOK", event -> userWantsDateBox(textBox));
     }
 
     private void registerOnEnterOpenDateBox(final Datebox datebox) {
-        datebox.addEventListener("onOK", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                datebox.setOpen(true);
-            }
-        });
+        datebox.addEventListener("onOK", event -> datebox.setOpen(true));
     }
 
     private void findComponentsForStartDateCell(Treecell treecell) {
@@ -383,13 +350,7 @@ class LeftTasksTreeRow extends GenericForwardComposer {
     }
 
     private void registerBlurListener(final Datebox datebox) {
-        datebox.addEventListener("onBlur", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                dateBoxHasLostFocus(datebox);
-            }
-        });
+        datebox.addEventListener("onBlur", event -> dateBoxHasLostFocus(datebox));
     }
 
     public void updateBean(Component updatedComponent) {
@@ -405,13 +366,7 @@ class LeftTasksTreeRow extends GenericForwardComposer {
 
             try {
                 final Date begin = dateFormat.parse(getStartDateTextBox().getValue());
-                task.doPositionModifications(new IModifications() {
-
-                    @Override
-                    public void doIt(IUpdatablePosition position) {
-                        position.moveTo(GanttDate.createFrom(begin));
-                    }
-                });
+                task.doPositionModifications(position -> position.moveTo(GanttDate.createFrom(begin)));
             } catch (ParseException e) {
                 // Do nothing as textbox is rested in the next sentence
             }
@@ -449,12 +404,8 @@ class LeftTasksTreeRow extends GenericForwardComposer {
             nameLabel.setTooltiptext(task.getName());
             nameLabel.setSclass("clickable-rows");
 
-            nameLabel.addEventListener(Events.ON_CLICK, new EventListener() {
-                @Override
-                public void onEvent(Event arg0) throws Exception {
-                    Executions.getCurrent().sendRedirect("/planner/index.zul;order=" + task.getProjectCode());
-                }
-            });
+            nameLabel.addEventListener(Events.ON_CLICK,
+                    arg0 -> Executions.getCurrent().sendRedirect("/planner/index.zul;order=" + task.getProjectCode()));
 
             startDateLabel.setValue(asString(task.getBeginDate().toDayRoundedDate()));
             endDateLabel.setValue(asString(task.getEndDate().toDayRoundedDate()));
@@ -532,12 +483,8 @@ class LeftTasksTreeRow extends GenericForwardComposer {
 
     private void onProjectStatusClick(Component statucComp) {
         if ( !disabilityConfiguration.isTreeEditable() ) {
-            statucComp.addEventListener(Events.ON_CLICK, new EventListener() {
-                @Override
-                public void onEvent(Event arg0) throws Exception {
-                    Executions.getCurrent().sendRedirect("/planner/index.zul;order=" + task.getProjectCode());
-                }
-            });
+            statucComp.addEventListener(Events.ON_CLICK,
+                    arg0 -> Executions.getCurrent().sendRedirect("/planner/index.zul;order=" + task.getProjectCode()));
         }
     }
 }

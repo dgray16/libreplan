@@ -526,19 +526,19 @@ public class PlanningStateCreator {
 
     public interface IScenarioInfo {
 
-        public IAssignmentsOnResourceCalculator getAssignmentsCalculator();
+        IAssignmentsOnResourceCalculator getAssignmentsCalculator();
 
-        public Scenario getCurrentScenario();
+        Scenario getCurrentScenario();
 
-        public boolean isUsingTheOwnerScenario();
+        boolean isUsingTheOwnerScenario();
 
         /**
          * @throws IllegalStateException
          *             if it's using the owner scenario
          */
-        public void saveVersioningInfo() throws IllegalStateException;
+        void saveVersioningInfo() throws IllegalStateException;
 
-        public void afterCommit();
+        void afterCommit();
     }
 
     private class ChangeScenarioInfoOnSave implements IScenarioInfo {
@@ -895,8 +895,7 @@ public class PlanningStateCreator {
         private Set<Criterion> getExistentCriterions(Set<Resource> resources) {
             Set<Criterion> result = new HashSet<Criterion>();
             for (Resource resource : resources) {
-                for (CriterionSatisfaction each : resource
-                        .getCriterionSatisfactions()) {
+                for (CriterionSatisfaction each : resource.getCriterionSatisfactions()) {
                     result.add(each.getCriterion());
                 }
             }
@@ -926,13 +925,12 @@ public class PlanningStateCreator {
         }
 
         public Collection<? extends TaskElement> getToRemove() {
-            return Collections
-                    .unmodifiableCollection(onlyNotTransient(toRemove));
+            return Collections.unmodifiableCollection(onlyNotTransient(toRemove));
         }
 
         private List<TaskElement> onlyNotTransient(
                 Collection<? extends TaskElement> toRemove) {
-            ArrayList<TaskElement> result = new ArrayList<TaskElement>();
+            ArrayList<TaskElement> result = new ArrayList<>();
             for (TaskElement taskElement : toRemove) {
                 if (taskElement.getId() != null) {
                     result.add(taskElement);
@@ -980,12 +978,12 @@ public class PlanningStateCreator {
         }
 
         public List<Resource> getResourcesRelatedWithAllocations() {
-            Set<Resource> result = new HashSet<Resource>();
+            Set<Resource> result = new HashSet<>();
             for (Task each : justTasks(order
                     .getAllChildrenAssociatedTaskElements())) {
                 result.addAll(resourcesRelatedWith(each));
             }
-            return new ArrayList<Resource>(result);
+            return new ArrayList<>(result);
         }
 
         private Set<Resource> resourcesRelatedWith(Task task) {

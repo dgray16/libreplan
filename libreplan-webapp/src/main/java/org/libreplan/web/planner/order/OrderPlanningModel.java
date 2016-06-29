@@ -1163,13 +1163,9 @@ public class OrderPlanningModel implements IOrderPlanningModel {
 
     private PlanningState createPlanningStateFor(Order order) {
         return planningStateCreator.retrieveOrCreate(planner.getDesktop(),
-                order, new IActionsOnRetrieval() {
-
-                    @Override
-                    public void onRetrieval(PlanningState planningState) {
-                        planningState.reattach();
-                        planningState.reassociateResourcesWithSession();
-                    }
+                order, planningState1 -> {
+                    planningState1.reattach();
+                    planningState1.reassociateResourcesWithSession();
                 });
     }
 

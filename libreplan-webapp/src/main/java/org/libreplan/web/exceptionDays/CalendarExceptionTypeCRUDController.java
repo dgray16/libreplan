@@ -179,7 +179,7 @@ public class CalendarExceptionTypeCRUDController extends BaseCRUDController<Cale
         initializeCapacityPicker();
     }
 
-    private CalendarExceptionType getExceptionDayType() {
+    public CalendarExceptionType getExceptionDayType() {
         return calendarExceptionTypeModel.getExceptionDayType();
     }
 

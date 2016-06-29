@@ -24,7 +24,7 @@
     <hbox width="100%">
         <separator spacing="10px" width="100%"/>
 
-        <grid fixedLayout="true" hflex="1">
+        <grid sizedByContent="true" hflex="1">
             <columns>
                 <column width="200px" />
                 <column  />

@@ -193,6 +193,7 @@ public class WorkerModel extends IntegrationEntityModel implements IWorkerModel 
     @Transactional(readOnly = true)
     public List<Worker> getRealWorkers() {
         currentWorkerList = resourceDAO.getRealWorkers();
+
         return currentWorkerList;
     }
 

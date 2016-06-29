@@ -107,39 +107,34 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
 
     }
 
-    private RowRenderer usersRenderer = new RowRenderer() {
+    private RowRenderer usersRenderer = (row, data, i) -> {
+        final User user = (User) data;
+        row.setValue(user);
 
-        @Override
-        public void render(Row row, Object data, int i) throws Exception {
-            final User user = (User) data;
-            row.setValue(user);
+        Util.appendLabel(row, user.getLoginName());
+        Util.appendLabel(row, user.isDisabled() ? _("Yes") : _("No"));
+        Util.appendLabel(row, user.isSuperuser() ? _("Yes") : _("No"));
+        Util.appendLabel(row, _(user.getUserType().toString()));
+        Util.appendLabel(row, user.isBound() ? user.getWorker().getShortDescription() : "");
 
-            Util.appendLabel(row, user.getLoginName());
-            Util.appendLabel(row, user.isDisabled() ? _("Yes") : _("No"));
-            Util.appendLabel(row, user.isSuperuser() ? _("Yes") : _("No"));
-            Util.appendLabel(row, _(user.getUserType().toString()));
-            Util.appendLabel(row, user.isBound() ? user.getWorker().getShortDescription() : "");
+        Button[] buttons = Util.appendOperationsAndOnClickEvent(row,
+                new EventListener() {
+                    @Override
+                    public void onEvent(Event event) throws Exception {
+                        goToEditForm(user);
+                    }
+                }, new EventListener() {
+                    @Override
+                    public void onEvent(Event event) throws Exception {
+                        confirmDelete(user);
+                    }
+                });
 
-            Button[] buttons = Util.appendOperationsAndOnClickEvent(row,
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event event) throws Exception {
-                            goToEditForm(user);
-                        }
-                    }, new EventListener() {
-                        @Override
-                        public void onEvent(Event event) throws Exception {
-                            confirmDelete(user);
-                        }
-                    });
-
-            // Disable remove button for default admin as it's mandatory
-            if ( isDefaultAdmin(user) ) {
-                buttons[1].setDisabled(true);
-                buttons[1].setTooltiptext(_("Default user \"admin\" cannot be removed as it is mandatory"));
-            }
+        // Disable remove button for default admin as it's mandatory
+        if ( isDefaultAdmin(user) ) {
+            buttons[1].setDisabled(true);
+            buttons[1].setTooltiptext(_("Default user \"admin\" cannot be removed as it is mandatory"));
         }
-
     };
 
     @Override
