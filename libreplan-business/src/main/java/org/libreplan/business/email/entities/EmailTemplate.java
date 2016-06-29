@@ -27,9 +27,8 @@ import org.libreplan.business.settings.entities.Language;
  * This class is intended to work as a Hibernate component.
  * It represents the E-mail template to be modified by admin and send to user.
  *
- * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
- * on 29.09.2015.
+ *
+ * @author Created by Vova Perebykivskiy <vova@libreplan-enterprise.com> on 29.09.2015.
  */
 public class EmailTemplate extends BaseEntity {
 

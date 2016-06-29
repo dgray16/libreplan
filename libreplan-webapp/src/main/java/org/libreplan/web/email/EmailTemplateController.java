@@ -38,26 +38,19 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
 
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 import static org.libreplan.web.I18nHelper._;
 
 /**
- * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
- * on 25.09.15.
+ * @author Created by Vova Perebykivskiy <vova@libreplan-enterprise.com> on 25.09.2015.
  */
-
-/*@org.springframework.stereotype.Component
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)*/
 
 public class EmailTemplateController extends GenericForwardComposer<Component>{
 
@@ -76,18 +69,15 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
     private Textbox subjectTextbox;
 
 
-    public EmailTemplateController(){
+    public EmailTemplateController() {
         userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
         emailTemplateModel = (IEmailTemplateModel) SpringUtil.getBean("emailTemplateModel");
     }
 
-    private static ListitemRenderer languagesRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i) throws Exception {
-            Language language = (Language) data;
-            String displayName = language.getDisplayName();
-            item.setLabel(displayName);
-        }
+    private static ListitemRenderer languagesRenderer = (item, data, i) -> {
+        Language language = (Language) data;
+        String displayName = language.getDisplayName();
+        item.setLabel(displayName);
     };
 
     @Override
@@ -96,8 +86,10 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         comp.setAttribute("emailTemplateController", this, true);
         messages = new MessagesForUser(messagesContainer);
 
-        // Set default template and language for user
-        // And content and subject for that language & template
+        /*
+         Set default template and language for user.
+         And content and subject for that language & template.
+        */
         setUser();
         setSelectedLanguage(user.getApplicationLanguage());
 
@@ -105,7 +97,7 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         getSubjectDataBySelectedLanguage();
     }
 
-    public boolean save(){
+    public boolean save() {
         try {
             setSelectedContent();
             setSelectedSubject();
@@ -126,15 +118,13 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         Executions.getCurrent().sendRedirect("../planner/index.zul");
     }
 
+    /* Should be public! */
     public Language getSelectedLanguage() {
         return emailTemplateModel.getLanguage();
     }
 
-    public String getTest(){
-        return "Test";
-    }
-
-    private void setSelectedLanguage(Language language){
+    /* Should be public! */
+    public void setSelectedLanguage(Language language) {
         emailTemplateModel.setLanguage(language);
 
         getSubjectDataBySelectedLanguage();
@@ -147,25 +137,22 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
 
     public List<Language> getLanguages() {
         List<Language> languages = new LinkedList<>(Arrays.asList(Language.values()));
-        Collections.sort(languages, new Comparator<Language>() {
-            @Override
-            public int compare(Language o1, Language o2) {
-                if (o1.equals(Language.BROWSER_LANGUAGE)) {
-                    return -1;
-                }
-                if (o2.equals(Language.BROWSER_LANGUAGE)) {
-                    return 1;
-                }
-                return o1.getDisplayName().compareTo(o2.getDisplayName());
+        Collections.sort(languages, (o1, o2) -> {
+            if ( o1.equals(Language.BROWSER_LANGUAGE) ) {
+                return -1;
             }
+            if ( o2.equals(Language.BROWSER_LANGUAGE) ) {
+                return 1;
+            }
+            return o1.getDisplayName().compareTo(o2.getDisplayName());
         });
         languages.remove(0);
 
         return languages;
     }
 
-
-    private EmailTemplateEnum getSelectedEmailTemplateEnum() {
+    /* Should be public! */
+    public EmailTemplateEnum getSelectedEmailTemplateEnum() {
         return emailTemplateModel.getEmailTemplateEnum();
     }
 
@@ -177,13 +164,10 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
     }
 
     public ListitemRenderer getEmailTemplateEnumRenderer() {
-        return new ListitemRenderer() {
-            @Override
-            public void render(Listitem item, Object data, int i) throws Exception {
-                EmailTemplateEnum template = (EmailTemplateEnum) data;
-                item.setLabel(_(template.getTemplateType()));
-                item.setValue(template);
-            }
+        return (item, data, i) -> {
+            EmailTemplateEnum template = (EmailTemplateEnum) data;
+            item.setLabel(_(template.getTemplateType()));
+            item.setValue(template);
         };
     }
 
@@ -192,34 +176,38 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
     }
 
 
-    private void setSelectedContent(){
+    void setSelectedContent() {
         emailTemplateModel.setContent(contentsTextbox.getValue());
     }
 
-    private void setSelectedSubject(){
+    void setSelectedSubject() {
         emailTemplateModel.setSubject(subjectTextbox.getValue());
     }
 
-    private void getContentDataBySelectedLanguage(){
+    private void getContentDataBySelectedLanguage() {
         contentsTextbox.setValue(emailTemplateModel.getContentBySelectedLanguage(
-                getSelectedLanguage().ordinal(), getSelectedEmailTemplateEnum().ordinal()));
+                getSelectedLanguage().ordinal(),
+                getSelectedEmailTemplateEnum().ordinal()));
     }
-    private void getContentDataBySelectedTemplate(){
+    private void getContentDataBySelectedTemplate() {
         contentsTextbox.setValue( emailTemplateModel.getContentBySelectedTemplate(
-                getSelectedEmailTemplateEnum().ordinal(), getSelectedLanguage().ordinal()) );
+                getSelectedEmailTemplateEnum().ordinal(),
+                getSelectedLanguage().ordinal()) );
     }
 
-    private void getSubjectDataBySelectedLanguage(){
+    private void getSubjectDataBySelectedLanguage() {
         subjectTextbox.setValue(emailTemplateModel.getSubjectBySelectedLanguage(
-                getSelectedLanguage().ordinal(), getSelectedEmailTemplateEnum().ordinal()));
+                getSelectedLanguage().ordinal(),
+                getSelectedEmailTemplateEnum().ordinal()));
     }
-    private void getSubjectDataBySelectedTemplate(){
+    private void getSubjectDataBySelectedTemplate() {
         subjectTextbox.setValue( emailTemplateModel.getSubjectBySelectedTemplate(
-                getSelectedEmailTemplateEnum().ordinal(), getSelectedLanguage().ordinal()) );
+                getSelectedEmailTemplateEnum().ordinal(),
+                getSelectedLanguage().ordinal()) );
     }
 
     @Transactional
-    private void setUser(){
+    private void setUser() {
         try {
             user = userDAO.findByLoginName(SecurityUtils.getSessionUserLoginName());
         } catch (InstanceNotFoundException e) {

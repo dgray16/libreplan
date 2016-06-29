@@ -42,19 +42,18 @@
                             <caption label="${i18n:_('General user data')}" />
                             <grid>
                                 <columns>
-                                    <column width="220px"></column>
-                                    <column width="420px"></column>
+                                    <column width="220px"/>
+                                    <column width="420px"/>
                                 </columns>
                                 <rows>
                                     <row>
-                                        <label value = "@{emailTemplateController.test}"/>
+                                        <label value="${i18n:_('Select template language')}"/>
                                         <listbox mold="select"
                                                  id="templateLanguageListbox"
                                                  model="@{emailTemplateController.languages}"
                                                  itemRenderer="@{emailTemplateController.languagesRenderer}"
                                                  selectedItem="@{emailTemplateController.selectedLanguage}">
                                         </listbox>
-
                                     </row>
                                     <row>
                                         <label value="${i18n:_('Select template type')}"/>
@@ -66,15 +65,11 @@
                                     </row>
                                     <row>
                                         <label value="${i18n:_('E-mail subject')}"/>
-                                        <textbox id="subjectTextbox"
-                                                 width="400px;" />
+                                        <textbox id="subjectTextbox" width="400px;" />
                                     </row>
                                     <row>
                                         <label value="${i18n:_('Template contents')}"/>
-
-                                        <textbox id="contentsTextbox"
-                                                 rows="15" width="400px;"
-                                                 tabindex="11"/>
+                                        <textbox id="contentsTextbox" rows="15" width="400px;" tabindex="11"/>
                                         <groupbox closable="false" width="270px">
                                             <caption label="${i18n:_('Possible content keywords')}"/>
                                             <grid width="250px">
@@ -129,8 +124,11 @@
                     </tabpanel>
                 </tabpanels>
             </tabbox>
-        <button onClick="emailTemplateController.save()" autodisable="self" label="${i18n:_('Save')}" sclass="save-button global-action"/>
-        <button onClick="emailTemplateController.cancel()" label="${i18n:_('Cancel')}" sclass="cancel-button global-action"/>
-    </window>
 
+        <button onClick="emailTemplateController.save()"
+                autodisable="self" label="${i18n:_('Save')}" sclass="save-button global-action"/>
+
+        <button onClick="emailTemplateController.cancel()"
+                label="${i18n:_('Cancel')}" sclass="cancel-button global-action"/>
+    </window>
 </zk>

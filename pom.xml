@@ -231,7 +231,6 @@
             </dependency>
 
             <!-- Hibernate -->
-            <!-- TODO Hibernate 5.1.0.FINAL for Spring 4.2+ -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>

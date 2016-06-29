@@ -31,7 +31,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.commons.collections4.iterators.EntrySetMapIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.zkoss.ganttz.data.TaskLeaf;
@@ -40,6 +39,8 @@ import org.zkoss.zul.event.TreeDataEvent;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
+ * @author Bogdan Bodnarjuk <b.bodnarjuk@libreplan-enterprise.com>
  */
 
 //TODO Check this class ?
@@ -99,7 +100,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         public int[] up(Node<T> node) {
             ListIterator<Node<T>> listIterator = children.listIterator(children.size());
 
-            while (listIterator.hasPrevious()) {
+            while ( listIterator.hasPrevious() ) {
                 Node<T> current = listIterator.previous();
 
                 if ( current == node && listIterator.hasPrevious() ) {
@@ -116,9 +117,9 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         }
 
         private void until(LinkedList<Integer> result, Node<T> parent) {
-            if (!parent.equals(this)) {
-                if (isRoot()) {
-                    // final reached, but parent not found
+            if ( !parent.equals(this) ) {
+                if ( isRoot() ) {
+                    /* Final reached, but parent not found */
                     result.clear();
                 } else {
                     result.add(0, this.parentNode.getIndexOf(this));
@@ -181,13 +182,12 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     private Node<T> find(Object domainObject) {
 
         for (Map.Entry<T, Node<T>> item : nodesByDomainObject.entrySet()) {
-            if(item.getKey() != null) {
-                if (item.getKey().equals(domainObject)) {
+            if ( item.getKey() != null ) {
+                if ( item.getKey().equals(domainObject) ) {
                     return item.getValue();
                 }
             }
         }
-
 
         return nodesByDomainObject.get(domainObject);
     }
@@ -195,12 +195,12 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     private static <T> T unwrap(Node<T> node) {
     //TODO To rewrite code correctly
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-            for (int i = 0; i < stackTraceElements.length; i++) {
-                if (node.children.size() > 0 && stackTraceElements[i].getMethodName().equals("getAssociatedNode")) {
+        for (StackTraceElement stackTraceElement : stackTraceElements) {
+            if ( node.children.size() > 0 && stackTraceElement.getMethodName().equals("getAssociatedNode") ) {
 
-                    return node.children.get(0).value;
-                }
+                return node.children.get(0).value;
             }
+        }
 
         return node == null ? null : node.value;
     }
@@ -282,18 +282,22 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     public T getChild(Object parent, int index) {
         Node<T> node;
 
-        if(parent == null){
+        if ( parent == null ) {
             return unwrap(find(null).children.get(index));
         }
 
-        if(parent instanceof TaskLeaf || parent instanceof MutableTreeModel.Node ||
-                parent.getClass().toString().equals("class org.libreplan.business.orders.entities.OrderLine")){
+        if ( parent instanceof TaskLeaf ||
+                parent instanceof MutableTreeModel.Node ||
+                parent.getClass().toString().equals("class org.libreplan.business.orders.entities.OrderLine") ) {
+
             node = find(this.root.value);
+
+            return unwrap(node.children.get(index));
         } else {
             node = find(parent);
-        }
 
-        return unwrap(node.children.get(index));
+            return unwrap(node);
+        }
     }
 
     @Override
@@ -301,8 +305,10 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         //TODO To rewrite code correctly
         Node<T> node;
 
-            if (parent instanceof MutableTreeModel.Node &&
-                    this.root.value.getClass().toString().equals("class org.libreplan.business.orders.entities.Order")) {
+            if ( parent instanceof MutableTreeModel.Node &&
+                    this.root.value.getClass().toString().equals(
+                            "class org.libreplan.business.orders.entities.Order") ) {
+
                 node = find(this.root.value);
             } else {
                 node = find(parent);
@@ -315,12 +321,6 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     @Override
     public boolean isLeaf(Object object) {
         Node<T> node = find(object);
-
-   /*     if(object.getClass().toString().equals("class org.libreplan.business.materials.entities.MaterialCategory")){
-            node = find(this.root.value);
-        } else {
-            node = find(object);
-        }*/
 
         return node.children.isEmpty();
     }
@@ -502,8 +502,10 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         Node<T> parentNode = find(parent);
         Node<T> childNode = find(child);
 
-        return parentNode != null && childNode != null &&
-                childNode.getParent() != null && childNode.getParent().equals(parentNode);
+        return parentNode != null &&
+                childNode != null &&
+                childNode.getParent() != null &&
+                childNode.getParent().equals(parentNode);
     }
 
     public List<T> asList() {

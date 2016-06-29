@@ -36,9 +36,8 @@ import java.util.List;
 /**
  * Model for operations related to {@link EmailTemplate}.
  *
- * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
- * on 25.09.15.
+ *
+ * @author Created by Vova Perebykivskiy <vova@libreplan-enterprise.com> on 25.09.2015.
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -54,20 +53,26 @@ public class EmailTemplateModel implements IEmailTemplateModel {
     @Transactional
     public void confirmSave() throws InstanceNotFoundException {
 
-        /* If current EmailTemplate entity (id) is existing in DB than it needs to be updated.
-        *  Else current EmailTemplate entity (id) is creating and getting new values from form.
+        /*
+         If current EmailTemplate entity (id) is existing in DB than it needs to be updated.
+         Else current EmailTemplate entity (id) is creating and getting new values from form.
         */
         List<EmailTemplate> emailTemplates = emailTemplateDAO.getAll();
         EmailTemplate emailTemplateFromDatabase = null;
+        boolean thisLanguageEqualsToItemLanguage;
+        boolean thisTypeEqualsToItemType;
 
-        for (int i = 0; i < emailTemplates.size(); i++) {
-            if ( emailTemplate.getLanguage() == emailTemplates.get(i).getLanguage() &&
-                    emailTemplate.getType() == emailTemplates.get(i).getType() ) {
-                emailTemplateFromDatabase = emailTemplateDAO.find(emailTemplates.get(i).getId());
-            }
+        for (EmailTemplate item : emailTemplates) {
+
+            thisLanguageEqualsToItemLanguage = emailTemplate.getLanguage() == item.getLanguage();
+            thisTypeEqualsToItemType = emailTemplate.getType() == item.getType();
+
+            if ( thisLanguageEqualsToItemLanguage && thisTypeEqualsToItemType )
+                emailTemplateFromDatabase = emailTemplateDAO.find(item.getId());
+
         }
 
-        if ( emailTemplateFromDatabase != null ){
+        if ( emailTemplateFromDatabase != null ) {
             EmailTemplate temporaryEntity = emailTemplate;
             emailTemplate = emailTemplateFromDatabase;
 
@@ -95,7 +100,6 @@ public class EmailTemplateModel implements IEmailTemplateModel {
     }
 
     @Override
-    @Transactional
     public Language getLanguage() {
         return this.emailTemplate.getLanguage();
     }
