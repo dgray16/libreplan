@@ -32,14 +32,25 @@ import org.libreplan.web.common.components.Autocomplete;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
 
-import java.util.*;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Comboitem;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listcell;
+import org.zkoss.zul.Listitem;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Radio;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -77,7 +88,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     private Radio filterByBoth;
 
-    public HoursWorkedPerWorkerController(){
+    public HoursWorkedPerWorkerController() {
         hoursWorkedPerWorkerModel = (IHoursWorkedPerWorkerModel) SpringUtil.getBean("hoursWorkedPerWorkerModel");
     }
 
@@ -100,20 +111,24 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     @Override
     protected JRDataSource getDataSource() {
         return hoursWorkedPerWorkerModel.getHoursWorkedPerWorkerReport(
-                getSelectedResources(), getSelectedLabels(),
+                getSelectedResources(),
+                getSelectedLabels(),
                 getSelectedFilterLabels(),
                 getSelectedCriterions(),
-                getStartingDate(), getEndingDate());
+                getStartingDate(),
+                getEndingDate());
     }
 
     private LabelFilterType getSelectedFilterLabels() {
-        if (filterByWorkReports.isChecked()) {
+        if ( filterByWorkReports.isChecked() ) {
             return LabelFilterType.WORK_REPORT;
         }
-        if (filterByOrderElements.isChecked()) {
+
+        if ( filterByOrderElements.isChecked() ) {
             return LabelFilterType.ORDER_ELEMENT;
         }
-        if (filterByBoth.isChecked()) {
+
+        if ( filterByBoth.isChecked() ) {
             return LabelFilterType.BOTH;
         }
 
@@ -125,14 +140,14 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
         final List<Listitem> listItems = lbResources.getItems();
         for (Listitem each : listItems) {
-            result.add((Resource) each.getValue());
+            result.add(each.getValue());
         }
 
         return result;
     }
 
     private Date getStartingDate() {
-        if (startingDate.getValue() == null) {
+        if ( startingDate.getValue() == null ) {
             return null;
         }
         Calendar calendar = Calendar.getInstance();
@@ -143,13 +158,14 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private Date getEndingDate() {
-        if (endingDate.getValue() == null) {
+        if ( endingDate.getValue() == null )
             return null;
-        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(endingDate.getValue());
-        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DATE), 23, 59, 59);
+
+        calendar.set(
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 23, 59, 59);
 
         return calendar.getTime();
     }
@@ -169,11 +185,11 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     public void onAddResource() {
         Resource resource = getSelectedCurrentResource();
-        if (resource != null) {
+        if ( resource != null ) {
             boolean result = hoursWorkedPerWorkerModel.addSelectedResource(resource);
-            if (!result) {
-                throw new WrongValueException(filterResource,
-                        _("This resource has already been added."));
+
+            if ( !result ) {
+                throw new WrongValueException(filterResource, _("This resource has already been added."));
             } else {
                 Util.reloadBindings(lbResources);
             }
@@ -187,10 +203,9 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
 
     private Resource getSelectedCurrentResource() {
         Comboitem itemSelected = filterResource.getSelectedItem();
-        if ((itemSelected != null) && ((itemSelected.getValue()) != null)) {
+        if ( (itemSelected != null) && ((itemSelected.getValue()) != null) ) {
             return (Resource) itemSelected.getValue();
         }
-
         return null;
     }
 
@@ -199,10 +214,10 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     /**
-     * ListitemRenderer for a @{Resource} element
+     * ListItemRenderer for a @{Resource} element
      * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
      */
-    private class ResourceListRenderer implements ListitemRenderer {
+    class ResourceListRenderer implements ListitemRenderer {
 
         @Override
         public void render(Listitem item, Object data, int i) {
@@ -268,22 +283,18 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private String getName(Resource resource) {
-        if ((resource instanceof Worker) && (((Worker) resource).isReal())) {
+        if ( (resource instanceof Worker) && (((Worker) resource).isReal()) )
             return (resource).getShortDescription();
-        }
 
         return resource.getName();
     }
 
     private String getType(Resource resource) {
-        if (resource instanceof Worker) {
-
-            if (((Worker) resource).isReal()) {
+        if ( resource instanceof Worker )
+            if ( ((Worker) resource).isReal() )
                 return _("Worker");
-            } else {
+             else
                 return _("Virtual worker");
-            }
-        }
 
         return "Machine";
     }
@@ -295,15 +306,14 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     public void onSelectLabel() {
         Label label = (Label) bdLabels.getSelectedElement();
 
-        if (label == null) {
+        if ( label == null ) {
             throw new WrongValueException(bdLabels, _("please, select a label"));
         }
 
         boolean result = hoursWorkedPerWorkerModel.addSelectedLabel(label);
 
-        if (!result) {
-            throw new WrongValueException(bdLabels,
-                    _("Label has already been added."));
+        if ( !result ) {
+            throw new WrongValueException(bdLabels, _("Label has already been added."));
         } else {
             Util.reloadBindings(lbLabels);
         }
@@ -326,13 +336,13 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     public void onSelectCriterion() {
         Criterion criterion = (Criterion) bdCriterions.getSelectedElement();
 
-        if (criterion == null) {
+        if ( criterion == null )
             throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
-        }
+
 
         boolean result = hoursWorkedPerWorkerModel.addSelectedCriterion(criterion);
 
-        if (!result) {
+        if ( !result ) {
             throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));
         } else {
             Util.reloadBindings(lbCriterions);
