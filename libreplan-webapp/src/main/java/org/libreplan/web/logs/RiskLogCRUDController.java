@@ -145,19 +145,32 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
 
     private void setScoreCellColor(Row row, int riskScore) {
         Cell cell = (Cell) row.getChildren().get(4);
-        switch (riskScore) {
-            case 1: cell.setClass("riskLog-score-color-1");
+
+        switch ( riskScore ) {
+            case 1:
+                cell.setClass("riskLog-score-color-1");
                 break;
-            case 2: cell.setClass("riskLog-score-color-2");
+
+            case 2:
+                cell.setClass("riskLog-score-color-2");
                 break;
-            case 3: cell.setClass("riskLog-score-color-3");
+
+            case 3:
+                cell.setClass("riskLog-score-color-3");
                 break;
-            case 4: cell.setClass("riskLog-score-color-4");
+
+            case 4:
+                cell.setClass("riskLog-score-color-4");
                 break;
-            case 6: cell.setClass("riskLog-score-color-6");
+
+            case 6:
+                cell.setClass("riskLog-score-color-6");
                 break;
-            case 9: cell.setClass("riskLog-score-color-9");
+
+            case 9:
+                cell.setClass("riskLog-score-color-9");
                 break;
+
             default: throw new UnsupportedCharsetException("Unsupported risk score");
         }
     }

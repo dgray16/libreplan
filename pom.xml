@@ -152,12 +152,6 @@
 
 
     <repositories>
-        <!-- Getttext commons -->
-        <repository>
-            <id>gettext-commons-site</id>
-            <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
-        </repository>
-
         <!-- LibrePlan repository -->
         <repository>
             <id>thirdparty</id>
@@ -212,9 +206,9 @@
 
             <!-- Gettext commons -->
             <dependency>
-                <groupId>org.xnap.commons</groupId>
+                <groupId>com.googlecode.gettext-commons</groupId>
                 <artifactId>gettext-commons</artifactId>
-                <version>0.9.6</version>
+                <version>0.9.8</version>
             </dependency>
 
             <!--

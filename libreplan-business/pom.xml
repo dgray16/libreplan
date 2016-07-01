@@ -14,7 +14,7 @@
     <dependencies>
         <!-- Gettext commons -->
         <dependency>
-            <groupId>org.xnap.commons</groupId>
+            <groupId>com.googlecode.gettext-commons</groupId>
             <artifactId>gettext-commons</artifactId>
         </dependency>
 
@@ -73,7 +73,7 @@
             <artifactId>junit</artifactId>
         </dependency>
 
-        <!-- datasource for testing -->
+        <!-- Datasource for testing -->
         <dependency>
            <groupId>com.jolbox</groupId>
            <artifactId>bonecp</artifactId>

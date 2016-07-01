@@ -436,7 +436,7 @@
             <artifactId>junit</artifactId>
         </dependency>
 
-        <!-- datasource for testing -->
+        <!-- Datasource for testing -->
         <dependency>
            <groupId>com.jolbox</groupId>
            <artifactId>bonecp</artifactId>

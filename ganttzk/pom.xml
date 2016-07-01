@@ -71,7 +71,7 @@
     <dependencies>
         <!-- Gettext commons -->
         <dependency>
-            <groupId>org.xnap.commons</groupId>
+            <groupId>com.googlecode.gettext-commons</groupId>
             <artifactId>gettext-commons</artifactId>
         </dependency>
 

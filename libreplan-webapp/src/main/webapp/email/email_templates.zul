@@ -31,7 +31,9 @@
 <zk>
     <window self="@{define(content)}" apply="org.libreplan.web.email.EmailTemplateController"
             title="${i18n:_('Edit E-mail template')}">
+
         <vbox id="messagesContainer" />
+
             <tabbox>
                 <tabs>
                     <tab label="${i18n:_('Template data')}"/>
@@ -44,6 +46,7 @@
                                 <columns>
                                     <column width="220px"/>
                                     <column width="420px"/>
+                                    <column width="300px"/>
                                 </columns>
                                 <rows>
                                     <row>
@@ -67,11 +70,12 @@
                                         <label value="${i18n:_('E-mail subject')}"/>
                                         <textbox id="subjectTextbox" width="400px;" />
                                     </row>
-                                    <row>
+                                    <row style="height: 270px;">
                                         <label value="${i18n:_('Template contents')}"/>
                                         <textbox id="contentsTextbox" rows="15" width="400px;" tabindex="11"/>
                                         <groupbox closable="false" width="270px">
-                                            <caption label="${i18n:_('Possible content keywords')}"/>
+                                            <caption label="${i18n:_('Possible content keywords')}"
+                                                     style="background: #F7F7F7;"/>
                                             <grid width="250px">
                                                 <columns>
                                                     <column label="${i18n:_('Keyword')}"/>
