@@ -2095,3 +2095,7 @@ select {
 .z-window {
     background: transparent;
 }
+
+.z-row .z-row-inner, .z-row .z-cell {
+    border-left: 1px solid rgb(204, 204, 204);
+}
