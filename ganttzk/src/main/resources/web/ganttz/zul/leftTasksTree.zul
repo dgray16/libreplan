@@ -23,12 +23,12 @@
     signature="java.lang.String _(java.lang.String name)" ?>
 
 <div>
-<tree id="tasksTree" fixedLayout="true" sclass="taskTreeCols" hflex="1">
-    <treecols sizable="false" height="33px">
-        <treecol label="${ganttzk_i18n:_('Name')}" sclass="tree-text" />
-        <treecol label="${ganttzk_i18n:_('Start')}" width="60px" />
-        <treecol label="${ganttzk_i18n:_('End')}" width="60px" />
-        <treecol label="${ganttzk_i18n:_('T / M')}" width="55px" />
-    </treecols>
-</tree>
+    <tree id="tasksTree" fixedLayout="true" sclass="taskTreeCols" hflex="1" >
+        <treecols sizable="false" height="33px">
+            <treecol label="${ganttzk_i18n:_('Name')}" sclass="tree-text" />
+            <treecol label="${ganttzk_i18n:_('Start')}" width="60px" />
+            <treecol label="${ganttzk_i18n:_('End')}" width="60px" />
+            <treecol label="${ganttzk_i18n:_('T / M')}" width="55px" />
+        </treecols>
+    </tree>
 </div>

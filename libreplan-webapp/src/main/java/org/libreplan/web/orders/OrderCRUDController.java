@@ -438,6 +438,32 @@ public class OrderCRUDController extends GenericForwardComposer {
             deadline.setFocus(SchedulingMode.BACKWARDS == chosen);
         }
 
+        public Constraint getCheckConstraintFinishDate() {
+            return (comp, value) -> {
+                Date finishDate = (Date) value;
+                if ((finishDate != null) && (initDate.getValue() != null) &&
+                        (finishDate.compareTo(initDate.getValue()) < 0)) {
+
+                    deadline.setValue(null);
+                    getOrder().setDeadline(null);
+                    throw new WrongValueException(comp, _("must be after start date"));
+                }
+            };
+        }
+
+        public Constraint checkConstraintStartDate() {
+            return (comp, value) -> {
+                Date startDate = (Date) value;
+                if ((startDate != null) && (deadline.getValue() != null) &&
+                        (startDate.compareTo(deadline.getValue()) > 0)) {
+
+                    initDate.setValue(null);
+                    getOrder().setInitDate(null);
+                    throw new WrongValueException(comp, _("must be lower than end date"));
+                }
+            };
+        }
+
     }
 
     private void bindListOrderStatusSelectToOnStatusChange() {
@@ -1692,4 +1718,5 @@ public class OrderCRUDController extends GenericForwardComposer {
     public BigDecimal getTotalBudget() {
         return getOrder().getBudget().add(getResourcesBudget());
     }
+
 }

@@ -131,11 +131,13 @@
                             <row>
                                 <label value="${i18n:_('Starting date')}" />
                                 <datebox id="initDate"
+
                                     value="@{controller.order.initDate}" />
                             </row>
                             <row>
                                 <label value="${i18n:_('Deadline')}" />
                                 <datebox id="deadline"
+
                                     value="@{controller.order.deadline}"
                                     disabled="@{controller.subcontractedProject}"/>
                             </row>

@@ -33,7 +33,6 @@ import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.zkoss.ganttz.data.TaskLeaf;
 import org.zkoss.zul.AbstractTreeModel;
 import org.zkoss.zul.event.TreeDataEvent;
 
@@ -43,7 +42,6 @@ import org.zkoss.zul.event.TreeDataEvent;
  * @author Bogdan Bodnarjuk <b.bodnarjuk@libreplan-enterprise.com>
  */
 
-//TODO Check this class ?
 public class MutableTreeModel<T> extends AbstractTreeModel {
 
     private static final Log LOG = LogFactory.getLog(MutableTreeModel.class);
@@ -180,28 +178,10 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private Node<T> find(Object domainObject) {
-
-        for (Map.Entry<T, Node<T>> item : nodesByDomainObject.entrySet()) {
-            if ( item.getKey() != null ) {
-                if ( item.getKey().equals(domainObject) ) {
-                    return item.getValue();
-                }
-            }
-        }
-
         return nodesByDomainObject.get(domainObject);
     }
 
     private static <T> T unwrap(Node<T> node) {
-    //TODO To rewrite code correctly
-        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (StackTraceElement stackTraceElement : stackTraceElements) {
-            if ( node.children.size() > 0 && stackTraceElement.getMethodName().equals("getAssociatedNode") ) {
-
-                return node.children.get(0).value;
-            }
-        }
-
         return node == null ? null : node.value;
     }
 
@@ -279,25 +259,33 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     @Override
+    public T getChild(int[] path){
+        T node = getRoot();
+        for (int item : path) {
+            if (item < 0 || item > _childCount(node))
+                return null;
+
+            node = getChild(node, item);
+        }
+
+        return node;
+    }
+
+    private int _childCount(T parent) {
+        return isLeaf(parent) ? 0 : getChildCount(parent);
+    }
+    @Override
     public T getChild(Object parent, int index) {
+        //TODO To rewrite code correctly
         Node<T> node;
 
-        if ( parent == null ) {
-            return unwrap(find(null).children.get(index));
-        }
-
-        if ( parent instanceof TaskLeaf ||
-                parent instanceof MutableTreeModel.Node ||
-                parent.getClass().toString().equals("class org.libreplan.business.orders.entities.OrderLine") ) {
-
-            node = find(this.root.value);
-
-            return unwrap(node.children.get(index));
+        if (parent instanceof MutableTreeModel.Node) {
+            node = find(((Node) parent).value);
         } else {
             node = find(parent);
-
-            return unwrap(node);
         }
+
+        return unwrap(node.children.get(index));
     }
 
     @Override
@@ -305,15 +293,11 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         //TODO To rewrite code correctly
         Node<T> node;
 
-            if ( parent instanceof MutableTreeModel.Node &&
-                    this.root.value.getClass().toString().equals(
-                            "class org.libreplan.business.orders.entities.Order") ) {
-
-                node = find(this.root.value);
+            if (parent instanceof MutableTreeModel.Node) {
+                node = find(((Node) parent).value);
             } else {
                 node = find(parent);
             }
-
 
         return node.children.size();
     }
@@ -323,6 +307,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         Node<T> node = find(object);
 
         return node.children.isEmpty();
+
     }
 
     @SuppressWarnings("unchecked")
@@ -488,10 +473,6 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
     public boolean isEmpty() {
         return getChildCount(getRoot()) == 0;
-    }
-
-    public boolean hasChildren(T node) {
-        return getChildCount(node) > 0;
     }
 
     public boolean contains(T object) {

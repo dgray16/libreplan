@@ -430,7 +430,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
         tasksTreeModel = MutableTreeModel.create(Task.class);
         fillModel(tasks, true);
         tasksTree.setModel(tasksTreeModel);
-        tasksTree.setItemRenderer(new TaskBeanRenderer());
+        tasksTree.setTreeitemRenderer(new TaskBeanRenderer());
     }
 
     void addTask(Position position, Task task) {

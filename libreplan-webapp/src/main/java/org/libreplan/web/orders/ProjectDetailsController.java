@@ -228,34 +228,26 @@ public class ProjectDetailsController extends GenericForwardComposer<Component> 
     }
 
     public Constraint getCheckConstraintFinishDate() {
-        return new Constraint() {
-            @Override
-            public void validate(Component comp, Object value)
-                    throws WrongValueException {
-                Date finishDate = (Date) value;
-                if ((finishDate != null) && (initDate.getValue() != null)
-                        && (finishDate.compareTo(initDate.getValue()) < 0)) {
-                    deadline.setValue(null);
-                    getOrder().setDeadline(null);
-                    throw new WrongValueException(comp,
-                            _("must be after start date"));
-                }
+        return (comp, value) -> {
+            Date finishDate = (Date) value;
+            if ((finishDate != null) && (initDate.getValue() != null) &&
+                    (finishDate.compareTo(initDate.getValue()) < 0)) {
+
+                deadline.setValue(null);
+                getOrder().setDeadline(null);
+                throw new WrongValueException(comp, _("must be after start date"));
             }
         };
     }
 
     public Constraint checkConstraintStartDate() {
-        return new Constraint() {
-            @Override
-            public void validate(Component comp, Object value)
-                    throws WrongValueException {
-                Date startDate = (Date) value;
-                if ((startDate != null) && (deadline.getValue() != null) &&
-                        (startDate.compareTo(deadline.getValue()) > 0)) {
-                    initDate.setValue(null);
-                    getOrder().setInitDate(null);
-                    throw new WrongValueException(comp, _("must be lower than end date"));
-                }
+        return (comp, value) -> {
+            Date startDate = (Date) value;
+            if ((startDate != null) && (deadline.getValue() != null) &&
+                    (startDate.compareTo(deadline.getValue()) > 0)) {
+                initDate.setValue(null);
+                getOrder().setInitDate(null);
+                throw new WrongValueException(comp, _("must be lower than end date"));
             }
         };
     }
