@@ -149,7 +149,6 @@ public class MaterialsController extends GenericForwardComposer {
 
         @Override
         public void render(Treeitem treeitem, MaterialCategory node, int i) throws Exception {
-            //TODO Object is null. WHY?!
             final MaterialCategory materialCategory = node;
 
             final Textbox tb = new Textbox(materialCategory.getName());

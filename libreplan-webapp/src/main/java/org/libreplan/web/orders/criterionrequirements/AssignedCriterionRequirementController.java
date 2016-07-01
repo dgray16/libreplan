@@ -94,7 +94,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     protected NewDataSortableGrid listHoursGroups;
 
-    private Intbox orderElementTotalHours;
+    protected Intbox orderElementTotalHours;
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -184,8 +184,8 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
             CriterionRequirementWrapper requirementWrapper,
             CriterionWithItsType newCriterionAndType);
 
-    private void selectCriterionAndType(Listitem item, Bandbox bandbox,
-                                        CriterionRequirementWrapper requirementWrapper) {
+    public void selectCriterionAndType(Listitem item, Bandbox bandbox,
+            CriterionRequirementWrapper requirementWrapper) {
         if (item != null) {
             CriterionWithItsType newCriterionAndType = item.getValue();
             try {
@@ -347,8 +347,8 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     private Rows getRequirementRows(Row row) {
         Panel panel = (Panel) row.getFirstChild().getFirstChild();
-        NewDataSortableGrid grid = (NewDataSortableGrid) panel.getFirstChild()
-                .getFirstChild();
+        NewDataSortableGrid grid = (NewDataSortableGrid) panel.getFirstChild().getFirstChild();
+        
         return grid.getRows();
     }
 
@@ -690,7 +690,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
     private void repaint(Component self, HoursGroupWrapper hoursGroupWrapper) {
         Grid grid = getHoursGroupDetailsGrid(self);
         if (grid != null) {
-            grid.setModel(new SimpleListModel(hoursGroupWrapper
+            grid.setModel(new SimpleListModel<>(hoursGroupWrapper
                     .getCriterionRequirementWrappersView().toArray()));
             grid.invalidate();
         } else {
