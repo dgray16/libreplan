@@ -446,7 +446,7 @@ div.z-row-content {
     padding-bottom: 10px;
     font-weight: normal;
     padding-left: 22px;
-    background: #FFFFFF url(../img/header_bullet.gif) no-repeat 0 8px;
+    background: #FFFFFF url(../img/header_bullet.gif) no-repeat 0 7px;
 }
 
 .caption-title .z-caption-content {
@@ -2065,8 +2065,6 @@ select {
     background-color: #C3EAAF !important;
 }
 
-
-
 .z-center {
     border: 1px solid #9ECAD8;
 }
@@ -2077,4 +2075,19 @@ select {
 
 .z-label {
     padding-left: 4px;
+}
+
+/*
+ Made for grid rows.
+ It makes possible to define on hover background of rows.
+ If row is pair then backgroud equals grey.
+ Else if row is odd then background equals white.
+ So, it removes default ZK hover effect for grid.
+*/
+.z-row:hover:nth-child(odd)>.z-row-inner, .z-row:hover>.z-cell {
+    background: none;
+}
+
+.z-row:hover:nth-child(even)>.z-row-inner, .z-row:hover>.z-cell {
+    background: #F7F7F7;
 }
