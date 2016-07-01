@@ -2091,3 +2091,7 @@ select {
 .z-row:hover:nth-child(even)>.z-row-inner, .z-row:hover>.z-cell {
     background: #F7F7F7;
 }
+
+.z-window {
+    background: transparent;
+}
