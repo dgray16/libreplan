@@ -626,11 +626,12 @@ tr.z-vbox-separator {
    border-left: 0;
 }
 
-.row_resourceload {
-    height: 10px;
+.z-resourceloadcomponent {
+    height: 7px;
     border: 1px;
-    margin-bottom: 10px;
-    margin-top: 8px;
+    margin-bottom: 16px;
+    margin-top: 6px;
+    padding-bottom: 2px;
     width: 100%;
     border-bottom: 1px dotted #CCCCCC;
 }
@@ -698,8 +699,8 @@ tr.z-vbox-separator {
     border-collapse: collapse;
 }
 
-.resourceloadleftpane div.z-treecell-cnt {
-    paddding-top: 2px;
+.resourceloadleftpane div.z-treecell-content {
+    padding-top: 2px;
     border-bottom: 1px dotted #CCCCCC;
 }
 
@@ -749,7 +750,7 @@ tr.z-vbox-separator {
     padding-bottom: 2px;
 }
 
-.resourceloadleftpane .z-tree-ico + .secondlevel span {
+.resourceloadleftpane .z-tree-line + .secondlevel span {
     font-weight: bold;
 }
 
@@ -761,7 +762,7 @@ tr.z-vbox-separator {
     overflow: visible;
 }
 .resourceloadleftpane div.z-tree-body table {
-    table-layout:auto !important;
+    table-layout:auto;
 }
 
 .resourceloadleftpane .icono .z-button-cm:active,
@@ -771,7 +772,7 @@ tr.z-vbox-separator {
 }
 
 /* ---------- Start Limiting resources --------------- */
-.limitingresourceslist .row_resourceload {
+.limitingresourceslist .z-resourceloadcomponent{
     height: 25px;
 }
 
@@ -784,7 +785,7 @@ tr.z-vbox-separator {
 }
 
 .limitingresources td.z-treecell {
-    paddding-top: 2px;
+    padding-top: 2px;
     border-bottom: 1px dotted #CCCCCC;
 }
 
@@ -857,10 +858,6 @@ div.z-tree {
 .listdetails td {
     border-bottom: 1px dotted #CCC !important;
     border-right: 1px dotted #CCC;
-}
-
-.plannerlayout, .resourcesloadlayout, .advancedallocationlayout {
-/*    height: 100%; */
 }
 
 .temp-class {
@@ -1341,9 +1338,9 @@ body .perspectives-column {
     width: 100% !important;
 }
 
-.z-tree-icon, .z-tree-line {
+/*.z-tree-icon, .z-tree-line {
     display: none;
-}
+}*/
 
 /*.z-tree-line.z-tree-spacer {*/
 
@@ -1580,4 +1577,20 @@ div ~ .resourcesloadlayout {
 .tabSwitcher > .z-div > .z-div > div {
     height: 100%;
     display: block !important;
+}
+
+/*
+span.z-tree-spacer {
+    width: 16px;
+    display: inline-block;
+}
+*/
+
+.z-treerow.z-treerow-selected > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow > .z-treecell > .z-treecell-content {
+    color: black;
+}
+
+.taskdetail_grid .z-treecell .z-treecell-content {
+    display: inline-table;
 }

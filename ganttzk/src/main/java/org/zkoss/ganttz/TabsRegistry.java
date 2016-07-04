@@ -29,8 +29,6 @@ import java.util.Map;
 import org.zkoss.ganttz.extensions.ITab;
 import org.zkoss.ganttz.util.IMenuItemsRegister;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 
 public class TabsRegistry {
 
@@ -55,10 +53,7 @@ public class TabsRegistry {
         void doAction();
     }
 
-    private static final IBeforeShowAction DO_NOTHING = new IBeforeShowAction() {
-        @Override
-        public void doAction() {
-        }
+    private static final IBeforeShowAction DO_NOTHING = () -> {
     };
 
     public void show(ITab tab) {
@@ -110,14 +105,7 @@ public class TabsRegistry {
     public void registerAtMenu(IMenuItemsRegister menu) {
         this.menu = menu;
         for (final ITab t : tabs) {
-            Object key = menu.addMenuItem(t.getName(), t.getCssClass(),
-                    new EventListener() {
-
-                @Override
-                public void onEvent(Event event) {
-                    show(t);
-                }
-            });
+            Object key = menu.addMenuItem(t.getName(), t.getCssClass(), event -> show(t));
             fromTabToMenuKey.put(t, key);
         }
 

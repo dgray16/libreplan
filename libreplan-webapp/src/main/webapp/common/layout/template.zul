@@ -33,17 +33,17 @@
 <zk>
     <zscript>
         <![CDATA[
-    contextPath = Executions.getCurrent().getContextPath();
-    templateCtrl = templateController;
-    idAdminUser = templateController.getIdAdminUser();
-    idWsreader = templateController.getIdWsreaderUser();
-    idWswriter = templateController.getIdWswriterUser();
-    idWssubcontracting = templateController.getIdWssubcontractingUser();
-    idManager = templateController.getIdManagerUser();
-    idHresources = templateController.getIdHresourcesUser();
-    idOutsourcing = templateController.getIdOutsourcingUser();
-    idReports = templateController.getIdReportsUser();
-]]>
+            contextPath = Executions.getCurrent().getContextPath();
+            templateCtrl = templateController;
+            idAdminUser = templateController.getIdAdminUser();
+            idWsreader = templateController.getIdWsreaderUser();
+            idWswriter = templateController.getIdWswriterUser();
+            idWssubcontracting = templateController.getIdWssubcontractingUser();
+            idManager = templateController.getIdManagerUser();
+            idHresources = templateController.getIdHresourcesUser();
+            idOutsourcing = templateController.getIdOutsourcingUser();
+            idReports = templateController.getIdReportsUser();
+        ]]>
     </zscript>
 
 <div xmlns:n="http://www.zkoss.org/2005/zk/native" apply="${templateCtrl}" height="100%">
@@ -113,7 +113,6 @@
 
         <center border="none">
             <borderlayout width="auto" height="100%">
-                <!-- borderlayout class="main-layout" height="2000px" width="2000px"-->
                 <west sclass="perspectives-column" width="90px" >
                     <vbox vflex="1" >
                         <hbox id="perspectiveButtonsInsertionPoint" sclass="toolbar-box global-commands" height="30px" width="90px">

@@ -24,13 +24,9 @@
 
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 
-<?component name="manualAllocationWindow"
-    macroURI="/limitingresources/manualAllocation.zul"
-    inline="true" ?>
+<?component name="manualAllocationWindow" macroURI="/limitingresources/manualAllocation.zul" inline="true" ?>
 
-<?component name="editTaskWindow"
-    macroURI="/planner/editTask.zul"
-    inline="true" ?>
+<?component name="editTaskWindow" macroURI="/planner/editTask.zul" inline="true" ?>
 
 <zk xmlns:n="http://www.zkoss.org/2005/zk/native">
 

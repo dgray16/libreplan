@@ -18,9 +18,9 @@ limitingresources.QueueListComponent = zk.$extends(zk.Widget,{
     adjustScrollHorizontalPosition : function (offsetInPx) {
         jq(this.$n()).scrollLeft(offsetInPx);
     },
-    adjustResourceLoadRows : function() {
+    adjustResourceLoadRows: function () {
         var width = jq('.rightpanellayout #timetracker .z-grid-header :first').innerWidth();
-        jq('.row_resourceload').each(function(index, element){
+        jq('.row_resourceload').each(function (index, element) {
             jq(element).width(width);
         });
     },

@@ -96,7 +96,7 @@ public class Util {
 
     /**
      * Forces to reload the bindings of the provided components if there is an
-     * associated {@link DefaultBinder}.
+     * associated {@link DataBinder}.
      *
      * @param toReload
      *            the components to reload
@@ -107,7 +107,7 @@ public class Util {
 
     public enum ReloadStrategy {
         /**
-         * If the {@link DefaultBinder} exists the bindings are reloaded no matter
+         * If the {@link DataBinder} exists the bindings are reloaded no matter
          * what.
          */
         FORCE,
@@ -125,7 +125,7 @@ public class Util {
 
     /**
      * Reload the bindings of the provided components if there is an associated
-     * {@link DefaultBinder} and the {@link ReloadStrategy} allows it.
+     * {@link DataBinder} and the {@link ReloadStrategy} allows it.
      *
      * @param toReload
      *            the components to reload
@@ -200,7 +200,7 @@ public class Util {
     private static final ThreadLocal<Boolean> ignoreCreateBindings = new ThreadLocal<Boolean>() {
         protected Boolean initialValue() {
             return false;
-        };
+        }
     };
 
     public static void executeIgnoringCreationOfBindings(Runnable action) {
@@ -281,7 +281,7 @@ public class Util {
      */
     public static Textbox bind(final Textbox textBox, final Getter<String> getter, final Setter<String> setter) {
         textBox.setValue(getter.get());
-        textBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        textBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue();
             setter.set(value);
@@ -363,7 +363,7 @@ public class Util {
      */
     public static Intbox bind(final Intbox intBox, final Getter<Integer> getter, final Setter<Integer> setter) {
         intBox.setValue(getter.get());
-        intBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        intBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue().trim();
             if (value.isEmpty()) {
@@ -407,7 +407,7 @@ public class Util {
      */
     public static Datebox bind(final Datebox dateBox, final Getter<Date> getter, final Setter<Date> setter) {
         dateBox.setValue(getter.get());
-        dateBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        dateBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(dateBox.getValue());
             dateBox.setValue(getter.get());
         });
@@ -446,7 +446,7 @@ public class Util {
      */
     public static Timebox bind(final Timebox timeBox, final Getter<Date> getter, final Setter<Date> setter) {
         timeBox.setValue(getter.get());
-        timeBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        timeBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(timeBox.getValue());
             timeBox.setValue(getter.get());
         });
@@ -486,7 +486,7 @@ public class Util {
      */
     public static Decimalbox bind(final Decimalbox decimalBox, final Getter<BigDecimal> getter, final Setter<BigDecimal> setter) {
         decimalBox.setValue(getter.get());
-        decimalBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        decimalBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(decimalBox.getValue());
             decimalBox.setValue(getter.get());
         });
@@ -525,7 +525,7 @@ public class Util {
      */
     public static Checkbox bind(final Checkbox checkBox, final Getter<Boolean> getter, final Setter<Boolean> setter) {
         checkBox.setChecked(getter.get());
-        checkBox.addEventListener(Events.ON_CHECK, (EventListener<Event>) event -> {
+        checkBox.addEventListener(Events.ON_CHECK,event -> {
             setter.set(checkBox.isChecked());
             checkBox.setChecked(getter.get());
         });
@@ -604,7 +604,7 @@ public class Util {
      */
     public static Bandbox bind(final Bandbox bandBox, final Getter<String> getter, final Setter<String> setter) {
         bandBox.setValue(getter.get());
-        bandBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        bandBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue();
             setter.set(value);

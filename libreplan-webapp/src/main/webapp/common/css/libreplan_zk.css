@@ -1234,14 +1234,15 @@ span.z-dottree-line {
     overflow-x: auto;
 }
 
-tr.z-tree-row-seld, tr.z-listitem-seld,
-.z-combobox-pp .z-comboitem-seld,
-tr.z-treerow-seld {
-    background-color: #fdd772; /* Dark orange */
-    color: #000000;
+.z-treerow.z-treerow-selected > .z-treecell,
+.z-treerow.z-treerow-selected.z-treerow-focus:hover > .z-treecell,
+.z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell,
+.z-treerow.z-treerow-selected:hover > .z-treecell {
+    /*background: #fdd772; !* Dark orange *!*/
+    background: linear-gradient(to bottom, #fdd772 0, #fdd772 100%);
 }
 
-tr.z-treerow-seld input {
+tr.z-treerow-selected input {
     /* Soft orange */
     background: #fdf3da none;
 }
@@ -2077,4 +2078,10 @@ select {
 
 .z-label {
     padding-left: 4px;
+}
+
+.z-treerow.z-treerow-selected.z-treerow-focus:hover > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow-selected:hover > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell > .z-treecell-content {
+    color: black;
 }

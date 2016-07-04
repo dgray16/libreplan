@@ -67,12 +67,12 @@ public class OrdersTabCreator {
             if (result != null) {
                 return result;
             }
-            Map<String, Object> args = new HashMap<String, Object>();
+            Map<String, Object> args = new HashMap<>();
             args.put("orderController", setupOrderCrudController());
-            result = Executions.createComponents("/orders/_ordersTab.zul",
-                    parent, args);
+            result = Executions.createComponents("/orders/_ordersTab.zul", parent, args);
             Util.createBindingsFor(result);
             Util.reloadBindings(ReloadStrategy.ONE_PER_REQUEST, result);
+
             return result;
         }
 

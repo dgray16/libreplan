@@ -46,7 +46,8 @@
             </tabs>
             <tabpanels>
                 <tabpanel id="panelConfiguration">
-                    <grid id="configurationVariables">
+                    <grid fixedLayout="true"
+                        id="configurationVariables">
                         <columns>
                             <column width="200px" />
                             <column />
@@ -427,7 +428,7 @@
                             <grid id="configurationRoles"
                                 model="@{configurationController.roles}"
                                 rowRenderer="@{configurationController.allUserRolesRenderer}"
-                                mold="paging" pageSize="10" sizedByContent="true">
+                                mold="paging" pageSize="10" fixedLayout="true">
                                 <columns>
                                     <column label="${i18n:_('LibrePlan Role')}" width="200px" />
                                     <column label="${i18n:_('LDAP Roles (separated by ;)')}" />

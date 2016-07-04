@@ -45,7 +45,6 @@ import org.zkoss.ganttz.util.OnZKDesktopRegistry;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Button;
@@ -101,16 +100,16 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
         }
 
         public CustomMenuItem(String name, String url) {
-            this(name, url, new ArrayList<CustomMenuItem>());
+            this(name, url, new ArrayList<>());
         }
 
         public CustomMenuItem(String name, String url, String helpLink) {
-            this(name, url, new ArrayList<CustomMenuItem>());
+            this(name, url, new ArrayList<>());
             this.helpLink = helpLink;
         }
 
         public CustomMenuItem(String name, String url, boolean disabled) {
-            this(name, url, new ArrayList<CustomMenuItem>());
+            this(name, url, new ArrayList<>());
             this.disabled = disabled;
         }
 
@@ -272,46 +271,29 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
         List<CustomMenuItem> planningItems = new ArrayList<>();
         if ( SecurityUtils.isSuperuserOrRolePlanningOrHasAnyAuthorization() ) {
 
-            planningItems.add(
-                    subItem(
-                            _("Company view"),
-                            new ICapture() {
-                                @Override
-                                public void capture() {
-                                    globalView.goToCompanyScheduling();
-                                }
+            planningItems.add(subItem(_("Company view"),
+                            () -> {
+                                globalView.goToCompanyScheduling();
                             },
                             "01-introducion.html"));
 
-            planningItems.add(subItem(
-                    _("Projects"),
-                    new ICapture() {
-                        @Override
-                        public void capture() {
-                            globalView.goToOrdersList();
-                        }
+            planningItems.add(subItem(_("Projects"),
+                    () -> {
+                        globalView.goToOrdersList();
                     },
                     "01-introducion.html#id2"));
         }
 
         if ( SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING) ) {
-            planningItems.add(subItem(
-                    _("Resources Load"),
-                    new ICapture() {
-                        @Override
-                        public void capture() {
-                            globalView.goToCompanyLoad();
-                        }
+            planningItems.add(subItem(_("Resources Load"),
+                    () -> {
+                        globalView.goToCompanyLoad();
                     },
                     "01-introducion.html#id1"));
 
-            planningItems.add(subItem(
-                    _("Queue-based Resources"),
-                    new ICapture() {
-                        @Override
-                        public void capture() {
-                            globalView.goToLimitingResources();
-                        }
+            planningItems.add(subItem(_("Queue-based Resources"),
+                    () -> {
+                        globalView.goToLimitingResources();
                     },
                     "01-introducion.html"));
         }

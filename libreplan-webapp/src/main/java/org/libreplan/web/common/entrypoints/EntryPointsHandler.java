@@ -45,8 +45,6 @@ import org.libreplan.web.common.converters.IConverterFactory;
 import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.BookmarkEvent;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 
 /**
  * <br />
@@ -117,7 +115,7 @@ public class EntryPointsHandler<T> {
      * @return
      */
     public static List<? extends String> capturePaths(ICapture redirects) {
-        linkCaputurer.set(new ArrayList<String>());
+        linkCaputurer.set(new ArrayList<>());
         try {
             redirects.capture();
             List<String> list = linkCaputurer.get();
@@ -303,11 +301,7 @@ public class EntryPointsHandler<T> {
             if (matrixParamsNames.equals(requiredParams)) {
                 final Object[] arguments = retrieveArguments(matrixParams,
                         entryPointAnnotation, entryPointMetadata.method.getParameterTypes());
-                Util.executeIgnoringCreationOfBindings(new Runnable() {
-                    public void run() {
-                        callMethod(controller, entryPointMetadata.method, arguments);
-                    }
-                });
+                Util.executeIgnoringCreationOfBindings(() -> callMethod(controller, entryPointMetadata.method, arguments));
 
                 return true;
             }
@@ -322,14 +316,10 @@ public class EntryPointsHandler<T> {
     }
 
     public <S extends T> void registerBookmarkListener(final S controller, Page page) {
-        page.addEventListener("onBookmarkChange", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                BookmarkEvent bookmarkEvent = (BookmarkEvent) event;
-                String bookmark = bookmarkEvent.getBookmark();
-                applyIfMatches(controller, bookmark);
-            }
+        page.addEventListener("onBookmarkChange", event -> {
+            BookmarkEvent bookmarkEvent = (BookmarkEvent) event;
+            String bookmark = bookmarkEvent.getBookmark();
+            applyIfMatches(controller, bookmark);
         });
     }
 
