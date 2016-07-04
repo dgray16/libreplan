@@ -1413,7 +1413,7 @@ tr.z-treerow-over input {
     text-decoration: underline;
 }
 
-.clickable-rows tr.z-row:hover .z-row-cnt {
+.clickable-rows tr.z-row:hover .z-row-content {
     color: #000000;
 }
 
@@ -1421,7 +1421,7 @@ tr.z-tree-row-seld td.z-row-inner {
     background-color: #2A83B4
 }
 
-tr.z-tree-row-seld .z-row-cnt {
+tr.z-tree-row-seld .z-row-content {
     color: #FFFFFF;
 }
 
@@ -2080,7 +2080,7 @@ select {
 /*
  Made for grid rows.
  It makes possible to define on hover background of rows.
- If row is pair then backgroud equals grey.
+ If row is pair then background equals grey.
  Else if row is odd then background equals white.
  So, it removes default ZK hover effect for grid.
 */
@@ -2097,5 +2097,24 @@ select {
 }
 
 .z-row .z-row-inner, .z-row .z-cell {
-    border-left: 1px solid rgb(204, 204, 204);
+    border: none;
+    border-right: 1px solid rgb(204, 204, 204);
+    border-bottom: 1px solid rgb(207, 207, 207);
+}
+
+.z-row-content {
+   margin: 5px;
+}
+
+/*
+  Made for edit email template page text area.
+  If it will break something, add class for text area and remove this restriction.
+*/
+textarea {
+    resize: none;
+}
+
+.z-column {
+    border: none;
+    border-right: 1px solid rgb(207, 207, 207);
 }
