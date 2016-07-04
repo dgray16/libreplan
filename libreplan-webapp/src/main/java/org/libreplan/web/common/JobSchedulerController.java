@@ -42,7 +42,6 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zkplus.spring.SpringUtil;
@@ -53,7 +52,6 @@ import org.zkoss.zul.Hbox;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Popup;
-import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Caption;
@@ -68,10 +66,6 @@ import org.zkoss.zul.Window;
 public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfiguration> {
 
     private static final Log LOG = LogFactory.getLog(JobSchedulerController.class);
-
-    private Grid listJobSchedulings;
-
-    private Grid cronExpressionGrid;
 
     private Popup cronExpressionInputPopup;
 
@@ -104,13 +98,13 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        listJobSchedulings = (Grid) listWindow.getFellowIfAny("listJobSchedulings");
+        Grid listJobSchedulings = (Grid) listWindow.getFellowIfAny("listJobSchedulings");
         listJobSchedulings.getModel();
         initCronExpressionPopup();
     }
 
     /**
-     * initializes cron expressions for popup
+     * Initializes cron expressions for popup
      */
     private void initCronExpressionPopup() {
         cronExpressionTextBox = (Textbox) editWindow.getFellow("cronExpressionTextBox");
@@ -120,7 +114,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
         jobGroup = (Label) cronExpressionInputPopup.getFellow("jobGroup");
         jobName = (Label) cronExpressionInputPopup.getFellow("jobName");
 
-        cronExpressionGrid = (Grid) cronExpressionInputPopup.getFellow("cronExpressionGrid");
+        Grid cronExpressionGrid = (Grid) cronExpressionInputPopup.getFellow("cronExpressionGrid");
 
         cronExpressionSeconds = (Textbox) cronExpressionGrid.getFellow("cronExpressionSeconds");
         cronExpressionMinutes = (Textbox) cronExpressionGrid.getFellow("cronExpressionMinutes");
@@ -170,78 +164,54 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
      * renders job scheduling and returns {@link RowRenderer}
      */
     public RowRenderer getJobSchedulingRenderer() {
-        return new RowRenderer() {
+        return (row, o, i) -> {
+            final JobSchedulerConfiguration jobSchedulerConfiguration = (JobSchedulerConfiguration) o;
+            row.setValue(o);
 
-            @Override
-            public void render(Row row, Object o, int i) throws Exception {
-                final JobSchedulerConfiguration jobSchedulerConfiguration = (JobSchedulerConfiguration) o;
-                row.setValue(o);
+            Util.appendLabel(row, jobSchedulerConfiguration.getJobGroup());
+            Util.appendLabel(row, jobSchedulerConfiguration.getJobName());
+            Util.appendLabel(row, jobSchedulerConfiguration.getCronExpression());
+            Util.appendLabel(row, getNextFireTime(jobSchedulerConfiguration));
+            Hbox hbox = new Hbox();
 
-                Util.appendLabel(row, jobSchedulerConfiguration.getJobGroup());
-                Util.appendLabel(row, jobSchedulerConfiguration.getJobName());
-                Util.appendLabel(row, jobSchedulerConfiguration.getCronExpression());
-                Util.appendLabel(row, getNextFireTime(jobSchedulerConfiguration));
-                Hbox hbox = new Hbox();
+            hbox.appendChild(createManualButton(event -> {
+                try {
+                    jobSchedulerModel.doManual(jobSchedulerConfiguration);
+                    showSynchronizationInfo();
+                } catch (ConnectorException e) {
+                    messagesForUser.showMessage(Level.ERROR, e.getMessage());
+                }
+            }));
 
-                hbox.appendChild(createManualButton(new EventListener() {
+            hbox.appendChild(Util.createEditButton(event -> goToEditForm(jobSchedulerConfiguration)));
 
-                    @Override
-                    public void onEvent(Event event) throws Exception {
-                        try {
-                            jobSchedulerModel.doManual(jobSchedulerConfiguration);
-                            showSynchronizationInfo();
-                        } catch (ConnectorException e) {
-                            messagesForUser.showMessage(Level.ERROR,
-                                    e.getMessage());
-                        }
-                    }
-                }));
+            hbox.appendChild(Util.createRemoveButton(event -> confirmDelete(jobSchedulerConfiguration)));
 
-                hbox.appendChild(Util.createEditButton(new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        goToEditForm(jobSchedulerConfiguration);
-                    }
-                }));
-
-                hbox.appendChild(Util.createRemoveButton(new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        confirmDelete(jobSchedulerConfiguration);
-                    }
-                }));
-
-                row.appendChild(hbox);
-            }
+            row.appendChild(hbox);
         };
     }
 
     private RowRenderer getSynchronizationInfoRenderer() {
-        return new RowRenderer() {
+        return (row, o, i) -> {
+            final SynchronizationInfo synchronizationInfo = (SynchronizationInfo) o;
+            row.setValue(o);
 
-            @Override
-            public void render(Row row, Object o, int i) throws Exception {
-                final SynchronizationInfo synchronizationInfo = (SynchronizationInfo) o;
-                row.setValue(o);
+            Groupbox groupbox = new Groupbox();
+            groupbox.setClosable(true);
+            Caption caption = new Caption();
+            caption.setLabel(synchronizationInfo.getAction());
+            groupbox.appendChild(caption);
+            row.appendChild(groupbox);
 
-                Groupbox groupbox = new Groupbox();
-                groupbox.setClosable(true);
-                Caption caption = new Caption();
-                caption.setLabel(synchronizationInfo.getAction());
-                groupbox.appendChild(caption);
-                row.appendChild(groupbox);
+            if ( synchronizationInfo.isSuccessful() ) {
+                groupbox.appendChild(new Label(_("Completed")));
+            } else {
 
-                if ( synchronizationInfo.isSuccessful() ) {
-                    groupbox.appendChild(new Label(_("Completed")));
-                } else {
+                Listbox listbox = new Listbox();
 
-                    Listbox listbox = new Listbox();
-
-                    listbox.setModel(new SimpleListModel<>(synchronizationInfo.getFailedReasons()));
-                    groupbox.appendChild(listbox);
-                }
+                listbox.setModel(new SimpleListModel<>(synchronizationInfo.getFailedReasons()));
+                groupbox.appendChild(listbox);
             }
-
         };
     }
 
@@ -272,7 +242,8 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     }
 
     /**
-     * returns the next fire time for the specified job in
+     * Returns the next fire time for the specified job in
+     *
      * {@link JobSchedulerConfiguration}
      *
      * @param jobSchedulerConfiguration
@@ -283,7 +254,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     }
 
     /**
-     * creates and returns a button
+     * Creates and returns a button
      *
      * @param eventListener
      *            Event listener for this button
@@ -336,8 +307,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     }
 
     /**
-     * sets the <code>cronExpressionTextBox</code> value from the
-     * <code>cronExpressionInputPopup</code>
+     * Sets the <code>cronExpressionTextBox</code> value from the <code>cronExpressionInputPopup</code>
      */
     public void updateCronExpression() {
         String cronExpression = getCronExpressionString();
@@ -346,8 +316,10 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
             new CronExpression(cronExpression);
         } catch (ParseException e) {
             LOG.info("Unable to parse cron expression", e);
-            throw new WrongValueException(cronExpressionInputPopup, _("Unable to parse cron expression") + ":\n"
-                            + e.getMessage());
+
+            throw new WrongValueException(
+                    cronExpressionInputPopup,
+                    _("Unable to parse cron expression") + ":\n" + e.getMessage());
         }
         cronExpressionTextBox.setValue(cronExpression);
         cronExpressionInputPopup.close();
@@ -407,7 +379,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     @Override
     protected void save() throws ValidationException {
         jobSchedulerModel.confirmSave();
-        if (jobSchedulerModel.scheduleOrUnscheduleJob()) {
+        if ( jobSchedulerModel.scheduleOrUnscheduleJob() ) {
             messagesForUser.showMessage(Level.INFO, _("Job is scheduled/unscheduled"));
         }
     }
@@ -425,7 +397,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     @Override
     protected void delete(JobSchedulerConfiguration entity) throws InstanceNotFoundException {
         jobSchedulerModel.remove(entity);
-        if (jobSchedulerModel.deleteScheduledJob(entity)) {
+        if ( jobSchedulerModel.deleteScheduledJob(entity) ) {
             messagesForUser.showMessage(Level.INFO, _("Job is deleted from scheduler"));
         }
     }

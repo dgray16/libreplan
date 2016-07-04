@@ -52,7 +52,7 @@ import static org.libreplan.web.I18nHelper._;
  *
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  * @author Miciele Ghiorghis <m.ghiorghis@antoniusziekenhuis.nl>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -113,63 +113,68 @@ public class JobSchedulerModel implements IJobSchedulerModel {
     }
 
     @Override
-    public String getNextFireTime(
-            JobSchedulerConfiguration jobSchedulerConfiguration) {
+    public String getNextFireTime(JobSchedulerConfiguration jobSchedulerConfiguration) {
         return schedulerManager.getNextFireTime(jobSchedulerConfiguration);
     }
 
     @Override
-    public void doManual(JobSchedulerConfiguration jobSchedulerConfiguration)
-            throws ConnectorException {
+    public void doManual(JobSchedulerConfiguration jobSchedulerConfiguration) throws ConnectorException {
         String name = jobSchedulerConfiguration.getJobClassName().getName();
         if (name.equals(JobClassNameEnum.IMPORT_ROSTER_FROM_TIM_JOB.getName())) {
             synchronizationInfos = importRosterFromTim.importRosters();
+
             return;
         }
         if (name.equals(JobClassNameEnum.EXPORT_TIMESHEET_TO_TIM_JOB.getName())) {
             synchronizationInfos = exportTimesheetsToTim.exportTimesheets();
+
             return;
         }
-        if (name.equals(JobClassNameEnum.SYNC_ORDERELEMENTS_WITH_JIRA_ISSUES_JOB
-                .getName())) {
-            synchronizationInfos = jiraOrderElementSynchronizer
-                    .syncOrderElementsWithJiraIssues();
+        if (name.equals(JobClassNameEnum.SYNC_ORDERELEMENTS_WITH_JIRA_ISSUES_JOB.getName())) {
+            synchronizationInfos = jiraOrderElementSynchronizer.syncOrderElementsWithJiraIssues();
+
             return;
         }
         if ( name.equals(JobClassNameEnum.SEND_EMAIL_TASK_ASSIGNED_TO_RESOURCE.getName()) ) {
-            synchronizationInfos = new ArrayList<SynchronizationInfo>();
-            synchronizationInfos.add(new SynchronizationInfo(_("Task assigned to resource emails")));
+            synchronizationInfos = new ArrayList<>();
+            synchronizationInfos.add(new SynchronizationInfo(_("Task assigned to resource emails job")));
             taskAssignedToResource.sendEmail();
+
             return;
         }
         if ( name.equals(JobClassNameEnum.SEND_EMAIL_RESOURCE_REMOVED_FROM_TASK.getName()) ) {
-            synchronizationInfos = new ArrayList<SynchronizationInfo>();
-            synchronizationInfos.add(new SynchronizationInfo(_("Resource removed from task")));
+            synchronizationInfos = new ArrayList<>();
+            synchronizationInfos.add(new SynchronizationInfo(_("Resource removed from task job")));
             resourceRemovedFromTask.sendEmail();
+
             return;
         }
         if ( name.equals(JobClassNameEnum.SEND_EMAIL_MILESTONE_REACHED.getName()) ) {
-            synchronizationInfos = new ArrayList<SynchronizationInfo>();
-            synchronizationInfos.add(new SynchronizationInfo(_("Milestone reached")));
+            synchronizationInfos = new ArrayList<>();
+            synchronizationInfos.add(new SynchronizationInfo(_("Milestone reached job")));
             milestoneReached.sendEmail();
+
             return;
         }
         if ( name.equals(JobClassNameEnum.SEND_EMAIL_TASK_SHOULD_START.getName()) ) {
-            synchronizationInfos = new ArrayList<SynchronizationInfo>();
-            synchronizationInfos.add(new SynchronizationInfo(_("Task should start")));
+            synchronizationInfos = new ArrayList<>();
+            synchronizationInfos.add(new SynchronizationInfo(_("Task should start job")));
             taskShouldStart.sendEmail();
+
             return;
         }
         if ( name.equals(JobClassNameEnum.SEND_EMAIL_TASK_SHOULD_FINISH.getName()) ) {
-            synchronizationInfos = new ArrayList<SynchronizationInfo>();
-            synchronizationInfos.add(new SynchronizationInfo(_("Task should finish")));
+            synchronizationInfos = new ArrayList<>();
+            synchronizationInfos.add(new SynchronizationInfo(_("Task should finish job")));
             taskShouldFinish.sendEmail();
+
             return;
         }
         if ( name.equals(JobClassNameEnum.SEND_EMAIL_TIMESHEET_DATA_MISSING.getName()) ) {
-            synchronizationInfos = new ArrayList<SynchronizationInfo>();
-            synchronizationInfos.add(new SynchronizationInfo(_("Timesheet data missing")));
+            synchronizationInfos = new ArrayList<>();
+            synchronizationInfos.add(new SynchronizationInfo(_("Timesheet data missing job")));
             timesheetDataMissing.sendEmail();
+
             return;
         }
 
@@ -211,8 +216,7 @@ public class JobSchedulerModel implements IJobSchedulerModel {
     @Transactional
     public void remove(JobSchedulerConfiguration jobSchedulerConfiguration) {
         try {
-            jobSchedulerConfigurationDAO.remove(jobSchedulerConfiguration
-                    .getId());
+            jobSchedulerConfigurationDAO.remove(jobSchedulerConfiguration.getId());
         } catch (InstanceNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -226,8 +230,8 @@ public class JobSchedulerModel implements IJobSchedulerModel {
 
     @Override
     public boolean scheduleOrUnscheduleJobs(Connector connector) {
-        List<JobSchedulerConfiguration> jobSchedulerConfigurations = jobSchedulerConfigurationDAO
-                .findByConnectorName(connector.getName());
+        List<JobSchedulerConfiguration> jobSchedulerConfigurations =
+                jobSchedulerConfigurationDAO.findByConnectorName(connector.getName());
 
         for (JobSchedulerConfiguration jobSchedulerConfiguration : jobSchedulerConfigurations) {
             try {

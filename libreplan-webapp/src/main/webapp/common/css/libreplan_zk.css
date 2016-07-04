@@ -2118,3 +2118,22 @@ textarea {
     border: none;
     border-right: 1px solid rgb(207, 207, 207);
 }
+
+.job-scheduling-manual-header .z-window-header {
+    background: none;
+
+    padding-left: 6px;
+    color: white;
+    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
+    border-radius: 5px 5px 0 0;
+}
+
+.z-window-header-move {
+    background: none;
+
+    padding-left: 6px;
+    color: white;
+    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
+}
+
+
