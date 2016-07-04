@@ -42,11 +42,12 @@
                     <tabpanel>
                         <groupbox>
                             <caption label="${i18n:_('General user data')}" />
+
                             <grid>
                                 <columns>
-                                    <column width="220px"/>
-                                    <column width="420px"/>
-                                    <column width="300px"/>
+                                    <column width="6%"/>
+                                    <column width="20%"/>
+                                    <column width="54%"/>
                                 </columns>
                                 <rows>
                                     <row>
@@ -72,8 +73,8 @@
                                     </row>
                                     <row style="height: 270px;">
                                         <label value="${i18n:_('Template contents')}"/>
-                                        <textbox id="contentsTextbox" rows="15" width="400px;" tabindex="11"/>
-                                        <groupbox closable="false" width="270px">
+                                        <textbox id="contentsTextbox" rows="20" width="400px;"/>
+                                        <groupbox closable="false" width="270px" sclass="email-content-keywords">
                                             <caption label="${i18n:_('Possible content keywords')}"
                                                      style="background: #F7F7F7;"/>
                                             <grid width="250px">
@@ -124,6 +125,7 @@
                                     </row>
                                 </rows>
                             </grid>
+
                         </groupbox>
                     </tabpanel>
                 </tabpanels>
@@ -134,5 +136,13 @@
 
         <button onClick="emailTemplateController.cancel()"
                 label="${i18n:_('Cancel')}" sclass="cancel-button global-action"/>
+
+        <script>
+            <!-- Hack for removing unnecessary border of grid column -->
+            zk.afterMount(function() {
+                var div = $( "div.email-content-keywords" );
+                div.parents('td.z-row-inner').css('border-right', 'none');
+            });
+        </script>
     </window>
 </zk>

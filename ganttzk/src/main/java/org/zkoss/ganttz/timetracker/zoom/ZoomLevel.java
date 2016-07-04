@@ -32,8 +32,8 @@ public enum ZoomLevel {
     DETAIL_ONE(_("Year")) {
         @Override
         public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel,
-                IDetailItemModificator secondLevel) {
+                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
+
             return new DetailOneTimeTrackerState(firstLevel, secondLevel);
         }
 
@@ -42,11 +42,12 @@ public enum ZoomLevel {
             return days > 950;
         }
     },
+
     DETAIL_TWO(_("Quarter")) {
         @Override
         public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel,
-                IDetailItemModificator secondLevel) {
+                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
+
             return new DetailTwoTimeTrackerState(firstLevel, secondLevel);
         }
 
@@ -55,11 +56,12 @@ public enum ZoomLevel {
             return days > 550;
         }
     },
+
     DETAIL_THREE(_("Month")) {
         @Override
         public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel,
-                IDetailItemModificator secondLevel) {
+                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
+
             return new DetailThreeTimeTrackerState(firstLevel, secondLevel);
         }
 
@@ -68,11 +70,12 @@ public enum ZoomLevel {
             return days > 175;
         }
     },
+
     DETAIL_FOUR(_("Week")) {
         @Override
         public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel,
-                IDetailItemModificator secondLevel) {
+                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
+
             return new DetailFourTimeTrackerState(firstLevel, secondLevel);
         }
 
@@ -81,11 +84,12 @@ public enum ZoomLevel {
             return days > 50;
         }
     },
+
     DETAIL_FIVE(_("Day")) {
         @Override
         public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel,
-                IDetailItemModificator secondLevel) {
+                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
+
             return new DetailFiveTimeTrackerState(firstLevel, secondLevel);
         }
 
@@ -94,11 +98,12 @@ public enum ZoomLevel {
             return true;
         }
     },
+
     DETAIL_SIX(_("Hour")) {
         @Override
         public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel,
-                IDetailItemModificator secondLevel) {
+                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
+
             return new DetailSixTimeTrackerState(firstLevel, secondLevel);
         }
 
@@ -109,7 +114,7 @@ public enum ZoomLevel {
     };
 
     /**
-     * Forces to mark the string as needing translation
+     * Forces to mark the string as needing translation.
      */
     private static String _(String string) {
         return string;
@@ -121,7 +126,7 @@ public enum ZoomLevel {
         return internalName;
     }
 
-    private ZoomLevel(String name) {
+    ZoomLevel(String name) {
         this.internalName = name;
     }
 
@@ -149,8 +154,7 @@ public enum ZoomLevel {
     }
 
     public abstract TimeTrackerState getTimeTrackerState(
-            IDetailItemModificator firstLevel,
-            IDetailItemModificator secondLevel);
+            IDetailItemModificator firstLevel, IDetailItemModificator secondLevel);
 
     @Override
     public String toString() {
@@ -159,6 +163,7 @@ public enum ZoomLevel {
 
     public static ZoomLevel getFromString(String zoomLevelParameter) {
         ZoomLevel requiredZoomLevel = ZoomLevel.DETAIL_ONE;
+
         if (zoomLevelParameter != null) {
             for (ZoomLevel z : ZoomLevel.values()) {
                 if (zoomLevelParameter.equals(z.internalName)) {
@@ -170,10 +175,10 @@ public enum ZoomLevel {
 
     }
 
-    public static ZoomLevel getDefaultZoomByDates(LocalDate initDate,
-            LocalDate endDate) {
+    public static ZoomLevel getDefaultZoomByDates(LocalDate initDate, LocalDate endDate) {
         if (initDate != null && endDate != null) {
             int days = Days.daysBetween(initDate, endDate).getDays();
+
             for (ZoomLevel each : ZoomLevel.values()) {
                 if (each.isSuitableFor(days)) {
                     return each;
