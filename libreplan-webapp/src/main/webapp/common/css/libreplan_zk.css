@@ -792,10 +792,9 @@ div.z-grid {
 
 /* Graphical improvements */
 
-.z-panel-header {
-    background:none;
-    border: 0;
-    margin:0 0 0 10px
+.z-panel-header, .z-panel-head {
+    font-weight: bold;
+    margin: 0 10px;
 }
 
 .z-panel-body {
@@ -1506,18 +1505,21 @@ tr.z-tree-row-seld .z-row-content {
     overflow: visible;
 }
 
-.filter-more-options .z-groupbox-cnt {
-    width: 600px;
+.filter-more-options .z-groupbox-content {
+    width: 612px;
     left: -492px;
     position: relative;
     background-color: #F0FAFF;
 }
-.filter-more-options .z-groupbox-body .z-groupbox-cnt {
+.filter-more-options .z-groupbox-body .z-groupbox-content {
     border-top: solid 1px #B2CCD9 !important;
 }
 
 .filter-more-options .z-groupbox-header {
     margin-top: 0;
+    min-height: 24px;
+    height: 24px;
+    border-radius: 4px;
 }
 .filter-more-options .z-groupbox-bl {
     display: none;
@@ -2119,6 +2121,7 @@ textarea {
     border-right: 1px solid rgb(207, 207, 207);
 }
 
+/* Synchronization window ( Job Scheduling ) */
 .job-scheduling-manual-header .z-window-header {
     background: none;
 
@@ -2134,6 +2137,20 @@ textarea {
     padding-left: 6px;
     color: white;
     background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
+}
+
+.hour-cost-button {
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.hour-cost-grid {
+    margin: 0 10px 10px 10px;
+}
+
+.more-options-label {
+    top: -4px !important;
+    padding-left: 6px !important;
 }
 
 

@@ -31,7 +31,7 @@ import org.libreplan.business.labels.entities.LabelType;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.business.workreports.entities.PositionInWorkReportEnum;
 import org.libreplan.business.workreports.entities.WorkReport;
-import org.libreplan.business.workreports.entities.WorkReportLabelTypeAssigment;
+import org.libreplan.business.workreports.entities.WorkReportLabelTypeAssignment;
 import org.libreplan.business.workreports.entities.WorkReportType;
 import org.libreplan.business.workreports.valueobjects.DescriptionField;
 import org.libreplan.web.common.IIntegrationEntityModel;
@@ -127,7 +127,7 @@ public interface IWorkReportTypeModel extends IIntegrationEntityModel {
      * {@link WorkReportType}.
      * @return A List {@link DescripitonField}
      */
-    public List<DescriptionField> getDescriptionFields();
+    List<DescriptionField> getDescriptionFields();
 
     /**
      * Gets the current list of {@link LabelType}
@@ -141,14 +141,14 @@ public interface IWorkReportTypeModel extends IIntegrationEntityModel {
      * @param
      * @return
      */
-    public void addNewDescriptionField();
+    void addNewDescriptionField();
 
     /**
      * Delete a {@link DescriptionField} from {@link WorkReportType}
      * @param DescriptionField
      * @return
      */
-    public void removeDescriptionField(DescriptionField descriptionField);
+    void removeDescriptionField(DescriptionField descriptionField);
 
     /**
      * Change the @{PositionInWorkReportEnum} of a {@link DescriptionField} to
@@ -156,17 +156,14 @@ public interface IWorkReportTypeModel extends IIntegrationEntityModel {
      * @param @{PositionInWorkReportEnum} ,@{DescriptionField}
      * @return
      */
-    void changePositionDescriptionField(
-            PositionInWorkReportEnum newPosition,
-            DescriptionField descriptionField);
+    void changePositionDescriptionField(PositionInWorkReportEnum newPosition, DescriptionField descriptionField);
 
     /**
      * return the @{PositionInWorkReportEnum} of a {@link DescriptionField}.
      * @param @{DescriptionField}
      * @return @{PositionInWorkReportEnum}
      */
-    PositionInWorkReportEnum getPosition(
-            DescriptionField descriptionField);
+    PositionInWorkReportEnum getPosition(DescriptionField descriptionField);
 
     /**
      * Check if a @{DescriptionField} is into the
@@ -176,39 +173,37 @@ public interface IWorkReportTypeModel extends IIntegrationEntityModel {
     boolean isHeadingDescriptionField(DescriptionField descriptionField);
 
     /**
-     * Gets the {@link List} of {@link WorkReportLabelTypeAssigment}.
-     * @return A {@link List} of {@link WorkReportLabelTypeAssigment}
+     * Gets the {@link List} of {@link WorkReportLabelTypeAssignment}.
+     * @return A {@link List} of {@link WorkReportLabelTypeAssignment}
      */
-    Set<WorkReportLabelTypeAssigment> getWorkReportLabelTypeAssigments();
+    Set<WorkReportLabelTypeAssignment> getWorkReportLabelTypeAssignments();
 
     /**
-     * Add a new {@link WorkReportLabelTypeAssigment} to {@link WorkReportType}.
+     * Add a new {@link WorkReportLabelTypeAssignment} to {@link WorkReportType}.
      * @param
      * @return
      */
-    void addNewWorkReportLabelTypeAssigment();
+    void addNewWorkReportLabelTypeAssignment();
 
     /**
-     * Delete a {@link WorkReportLabelTypeAssigment} from {@link WorkReportType}
-     * @param {@link WorkReportLabelTypeAssigment}
+     * Delete a {@link WorkReportLabelTypeAssignment} from {@link WorkReportType}
+     * @param {@link WorkReportLabelTypeAssignment}
      * @return
      */
-    void removeWorkReportLabelTypeAssigment(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment);
+    void removeWorkReportLabelTypeAssignment(WorkReportLabelTypeAssignment workReportLabelTypeAssigment);
 
     /**
-     * Check if a {@link WorkReportLabelTypeAssigment} is shared by lines
+     * Check if a {@link WorkReportLabelTypeAssignment} is shared by lines
      * @return a @{PositionInWorkReportEnum.HEADING} if it's is shared by lines.
      */
-    PositionInWorkReportEnum getLabelAssigmentPosition(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment);
+    PositionInWorkReportEnum getLabelAssigmentPosition(WorkReportLabelTypeAssignment workReportLabelTypeAssigment);
 
     /**
-     * Set weather the {@link WorkReportLabelTypeAssigment} is shared by lines
+     * Set weather the {@link WorkReportLabelTypeAssignment} is shared by lines
      * @return
      */
     void setLabelAssigmentPosition(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment,
+            WorkReportLabelTypeAssignment workReportLabelTypeAssigment,
             PositionInWorkReportEnum position);
 
     /* Operation to assign the requirements fields */
@@ -255,15 +250,13 @@ public interface IWorkReportTypeModel extends IIntegrationEntityModel {
      * Check if the name of a {@link WorkReportType} is valid.
      * @throw @{IllegalArgumentException} if it's is null, empty or not unique.
      */
-    public void validateWorkReportTypeName(String name)
-            throws IllegalArgumentException;
+    void validateWorkReportTypeName(String name) throws IllegalArgumentException;
 
     /**
      * Check if the code of a {@link WorkReportType} is valid.
      * @throw @{IllegalArgumentException} if it's is null, empty or not unique.
      */
-    void validateWorkReportTypeCode(String code)
-            throws IllegalArgumentException;
+    void validateWorkReportTypeCode(String code) throws IllegalArgumentException;
 
     /**
      * Check if the leghts of the collection of {@link DescriptionField} are
@@ -278,28 +271,19 @@ public interface IWorkReportTypeModel extends IIntegrationEntityModel {
      * @return the @{DescriptionField} with the fieldName null, empty or not
      *         unique.
      */
-    DescriptionField validateFieldNameLineFields()
-            throws IllegalArgumentException;
-
-    // /**
-    // * Check if the fieldName of a {@link DescriptionField} is equal to the
-    // * fieldName of another {@link DescriptionField}.
-    // * @return true if exist other {@link DescriptionField} with the same
-    // * fieldName.
-    // */
-    // boolean existSameFieldName(DescriptionField descriptionField);
+    DescriptionField validateFieldNameLineFields() throws IllegalArgumentException;
 
     /**
      * Check if the collection of @{LabelType} are valids.
-     * @return the @{WorkReportLabelTypeAssigment} with the LabelType null.
+     * @return the @{WorkReportLabelTypeAssignment} with the LabelType null.
      */
-    WorkReportLabelTypeAssigment validateLabelTypes();
+    WorkReportLabelTypeAssignment validateLabelTypes();
 
     /**
      * Check if the collection of @{Label} are valids.
-     * @return the @{WorkReportLabelTypeAssigment} with the Label null.
+     * @return the @{WorkReportLabelTypeAssignment} with the Label null.
      */
-    WorkReportLabelTypeAssigment validateLabels();
+    WorkReportLabelTypeAssignment validateLabels();
 
     /* Operation to manage the ordered list of fields and labels */
     boolean validateTheIndexFieldsAndLabels();

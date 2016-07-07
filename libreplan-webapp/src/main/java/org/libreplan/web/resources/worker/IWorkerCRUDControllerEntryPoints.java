@@ -27,16 +27,17 @@ import org.libreplan.web.common.entrypoints.EntryPoints;
 
 /**
  * Contract for {@link WorkerCRUDController}. <br />
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
 @EntryPoints(page = "/resources/worker/worker.zul", registerAs = "workerCRUD")
 public interface IWorkerCRUDControllerEntryPoints {
 
     @EntryPoint("edit")
-    public abstract void goToEditForm(Worker worker);
+    void goToEditForm(Worker worker);
 
     @EntryPoint("create")
-    public abstract void goToCreateForm();
+    void goToCreateForm();
 
     @EntryPoint("list")
     void goToList();

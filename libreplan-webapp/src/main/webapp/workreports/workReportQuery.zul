@@ -28,10 +28,10 @@
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk>
     <window self="@{define(content)}" id="listQueryWindow"
-        title="${i18n:_('Timesheet Lines List')}"
-        apply="org.libreplan.web.workreports.WorkReportQueryController">
+            title="${i18n:_('Timesheet Lines List')}"
+            apply="org.libreplan.web.workreports.WorkReportQueryController">
 
-        <vbox id="messagesContainer"></vbox>
+        <vbox id="messagesContainer"/>
 
         <groupbox closable="false">
         <caption label="${i18n:_('Filter timesheet lines by')}" />
@@ -40,15 +40,16 @@
             <!-- Filter work report lines -->
             <hbox>
                 <hbox align="pack">
+
                 <!-- Resource -->
                 <label value="${i18n:_('Resource')}"/>
-                <autocomplete id="filterResource" buttonVisible="true"
-                    finder="ResourceFinder"/>
+                <autocomplete id="filterResource" buttonVisible="true" finder="ResourceFinder"/>
 
                 <!-- Task -->
                 <label value="${i18n:_('task')}"/>
                 <bandboxSearch id="bandboxFilterOrderElement" widthBandbox="285px" widthListbox="700px"
-                    finder="OrderElementBandboxFinder" model="@{controller.orderElements}"/>
+                               finder="OrderElementBandboxFinder"
+                               model="@{controller.orderElements}"/>
 
                 <!-- From -->
                 <label value="${i18n:_('from')}"/>
@@ -61,14 +62,14 @@
 
                 <!-- More options -->
                 <groupbox sclass="filter-more-options" mold="3d"  width="120px" open="false"
-                    contentStyle="border: 1px solid #B2CCD9;">
-                        <caption label="${i18n:_('More options')}" />
+                          contentStyle="border: 1px solid #B2CCD9;">
+                        <caption label="${i18n:_('More options')}" sclass="more-options-label" />
 
                     <hbox>
                         <!-- Hours Type -->
                         <label value="${i18n:_('hours type')}"/>
                         <autocomplete id="filterHoursType" buttonVisible="true"
-                            finder="TypeOfWorkHoursFinder" width="100px"/>
+                                      finder="TypeOfWorkHoursFinder" width="100px"/>
 
                         <!-- Type -->
                         <label value="${i18n:_('type')}"/>
@@ -81,7 +82,7 @@
                 </groupbox>
 
                 <button label="${i18n:_('Filter')}" sclass="createButton"
-                    onClick="controller.onApplyFilterWorkReportLines(event)"/>
+                        onClick="controller.onApplyFilterWorkReportLines(event)"/>
             </hbox>
         </div>
         </groupbox>
@@ -91,32 +92,34 @@
             </hbox>
 
             <grid id="gridListQuery"  mold="paging" pageSize="15"
-                model="@{controller.queryWorkReportLines}"
-                onInitRender ="controller.sortQueryWorkReportLines();"
-                sizedByContent="true" span="true">
+                  model="@{controller.queryWorkReportLines}"
+                  onInitRender ="controller.sortQueryWorkReportLines();"
+                  sizedByContent="true" span="true">
+
                 <columns sizable="true">
-                <column id="date" label="${i18n:_('Date')}" align="center"
-                    sort="auto(date)" sortDirection="ascending"/>
-                <column id="resource" label="${i18n:_('Resource')}" align="center"
-                    sort="auto(resource.shortDescription)" sortDirection="ascending"/>
-                <column id="projectCode" label="${i18n:_('Project Code')}" align="center"
-                    sort="auto(orderElement.order.code)" sortDirection="ascending"/>
-                <column id="projectName" label="${i18n:_('Project Name')}" align="center"
-                    sort="auto(orderElement.order.name)" sortDirection="ascending"/>
-                <column id="taskCode" label="${i18n:_('Task Code')}" align="center"
-                    sort="auto(orderElement.code)" sortDirection="ascending"/>
-                <column id="taskName" label="${i18n:_('Task name')}" align="center"
-                    sort="auto(orderElement.name)" sortDirection="ascending"/>
-                <column id="startHour" label="${i18n:_('Start hour')}" align="center"
-                    sort="auto(clockStart)" sortDirection="ascending"/>
-                <column id="finishHour" label="${i18n:_('Finish hour')}" align="center"
-                    sort="auto(clockFinish)" sortDirection="ascending"/>
-                <column id="hours" label="${i18n:_('Hours')}" align="center"
-                    sort="auto(effort)" sortDirection="ascending"/>
-                <column id="hourType" label="${i18n:_('Hours type')}" align="center"
-                    sort="auto(typeOfWorkHours.name)" sortDirection="ascending"/>
+                <column id="date" label="${i18n:_('Date')}" align="center" sort="auto(date)" sortDirection="ascending"/>
+
+                <column id="resource" label="${i18n:_('Resource')}" align="center" sort="auto(resource.shortDescription)" sortDirection="ascending"/>
+
+                <column id="projectCode" label="${i18n:_('Project Code')}" align="center" sort="auto(orderElement.order.code)" sortDirection="ascending"/>
+
+                <column id="projectName" label="${i18n:_('Project Name')}" align="center" sort="auto(orderElement.order.name)" sortDirection="ascending"/>
+
+                <column id="taskCode" label="${i18n:_('Task Code')}" align="center" sort="auto(orderElement.code)" sortDirection="ascending"/>
+
+                <column id="taskName" label="${i18n:_('Task name')}" align="center" sort="auto(orderElement.name)" sortDirection="ascending"/>
+
+                <column id="startHour" label="${i18n:_('Start hour')}" align="center" sort="auto(clockStart)" sortDirection="ascending"/>
+
+                <column id="finishHour" label="${i18n:_('Finish hour')}" align="center" sort="auto(clockFinish)" sortDirection="ascending"/>
+
+                <column id="hours" label="${i18n:_('Hours')}" align="center" sort="auto(effort)" sortDirection="ascending"/>
+
+                <column id="hourType" label="${i18n:_('Hours type')}" align="center" sort="auto(typeOfWorkHours.name)" sortDirection="ascending"/>
+
                 <column label="${i18n:_('Timesheet')}" align="center"/>
                 </columns>
+
                 <rows>
                 <row self="@{each='queryWorkReportLine'}" value="@{queryWorkReportLine}">
                     <label value="@{queryWorkReportLine.date, converter='org.libreplan.web.common.typeconverters.DateConverter'}" />
@@ -130,9 +133,9 @@
                     <label value="@{queryWorkReportLine.effort.toFormattedString}" />
                     <label value="@{queryWorkReportLine.typeOfWorkHours.name}" />
                     <button sclass="icono" image="/common/img/ico_editar1.png"
-                        hoverImage="/common/img/ico_editar.png"
-                        tooltiptext="${i18n:_('Edit')}"
-                        onClick="controller.goToEditFormQuery(self.parent.value);">
+                            hoverImage="/common/img/ico_editar.png"
+                            tooltiptext="${i18n:_('Edit')}"
+                            onClick="controller.goToEditFormQuery(self.parent.value);">
                     </button>
                 </row>
                 </rows>
@@ -140,7 +143,5 @@
 
             <separator bar="false" spacing="20px" orient="horizontal"/>
 
-
         </window>
-
 </zk>

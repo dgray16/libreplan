@@ -44,15 +44,7 @@ import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureExcep
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
 
-public class WorkReportType extends IntegrationEntity implements IHumanIdentifiable{
-
-    public static WorkReportType create() {
-        return create(new WorkReportType());
-    }
-
-    public static WorkReportType create(String name, String code) {
-        return create(new WorkReportType(name), code);
-    }
+public class WorkReportType extends IntegrationEntity implements IHumanIdentifiable {
 
     private String name;
 
@@ -62,14 +54,13 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
 
     private Boolean orderElementIsSharedInLines = false;
 
-    private HoursManagementEnum hoursManagement = HoursManagementEnum
-            .getDefault();
+    private HoursManagementEnum hoursManagement = HoursManagementEnum.getDefault();
 
-    private Set<WorkReportLabelTypeAssigment> workReportLabelTypeAssigments = new HashSet<WorkReportLabelTypeAssigment>();
+    private Set<WorkReportLabelTypeAssignment> workReportLabelTypeAssignments = new HashSet<>();
 
-    private Set<DescriptionField> headingFields = new HashSet<DescriptionField>();
+    private Set<DescriptionField> headingFields = new HashSet<>();
 
-    private Set<DescriptionField> lineFields = new HashSet<DescriptionField>();
+    private Set<DescriptionField> lineFields = new HashSet<>();
 
     /**
      * Constructor for hibernate. Do not use!
@@ -80,6 +71,14 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
 
     private WorkReportType(String name) {
         this.name = name;
+    }
+
+    public static WorkReportType create() {
+        return create(new WorkReportType());
+    }
+
+    public static WorkReportType create(String name, String code) {
+        return create(new WorkReportType(name), code);
     }
 
     @NotEmpty(message = "name not specified or empty")
@@ -100,8 +99,7 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     public Boolean getResourceIsSharedInLines() {
-        return resourceIsSharedInLines == null ? false
-                : resourceIsSharedInLines;
+        return resourceIsSharedInLines == null ? false : resourceIsSharedInLines;
     }
 
     public void setResourceIsSharedInLines(Boolean resourceIsSharedInLines) {
@@ -109,12 +107,10 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     public Boolean getOrderElementIsSharedInLines() {
-        return orderElementIsSharedInLines == null ? false
-                : orderElementIsSharedInLines;
+        return orderElementIsSharedInLines == null ? false : orderElementIsSharedInLines;
     }
 
-    public void setOrderElementIsSharedInLines(
-            Boolean orderElementIsSharedInLines) {
+    public void setOrderElementIsSharedInLines(Boolean orderElementIsSharedInLines) {
         this.orderElementIsSharedInLines = orderElementIsSharedInLines;
     }
 
@@ -127,13 +123,12 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     @Valid
-    public Set<WorkReportLabelTypeAssigment> getWorkReportLabelTypeAssigments() {
-        return workReportLabelTypeAssigments;
+    public Set<WorkReportLabelTypeAssignment> getWorkReportLabelTypeAssignments() {
+        return workReportLabelTypeAssignments;
     }
 
-    public void setWorkReportLabelTypeAssigments(
-            Set<WorkReportLabelTypeAssigment> workReportLabelTypeAssigments) {
-        this.workReportLabelTypeAssigments = workReportLabelTypeAssigments;
+    public void setWorkReportLabelTypeAssignments(Set<WorkReportLabelTypeAssignment> workReportLabelTypeAssigments) {
+        this.workReportLabelTypeAssignments = workReportLabelTypeAssigments;
     }
 
     @Valid
@@ -157,10 +152,7 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     @SuppressWarnings("unused")
     @AssertTrue(message = "Value is not valid.\n Code cannot contain chars like '_'.")
     public boolean isWorkReportTypeCodeWithoutIncorrectCharacterConstraint() {
-        if ((getCode() == null) || (getCode().contains("_"))) {
-            return false;
-        }
-        return true;
+        return !((getCode() == null) || (getCode().contains("_")));
     }
 
     @SuppressWarnings("unused")
@@ -173,12 +165,10 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
             try {
                 WorkReportType c = workReportTypeDAO.findUniqueByName(name);
                 return c.getId().equals(getId());
-            } catch (InstanceNotFoundException e) {
+            } catch ( InstanceNotFoundException | HibernateOptimisticLockingFailureException e ) {
                 return true;
             } catch (NonUniqueResultException e) {
                 return false;
-            } catch (HibernateOptimisticLockingFailureException e) {
-                return true;
             }
         }
     }
@@ -197,7 +187,7 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     @SuppressWarnings("unused")
     @AssertTrue(message = "Assigned Label Type cannot be repeated in a Timesheet Template.")
     public boolean isNotExistRepeatedLabelTypesConstraint() {
-        for (WorkReportLabelTypeAssigment assignedLabelType : this.workReportLabelTypeAssigments) {
+        for (WorkReportLabelTypeAssignment assignedLabelType : this.workReportLabelTypeAssignments) {
             if (existRepeatedLabelType(assignedLabelType)) {
                 return false;
             }
@@ -205,32 +195,24 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         return true;
     }
 
-    public boolean existRepeatedLabelType(
-            WorkReportLabelTypeAssigment assignedLabelType) {
-        for (WorkReportLabelTypeAssigment oldAssignedLabelType : this.workReportLabelTypeAssigments) {
-            if ((!oldAssignedLabelType.equals(assignedLabelType))
-                    && (isTheSameLabelType(oldAssignedLabelType.getLabelType(),
-                            assignedLabelType.getLabelType()))) {
+    public boolean existRepeatedLabelType(WorkReportLabelTypeAssignment assignedLabelType) {
+        for (WorkReportLabelTypeAssignment oldAssignedLabelType : this.workReportLabelTypeAssignments) {
+            if ( (!oldAssignedLabelType.equals(assignedLabelType)) &&
+                    (isTheSameLabelType(oldAssignedLabelType.getLabelType(), assignedLabelType.getLabelType())) ) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isTheSameLabelType(LabelType oldLabelType,
-            LabelType newLabelType) {
-        if ((oldLabelType != null) && (newLabelType != null)
-                && (oldLabelType.equals(newLabelType))) {
-            return true;
-        }
-        return false;
+    public boolean isTheSameLabelType(LabelType oldLabelType, LabelType newLabelType) {
+        return (oldLabelType != null) && (newLabelType != null) && (oldLabelType.equals(newLabelType));
     }
 
     public boolean existSameFieldName(DescriptionField descriptionField) {
         for (DescriptionField oldDescriptionField : getDescriptionFields()) {
-            if ((!oldDescriptionField.equals(descriptionField))
-                    && (isTheSameFieldName(oldDescriptionField.getFieldName(),
-                            descriptionField.getFieldName()))) {
+            if ( (!oldDescriptionField.equals(descriptionField)) &&
+                    (isTheSameFieldName(oldDescriptionField.getFieldName(), descriptionField.getFieldName())) ) {
                 return true;
             }
         }
@@ -238,46 +220,40 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     private boolean isTheSameFieldName(String oldName, String newName) {
-        if ((oldName != null) && (newName != null) && (!oldName.isEmpty())
-                && (!newName.isEmpty()) && (oldName.equals(newName))) {
-            return true;
-        }
-        return false;
+        return (oldName != null) &&
+                (newName != null) &&
+                (!oldName.isEmpty()) &&
+                (!newName.isEmpty()) &&
+                (oldName.equals(newName));
     }
 
     public Set<DescriptionField> getDescriptionFields() {
-        Set<DescriptionField> descriptionFields = new HashSet<DescriptionField>();
+        Set<DescriptionField> descriptionFields = new HashSet<>();
         descriptionFields.addAll(this.getHeadingFields());
         descriptionFields.addAll(this.getLineFields());
+
         return descriptionFields;
     }
 
     /* Operation to manage the index */
 
     public void addDescriptionFieldToEndLine(DescriptionField descriptionField) {
-        addDescriptionFieldToLine(descriptionField, getLineFieldsAndLabels()
-                .size());
+        addDescriptionFieldToLine(descriptionField, getLineFieldsAndLabels().size());
     }
 
     public void addDescriptionFieldToEndHead(DescriptionField descriptionField) {
-        addDescriptionFieldToHead(descriptionField, getHeadingFieldsAndLabels()
-                .size());
+        addDescriptionFieldToHead(descriptionField, getHeadingFieldsAndLabels().size());
     }
 
-    public void addLabelAssigmentToEndHead(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment) {
-        addLabelAssigmentToHead(workReportLabelTypeAssigment,
-                getHeadingFieldsAndLabels().size());
+    public void addLabelAssigmentToEndHead(WorkReportLabelTypeAssignment workReportLabelTypeAssigment) {
+        addLabelAssigmentToHead(workReportLabelTypeAssigment, getHeadingFieldsAndLabels().size());
     }
 
-    public void addLabelAssigmentToEndLine(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment) {
-        addLabelAssigmentToLine(workReportLabelTypeAssigment,
-                getLineFieldsAndLabels().size());
+    public void addLabelAssigmentToEndLine(WorkReportLabelTypeAssignment workReportLabelTypeAssigment) {
+        addLabelAssigmentToLine(workReportLabelTypeAssigment, getLineFieldsAndLabels().size());
     }
 
-    public void addDescriptionFieldToLine(DescriptionField descriptionField,
-            int position) {
+    public void addDescriptionFieldToLine(DescriptionField descriptionField, int position) {
         if (isValidIndexToAdd(position, getLineFieldsAndLabels())) {
             updateIndexFromPosition(getLineFieldsAndLabels(), position, 1);
             descriptionField.setPositionNumber(position);
@@ -285,8 +261,7 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         }
     }
 
-    public void addDescriptionFieldToHead(DescriptionField descriptionField,
-            int position) {
+    public void addDescriptionFieldToHead(DescriptionField descriptionField, int position) {
         if (isValidIndexToAdd(position, getHeadingFieldsAndLabels())) {
             updateIndexFromPosition(getHeadingFieldsAndLabels(), position, 1);
             descriptionField.setPositionNumber(position);
@@ -294,82 +269,62 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         }
     }
 
-    public void addLabelAssigmentToHead(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment,
-            int position) {
+    public void addLabelAssigmentToHead(WorkReportLabelTypeAssignment workReportLabelTypeAssigment, int position) {
         if (isValidIndexToAdd(position, getHeadingFieldsAndLabels())) {
             updateIndexFromPosition(getHeadingFieldsAndLabels(), position, 1);
             workReportLabelTypeAssigment.setLabelsSharedByLines(true);
             workReportLabelTypeAssigment.setPositionNumber(position);
-            getWorkReportLabelTypeAssigments()
-                    .add(workReportLabelTypeAssigment);
+            getWorkReportLabelTypeAssignments().add(workReportLabelTypeAssigment);
         }
     }
 
-    public void addLabelAssigmentToLine(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment,
-            int position) {
+    public void addLabelAssigmentToLine(WorkReportLabelTypeAssignment workReportLabelTypeAssigment, int position) {
         if (isValidIndexToAdd(position, getLineFieldsAndLabels())) {
             updateIndexFromPosition(getLineFieldsAndLabels(), position, 1);
             workReportLabelTypeAssigment.setLabelsSharedByLines(false);
-            workReportLabelTypeAssigment.setPositionNumber(
-
-            position);
-            getWorkReportLabelTypeAssigments()
-                    .add(workReportLabelTypeAssigment);
+            workReportLabelTypeAssigment.setPositionNumber(position);
+            getWorkReportLabelTypeAssignments().add(workReportLabelTypeAssigment);
         }
     }
 
-    public void moveLabelToEndHead(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment) {
-        moveLabelToHead(workReportLabelTypeAssigment,
-                getHeadingFieldsAndLabels().size() - 1);
+    public void moveLabelToEndHead(WorkReportLabelTypeAssignment workReportLabelTypeAssigment) {
+        moveLabelToHead(workReportLabelTypeAssigment, getHeadingFieldsAndLabels().size() - 1);
     }
 
-    public void moveLabelToEndLine(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment) {
-        moveLabelToLine(workReportLabelTypeAssigment, getLineFieldsAndLabels()
-                .size() - 1);
+    public void moveLabelToEndLine(WorkReportLabelTypeAssignment workReportLabelTypeAssigment) {
+        moveLabelToLine(workReportLabelTypeAssigment, getLineFieldsAndLabels().size() - 1);
     }
 
     public void moveDescriptionFieldToEndHead(DescriptionField descriptionField) {
-        moveDescriptionFieldToHead(descriptionField,
-                getHeadingFieldsAndLabels().size() - 1);
+        moveDescriptionFieldToHead(descriptionField, getHeadingFieldsAndLabels().size() - 1);
     }
 
     public void moveDescriptionFieldToEndLine(DescriptionField descriptionField) {
-        moveDescriptionFieldToLine(descriptionField, getLineFieldsAndLabels()
-                .size() - 1);
+        moveDescriptionFieldToLine(descriptionField, getLineFieldsAndLabels().size() - 1);
     }
 
-    public void moveLabelToHead(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment,
-            int position) {
+    public void moveLabelToHead(WorkReportLabelTypeAssignment workReportLabelTypeAssigment, int position) {
         if (isValidIndexToMove(position, getHeadingFieldsAndLabels())) {
             removeLabel(workReportLabelTypeAssigment);
             addLabelAssigmentToHead(workReportLabelTypeAssigment, position);
         }
     }
 
-    public void moveLabelToLine(
-            WorkReportLabelTypeAssigment workReportLabelTypeAssigment,
-            int position) {
+    public void moveLabelToLine(WorkReportLabelTypeAssignment workReportLabelTypeAssigment, int position) {
         if (isValidIndexToMove(position, getLineFieldsAndLabels())) {
             removeLabel(workReportLabelTypeAssigment);
             addLabelAssigmentToLine(workReportLabelTypeAssigment, position);
         }
     }
 
-    public void moveDescriptionFieldToHead(DescriptionField descriptionField,
-            int position) {
+    public void moveDescriptionFieldToHead(DescriptionField descriptionField, int position) {
         if (isValidIndexToMove(position, getHeadingFieldsAndLabels())) {
             removeDescriptionField(descriptionField);
             addDescriptionFieldToHead(descriptionField, position);
         }
     }
 
-    public void moveDescriptionFieldToLine(DescriptionField descriptionField,
-            int position) {
+    public void moveDescriptionFieldToLine(DescriptionField descriptionField, int position) {
         if (isValidIndexToMove(position, getLineFieldsAndLabels())) {
             removeDescriptionField(descriptionField);
             addDescriptionFieldToLine(descriptionField, position);
@@ -379,24 +334,20 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     public void removeDescriptionField(DescriptionField descriptionField){
         if (getHeadingFields().contains(descriptionField)) {
             getHeadingFields().remove(descriptionField);
-            updateIndexFromPosition(getHeadingFieldsAndLabels(),
-                    descriptionField.getPositionNumber(), -1);
+            updateIndexFromPosition(getHeadingFieldsAndLabels(), descriptionField.getPositionNumber(), -1);
         } else {
             getLineFields().remove(descriptionField);
-            updateIndexFromPosition(getLineFieldsAndLabels(), descriptionField
-                    .getPositionNumber(), -1);
+            updateIndexFromPosition(getLineFieldsAndLabels(), descriptionField.getPositionNumber(), -1);
         }
 
     }
 
-    public void removeLabel(WorkReportLabelTypeAssigment workReportLabelTypeAssigment) {
-        getWorkReportLabelTypeAssigments().remove(workReportLabelTypeAssigment);
+    public void removeLabel(WorkReportLabelTypeAssignment workReportLabelTypeAssigment) {
+        getWorkReportLabelTypeAssignments().remove(workReportLabelTypeAssigment);
         if (workReportLabelTypeAssigment.getLabelsSharedByLines()) {
-            updateIndexFromPosition(getHeadingFieldsAndLabels(),
-                    workReportLabelTypeAssigment.getPositionNumber(), -1);
+            updateIndexFromPosition(getHeadingFieldsAndLabels(), workReportLabelTypeAssigment.getPositionNumber(), -1);
         } else {
-            updateIndexFromPosition(getLineFieldsAndLabels(),
-                    workReportLabelTypeAssigment.getPositionNumber(), -1);
+            updateIndexFromPosition(getLineFieldsAndLabels(), workReportLabelTypeAssigment.getPositionNumber(), -1);
         }
     }
 
@@ -404,15 +355,14 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         if (object instanceof DescriptionField) {
             ((DescriptionField) object).setPositionNumber(index);
         } else {
-            ((WorkReportLabelTypeAssigment) object).setPositionNumber(index);
+            ((WorkReportLabelTypeAssignment) object).setPositionNumber(index);
         }
     }
 
-    private void updateIndexFromPosition(List<Object> list, Integer position,
-            Integer change) {
-        for (int i = 0; i < list.size(); i++) {
-            if (getIndex(list.get(i)).compareTo(position) >= 0) {
-                setIndex(list.get(i), getIndex(list.get(i)) + change);
+    private void updateIndexFromPosition(List<Object> list, Integer position, Integer change) {
+        for (Object aList : list) {
+            if (getIndex(aList).compareTo(position) >= 0) {
+                setIndex(aList, getIndex(aList) + change);
             }
         }
     }
@@ -429,16 +379,16 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         return validateTheIndexFieldsAndLabels(getLineFieldsAndLabels());
     }
 
-    private boolean validateTheIndexFieldsAndLabels(
-            List<Object> listFieldsAndLabels) {
+    private boolean validateTheIndexFieldsAndLabels(List<Object> listFieldsAndLabels) {
         List<Object> result = getListToNull(listFieldsAndLabels);
         for (Object object : listFieldsAndLabels) {
+
             // Check if index is out of range
             Integer index = getIndex(object);
-            if ((index.compareTo(0) < 0)
-                    || (index.compareTo(result.size()) >= 0)) {
+            if ((index.compareTo(0) < 0) || (index.compareTo(result.size()) >= 0)) {
                 return false;
             }
+
             // Check if index is repeated
             if (result.get(getIndex(object)) != null) {
                 return false;
@@ -456,22 +406,24 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     public List<Object> getHeadingFieldsAndLabels() {
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         result.addAll(getHeadingLabels());
         result.addAll(getHeadingFields());
+
         return result;
     }
 
     public List<Object> getLineFieldsAndLabels() {
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         result.addAll(getLineLabels());
         result.addAll(getLineFields());
+
         return result;
     }
 
-    public List<WorkReportLabelTypeAssigment> getHeadingLabels() {
-        List<WorkReportLabelTypeAssigment> result = new ArrayList<WorkReportLabelTypeAssigment>();
-        for (WorkReportLabelTypeAssigment label : getWorkReportLabelTypeAssigments()) {
+    public List<WorkReportLabelTypeAssignment> getHeadingLabels() {
+        List<WorkReportLabelTypeAssignment> result = new ArrayList<>();
+        for (WorkReportLabelTypeAssignment label : getWorkReportLabelTypeAssignments()) {
             if (label.getLabelsSharedByLines()) {
                 result.add(label);
             }
@@ -479,9 +431,9 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         return result;
     }
 
-    public List<WorkReportLabelTypeAssigment> getLineLabels() {
-        List<WorkReportLabelTypeAssigment> result = new ArrayList<WorkReportLabelTypeAssigment>();
-        for (WorkReportLabelTypeAssigment label : getWorkReportLabelTypeAssigments()) {
+    public List<WorkReportLabelTypeAssignment> getLineLabels() {
+        List<WorkReportLabelTypeAssignment> result = new ArrayList<>();
+        for (WorkReportLabelTypeAssignment label : getWorkReportLabelTypeAssignments()) {
             if (!label.getLabelsSharedByLines()) {
                 result.add(label);
             }
@@ -493,12 +445,12 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
         if (object instanceof DescriptionField) {
             return ((DescriptionField) object).getPositionNumber();
         } else {
-            return ((WorkReportLabelTypeAssigment) object).getPositionNumber();
+            return ((WorkReportLabelTypeAssignment) object).getPositionNumber();
         }
     }
 
     private List<Object> getListToNull(List<Object> list) {
-        List<Object> result = new ArrayList<Object>(list.size());
+        List<Object> result = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); i++) {
             result.add(null);
         }
@@ -510,8 +462,7 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     private boolean isValidIndexToAdd(Integer position, List<Object> list) {
-        return ((position.compareTo(0) >= 0) && (position
-                .compareTo(list.size()) <= 0));
+        return ((position.compareTo(0) >= 0) && (position.compareTo(list.size()) <= 0));
     }
 
     @Override
@@ -525,18 +476,11 @@ public class WorkReportType extends IntegrationEntity implements IHumanIdentifia
     }
 
     public boolean isPersonalTimesheetsType() {
-        if (StringUtils.isBlank(name)) {
-            return false;
-        }
-        return name.equals(PredefinedWorkReportTypes.PERSONAL_TIMESHEETS
-                .getName());
+        return !StringUtils.isBlank(name) && name.equals(PredefinedWorkReportTypes.PERSONAL_TIMESHEETS.getName());
     }
 
     public boolean isJiraTimesheetsType() {
-        if (StringUtils.isBlank(name)) {
-            return false;
-        }
-        return name.equals(PredefinedWorkReportTypes.JIRA_TIMESHEETS.getName());
+        return !StringUtils.isBlank(name) && name.equals(PredefinedWorkReportTypes.JIRA_TIMESHEETS.getName());
     }
 
 }

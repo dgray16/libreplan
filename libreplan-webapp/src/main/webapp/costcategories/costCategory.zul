@@ -31,7 +31,7 @@
 <zk>
     <window self="@{define(content)}"
         apply="org.libreplan.web.costcategories.CostCategoryCRUDController">
-        <vbox id="messagesContainer"></vbox>
+        <vbox id="messagesContainer"/>
 
         <list top_id="listWindow" />
         <edition top_id="editWindow" />
