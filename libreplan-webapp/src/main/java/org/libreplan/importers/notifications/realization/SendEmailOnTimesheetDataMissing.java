@@ -63,9 +63,7 @@ import java.util.List;
  * and that are treat to {@link EmailTemplateEnum.TEMPLATE_ENTER_DATA_IN_TIMESHEET}
  * Data will be send for bound users with empty timesheet lines.
  *
- * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
- * on 20.01.2016.
+ * @author Created by Vova Perebykivskyi <vova@libreplan-enterprise.com> on 20.01.2016.
  */
 
 @Component
@@ -101,8 +99,8 @@ public class SendEmailOnTimesheetDataMissing implements IEmailNotificationJob {
 
                 if ( emailConnectionValidator.validConnection() ){
 
-                List<EmailNotification> notifications = emailNotificationModel
-                        .getAllByType(EmailTemplateEnum.TEMPLATE_ENTER_DATA_IN_TIMESHEET);
+                List<EmailNotification> notifications =
+                        emailNotificationModel.getAllByType(EmailTemplateEnum.TEMPLATE_ENTER_DATA_IN_TIMESHEET);
 
                 for (int i = 0; i < notifications.size(); i++)
                     if ( composeMessageForUser(notifications.get(i)) )
@@ -189,35 +187,37 @@ public class SendEmailOnTimesheetDataMissing implements IEmailNotificationJob {
                 tasksNumber = getNumberOfOrderElementsWithTrackedTime(workReport);
             }
 
-            result.add(new PersonalTimesheetDTO(date, workReport,
-                    getResourceCapcity(resource, date, periodicity), hours,
+            result.add(new PersonalTimesheetDTO(
+                    date,
+                    workReport,
+                    getResourceCapcity(resource, date, periodicity),
+                    hours,
                     tasksNumber));
         }
 
         return result;
     }
     private LocalDate getActivationDate(Worker worker) {
-        return worker.getCalendar().getFistCalendarAvailability()
-                .getStartDate();
+        return worker.getCalendar().getFistCalendarAvailability().getStartDate();
     }
 
 
     private PersonalTimesheetsPeriodicityEnum getPersonalTimesheetsPeriodicity() {
-        return configurationDAO.getConfiguration()
-                .getPersonalTimesheetsPeriodicity();
+        return configurationDAO.getConfiguration().getPersonalTimesheetsPeriodicity();
     }
     private WorkReport getWorkReport(Resource resource, LocalDate date,
                                      PersonalTimesheetsPeriodicityEnum periodicity) {
-        WorkReport workReport = workReportDAO.getPersonalTimesheetWorkReport(
-                resource, date, periodicity);
+
+        WorkReport workReport = workReportDAO.getPersonalTimesheetWorkReport(resource, date, periodicity);
         forceLoad(workReport);
+
         return workReport;
     }
     private void forceLoad(WorkReport workReport) {
         if (workReport != null) {
             WorkReportType workReportType = workReport.getWorkReportType();
             workReportType.getLineFields().size();
-            workReportType.getWorkReportLabelTypeAssigments().size();
+            workReportType.getWorkReportLabelTypeAssignments().size();
             workReportType.getHeadingFields().size();
         }
     }
@@ -243,10 +243,8 @@ public class SendEmailOnTimesheetDataMissing implements IEmailNotificationJob {
         LocalDate end = periodicity.getEnd(date);
 
         EffortDuration capacity = EffortDuration.zero();
-        for (LocalDate day = start; day.compareTo(end) <= 0; day = day
-                .plusDays(1)) {
-            capacity = capacity.plus(resource.getCalendar().getCapacityOn(
-                    IntraDayDate.PartialDay.wholeDay(day)));
+        for (LocalDate day = start; day.compareTo(end) <= 0; day = day.plusDays(1)) {
+            capacity = capacity.plus(resource.getCalendar().getCapacityOn(IntraDayDate.PartialDay.wholeDay(day)));
         }
         return capacity;
     }

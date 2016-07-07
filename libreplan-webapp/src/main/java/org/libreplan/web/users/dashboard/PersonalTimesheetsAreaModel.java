@@ -64,29 +64,32 @@ public class PersonalTimesheetsAreaModel implements IPersonalTimesheetsAreaModel
     @Transactional(readOnly = true)
     public List<PersonalTimesheetDTO> getPersonalTimesheets() {
         User user = UserUtil.getUserFromSession();
+
         if (!user.isBound()) {
             return Collections.emptyList();
         }
+
         Resource resource = user.getWorker();
         BaseCalendarModel.forceLoadBaseCalendar(resource.getCalendar());
 
         LocalDate activationDate = getActivationDate(user.getWorker());
         LocalDate currentDate = new LocalDate();
-        return getPersonalTimesheets(user.getWorker(), activationDate,
-                currentDate.plusMonths(1), getPersonalTimesheetsPeriodicity());
+
+        return getPersonalTimesheets(
+                user.getWorker(), activationDate, currentDate.plusMonths(1), getPersonalTimesheetsPeriodicity());
     }
 
     private List<PersonalTimesheetDTO> getPersonalTimesheets(Resource resource,
-            LocalDate start, LocalDate end,
-            PersonalTimesheetsPeriodicityEnum periodicity) {
+                                                             LocalDate start,
+                                                             LocalDate end,
+                                                             PersonalTimesheetsPeriodicityEnum periodicity) {
         start = periodicity.getStart(start);
         end = periodicity.getEnd(end);
         int items = periodicity.getItemsBetween(start, end);
 
-        List<PersonalTimesheetDTO> result = new ArrayList<PersonalTimesheetDTO>();
+        List<PersonalTimesheetDTO> result = new ArrayList<>();
 
-        // In decreasing order to provide a list sorted with the more recent
-        // personal timesheets at the beginning
+        // In decreasing order to provide a list sorted with the more recent personal timesheets at the beginning
         for (int i = items; i >= 0; i--) {
             LocalDate date = periodicity.getDateForItemFromDate(i, start);
 
@@ -99,32 +102,37 @@ public class PersonalTimesheetsAreaModel implements IPersonalTimesheetsAreaModel
                 tasksNumber = getNumberOfOrderElementsWithTrackedTime(workReport);
             }
 
-            result.add(new PersonalTimesheetDTO(date, workReport,
-                    getResourceCapcity(resource, date, periodicity), hours,
+            result.add(new PersonalTimesheetDTO(
+                    date,
+                    workReport,
+                    getResourceCapcity(resource, date, periodicity),
+                    hours,
                     tasksNumber));
         }
 
         return result;
     }
 
-    private WorkReport getWorkReport(Resource resource, LocalDate date,
-            PersonalTimesheetsPeriodicityEnum periodicity) {
-        WorkReport workReport = workReportDAO.getPersonalTimesheetWorkReport(
-                resource, date, periodicity);
+    private WorkReport getWorkReport(Resource resource,
+                                     LocalDate date,
+                                     PersonalTimesheetsPeriodicityEnum periodicity) {
+
+        WorkReport workReport = workReportDAO.getPersonalTimesheetWorkReport(resource, date, periodicity);
         forceLoad(workReport);
+
         return workReport;
     }
 
     private EffortDuration getResourceCapcity(Resource resource,
-            LocalDate date, PersonalTimesheetsPeriodicityEnum periodicity) {
+                                              LocalDate date,
+                                              PersonalTimesheetsPeriodicityEnum periodicity) {
+
         LocalDate start = periodicity.getStart(date);
         LocalDate end = periodicity.getEnd(date);
 
         EffortDuration capacity = EffortDuration.zero();
-        for (LocalDate day = start; day.compareTo(end) <= 0; day = day
-                .plusDays(1)) {
-            capacity = capacity.plus(resource.getCalendar().getCapacityOn(
-                    PartialDay.wholeDay(day)));
+        for (LocalDate day = start; day.compareTo(end) <= 0; day = day.plusDays(1)) {
+            capacity = capacity.plus(resource.getCalendar().getCapacityOn(PartialDay.wholeDay(day)));
         }
         return capacity;
     }
@@ -133,14 +141,13 @@ public class PersonalTimesheetsAreaModel implements IPersonalTimesheetsAreaModel
         if (workReport != null) {
             WorkReportType workReportType = workReport.getWorkReportType();
             workReportType.getLineFields().size();
-            workReportType.getWorkReportLabelTypeAssigments().size();
+            workReportType.getWorkReportLabelTypeAssignments().size();
             workReportType.getHeadingFields().size();
         }
     }
 
     private LocalDate getActivationDate(Worker worker) {
-        return worker.getCalendar().getFistCalendarAvailability()
-                .getStartDate();
+        return worker.getCalendar().getFistCalendarAvailability().getStartDate();
     }
 
     @Override
@@ -149,7 +156,7 @@ public class PersonalTimesheetsAreaModel implements IPersonalTimesheetsAreaModel
             return 0;
         }
 
-        List<OrderElement> orderElements = new ArrayList<OrderElement>();
+        List<OrderElement> orderElements = new ArrayList<>();
         for (WorkReportLine line : workReport.getWorkReportLines()) {
             if (!line.getEffort().isZero()) {
                 OrderElement orderElement = line.getOrderElement();
@@ -164,8 +171,7 @@ public class PersonalTimesheetsAreaModel implements IPersonalTimesheetsAreaModel
     @Override
     @Transactional(readOnly = true)
     public PersonalTimesheetsPeriodicityEnum getPersonalTimesheetsPeriodicity() {
-        return configurationDAO.getConfiguration()
-                .getPersonalTimesheetsPeriodicity();
+        return configurationDAO.getConfiguration().getPersonalTimesheetsPeriodicity();
     }
 
 }

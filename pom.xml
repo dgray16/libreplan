@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.libreplan</groupId>
@@ -36,6 +37,9 @@
         <default.emailSendingEnabled>true</default.emailSendingEnabled>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <jetty-port>8080</jetty-port>
+        <jetty-stop-port>9966</jetty-stop-port>
     </properties>
 
 
@@ -120,7 +124,7 @@
                 <jdbcDriver.version>9.4.1208.jre7</jdbcDriver.version>
                 <jdbcDriver.className>org.postgresql.Driver</jdbcDriver.className>
                 <!-- Data source properties -->
-                <dataSource.url>jdbc:postgresql://localhost/libreplan${libreplan.mode}</dataSource.url>
+                <dataSource.url>jdbc:postgresql://localhost/libreplan${libreplan.mode}-zk</dataSource.url>
                 <testDataSource.url>${dataSource.url}test</testDataSource.url>
                 <!-- Hibernate properties -->
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</hibernate.dialect>
@@ -806,7 +810,6 @@
             <!-- =========================================================== -->
             <!-- Jetty configuration -->
             <plugin>
-                <!-- TODO  Change version for JDK8 -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.3.8.v20160314</version>
@@ -819,7 +822,7 @@
                     </systemProperties>
                     <jettyXml>target/jetty/jetty-env.xml</jettyXml>
                     <reload>manual</reload>
-                    <stopPort>9966</stopPort>
+                    <stopPort>${jetty-stop-port}</stopPort>
                     <stopKey>stop</stopKey>
                     <!-- Log to the console. -->
                     <requestLog implementation="org.eclipse.jetty.server.NCSARequestLog">
@@ -830,6 +833,9 @@
                         -->
                         <append>true</append>
                     </requestLog>
+                    <httpConnector>
+                        <port>${jetty-port}</port>
+                    </httpConnector>
                 </configuration>
 
                 <dependencies>
