@@ -46,7 +46,7 @@ public abstract class EntitiesTree<T extends ITreeNode<T>> {
         MutableTreeModel<T> treeModel = MutableTreeModel.create(type, tree);
         T parent = treeModel.getRoot();
         treeModel.add(parent, children, EntitiesTree
-                .<T> createChildrenExtractor());
+                .<T>createChildrenExtractor());
         return treeModel;
     }
 
@@ -132,7 +132,7 @@ public abstract class EntitiesTree<T extends ITreeNode<T>> {
     }
 
     private void addToTree(ITreeNode<T> parentNode, int position,
-            ITreeNode<T> elementToAdd) {
+                           ITreeNode<T> elementToAdd) {
         List<T> children = Collections.singletonList(elementToAdd.getThis());
         tree.add(parentNode.getThis(), position, children, childrenExtractor());
     }
@@ -144,7 +144,7 @@ public abstract class EntitiesTree<T extends ITreeNode<T>> {
     }
 
     private void addOrderElementAt(ITreeNode<T> destinationNode,
-            ITreeNode<T> elementToAdd, int position) {
+                                   ITreeNode<T> elementToAdd, int position) {
         ITreeParentNode<T> container = turnIntoContainerIfNeeded(destinationNode);
         container.add(position, elementToAdd.getThis());
         addToTree(container, position, elementToAdd);
@@ -253,7 +253,7 @@ public abstract class EntitiesTree<T extends ITreeNode<T>> {
     }
 
     private IChildrenExtractor<T> childrenExtractor() {
-        return EntitiesTree.<T> createChildrenExtractor();
+        return EntitiesTree.<T>createChildrenExtractor();
     }
 
     private List<T> getTreeChildren(ITreeParentNode<T> parent) {

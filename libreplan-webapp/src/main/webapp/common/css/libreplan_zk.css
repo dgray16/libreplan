@@ -339,9 +339,10 @@ h4.message_WARNING {
 }
 
 
-.z-window-embedded {
-    margin: 5px 10px 10px;
-}
+/*.z-window-embedded {
+    margin: 10px;
+    margin-top: 5px;
+}*/
 
 .workerwindow {
 
@@ -350,7 +351,7 @@ h4.message_WARNING {
 .main-area .z-center-body > .z-div > .z-window-embedded {
     margin-top: 0;
     margin-bottom: 0;
-    padding-top: 10px;
+   /* padding-top: 10px;*/
     background: none;
 }
 
@@ -827,7 +828,7 @@ div.z-listbox-pgi-b {
 .orderTree .not-scheduled button.z-button,
 .orderTree .partially-scheduled button.z-button,
 .orderTree .completely-scheduled button.z-button {
-    margin: 4px 1px 0 0;
+    margin: -12px -6px -20px -14px;
 }
 
 .orderTree .not-scheduled span.scheduling-state,
@@ -841,7 +842,7 @@ div.z-listbox-pgi-b {
     padding: 1px 5px;
     height: 14px;
     font-size: 9px;
-    width: 5px;
+    /*width: 5px;*/
 }
 
 
@@ -1575,8 +1576,8 @@ tr.z-tree-row-seld .z-row-content {
 
 /* Expand vertical boxes for non-ffox browsers */
 .z-vbox {
-    width:100%;/*
-    display: inline;
+    width:100%;
+   /* display: inline;
     height: 100% !important;*/
 }
 
@@ -2039,7 +2040,6 @@ select {
 
 .icono {
     margin: -12px;
-    background-image: none !important;
     border: 1px solid transparent !important;
 }
 
@@ -2126,3 +2126,39 @@ textarea {
 .z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell > .z-treecell-content {
     color: black;
 }
+
+/*.z-dottree-header > table {
+    width: 1739px !important;
+}*/
+
+/*
+   Set min-width for everyone treecol in orderTree, because doesn't show correct data in treecol.
+*/
+
+.orderTree.z-dottree > div > table {
+
+}
+
+
+.completely-scheduled.z-treecell {
+    min-width: 140px;
+}
+
+/*
+.orderTree.z-dottree > div > table > colgroup > col:nth-child(2) {
+    width: 100px !important;
+}
+*/
+
+/*.orderTree.z-dottree > div > table {
+    width: 1000px !important;
+}*/
+
+.depth_1.z-treecell {
+    min-width: 1152px;
+}
+.orderTree.z-dottree > .z-dottree-body > table > .z-treechildren > .z-treerow > td:nth-child(4) {
+    min-width: 50px;
+}
+
+

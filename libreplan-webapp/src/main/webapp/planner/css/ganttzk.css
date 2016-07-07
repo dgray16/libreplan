@@ -1593,4 +1593,26 @@ span.z-tree-spacer {
 
 .taskdetail_grid .z-treecell .z-treecell-content {
     display: inline-table;
+    width: 100%;
 }
+
+span.z-dottree-icon {
+    width: 18px;
+    min-height: 18px;
+    height: 100%;
+    background-repeat: no-repeat;
+    display: -moz-inline-box;
+    vertical-align: top;
+    display: inline-block;
+}
+
+div.z-dottree {
+    border: 1px solid #cfcfcf;
+    overflow: hidden;
+    zoom: 1;
+}
+
+.z-dottree-line.z-dottree-spacer {
+    width: 18px;
+}
+

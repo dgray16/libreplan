@@ -99,10 +99,6 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
             //empty because templates don't have code attribute
         }
 
-        @Override
-        public void render(Treeitem treeitem, Object o) throws Exception {
-
-        }
 
         void addInitCell(final OrderElementTemplate currentElement) {
             final Intbox intbox = new Intbox();
@@ -266,7 +262,7 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
         try {
             OrderElementTemplate orderElement = item.getValue();
             getRenderer().updateColumnsFor(orderElement);
-            getRenderer().render(item, orderElement);
+            getRenderer().render(item, orderElement, 0);
         } catch (Exception e) {
             e.printStackTrace();
         }

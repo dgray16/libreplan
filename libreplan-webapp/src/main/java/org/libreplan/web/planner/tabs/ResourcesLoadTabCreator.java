@@ -113,6 +113,7 @@ public class ResourcesLoadTabCreator {
         };
     }
 
+
     private ITab createGlobalResourcesLoadTab() {
 
         final IComponentCreator componentCreator = parent -> {
@@ -125,7 +126,7 @@ public class ResourcesLoadTabCreator {
         return new CreatedOnDemandTab(_("Resources Load"), "company-load", componentCreator) {
             @Override
             protected void beforeShowAction() {
-                if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING) ) {
+                if (!SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING)) {
                     Util.sendForbiddenStatusCodeInHttpServletResponse();
                 }
             }

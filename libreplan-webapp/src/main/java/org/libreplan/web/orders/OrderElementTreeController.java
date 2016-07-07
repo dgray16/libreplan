@@ -68,8 +68,6 @@ import org.zkoss.ganttz.util.ComponentsFinder;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.A;
 import org.zkoss.zul.Button;
@@ -358,7 +356,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     public void expandAll() {
-        Set<Treeitem> childrenSet = new HashSet<Treeitem>();
+        Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = tree.getTreechildren();
         if ( children != null ) {
             childrenSet.addAll(children.getItems());
@@ -394,11 +392,6 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         public OrderElementTreeitemRenderer() {
         }
 
-        //TODO Check this ?
-        @Override
-        public void render(Treeitem treeitem, Object o) throws Exception {
-
-        }
 
         @Override
         protected void addDescriptionCell(OrderElement element) {
@@ -543,6 +536,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
             autoBudgetCell.setDisabled(true);
             addCell(autoBudgetCell);
         }
+
     }
 
     @Override
@@ -704,23 +698,23 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     public void showEditionOrderElement(final Treeitem item) {
-        OrderElement currentOrderElement = (OrderElement) item.getValue();
+        OrderElement currentOrderElement = item.getValue();
         markModifiedTreeitem(item.getTreerow());
         IOrderElementModel model = orderModel.getOrderElementModel(currentOrderElement);
         orderElementController.openWindow(model);
         refreshRow(item);
     }
 
-    void refreshRow(Treeitem item) {
+    public void refreshRow(Treeitem item) {
         try {
             getRenderer().updateColumnsFor(item.getValue());
-            getRenderer().render(item, item.getValue());
+            getRenderer().render(item, item.getValue(), 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    Treeitem getTreeitemByOrderElement(OrderElement element) {
+    public Treeitem getTreeitemByOrderElement(OrderElement element) {
         List<Treeitem> listItems = new ArrayList<>(this.tree.getItems());
         for (Treeitem item : listItems) {
             OrderElement orderElement = item.getValue();
