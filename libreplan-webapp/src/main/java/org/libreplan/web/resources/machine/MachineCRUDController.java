@@ -80,7 +80,7 @@ import org.zkoss.zul.Window;
  * Controller for {@link Machine} resource <br />
  * @author Diego Pino Garcia <dpino@igalia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class MachineCRUDController extends BaseCRUDController<Machine> {
 

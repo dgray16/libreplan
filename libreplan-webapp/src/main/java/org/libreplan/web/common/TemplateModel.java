@@ -348,31 +348,28 @@ public class TemplateModel implements ITemplateModel {
     }
 
     private IDesktopUpdate sendMessage(final String message) {
-        return new IDesktopUpdate() {
-            @Override
-            public void doUpdate() {
-                //TODO Check this ?
-                Clients.showBusy((Component) new Object(), message);
-            }
+        return () -> {
+            Clients.showBusy((Component) new Object(), message);
         };
     }
 
     private IDesktopUpdate showEnd() {
-        return new IDesktopUpdate() {
-
-            @Override
-            public void doUpdate() {
-                //TODO Check this ?
-                Clients.showBusy(null, "");
-            }
+        return () -> {
+            Clients.showBusy(null, "");
         };
     }
 
     private void doReassignationsOn(Order order, Scenario from, Scenario to) {
         copyAssignments(order, from, to);
-        GanttDiagramBuilder.createForcingDependencies(order,
-                TemplateModelAdapter.create(to, asLocalDate(order.getInitDate()),
-                        asLocalDate(order.getDeadline()), resourcesSearcher));
+
+        GanttDiagramBuilder.createForcingDependencies(
+                order,
+                TemplateModelAdapter.create(
+                        to,
+                        asLocalDate(order.getInitDate()),
+                        asLocalDate(order.getDeadline()),
+                        resourcesSearcher));
+
         doReassignations(order, to);
         doTheSaving(order);
     }

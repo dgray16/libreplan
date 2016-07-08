@@ -88,7 +88,7 @@ import org.zkoss.zul.Window;
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Diego Pino Garcia <dpino@igalia.com>
  * @author Javier Moran Rua <jmoran@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @org.springframework.stereotype.Component("resourceAllocationController")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)

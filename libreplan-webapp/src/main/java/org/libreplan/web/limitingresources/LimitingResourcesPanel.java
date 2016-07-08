@@ -51,8 +51,6 @@ import org.zkoss.zk.mesg.MZk;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlMacroComponent;
 import org.zkoss.zk.ui.UiException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.ListModel;
@@ -378,19 +376,13 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         return new TimeTrackerComponent(timeTracker) {
 
             @Override
-            protected void scrollHorizontalPercentage(int pixelsDisplacement) {
-
-            }
+            protected void scrollHorizontalPercentage(int pixelsDisplacement) {}
 
             @Override
-            protected void moveCurrentPositionScroll() {
-                // TODO Auto-generated method stub
-            }
+            protected void moveCurrentPositionScroll() {}
 
             @Override
-            protected void updateCurrentDayScroll() {
-                // TODO Auto-generated method stub
-            }
+            protected void updateCurrentDayScroll() {}
         };
     }
 
@@ -403,19 +395,15 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         return new TimeTrackerComponent(timeTracker) {
             @Override
             protected void scrollHorizontalPercentage(int pixelsDisplacement) {
-                response("", new AuInvoke(queueListComponent,
-                        "adjustScrollHorizontalPosition", pixelsDisplacement + ""));
+                response("", new AuInvoke(
+                        queueListComponent, "adjustScrollHorizontalPosition", Integer.toString(pixelsDisplacement)));
             }
 
             @Override
-            protected void moveCurrentPositionScroll() {
-                // TODO Auto-generated method stub
-            }
+            protected void moveCurrentPositionScroll() {}
 
             @Override
-            protected void updateCurrentDayScroll() {
-                // TODO Auto-generated method stub
-            }
+            protected void updateCurrentDayScroll() {}
         };
     }
 

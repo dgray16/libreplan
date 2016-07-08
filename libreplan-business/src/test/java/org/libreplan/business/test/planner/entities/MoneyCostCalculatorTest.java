@@ -477,7 +477,6 @@ public class MoneyCostCalculatorTest {
                     assertThat(moneyCostCalculator.getExpensesMoneyCost(orderElement),
                             equalTo(new BigDecimal(65).setScale(2)));
                 } catch (InstanceNotFoundException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 return null;
@@ -509,7 +508,6 @@ public class MoneyCostCalculatorTest {
                     assertThat(moneyCostCalculator.getExpensesMoneyCost(orderElement),
                             equalTo(new BigDecimal(65).setScale(2)));
                 } catch (InstanceNotFoundException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 return null;

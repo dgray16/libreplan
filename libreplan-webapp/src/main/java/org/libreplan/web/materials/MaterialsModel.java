@@ -58,7 +58,7 @@ import org.zkoss.ganttz.util.MutableTreeModel;
 
 /**
  * @author somebody <who-is-it@.know>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)

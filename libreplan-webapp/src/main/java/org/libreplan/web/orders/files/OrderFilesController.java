@@ -64,7 +64,7 @@ import static org.libreplan.web.I18nHelper._;
 /**
  * Controller for managing Order files
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 12.24.2015.
  */
 

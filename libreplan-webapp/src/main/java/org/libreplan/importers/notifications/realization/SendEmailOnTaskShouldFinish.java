@@ -48,7 +48,7 @@ import java.util.List;
  * Data will be send when current day equals to finish date.
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 21.01.2016.
  */
 

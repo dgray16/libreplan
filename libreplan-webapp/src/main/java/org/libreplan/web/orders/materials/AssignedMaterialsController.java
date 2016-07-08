@@ -20,7 +20,6 @@
  */
 package org.libreplan.web.orders.materials;
 
-import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.materials.entities.Material;
 import org.libreplan.business.materials.entities.MaterialAssignment;
 import org.libreplan.business.materials.entities.MaterialCategory;
@@ -33,12 +32,33 @@ import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listcell;
+import org.zkoss.zul.Listitem;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.Tab;
+import org.zkoss.zul.Tree;
+import org.zkoss.zul.TreeModel;
+import org.zkoss.zul.Treecell;
+import org.zkoss.zul.Treeitem;
+import org.zkoss.zul.TreeitemRenderer;
+import org.zkoss.zul.Treerow;
+import org.zkoss.zul.Vbox;
+import org.zkoss.zul.Textbox;
+import org.zkoss.zul.Decimalbox;
 import org.zkoss.zul.impl.MessageboxDlg;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -437,7 +457,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         final String message = _("Do you want to split the material assignment {0}?",
                 getMaterial(materialAssignment).getCode());
 
-        Map<String, java.io.Serializable> args = new HashMap<String, java.io.Serializable>();
+        Map<String, java.io.Serializable> args = new HashMap<>();
         args.put("message", message);
         args.put("title", _("Split new assignment"));
         args.put("OK", Messagebox.OK);

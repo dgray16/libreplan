@@ -22,5 +22,7 @@
 package org.libreplan.web.common;
 
 public enum Level {
-    INFO, WARNING, ERROR;
+    INFO,
+    WARNING,
+    ERROR
 }

@@ -40,7 +40,7 @@ import java.util.List;
  * Data will be send if resource has been removed from task (in resource allocation)
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.01.2016.
  */
 

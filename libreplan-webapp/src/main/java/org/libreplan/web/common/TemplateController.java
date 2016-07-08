@@ -49,7 +49,7 @@ import static org.libreplan.web.I18nHelper._;
  * Controller to manage UI operations from main template.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @org.springframework.stereotype.Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -216,6 +216,7 @@ public class TemplateController extends GenericForwardComposer {
 
             if ( VersionInformation.isNewVersionAvailable() ){
                 lastVersionNumber = VersionInformation.getLastVersion();
+
                 return true;
             }
         }
@@ -230,7 +231,8 @@ public class TemplateController extends GenericForwardComposer {
     }
 
     public String getVersionMessage(){
-        return _("A new version ") + lastVersionNumber +
+        return _("A new version ") +
+                lastVersionNumber +
                 _(" of LibrePlan is available. Please check next link for more information:");
     }
 

@@ -42,9 +42,25 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listcell;
+import org.zkoss.zul.Listitem;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Radio;
+import org.zkoss.zul.Radiogroup;
+import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.Window;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -495,7 +511,6 @@ public class ManualAllocationController extends GenericForwardComposer {
             ((Window) self).doModal();
             ((Window) self).setTitle(_("Manual assignment"));
         } catch (SuspendNotAllowedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -523,14 +538,12 @@ public class ManualAllocationController extends GenericForwardComposer {
         public void render(Listitem item, Object data, int i) {
             final LimitingResourceQueue queue = (LimitingResourceQueue) data;
             item.setValue(queue);
-//            item.setLabel("test1");
             item.appendChild(cell(queue));
         }
 
         private Listcell cell(LimitingResourceQueue queue) {
            Listcell result = new Listcell();
            result.setLabel(queue.getResource().getName());
-//           result.setLabel("test2");
            return result;
         }
 

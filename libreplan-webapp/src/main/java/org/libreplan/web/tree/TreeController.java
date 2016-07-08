@@ -40,8 +40,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.orders.entities.SchedulingState;
-import org.libreplan.business.orders.entities.SchedulingState.ITypeChangedListener;
-import org.libreplan.business.orders.entities.SchedulingState.Type;
 import org.libreplan.business.trees.ITreeNode;
 import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
@@ -75,7 +73,6 @@ import org.zkoss.zul.Treechildren;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.TreeitemRenderer;
 import org.zkoss.zul.Treerow;
-import org.zkoss.zul.Hbox;
 import org.zkoss.zul.impl.InputElement;
 
 
@@ -834,7 +831,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
         protected abstract void addCodeCell(final T element);
 
-        //TODO Check this ?
         public abstract void render(Treeitem treeitem, Object o) throws Exception;
 
         protected abstract void addDescriptionCell(final T element);

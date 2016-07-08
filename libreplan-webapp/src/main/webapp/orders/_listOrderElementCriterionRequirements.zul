@@ -188,6 +188,7 @@
                     <rows>
                         <row self="@{each='hoursGroupWrapper'}" value="@{hoursGroupWrapper}">
                             <!--TODO detail is EE package ZK-->
+                            <!-- This component is paid now. Resolve it -->
                             <!--<detail open="true">
 
                                 <listHoursGroupCriterionRequirements/>

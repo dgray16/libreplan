@@ -42,15 +42,17 @@ import org.apache.commons.logging.LogFactory;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.common.converters.IConverter;
 import org.libreplan.web.common.converters.IConverterFactory;
-import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.BookmarkEvent;
-import org.zkoss.zk.ui.event.Event;
+
 import org.zkoss.zk.ui.event.EventListener;
 
 /**
+ * Handler for EntryPoints. In other way it is also wrapper for URL redirecting.
  * <br />
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class EntryPointsHandler<T> {
 
@@ -80,6 +82,8 @@ public class EntryPointsHandler<T> {
 
     private final IConverterFactory converterFactory;
 
+    private static final ThreadLocal<List<String>> linkCapturer = new ThreadLocal<>();
+
     public static void setupEntryPointsForThisRequest(HttpServletRequest request, Map<String, String> entryPoints) {
         request.setAttribute(MANUALLY_SET_PARAMS, entryPoints);
     }
@@ -88,8 +92,6 @@ public class EntryPointsHandler<T> {
 
         void capture();
     }
-
-    private static final ThreadLocal<List<String>> linkCaputurer = new ThreadLocal<>();
 
     /**
      * It capture the first redirect done via an {@link EntryPoint} in the
@@ -103,8 +105,7 @@ public class EntryPointsHandler<T> {
     public static String capturePath(ICapture redirects) {
         List<? extends String> result = capturePaths(redirects);
         if (result.isEmpty()) {
-            throw new IllegalStateException(
-                    "a call to an entry point should be done");
+            throw new IllegalStateException("a call to an entry point should be done");
         }
         return result.get(0);
     }
@@ -117,10 +118,10 @@ public class EntryPointsHandler<T> {
      * @return
      */
     public static List<? extends String> capturePaths(ICapture redirects) {
-        linkCaputurer.set(new ArrayList<String>());
+        linkCapturer.set(new ArrayList<>());
         try {
             redirects.capture();
-            List<String> list = linkCaputurer.get();
+            List<String> list = linkCapturer.get();
 
             if (list == null) {
                 throw new RuntimeException(ICapture.class.getName() + " cannot be nested");
@@ -128,7 +129,7 @@ public class EntryPointsHandler<T> {
 
             return Collections.unmodifiableList(list);
         } finally {
-            linkCaputurer.set(null);
+            linkCapturer.set(null);
         }
     }
 
@@ -140,10 +141,16 @@ public class EntryPointsHandler<T> {
         this.converterFactory = converterFactory;
         this.executorRetriever = executorRetriever;
         EntryPoints entryPoints = interfaceDefiningEntryPoints.getAnnotation(EntryPoints.class);
-        Validate.notNull(entryPoints,
-                _("{0} annotation required on {1}", EntryPoints.class.getName(),
-                    interfaceDefiningEntryPoints.getName()));
+
+        Validate.notNull(
+                entryPoints,
+                _(
+                        "{0} annotation required on {1}",
+                        EntryPoints.class.getName(),
+                        interfaceDefiningEntryPoints.getName()));
+
         this.page = entryPoints.page();
+
         for (Method method : interfaceDefiningEntryPoints.getMethods()) {
             EntryPoint entryPoint = method.getAnnotation(EntryPoint.class);
             if (entryPoint != null) {
@@ -154,17 +161,17 @@ public class EntryPointsHandler<T> {
 
     public void doTransition(String methodName, Object... values) {
         if (!metadata.containsKey(methodName)) {
-            LOG.error("Method " + methodName
-                    + "doesn't represent a state(It doesn't have a "
-                    + EntryPoint.class.getSimpleName()
-                    + " annotation). Nothing will be done");
+            LOG.error(
+                    "Method " + methodName +
+                            "doesn't represent a state(It doesn't have a " +
+                            EntryPoint.class.getSimpleName() + " annotation). Nothing will be done");
 
             return;
         }
         String fragment = buildFragment(methodName, values);
 
-        if (linkCaputurer.get() != null) {
-            linkCaputurer.get().add(buildRedirectURL(fragment));
+        if (linkCapturer.get() != null) {
+            linkCapturer.get().add(buildRedirectURL(fragment));
             return;
         }
 
@@ -222,8 +229,16 @@ public class EntryPointsHandler<T> {
         executorRetriever.getCurrent().sendRedirect(uri);
     }
 
+    /**
+     * After migration from ZK 5 to ZK 8 it starts to throw 404 error on pages that were redirected with parameters.
+     * Solution is to make question mark (?) symbol after page.
+     *
+     * Before: http://localhost:8081/myaccount/personalTimesheet.zul;date=2016-07-08;resource=WORKER0004
+     *
+     * After: http://localhost:8081/myaccount/personalTimesheet.zul?date=2016-07-08;resource=WORKER0004
+     */
     private String buildRedirectURL(String fragment) {
-        return page + ";" + stripPound(fragment);
+        return page + "?" + stripPound(fragment);
     }
 
     private String getFragment(String[] parameterNames, String[] stringRepresentations) {
@@ -236,9 +251,11 @@ public class EntryPointsHandler<T> {
 
         for (int i = 0; i < parameterNames.length; i++) {
             result.append(parameterNames[i]);
+
             if (stringRepresentations[i] != null) {
                 result.append("=").append(stringRepresentations[i]);
             }
+
             if (i < parameterNames.length - 1) {
                 result.append(";");
             }
@@ -267,13 +284,13 @@ public class EntryPointsHandler<T> {
             return applyIfMatches(controller, (Map<String, String>) request.getAttribute(MANUALLY_SET_PARAMS));
         }
 
-        return applyIfMatches(controller, request.getRequestURI());
+        return request.getQueryString() != null
+                ? applyIfMatches(controller, request.getRequestURI() + ";" + request.getQueryString())
+                : applyIfMatches(controller, request.getRequestURI());
     }
 
     private HttpServletRequest getRequest() {
-        Execution current = executorRetriever.getCurrent();
-
-        return (HttpServletRequest) current.getNativeRequest();
+        return (HttpServletRequest) executorRetriever.getCurrent().getNativeRequest();
     }
 
     public <S extends T> boolean applyIfMatches(S controller, String fragment) {
@@ -303,11 +320,9 @@ public class EntryPointsHandler<T> {
             if (matrixParamsNames.equals(requiredParams)) {
                 final Object[] arguments = retrieveArguments(matrixParams,
                         entryPointAnnotation, entryPointMetadata.method.getParameterTypes());
-                Util.executeIgnoringCreationOfBindings(new Runnable() {
-                    public void run() {
-                        callMethod(controller, entryPointMetadata.method, arguments);
-                    }
-                });
+
+                Util.executeIgnoringCreationOfBindings(
+                        () -> callMethod(controller, entryPointMetadata.method, arguments));
 
                 return true;
             }
@@ -322,14 +337,10 @@ public class EntryPointsHandler<T> {
     }
 
     public <S extends T> void registerBookmarkListener(final S controller, Page page) {
-        page.addEventListener("onBookmarkChange", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                BookmarkEvent bookmarkEvent = (BookmarkEvent) event;
-                String bookmark = bookmarkEvent.getBookmark();
-                applyIfMatches(controller, bookmark);
-            }
+        page.addEventListener("onBookmarkChange", (EventListener) event -> {
+            BookmarkEvent bookmarkEvent = (BookmarkEvent) event;
+            String bookmark = bookmarkEvent.getBookmark();
+            applyIfMatches(controller, bookmark);
         });
     }
 

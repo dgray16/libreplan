@@ -54,7 +54,7 @@ import org.libreplan.importers.DependencyDTO.TypeOfDependencyDTO;
  * Class that is a converter from the MPXJ format File to {@link OrderDTO}.
  *
  * @author Alba Carro Pérez <alba.carro@gmail.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * @todo It last relationships. resources, calendars, hours, etc.
  */
 public class MPXJProjectFileConverter {

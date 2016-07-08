@@ -97,14 +97,15 @@ import org.zkoss.zul.Window;
  *
  * @author Diego Pino García <dpino@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterpsire.com>
  */
 public class WorkReportCRUDController
         extends GenericForwardComposer<Component>
         implements IWorkReportCRUDControllerEntryPoints {
 
-    private final static String MOLD = "paging";
+    private static final String MOLD = "paging";
 
-    private final static int PAGING = 10;
+    private static final int PAGING = 10;
 
     private boolean cameBackList = false;
 
@@ -170,12 +171,16 @@ public class WorkReportCRUDController
 
     private WorkReportType firstType;
 
-    public WorkReportCRUDController(){
+    private static final String ASCENDING = "ascending";
+
+    public WorkReportCRUDController() {
         workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
         URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
 
         workReportTypeCRUD = (IWorkReportTypeCRUDControllerEntryPoints)
                 SpringUtil.getBean("workReportTypeCRUDControllerEntryPoints");
+
+        personalTimesheetController = (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
     }
 
     @Override
@@ -276,8 +281,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Shows invalid values for {@link WorkReport} and {@link WorkReportLine}
-     * entities
+     * Shows invalid values for {@link WorkReport} and {@link WorkReportLine} entities.
+     *
      * @param e
      */
     private void showInvalidValues(ValidationException e) {
@@ -317,7 +322,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Validates {@link WorkReport} data constraints
+     * Validates {@link WorkReport} data constraints.
+     *
      * @param invalidValue
      */
     private boolean validateWorkReport() {
@@ -351,7 +357,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Validates {@link WorkReportLine} data constraints
+     * Validates {@link WorkReportLine} data constraints.
      *
      * @param invalidValue
      */
@@ -497,7 +503,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Timebox} time finish in {@link Row}
+     * Locates {@link Timebox} time finish in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -512,7 +519,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Timebox} time start in {@link Row}
+     * Locates {@link Timebox} time start in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -527,7 +535,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Autocomplete} type of work hours in {@link Row}
+     * Locates {@link Autocomplete} type of work hours in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -543,7 +552,8 @@ public class WorkReportCRUDController
 
 
     /**
-     * Locates {@link Checkbox} finished in {@link Row}
+     * Locates {@link Checkbox} finished in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -558,7 +568,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Texbox} code in {@link Row}
+     * Locates {@link Texbox} code in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -573,7 +584,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Textbox} effort in {@link Row}
+     * Locates {@link Textbox} effort in {@link Row}.
      *
      * @param row
      * @return
@@ -589,7 +600,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Datebox} date in {@link Row}
+     * Locates {@link Datebox} date in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -602,7 +614,8 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Textbox} Resource in {@link Row}
+     * Locates {@link Textbox} Resource in {@link Row}.
+     *
      * @param row
      * @return
      */
@@ -619,7 +632,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Locates {@link Textbox} Order in {@link Row}
+     * Locates {@link Textbox} Order in {@link Row}.
      *
      * @param row
      * @return
@@ -735,13 +748,12 @@ public class WorkReportCRUDController
     }
 
     /**
-     * {@link WorkReportLine} list is finally constructed dynamically
+     * {@link WorkReportLine} list is finally constructed dynamically.
      *
      * It seems there are some problems when a list of data is rendered,
-     * modified (the data model changes), and it's rendered again. Deleting
-     * previous settings and re-establishing the settings again each time the
+     * modified (the data model changes), and it's rendered again.
+     * Deleting previous settings and re-establishing the settings again each time the
      * list is rendered, solve those problems.
-     *
      */
     private void prepareWorkReportList() {
         /*
@@ -763,7 +775,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Appends list headers to {@link WorkReportLine} list
+     * Appends list headers to {@link WorkReportLine} list.
      *
      * @param grid
      */
@@ -787,7 +799,7 @@ public class WorkReportCRUDController
                 columnDate.setLabel(_("Date"));
                 columnDate.setSclass("date-column");
                 Util.setSort(columnDate, "auto=(date)");
-                columnDate.setSortDirection("ascending");
+                columnDate.setSortDirection(ASCENDING);
 
                 columnDate.addEventListener("onSort", event -> sortWorkReportLines());
                 columns.appendChild(columnDate);
@@ -881,7 +893,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Adds a new {@link WorkReportLine} to the list of rows
+     * Adds a new {@link WorkReportLine} to the list of rows.
      */
     public void addWorkReportLine() {
         workReportModel.addWorkReportLine();
@@ -919,7 +931,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Append a Autocomplete @{link Resource} to row
+     * Append a Autocomplete @{link Resource} to row.
      *
      * @param row
      */
@@ -958,7 +970,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Append a Textbox @{link Order} to row
+     * Append a Textbox @{link Order} to row.
      *
      * @param row
      */
@@ -1101,7 +1113,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Append a {@link Textbox} effort to {@link Row}
+     * Append a {@link Textbox} effort to {@link Row}.
      *
      * @param row
      */
@@ -1123,7 +1135,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Append Selectbox of @{link TypeOfWorkHours} to row
+     * Append Selectbox of @{link TypeOfWorkHours} to row.
      *
      * @param row
      */
@@ -1195,12 +1207,9 @@ public class WorkReportCRUDController
 
         Checkbox finished = Util.bind(
                 new Checkbox(),
-                () -> {
-                    return line.isFinished();
-                },
-                value -> {
-                    line.setFinished(BooleanUtils.isTrue(value));
-                });
+                () -> line.isFinished(),
+                value -> line.setFinished(BooleanUtils.isTrue(value))
+        );
 
         if ( !line.isFinished() && workReportModel.isFinished(line.getOrderElement()) ) {
             finished.setDisabled(true);
@@ -1210,7 +1219,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Append a delete {@link Button} to {@link Row}
+     * Append a delete {@link Button} to {@link Row}.
      *
      * @param row
      */
@@ -1246,7 +1255,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Binds Textbox effort to a {@link WorkReportLine} numHours
+     * Binds Textbox effort to a {@link WorkReportLine} numHours.
      *
      * @param box
      * @param workReportLine
@@ -1267,7 +1276,8 @@ public class WorkReportCRUDController
     public class WorkReportListRenderer implements RowRenderer {
 
         /**
-         * RowRenderer for a @{WorkReportLine} element
+         * RowRenderer for a @{WorkReportLine} element.
+         *
          * @author Diego Pino García <dpino@igalia.com>
          * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
          */
@@ -1277,7 +1287,7 @@ public class WorkReportCRUDController
 
             row.setValue(workReportLine);
 
-            // Create textboxes
+            // Create TextBoxes
             if (!getWorkReport().getWorkReportType().getDateIsSharedByLines()) {
                 appendDateInLines(row);
             }
@@ -1317,10 +1327,10 @@ public class WorkReportCRUDController
 
             if ( o instanceof DescriptionValue ) {
                 appendNewLabel(row, ((DescriptionValue) o).getFieldName());
-                appendNewTextbox(row, ((DescriptionValue) o));
+                appendNewTextbox(row, (DescriptionValue) o);
             } else {
                 appendNewLabel(row, ((Label) o).getType().getName());
-                appendAutocompleteLabelsByType(row, ((Label) o));
+                appendAutocompleteLabelsByType(row, (Label) o);
             }
         }
     }
@@ -1417,9 +1427,9 @@ public class WorkReportCRUDController
     public void sortWorkReports() {
         Column columnDateStart = (Column) listWindow.getFellow("columnDateStart");
         if ( columnDateStart != null ) {
-            if ( columnDateStart.getSortDirection().equals("ascending"))  {
+            if ( columnDateStart.getSortDirection().equals(ASCENDING))  {
                 columnDateStart.sort(false, false);
-                columnDateStart.setSortDirection("ascending");
+                columnDateStart.setSortDirection(ASCENDING);
             } else if ( columnDateStart.getSortDirection().equals("descending") ) {
                 columnDateStart.sort(true, false);
                 columnDateStart.setSortDirection("descending");
@@ -1443,7 +1453,7 @@ public class WorkReportCRUDController
         List<WorkReportType> result = workReportModel.getWorkReportTypes();
 
         if ( !result.isEmpty() ) {
-            this.firstType = result.get(0);
+            this.firstType = result.get(2);
         }
 
         return result;
@@ -1454,7 +1464,7 @@ public class WorkReportCRUDController
     }
 
     /**
-     * Apply filter to work reports
+     * Apply filter to work reports.
      */
     public void onApplyFilter() {
         createPredicate();
@@ -1562,7 +1572,7 @@ public class WorkReportCRUDController
     public void onCheckGenerateCode(Event e) {
         CheckEvent ce = (CheckEvent) e;
         if ( ce.isChecked() ) {
-            //we have to auto-generate the code for new objects
+            // We have to auto-generate the code for new objects
             try {
                 workReportModel.setCodeAutogenerated(ce.isChecked());
             } catch (ConcurrentModificationException err) {

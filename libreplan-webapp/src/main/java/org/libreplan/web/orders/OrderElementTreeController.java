@@ -68,8 +68,6 @@ import org.zkoss.ganttz.util.ComponentsFinder;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.A;
 import org.zkoss.zul.Button;
@@ -394,11 +392,8 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         public OrderElementTreeitemRenderer() {
         }
 
-        //TODO Check this ?
         @Override
-        public void render(Treeitem treeitem, Object o) throws Exception {
-
-        }
+        public void render(Treeitem treeitem, Object o) throws Exception {}
 
         @Override
         protected void addDescriptionCell(OrderElement element) {

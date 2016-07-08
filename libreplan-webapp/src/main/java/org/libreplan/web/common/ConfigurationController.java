@@ -119,7 +119,7 @@ import org.zkoss.zul.impl.InputElement;
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Cristina Alavarino Perez <cristina.alvarino@comtecsf.es>
  * @author Ignacio Diaz Teijido <ignacio.diaz@comtecsf.es>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class ConfigurationController extends GenericForwardComposer {
 
@@ -505,7 +505,7 @@ public class ConfigurationController extends GenericForwardComposer {
     private boolean checkValidEntitySequenceRows() {
         Rows rows = entitySequencesGrid.getRows();
         List<Row> listRows = rows.getChildren();
-        //TODO Check this ?
+
         for (Row row : listRows) {
 
                 EntitySequence seq = row.getValue();

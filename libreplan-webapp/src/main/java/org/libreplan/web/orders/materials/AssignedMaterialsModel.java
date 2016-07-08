@@ -34,7 +34,6 @@ import org.libreplan.business.materials.entities.UnitType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.ganttz.util.MutableTreeModel;
-import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.TreeModel;
 
 /**
@@ -59,12 +58,6 @@ public abstract class AssignedMaterialsModel<T, A> implements IAssignedMaterials
     private List<Material> matchingMaterials = new ArrayList<>();
 
     private List<UnitType> unitTypes = new ArrayList<>();
-
-//    public AssignedMaterialsModel(){
-//        categoryDAO = (IMaterialCategoryDAO) SpringUtil.getBean("categoryDAO");
-//        materialDAO = (IMaterialDAO) SpringUtil.getBean("materialDAO");
-//        unitTypeDAO = (IUnitTypeDAO) SpringUtil.getBean("unitTypeDAO");
-//    }
 
     @Transactional(readOnly = true)
     public void initEdit(T element) {
@@ -170,7 +163,6 @@ public abstract class AssignedMaterialsModel<T, A> implements IAssignedMaterials
 
     protected abstract boolean isInitialized();
 
-    //TODO Doesn't work with generic type!
     public List<A> getAssignedMaterials(MaterialCategory materialCategory) {
         List<A> result = new ArrayList<>();
 

@@ -37,7 +37,7 @@ import org.libreplan.business.costcategories.entities.TypeOfWorkHours;
  * @author Cristina Alvarino Perez <cristina.alvarino@comtecsf.es>
  * @author Ignacio Diaz Teijido <ignacio.diaz@comtecsf.es>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class Configuration extends BaseEntity {
 
@@ -207,7 +207,6 @@ public class Configuration extends BaseEntity {
         return true;
     }
 
-    //TODO 2 added methods follow below
     public void setGeneratedCodeForProjectLog(Boolean generateCodeForProjectLog) {
         this.generateCodeForProjectLog = generateCodeForProjectLog;
     }

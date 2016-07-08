@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 12.24.2015.
  */
 

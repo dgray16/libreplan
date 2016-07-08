@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
  * Cost calulator in terms of hours.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @Component
 @Scope(BeanDefinition.SCOPE_SINGLETON)

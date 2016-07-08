@@ -87,7 +87,7 @@ public class NewDataSortableGrid extends Grid implements AfterCompose {
         if (!(getModel() instanceof Sortable)) {
             return;
         }
-        //TODO Check this ?
+
         Sortable model = (Sortable) getModel();
 
         if ( lastSortedColumnAscending ) {

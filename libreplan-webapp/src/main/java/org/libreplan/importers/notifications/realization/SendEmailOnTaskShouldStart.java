@@ -48,7 +48,7 @@ import java.util.List;
  * Data will be send if current data equals to start date.
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.01.2016.
  */
 

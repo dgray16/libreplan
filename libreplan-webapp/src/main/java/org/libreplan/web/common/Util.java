@@ -50,7 +50,6 @@ import org.zkoss.util.Locales;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.InputEvent;
@@ -74,6 +73,7 @@ import org.zkoss.zul.Column;
 
 /**
  * Utilities class. <br />
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
@@ -85,18 +85,14 @@ public class Util {
     /**
      * Special chars from {@link DecimalFormat} class.
      */
-    private static final String[] DECIMAL_FORMAT_SPECIAL_CHARS = { "0", ",",
-            ".", "\u2030", "%", "#", ";", "-" };
+    private static final String[] DECIMAL_FORMAT_SPECIAL_CHARS = { "0", ",", ".", "\u2030", "%", "#", ";", "-" };
 
-    private static final String RELOADED_COMPONENTS_ATTR = Util.class.getName()
-            + ":" + "reloaded";
+    private static final String RELOADED_COMPONENTS_ATTR = Util.class.getName() + ":" + "reloaded";
 
-    private Util() {
-    }
+    private Util() {}
 
     /**
-     * Forces to reload the bindings of the provided components if there is an
-     * associated {@link DefaultBinder}.
+     * Forces to reload the bindings of the provided components if there is an associated {@link DefaultBinder}.
      *
      * @param toReload
      *            the components to reload
@@ -107,10 +103,10 @@ public class Util {
 
     public enum ReloadStrategy {
         /**
-         * If the {@link DefaultBinder} exists the bindings are reloaded no matter
-         * what.
+         * If the {@link DefaultBinder} exists the bindings are reloaded no matter what.
          */
         FORCE,
+
         /**
          * Once the bindings for a component have been manually loaded in one
          * request, subsequent calls for reload the bindings of the same
@@ -136,7 +132,10 @@ public class Util {
 
     private static void reloadBindings(boolean forceReload, Component... toReload) {
         for (Component reload : toReload) {
+
+            // TODO resolve deprecated
             DataBinder binder = Util.getBinder(reload);
+
             if (binder != null && (forceReload || notReloadedInThisRequest(reload))) {
                 binder.loadComponent(reload);
                 markAsReloadedForThisRequest(reload);
@@ -150,7 +149,7 @@ public class Util {
 
     private static Set<Component> getReloadedComponents(Component component) {
         Execution execution = component.getDesktop().getExecution();
-      //  @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
         Set<Component> result = (Set<Component>) execution.getAttribute(RELOADED_COMPONENTS_ATTR);
         if (result == null) {
             result = new HashSet<>();
@@ -185,7 +184,10 @@ public class Util {
 
     public static void saveBindings(Component... toReload) {
         for (Component reload : toReload) {
+
+            // TODO resolve deprecated
             DataBinder binder = Util.getBinder(reload);
+
             if (binder != null) {
                 binder.saveComponent(reload);
             }
@@ -200,7 +202,7 @@ public class Util {
     private static final ThreadLocal<Boolean> ignoreCreateBindings = new ThreadLocal<Boolean>() {
         protected Boolean initialValue() {
             return false;
-        };
+        }
     };
 
     public static void executeIgnoringCreationOfBindings(Runnable action) {
@@ -216,13 +218,17 @@ public class Util {
         if (ignoreCreateBindings.get()) {
             return;
         }
+
+        // TODO resolve deprecated
         AnnotateDataBinder binder = new AnnotateDataBinder(result, true);
+
         result.setAttribute("binder", binder, true);
         markAsNotReloadedForThisRequest(result);
     }
 
     /**
      * Generic interface to represent a class with a typical get method.
+     *
      * @author Manuel Rego Casasnovas <mrego@igalia.com>
      * @param <T>
      *           The type of the variable to be returned.
@@ -237,6 +243,7 @@ public class Util {
 
     /**
      * Generic interface to represent a class with a typical set method.
+     *
      * @author Manuel Rego Casasnovas <mrego@igalia.com>
      * @param <T>
      *            The type of the variable to be set.
@@ -253,6 +260,7 @@ public class Util {
     /**
      * Binds a {@link Textbox} with a {@link Getter}. The {@link Getter} will be
      * used to get the value that is going to be showed in the {@link Textbox}.
+     *
      * @param textBox
      *            The {@link Textbox} to be bound
      * @param getter
@@ -269,8 +277,8 @@ public class Util {
     /**
      * Binds a {@link Textbox} with a {@link Getter}. The {@link Getter} will be
      * used to get the value that is going to be showed in the {@link Textbox}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Textbox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Textbox}.
+     *
      * @param textBox
      *            The {@link Textbox} to be bound
      * @param getter
@@ -281,7 +289,7 @@ public class Util {
      */
     public static Textbox bind(final Textbox textBox, final Getter<String> getter, final Setter<String> setter) {
         textBox.setValue(getter.get());
-        textBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        textBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue();
             setter.set(value);
@@ -294,6 +302,7 @@ public class Util {
     /**
      * Binds a {@link Textbox} with a {@link Getter}. The {@link Getter} will be
      * used to get the value that is going to be showed in the {@link Textbox}.
+     *
      * @param textBox
      *            The {@link Textbox} to be bound
      * @param getter
@@ -310,8 +319,7 @@ public class Util {
     /**
      * Binds a {@link Textbox} with a {@link Getter}. The {@link Getter} will be
      * used to get the value that is going to be showed in the {@link Textbox}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Textbox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Textbox}.
      * @param textBox
      *            The {@link Textbox} to be bound
      * @param getter
@@ -323,8 +331,9 @@ public class Util {
     public static Combobox bind(final Combobox comboBox,
                                 final Getter<Comboitem> getter,
                                 final Setter<Comboitem> setter) {
+
         comboBox.setSelectedItem(getter.get());
-        comboBox.addEventListener("onSelect", (EventListener<Event>) event -> {
+        comboBox.addEventListener("onSelect",  event -> {
             setter.set(comboBox.getSelectedItem());
             comboBox.setSelectedItem(getter.get());
         });
@@ -334,7 +343,8 @@ public class Util {
 
     /**
      * Binds a {@link Intbox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Intbox}.
+     * used to get the value that is going to be showed in the {@link Intbox}
+     *
      * @param intBox
      *            The {@link Intbox} to be bound
      * @param getter
@@ -349,10 +359,10 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Intbox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Intbox}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Intbox}.
+     * Binds a {@link Intbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Intbox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Intbox}.
+     *
      * @param intBox
      *            The {@link Intbox} to be bound
      * @param getter
@@ -363,12 +373,14 @@ public class Util {
      */
     public static Intbox bind(final Intbox intBox, final Getter<Integer> getter, final Setter<Integer> setter) {
         intBox.setValue(getter.get());
-        intBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        intBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue().trim();
+
             if (value.isEmpty()) {
                 value = "0";
             }
+
             setter.set(Integer.valueOf(value));
             intBox.setValue(getter.get());
         });
@@ -377,8 +389,9 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Datebox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Datebox}.
+     * Binds a {@link Datebox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Datebox}.
+     *
      * @param dateBox
      *            The {@link Datebox} to be bound
      * @param getter
@@ -393,10 +406,10 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Datebox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Datebox}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Datebox}.
+     * Binds a {@link Datebox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Datebox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Datebox}.
+     *
      * @param dateBox
      *            The {@link Datebox} to be bound
      * @param getter
@@ -407,7 +420,7 @@ public class Util {
      */
     public static Datebox bind(final Datebox dateBox, final Getter<Date> getter, final Setter<Date> setter) {
         dateBox.setValue(getter.get());
-        dateBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        dateBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(dateBox.getValue());
             dateBox.setValue(getter.get());
         });
@@ -416,8 +429,9 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Timebox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Timebox}.
+     * Binds a {@link Timebox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Timebox}.
+     *
      * @param dateBox
      *            The {@link Timebox} to be bound
      * @param getter
@@ -432,10 +446,10 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Timebox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Timebox}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Timebox}.
+     * Binds a {@link Timebox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Timebox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Timebox}.
+     *
      * @param timeBox
      *            The {@link Timebox} to be bound
      * @param getter
@@ -446,7 +460,7 @@ public class Util {
      */
     public static Timebox bind(final Timebox timeBox, final Getter<Date> getter, final Setter<Date> setter) {
         timeBox.setValue(getter.get());
-        timeBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        timeBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(timeBox.getValue());
             timeBox.setValue(getter.get());
         });
@@ -455,9 +469,9 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Decimalbox} with a {@link Getter}. The {@link Getter} will
-     * be used to get the value that is going to be showed in the
-     * {@link Decimalbox}.
+     * Binds a {@link Decimalbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Decimalbox}.
+     *
      * @param decimalBox
      *            The {@link Decimalbox} to be bound
      * @param getter
@@ -472,10 +486,10 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Decimalbox} with a {@link Getter}. The {@link Getter} will
-     * be used to get the value that is going to be showed in the
-     * {@link Decimalbox}. The {@link Setter} will be used to store the value
-     * inserted by the user in the {@link Decimalbox}.
+     * Binds a {@link Decimalbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Decimalbox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Decimalbox}.
+     *
      * @param decimalBox
      *            The {@link Decimalbox} to be bound
      * @param getter
@@ -484,9 +498,12 @@ public class Util {
      *            The {@link Setter} interface that will implement a set method.
      * @return The {@link Decimalbox} bound
      */
-    public static Decimalbox bind(final Decimalbox decimalBox, final Getter<BigDecimal> getter, final Setter<BigDecimal> setter) {
+    public static Decimalbox bind(final Decimalbox decimalBox,
+                                  final Getter<BigDecimal> getter,
+                                  final Setter<BigDecimal> setter) {
+
         decimalBox.setValue(getter.get());
-        decimalBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        decimalBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(decimalBox.getValue());
             decimalBox.setValue(getter.get());
         });
@@ -495,9 +512,9 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Checkbox} with a {@link Getter}. The {@link Getter} will
-     * be used to get the value that is going to be showed in the
-     * {@link Checkbox}.
+     * Binds a {@link Checkbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Checkbox}.
+     *
      * @param decimalBox
      *            The {@link Checkbox} to be bound
      * @param getter
@@ -512,10 +529,10 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Checkbox} with a {@link Getter}. The {@link Getter} will
-     * be used to get the value that is going to be showed in the
-     * {@link Checkbox}. The {@link Setter} will be used to store the value
-     * inserted by the user in the {@link Checkbox}.
+     * Binds a {@link Checkbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Checkbox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Checkbox}.
+     *
      * @param decimalBox
      * @param getter
      *            The {@link Getter} interface that will implement a get method.
@@ -525,7 +542,7 @@ public class Util {
      */
     public static Checkbox bind(final Checkbox checkBox, final Getter<Boolean> getter, final Setter<Boolean> setter) {
         checkBox.setChecked(getter.get());
-        checkBox.addEventListener(Events.ON_CHECK, (EventListener<Event>) event -> {
+        checkBox.addEventListener(Events.ON_CHECK, event -> {
             setter.set(checkBox.isChecked());
             checkBox.setChecked(getter.get());
         });
@@ -533,9 +550,9 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Checkbox} with a {@link Getter}. The {@link Getter} will
-     * be used to get the value that is going to be showed in the
-     * {@link Checkbox}.
+     * Binds a {@link Checkbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Checkbox}.
+     *
      * @param Radio
      *            The {@link Radio} to be bound
      * @param getter
@@ -550,10 +567,10 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Radio} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Radio}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Radio}.
+     * Binds a {@link Radio} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Radio}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Radio}.
+     *
      * @param decimalBox
      *            The {@link Radio} to be bound
      * @param getter
@@ -573,8 +590,8 @@ public class Util {
     }
 
     /**
-     * Binds a {@link Bandbox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Bandbox}.
+     * Binds a {@link Bandbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Bandbox}.
      *
      * @param bandBox
      *            The {@link Bandbox} to be bound
@@ -585,14 +602,14 @@ public class Util {
     public static Bandbox bind(Bandbox bandBox, Getter<String> getter) {
         bandBox.setValue(getter.get());
         bandBox.setDisabled(true);
+
         return bandBox;
     }
 
     /**
-     * Binds a {@link Bandbox} with a {@link Getter}. The {@link Getter} will be
-     * used to get the value that is going to be showed in the {@link Bandbox}.
-     * The {@link Setter} will be used to store the value inserted by the user
-     * in the {@link Bandbox}.
+     * Binds a {@link Bandbox} with a {@link Getter}.
+     * The {@link Getter} will be used to get the value that is going to be showed in the {@link Bandbox}.
+     * The {@link Setter} will be used to store the value inserted by the user in the {@link Bandbox}.
      *
      * @param bandBox
      *            The {@link Bandbox} to be bound
@@ -604,7 +621,7 @@ public class Util {
      */
     public static Bandbox bind(final Bandbox bandBox, final Getter<String> getter, final Setter<String> setter) {
         bandBox.setValue(getter.get());
-        bandBox.addEventListener(Events.ON_CHANGE, (EventListener<Event>) event -> {
+        bandBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue();
             setter.set(value);
@@ -662,10 +679,10 @@ public class Util {
     }
 
     public static <T extends Component> T findOrCreate(Component container,
-            Class<T> klassOfComponentToFind, ICreation<T> ifNotFound) {
+                                                       Class<T> klassOfComponentToFind,
+                                                       ICreation<T> ifNotFound) {
         @SuppressWarnings("unchecked")
-        List<T> existent = ComponentsFinder.findComponentsOfType(
-                klassOfComponentToFind, container.getChildren());
+        List<T> existent = ComponentsFinder.findComponentsOfType(klassOfComponentToFind, container.getChildren());
         if (!existent.isEmpty()) {
             return existent.get(0);
         }
@@ -674,23 +691,20 @@ public class Util {
     }
 
     /**
-     * It removes all listeners registered for eventName and adds the new
-     * listener. It's ensured that the only listener left in the component for
-     * events of name eventName is uniqueListener
+     * It removes all listeners registered for eventName and adds the new listener.
+     * It's ensured that the only listener left in the component for events of name eventName is uniqueListener.
      *
      * @param component
      * @param eventName
      * @param uniqueListener
      */
-    public static void ensureUniqueListener(Component component, String eventName,
-            EventListener uniqueListener) {
+    public static void ensureUniqueListener(Component component, String eventName, EventListener uniqueListener) {
         ensureUniqueListeners(component, eventName, uniqueListener);
     }
 
     /**
-     * It removes all listeners registered for eventName and adds the new
-     * listeners. It's ensured that the only listeners left in the component for
-     * events of name eventName is uniqueListeners
+     * It removes all listeners registered for eventName and adds the new listeners.
+     * It's ensured that the only listeners left in the component for events of name eventName is uniqueListeners.
      *
      * @param component
      * @param eventName
@@ -714,8 +728,7 @@ public class Util {
         try {
             column.setSort(sortSpec);
         } catch (Exception e) {
-            LOG.error("failed to set sort property for: " + column + " with: "
-                    + sortSpec, e);
+            LOG.error("failed to set sort property for: " + column + " with: " + sortSpec, e);
         }
     }
 
@@ -731,8 +744,7 @@ public class Util {
 
     /**
      * Returns the value using the money format, that means, 2 figures for the
-     * decimal part and concatenating the currency symbol from
-     * {@link Configuration} object.
+     * decimal part and concatenating the currency symbol from {@link Configuration} object.
      */
     public static String addCurrencySymbol(BigDecimal value) {
         value = (value == null ? BigDecimal.ZERO : value);
@@ -766,8 +778,7 @@ public class Util {
     }
 
     /**
-     * Appends the <code>text</code> as a {@link Label} into the specified
-     * {@link Row}.
+     * Appends the <code>text</code> as a {@link Label} into the specified {@link Row}.
      */
     public static void appendLabel(Row row, String text) {
         row.appendChild(new Label(text));
@@ -779,7 +790,8 @@ public class Util {
      * {@link Row} for the edit operation.<br />
      *
      * The edit button will call the <code>editButtonListener</code> when
-     * clicked and the remove button the <code>removeButtonListener</code>.<br />
+     * clicked and the remove button the <code>removeButtonListener</code>.
+     * <br />
      *
      * If <code>removeButtonListener</code> is null, it only adds the edit
      * button and the <code>ON_CLICK</code> event.
@@ -790,7 +802,9 @@ public class Util {
      *         need to disable any of them depending on different situations.
      */
     public static Button[] appendOperationsAndOnClickEvent(Row row,
-            EventListener editButtonListener, EventListener removeButtonListener) {
+                                                           EventListener editButtonListener,
+                                                           EventListener removeButtonListener) {
+
         Button[] buttons = new Button[removeButtonListener != null ? 2 : 1];
 
         Hbox hbox = new Hbox();
@@ -809,8 +823,7 @@ public class Util {
     }
 
     /**
-     * Checks if the <code>entity</code> is contained in the provided
-     * <code>list</code>.
+     * Checks if the <code>entity</code> is contained in the provided <code>list</code>.
      */
     public static boolean contains(List<? extends BaseEntity> list, BaseEntity entity) {
         for (BaseEntity each : list) {
@@ -838,64 +851,46 @@ public class Util {
     }
 
     /**
-     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT}
-     * format and showing only date without time.
+     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT} format and showing only date without time.
      */
     public static String formatDate(Date date) {
-        if (date == null) {
-            return "";
-        }
-
-        return DateFormat.getDateInstance(DateFormat.DEFAULT, Locales.getCurrent()).format(date);
+        return date == null ? "" : DateFormat.getDateInstance(DateFormat.DEFAULT, Locales.getCurrent()).format(date);
     }
 
     /**
-     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT}
-     * format and showing both date and time.
+     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT} format and showing both date and time.
      */
     public static String formatDateTime(Date dateTime) {
         if (dateTime == null) {
             return "";
         }
 
-        return DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
-                DateFormat.DEFAULT, Locales.getCurrent()).format(dateTime);
+        return dateTime == null
+                ? ""
+                : DateFormat
+                .getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locales.getCurrent())
+                .format(dateTime);
     }
 
     /**
-     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT}
-     * format and showing only date without time.
+     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT} format and showing only date without time.
      */
     public static String formatDate(DateTime dateTime) {
-        if (dateTime == null) {
-            return "";
-        }
-
-        return formatDate(dateTime.toDate());
+        return dateTime == null ? "" : formatDate(dateTime.toDate());
     }
 
     /**
-     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT}
-     * format and showing only date without time.
+     * Format specific <code>date</code> using the {@link DateFormat#DEFAULT} format and showing only date without time.
      */
     public static String formatDate(LocalDate date) {
-        if (date == null) {
-            return "";
-        }
-
-        return formatDate(date.toDateTimeAtStartOfDay());
+        return date == null ? "" : formatDate(date.toDateTimeAtStartOfDay());
     }
 
     /**
-     * Format specific <code>time</code> using the {@link DateFormat#SHORT}
-     * format and showing only the time.
+     * Format specific <code>time</code> using the {@link DateFormat#SHORT} format and showing only the time.
      */
     public static String formatTime(Date time) {
-        if (time == null) {
-            return "";
-        }
-
-        return DateFormat.getTimeInstance(DateFormat.SHORT, Locales.getCurrent()).format(time);
+        return time == null ? "" : DateFormat.getTimeInstance(DateFormat.SHORT, Locales.getCurrent()).format(time);
     }
 
     /**
@@ -903,11 +898,7 @@ public class Util {
      * format and showing only the time.
      */
     public static String formatTime(LocalTime time) {
-        if (time == null) {
-            return "";
-        }
-
-        return formatTime(time.toDateTimeToday().toDate());
+        return time == null ? "" : formatTime(time.toDateTimeToday().toDate());
     }
 
 }

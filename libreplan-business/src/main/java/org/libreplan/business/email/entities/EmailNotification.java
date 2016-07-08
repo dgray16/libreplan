@@ -32,7 +32,7 @@ import java.util.Date;
  * It represents the Email notification to be send to user.
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 19.10.15.
  */
 public class EmailNotification extends BaseEntity {

@@ -56,7 +56,7 @@ import java.util.List;
 /**
  * Tests for {@link OrderFile}.
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 11.01.2016.
  */
 

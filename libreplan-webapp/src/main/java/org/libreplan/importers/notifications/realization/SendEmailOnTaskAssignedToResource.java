@@ -42,7 +42,7 @@ import java.util.List;
  * Data will be send after user will be assigned to some task.
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 13.10.2015.
  */
 @Component
