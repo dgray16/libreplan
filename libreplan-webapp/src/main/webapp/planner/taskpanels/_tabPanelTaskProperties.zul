@@ -23,7 +23,7 @@
 
 <tabpanel id="${arg.id}">
 
-    <grid >
+    <grid>
     <columns>
         <column width="300px"/>
         <column />
@@ -35,18 +35,17 @@
             </row>
             <row>
                 <label value="${i18n:_('Start')}" />
-                <datebox id="startDateBox"
-                         format="short " value = "@{propertiesController.ganttTaskDTO.endDate}" />
+                <datebox id="startDateBox" disabled="true"
+                         value = "@{propertiesController.ganttTaskDTO.beginDate}" />
             </row>
             <row>
                 <label value="${i18n:_('End')}" />
-                <datebox id="endDateBox"
+                <datebox id="endDateBox" disabled="true"
                         value = "@{propertiesController.ganttTaskDTO.endDate}" />
             </row>
             <row>
                 <label value="${i18n:_('Deadline')}"/>
-                <datebox id="deadLineDateBox"
-                         value="@{propertiesController.ganttTaskDTO.deadlineDate}"/>
+                <datebox id="deadLineDateBox" value = "@{propertiesController.ganttTaskDTO.deadlineDate}"/>
             </row>
             <row>
                 <label value="${i18n:_('Notes')}" />

@@ -122,9 +122,7 @@
                         <vbox id="registeredItemsInsertionPoint" width="90px" style="overflow-y:auto;overflow-x:hidden;display:block" vflex="1" />
                     </vbox>
                 </west>
-                <center id="mainContent"  sclass="main-area" autoscroll="true">
-                    <div self="@{insert(content)}" sclass="main-content" height="100%"/>
-                </center>
+                <center self="@{insert(content)}" class="main-area" autoscroll="true" />
 
             </borderlayout>
 

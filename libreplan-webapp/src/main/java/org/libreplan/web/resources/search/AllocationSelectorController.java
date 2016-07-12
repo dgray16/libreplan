@@ -32,13 +32,13 @@ import org.libreplan.business.scenarios.IScenarioManager;
 import org.libreplan.web.common.components.ResourceAllocationBehaviour;
 import org.libreplan.web.planner.allocation.INewAllocationsAdder;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * Controller for searching for {@link Resource}
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
-public abstract class AllocationSelectorController extends
-        GenericForwardComposer {
+public abstract class AllocationSelectorController extends GenericForwardComposer {
 
     // injected by name
     protected IResourcesSearcher resourcesSearcher;
@@ -56,7 +56,12 @@ public abstract class AllocationSelectorController extends
     protected IScenarioManager scenarioManager;
 
     public AllocationSelectorController() {
-
+        resourcesSearcher = (IResourcesSearcher) SpringUtil.getBean("resourcesSearcher");
+        adHocTransactionService = (IAdHocTransactionService) SpringUtil.getBean("adHocTransactionService");
+        resourceLoadRatiosCalculator =
+                (IResourceLoadRatiosCalculator) SpringUtil.getBean("resourceLoadRatiosCalculator");
+        behaviour = (ResourceAllocationBehaviour) SpringUtil.getBean("resourceAllocationBehaviour");
+        scenarioManager = (IScenarioManager) SpringUtil.getBean("scenarioManager");
     }
 
     /**

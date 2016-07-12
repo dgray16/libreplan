@@ -31,13 +31,16 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlNativeComponent;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
 import org.zkoss.zul.Menuitem;
 import org.zkoss.zul.Menupopup;
 import org.zkoss.zul.Menuseparator;
 import org.zkoss.zul.impl.XulElement;
 
+/**
+ * Create context menu for right-click mouse
+ * @param <T>
+ */
 public class MenuBuilder<T extends XulElement> {
 
     public static <T extends XulElement> MenuBuilder<T> on(Page page, Collection<T> elements) {
@@ -134,25 +137,18 @@ public class MenuBuilder<T extends XulElement> {
 
     private Menupopup create(boolean setContext) {
         Menupopup result = new Menupopup();
-        result.addEventListener("onOpen", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                OpenEvent openEvent = (OpenEvent) event;
-                referenced = (T) openEvent.getReference();
-            }
+        result.addEventListener("onOpen", event -> {
+            OpenEvent openEvent = (OpenEvent) event;
+            referenced = (T) openEvent.getReference();
         });
 
         for (final Item item : items) {
 
             if ( !item.name.equals("separator") ) {
                 Menuitem menuItem = item.createMenuItem();
-                menuItem.addEventListener("onClick", new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        ItemAction<T> action = item.action;
-                        action.onEvent(referenced, event);
-                    }
+                menuItem.addEventListener("onClick", event -> {
+                    ItemAction<T> action = item.action;
+                    action.onEvent(referenced, event);
                 });
                 result.appendChild(menuItem);
             } else {

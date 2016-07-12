@@ -47,7 +47,8 @@ public class TaskSource extends BaseEntity {
 
     public static TaskSource create(SchedulingDataForVersion schedulingState, List<HoursGroup> hoursGroups) {
         TaskSource result = create(new TaskSource(schedulingState));
-        result.setHoursGroups(new HashSet<HoursGroup>(hoursGroups));
+        result.setHoursGroups(new HashSet<>(hoursGroups));
+
         return result;
     }
 
@@ -59,6 +60,7 @@ public class TaskSource extends BaseEntity {
     public Task createTaskWithoutDatesInitializedAndLinkItToTaskSource() {
         TaskElement task = Task.createTaskWithoutDatesInitialized(this);
         this.setTask(task);
+
         return (Task) task;
     }
 
@@ -70,17 +72,17 @@ public class TaskSource extends BaseEntity {
     public TaskGroup createTaskGroupWithoutDatesInitializedAndLinkItToTaskSource() {
         TaskElement task = TaskGroup.create(this);
         this.setTask(task);
+
         return (TaskGroup) task;
     }
 
 
-    public static TaskSourceSynchronization mustAdd(
-            TaskSource taskSource) {
+    public static TaskSourceSynchronization mustAdd(TaskSource taskSource) {
         return new TaskSourceMustBeAdded(taskSource);
     }
 
     public static TaskSourceSynchronization mustAddGroup(TaskSource taskSource,
-            List<TaskSourceSynchronization> childrenOfGroup) {
+                                                         List<TaskSourceSynchronization> childrenOfGroup) {
         return new TaskGroupMustBeAdded(taskSource, childrenOfGroup);
     }
 
@@ -90,9 +92,9 @@ public class TaskSource extends BaseEntity {
 
     public interface IOptionalPersistence {
 
-        public void save(TaskSource taskSource);
+        void save(TaskSource taskSource);
 
-        public void remove(TaskSource taskSource);
+        void remove(TaskSource taskSource);
     }
 
     public static IOptionalPersistence persistTaskSources(
@@ -100,8 +102,7 @@ public class TaskSource extends BaseEntity {
         return new RealPersistence(taskSourceDAO, true);
     }
 
-    public static IOptionalPersistence persistButDontRemoveTaskSources(
-            ITaskSourceDAO taskSourceDAO) {
+    public static IOptionalPersistence persistButDontRemoveTaskSources(ITaskSourceDAO taskSourceDAO) {
         return new RealPersistence(taskSourceDAO, false);
     }
 
@@ -115,8 +116,7 @@ public class TaskSource extends BaseEntity {
 
         private final boolean removeTaskSources;
 
-        public RealPersistence(ITaskSourceDAO taskSourceDAO,
-                boolean removeTaskSources) {
+        public RealPersistence(ITaskSourceDAO taskSourceDAO, boolean removeTaskSources) {
             Validate.notNull(taskSourceDAO);
             this.taskSourceDAO = taskSourceDAO;
             this.removeTaskSources = removeTaskSources;
@@ -232,15 +232,13 @@ public class TaskSource extends BaseEntity {
         task.updateDeadlineFromOrderElement();
     }
 
-    public static abstract class TaskGroupSynchronization extends
-            TaskSourceSynchronization {
+    public abstract static class TaskGroupSynchronization extends TaskSourceSynchronization {
 
         protected final TaskSource taskSource;
 
         private final List<TaskSourceSynchronization> synchronizations;
 
-        protected TaskGroupSynchronization(TaskSource taskSource,
-                List<TaskSourceSynchronization> synchronizations) {
+        protected TaskGroupSynchronization(TaskSource taskSource, List<TaskSourceSynchronization> synchronizations) {
             Validate.notNull(taskSource);
             Validate.notNull(synchronizations);
             this.taskSource = taskSource;
@@ -254,11 +252,12 @@ public class TaskSource extends BaseEntity {
         @Override
         public TaskElement apply(IOptionalPersistence persistence) {
             List<TaskElement> children = getChildren(persistence);
+
             return apply(children, persistence);
         }
 
         private List<TaskElement> getChildren(IOptionalPersistence persistence) {
-            List<TaskElement> result = new ArrayList<TaskElement>();
+            List<TaskElement> result = new ArrayList<>();
             for (TaskSourceSynchronization each : synchronizations) {
                 TaskElement t = each.apply(persistence);
                 if (t != null) {
@@ -266,17 +265,16 @@ public class TaskSource extends BaseEntity {
                     result.add(t);
                 }
             }
+
             return result;
         }
 
-        protected abstract TaskElement apply(List<TaskElement> children,
-                IOptionalPersistence persistence);
+        protected abstract TaskElement apply(List<TaskElement> children, IOptionalPersistence persistence);
     }
 
     static class TaskGroupMustBeAdded extends TaskGroupSynchronization {
 
-        private TaskGroupMustBeAdded(TaskSource taskSource,
-                List<TaskSourceSynchronization> synchronizations) {
+        private TaskGroupMustBeAdded(TaskSource taskSource, List<TaskSourceSynchronization> synchronizations) {
             super(taskSource, synchronizations);
         }
 
@@ -294,21 +292,19 @@ public class TaskSource extends BaseEntity {
 
     }
 
-    static class TaskSourceForTaskGroupModified extends
-            TaskGroupSynchronization {
+    static class TaskSourceForTaskGroupModified extends TaskGroupSynchronization {
 
-        TaskSourceForTaskGroupModified(TaskSource taskSource,
-                List<TaskSourceSynchronization> synchronizations) {
+        TaskSourceForTaskGroupModified(TaskSource taskSource, List<TaskSourceSynchronization> synchronizations) {
             super(taskSource, synchronizations);
         }
 
         @Override
-        protected TaskElement apply(List<TaskElement> children,
-                IOptionalPersistence persistence) {
+        protected TaskElement apply(List<TaskElement> children, IOptionalPersistence persistence) {
             TaskGroup taskGroup = (TaskGroup) taskSource.getTask();
             taskGroup.setTaskChildrenTo(children);
             updateTaskWithOrderElement(taskGroup, taskSource.getOrderElement());
             persistence.save(taskSource);
+
             return taskGroup;
         }
     }
@@ -325,13 +321,13 @@ public class TaskSource extends BaseEntity {
         public TaskElement apply(IOptionalPersistence optionalPersistence) {
             taskSource.getTask().detach();
             optionalPersistence.remove(taskSource);
+
             return null;
         }
 
     }
 
-    public static TaskSource withHoursGroupOf(
-            SchedulingDataForVersion schedulingState) {
+    public static TaskSource withHoursGroupOf(SchedulingDataForVersion schedulingState) {
         return create(new TaskSource(schedulingState));
     }
 
@@ -345,7 +341,7 @@ public class TaskSource extends BaseEntity {
     private SchedulingDataForVersion schedulingData;
 
     @OnCopy(Strategy.SHARE_COLLECTION_ELEMENTS)
-    private Set<HoursGroup> hoursGroups = new HashSet<HoursGroup>();
+    private Set<HoursGroup> hoursGroups = new HashSet<>();
 
     public TaskSource() {
     }
@@ -355,22 +351,19 @@ public class TaskSource extends BaseEntity {
         Validate.notNull(schedulingState.getOrderElement());
         this.schedulingData = schedulingState;
         OrderElement orderElement = schedulingState.getOrderElement();
-        Type orderElementType = orderElement
-                .getSchedulingState().getType();
+        Type orderElementType = orderElement.getSchedulingState().getType();
+
         if (orderElementType == SchedulingState.Type.SCHEDULING_POINT) {
-            this.setHoursGroups(new HashSet<HoursGroup>(orderElement
-                    .getHoursGroups()));
+            this.setHoursGroups(new HashSet<>(orderElement.getHoursGroups()));
         }
     }
 
-    public TaskSourceSynchronization withCurrentHoursGroup(
-            List<HoursGroup> hoursGroups) {
-        setHoursGroups(new HashSet<HoursGroup>(hoursGroups));
+    public TaskSourceSynchronization withCurrentHoursGroup(List<HoursGroup> hoursGroups) {
+        setHoursGroups(new HashSet<>(hoursGroups));
         return new TaskSourceForTaskModified(this);
     }
 
-    public TaskSourceSynchronization modifyGroup(
-            List<TaskSourceSynchronization> childrenOfGroup) {
+    public TaskSourceSynchronization modifyGroup(List<TaskSourceSynchronization> childrenOfGroup) {
         return new TaskSourceForTaskGroupModified(this, childrenOfGroup);
     }
 
@@ -408,6 +401,7 @@ public class TaskSource extends BaseEntity {
         for (HoursGroup each : hoursGroups) {
             result += each.getWorkingHours();
         }
+
         return result;
     }
 

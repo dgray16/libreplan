@@ -46,7 +46,7 @@
                 <vbox>
                     <label value="${i18n:_('Load ratios calculated between')}:"/>
                     <separator/>
-                    <grid sizedByContent="true">
+                    <grid fixedLayout="true">
                        <columns>
                           <column/>
                           <column/>
@@ -90,7 +90,7 @@
 
             <!-- Assignment Type -->
             <vbox width="100%">
-                <grid sizedByContent="true" span="1" width="100%">
+                <grid fixedLayout="true" span="1" width="100%">
                     <columns>
                         <column width="200px" />
                         <column  />

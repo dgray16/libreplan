@@ -264,6 +264,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 } else {
                     // select the parent row to add new children ASAP
 
+
                     tree.setSelectedItem(getRenderer().getTreeitemForNode(newNode.getParent().getThis()));
                 }
             } else {
@@ -412,11 +413,13 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
     protected boolean isFirstItem(T element) {
         List children = element.getParent().getChildren();
+
         return (children.get(0).equals(element));
     }
 
     protected boolean isLastItem(T element) {
         List children = element.getParent().getChildren();
+
         return (children.get(children.size() - 1).equals(element));
     }
 
@@ -445,8 +448,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
                     @Override
                     public void onEvent(Event event) {
-                        Navigation navigation = Navigation
-                                .getIntentFrom((KeyEvent) event);
+                        Navigation navigation = Navigation.getIntentFrom((KeyEvent) event);
                         moveFocusTo(inputElement, navigation, treerow);
                     }
                 });
@@ -454,9 +456,11 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
             private void registerNavigableElement(InputElement inputElement) {
                 Treerow treeRow = getCurrentTreeRow();
+
                 if (!navigableElementsByRow.containsKey(treeRow)) {
                     navigableElementsByRow.put(treeRow, new ArrayList<>());
                 }
+
                 navigableElementsByRow.get(treeRow).add(inputElement);
             }
 
@@ -507,12 +511,12 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 Treeitem parent = (Treeitem) treerow.getParent();
                 @SuppressWarnings("unchecked")
                 List<Treeitem> treeItems = parent.getParent().getChildren();
-                int myPosition = parent.indexOf();
+                int myPosition = parent.getIndex();
 
                 if (myPosition > 0) {
                     // the current node is not the first brother
-                    Treechildren treechildren = treeItems.get(myPosition - 1)
-                            .getTreechildren();
+                    Treechildren treechildren = treeItems.get(myPosition - 1).getTreechildren();
+
                     if (treechildren == null || treechildren.getChildren().size() == 0) {
                         // the previous brother doesn't have children,
                         // or it has children but they are unloaded
@@ -562,7 +566,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     // Moving from a node to its brother
                     @SuppressWarnings("unchecked")
                     List<Treeitem> treeItems = parent.getParent().getChildren();
-                    int myPosition = parent.indexOf();
+                    int myPosition = parent.getIndex();
 
                     if (myPosition < treeItems.size() - 1) {
                         // the current node is not the last one

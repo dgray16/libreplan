@@ -25,6 +25,6 @@
         resourceLoad = arg.get("resourceLoadController");
     ]]>
     </zscript>
-    <div apply="${resourceLoad}" self="@{define(content)}">
+    <div apply="${resourceLoad}" sclass="resourceLoadForOrder" style="height: 100%" self="@{define(content)}">
     </div>
 </zk>

@@ -48,7 +48,6 @@ import org.libreplan.web.common.components.AllocationSelector;
 import org.libreplan.web.common.components.NewAllocationSelector;
 import org.libreplan.web.common.components.NewAllocationSelectorCombo;
 import org.libreplan.web.common.components.ResourceAllocationBehaviour;
-import org.libreplan.web.planner.allocation.TaskInformation.ITotalHoursCalculationListener;
 import org.libreplan.web.planner.order.PlanningStateCreator.PlanningState;
 import org.libreplan.web.planner.taskedition.EditTaskController;
 import org.libreplan.web.planner.taskedition.TaskPropertiesController;
@@ -61,9 +60,9 @@ import org.zkoss.ganttz.timetracker.OnColumnsRowRenderer;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Column;
@@ -141,6 +140,10 @@ public class ResourceAllocationController extends GenericForwardComposer {
     private Window editTaskWindow;
 
     private EditTaskController editTaskController;
+
+    public ResourceAllocationController(){
+        resourceAllocationModel = (IResourceAllocationModel) SpringUtil.getBean("resourceAllocationModel");
+    }
 
     public void setEditTaskController(EditTaskController editTaskController) {
         this.editTaskController = editTaskController;
@@ -228,11 +231,11 @@ public class ResourceAllocationController extends GenericForwardComposer {
         return allocationConfiguration.getTaskWorkableDays();
     }
 
-    private Label getTaskStart() {
+    public Label getTaskStart() {
         return (allocationConfiguration != null) ? allocationConfiguration.getTaskStart() : null;
     }
 
-    private Label getTaskEnd() {
+    public Label getTaskEnd() {
         return (allocationConfiguration != null) ? allocationConfiguration.getTaskEnd() : null;
     }
 
@@ -243,20 +246,14 @@ public class ResourceAllocationController extends GenericForwardComposer {
     private void initializeTaskInformationComponent() {
         taskInformation.initializeGridTaskRows(resourceAllocationModel.getHoursAggregatedByCriterions());
         formBinder.setRecommendedAllocation(taskInformation.getBtnRecommendedAllocation());
-        taskInformation.onCalculateTotalHours(new ITotalHoursCalculationListener() {
-
-            @Override
-            public Integer getTotalHours() {
-                return resourceAllocationModel.getOrderHours();
-            }
-        });
+        taskInformation.onCalculateTotalHours(() -> resourceAllocationModel.getOrderHours());
     }
 
     private void initializeAllocationConfigurationComponent() {
         allocationConfiguration.initialize(formBinder);
     }
 
-    enum HoursRendererColumn {
+    public enum HoursRendererColumn {
 
         CRITERIONS {
             @Override
@@ -340,25 +337,10 @@ public class ResourceAllocationController extends GenericForwardComposer {
         Util.reloadBindings(allocationsGrid);
     }
 
-    private boolean isExtendedView() {
+    public boolean isExtendedView() {
         return extendedViewCheckbox.isChecked();
     }
 
-    public int getColspanHours() {
-        if ( isExtendedView() ) {
-            return 4;
-        }
-
-        return 1;
-    }
-
-    public int getColspanResources() {
-        if ( isExtendedView() ) {
-            return 3;
-        }
-
-        return 1;
-    }
     /**
      * Close search worker in worker search tab
      */
@@ -367,7 +349,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
         applyButton.setVisible(true);
     }
 
-    enum CalculationTypeRadio {
+    public enum CalculationTypeRadio {
 
         WORKABLE_DAYS(CalculatedValue.END_DATE) {
             @Override
@@ -441,7 +423,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
 
     }
 
-    enum DerivedAllocationColumn implements IConvertibleToColumn {
+    public enum DerivedAllocationColumn implements IConvertibleToColumn {
         NAME(_("Name")) {
             @Override
             public Component cellFor(DerivedAllocation data) {
@@ -470,7 +452,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
 
         private final String name;
 
-        private DerivedAllocationColumn(String name) {
+        DerivedAllocationColumn(String name) {
             this.name = name;
         }
 
@@ -519,7 +501,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
     }
 
     private List<Object> plusAggregatingRow(List<AllocationRow> currentRows) {
-        List<Object> result = new ArrayList<Object>(currentRows);
+        List<Object> result = new ArrayList<>(currentRows);
         result.add(null);
         return result;
     }
@@ -589,25 +571,16 @@ public class ResourceAllocationController extends GenericForwardComposer {
             Listbox assignmentFunctionListbox = data.getAssignmentFunctionListbox();
             append(row, assignmentFunctionListbox);
             assignmentFunctionListbox.addEventListener(Events.ON_SELECT,
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event arg0) throws Exception {
-                            data.resetAssignmentFunction();
-                        }
-                    });
+                    arg0 -> data.resetAssignmentFunction());
 
             // On click delete button
             Button deleteButton = appendDeleteButton(row);
             deleteButton.setDisabled(isAnyManualOrTaskUpdatedFromTimesheets());
             formBinder.setDeleteButtonFor(data, deleteButton);
-            deleteButton.addEventListener("onClick", new EventListener() {
-
-                @Override
-                public void onEvent(Event event) {
-                    editTaskController.getTaskPropertiesController().getListToDelete()
-                            .add(data.getAssociatedResources().get(0));
-                    removeAllocation(data);
-                }
+            deleteButton.addEventListener("onClick", event -> {
+                editTaskController.getTaskPropertiesController().getListToDelete()
+                        .add(data.getAssociatedResources().get(0));
+                removeAllocation(data);
             });
 
             if (!data.isSatisfied()) {
@@ -662,14 +635,14 @@ public class ResourceAllocationController extends GenericForwardComposer {
     }
 
     public boolean hasResourceAllocations() {
-        return ((getResourceAllocations().size() > 1));
+        return getResourceAllocations().size() > 1;
     }
 
     public boolean isAnyNotFlat() {
         return formBinder != null && formBinder.isAnyNotFlat();
     }
 
-    private boolean isAnyManualOrTaskUpdatedFromTimesheets() {
+    public boolean isAnyManualOrTaskUpdatedFromTimesheets() {
         return formBinder != null && (formBinder.isAnyManual() || formBinder.isTaskUpdatedFromTimesheets());
     }
 

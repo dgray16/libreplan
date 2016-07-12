@@ -38,8 +38,8 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jetty-port>8080</jetty-port>
-        <jetty-stop-port>9966</jetty-stop-port>
+        <jetty-port>8081</jetty-port>
+        <jetty-stop-port>9967</jetty-stop-port>
     </properties>
 
 

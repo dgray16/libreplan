@@ -26,6 +26,6 @@
     ]]>
     </zscript>
 
-    <planner id="planner" sclass="plannerTest" apply="${planningController}">
+    <planner id="planner" sclass="parentPlanner" style="display: block; height: 100%;" apply="${planningController}">
     </planner>
 </zk>

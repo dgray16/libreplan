@@ -2041,7 +2041,9 @@ select {
 }
 
 .icono {
-    margin: -12px;
+    margin: -8px;
+    padding-left: 10px;
+    padding-right: 10px;
     border: 1px solid transparent !important;
 }
 
@@ -2054,18 +2056,25 @@ select {
     box-shadow: none !important;
 }
 
+/* Made for create buttons, because default ZK css is not work correctly for create button */
 .createButton {
     background-color: #E4F3D9;
+    background-image: none !important;
 }
 
 .createButton:hover {
-    background: none !important;
-    background-color: #C3EAAF !important;
+    background: none;
+    background-color: #C3EAAF;
 }
 
 .createButton:focus {
-    background: none !important;
-    background-color: #C3EAAF !important;
+    background: none;
+    background-color: #C3EAAF;
+}
+
+.createButton:disabled {
+    background: none;
+    background-color: #C3EAAF;
 }
 
 .z-center {
@@ -2163,17 +2172,18 @@ textarea {
     color: black;
 }
 
-/*.z-dottree-header > table {
-    width: 1739px !important;
+/*.z-dottree-header > table,
+.z-dottree-body > table {
+    display: inherit !important;
 }*/
 
 /*
    Set min-width for everyone treecol in orderTree, because doesn't show correct data in treecol.
 */
 
-.orderTree.z-dottree > div > table {
-
-}
+/*.orderTree.z-dottree > div > table > colgroup {
+    display: table-cell;
+}*/
 
 
 .completely-scheduled.z-treecell {
@@ -2197,4 +2207,19 @@ textarea {
     min-width: 50px;
 }
 
+/* Correct border line for auxheader(grid) in edit task */
+.z-auxhead .z-auxheader {
+    border-right: 1px solid rgb(204, 204, 204);
+    border-left: none;
+}
 
+
+/* Rewrite width for auto generate table */
+.normalResourceAllocation > div > table {
+    width: 100% !important;
+}
+
+/* Doesn't show tabpanel, because it isn't necessary */
+.tabNormalAllocation > .z-tabpanel > .z-tab {
+    display: none;
+}

@@ -102,7 +102,9 @@ public class OnColumnsRowRenderer<C, T> implements RowRenderer {
     }
 
     private final List<C> columns;
+
     private final ICellForDetailItemRenderer<C, T> cellRenderer;
+
     private Class<T> type;
 
     private OnColumnsRowRenderer(Class<T> type,

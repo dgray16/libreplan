@@ -52,11 +52,29 @@ import org.libreplan.web.planner.allocation.INewAllocationsAdder;
 import org.zkoss.lang.Objects;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.InputEvent;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Radiogroup;
+import org.zkoss.zul.Tree;
+import org.zkoss.zul.Radio;
+import org.zkoss.zul.Listheader;
+import org.zkoss.zul.SimpleListModel;
+import org.zkoss.zul.Listitem;
+import org.zkoss.zul.Treeitem;
+import org.zkoss.zul.DefaultTreeNode;
+import org.zkoss.zul.DefaultTreeModel;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Listcell;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Image;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Constraint;
+import org.zkoss.zul.TreeModel;
+import org.zkoss.zul.Treecell;
+import org.zkoss.zul.Treerow;
+import org.zkoss.zul.TreeitemRenderer;
 
 /**
  * Controller for searching for {@link Resource}.
@@ -108,23 +126,16 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
     }
 
     private void initializeFilteringDatesConstraints() {
-        startDateLoadRatiosDatebox
-                .setConstraint(checkConstraintFilteringDate());
+        startDateLoadRatiosDatebox.setConstraint(checkConstraintFilteringDate());
         endDateLoadRatiosDatebox.setConstraint(checkConstraintFilteringDate());
     }
 
     private void initializeCriteriaTree() {
         // Initialize criteria tree
         if ( criterionsTree != null ) {
-            criterionsTree.addEventListener("onSelect", new EventListener() {
-
-                // Whenever an element of the tree is selected, a search query
-                // is executed, refreshing the results into the workers listbox
-                @Override
-                public void onEvent(Event event) {
-                    searchResources("", getSelectedCriterions());
-                    showSelectedAllocations();
-                }
+            criterionsTree.addEventListener("onSelect", event -> {
+                searchResources("", getSelectedCriterions());
+                showSelectedAllocations();
             });
         }
 
@@ -134,15 +145,11 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
     private void initializeListboxResources() {
         // Initialize found resources box
         listBoxResources.addEventListener(Events.ON_SELECT,
-                new EventListener() {
-
-                    @Override
-                    public void onEvent(Event event) {
-                        if (isGenericType()) {
-                            returnToSpecificDueToResourceSelection();
-                        }
-                        showSelectedAllocations();
+                event -> {
+                    if (isGenericType()) {
+                        returnToSpecificDueToResourceSelection();
                     }
+                    showSelectedAllocations();
                 });
         listBoxResources.setMultiple(behaviour.allowMultipleSelection());
         listBoxResources.setItemRenderer(getListitemRenderer());
@@ -154,17 +161,15 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
 
         // Initialize radio group of selector types
         allocationTypeSelector.addEventListener(Events.ON_CHECK,
-                new EventListener() {
+                 event -> {
+                    Radio radio = (Radio) event.getTarget();
 
-                    @Override
-                    public void onEvent(Event event) {
-                        Radio radio = (Radio) event.getTarget();
-                        if (radio == null) {
-                            return;
-                        }
-                        onType(AllocationType.valueOf((String) radio.getValue()));
-                        showSelectedAllocations();
+                    if (radio == null) {
+                        return;
                     }
+
+                    onType(AllocationType.valueOf(radio.getValue()));
+                    showSelectedAllocations();
                 });
         // Feed with values
         for (AllocationType each : behaviour.allocationTypes()) {
@@ -188,7 +193,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
 
     private void doInitialSelection() {
         Radio item = allocationTypeSelector.getItemAtIndex(0);
-        currentAllocationType = AllocationType.valueOf((String) item.getValue());
+        currentAllocationType = AllocationType.valueOf(item.getValue());
         showSelectedAllocations();
         item.setSelected(true);
     }
@@ -284,8 +289,8 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
         @SuppressWarnings("unchecked")
         Collection<Listitem> items = listBoxResources.getItems();
         for (Listitem item : items) {
-            Resource itemResource = ((ResourceWithItsLoadRatios) item
-                    .getValue()).getResource();
+            Resource itemResource = ((ResourceWithItsLoadRatios) item.getValue()).getResource();
+
             if ( itemResource != null && itemResource.getId().equals(resource.getId()) ) {
                 return item;
             }
@@ -303,8 +308,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
 
     @SuppressWarnings("unchecked")
     private void clearSelection(Listbox listBox) {
-        Set<Listitem> selectedItems = new HashSet<>(
-                listBox.getSelectedItems());
+        Set<Listitem> selectedItems = new HashSet<>(listBox.getSelectedItems());
         for (Listitem each : selectedItems) {
             listBox.removeItemFromSelection(each);
         }
@@ -312,8 +316,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
 
     @SuppressWarnings("unchecked")
     private void clearSelection(Tree tree) {
-        Set<Treeitem> selectedItems = new HashSet<>(
-                tree.getSelectedItems());
+        Set<Treeitem> selectedItems = new HashSet<>(tree.getSelectedItems());
         for (Treeitem each : selectedItems) {
             tree.removeItemFromSelection(each);
         }
@@ -362,7 +365,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
         return result;
     }
 
-    private ResourceListRenderer getListitemRenderer() {
+    public ResourceListRenderer getListitemRenderer() {
         return resourceListRenderer;
     }
 
@@ -383,15 +386,11 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
         clearSelection(criterionsTree);
 
 
-        adHocTransactionService
-                .runOnReadOnlyTransaction(new IOnTransaction<Void>() {
-                    @Override
-                    public Void execute() {
-                        refreshListBoxResources();
-                        criterionsTree.setModel(getCriterions());
+        adHocTransactionService.runOnReadOnlyTransaction((IOnTransaction<Void>) () -> {
+                    refreshListBoxResources();
+                    criterionsTree.setModel(getCriterions());
 
-                        return null;
-                    }
+                    return null;
                 });
 
         doInitialSelection();
@@ -410,8 +409,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
         List<Resource> result = new ArrayList<>();
         List<Listitem> selectedItems = listBoxResources.getItems();
         for (Listitem item : selectedItems) {
-            result.add(((ResourceWithItsLoadRatios) item.getValue())
-                    .getResource());
+            result.add(((ResourceWithItsLoadRatios) item.getValue()).getResource());
         }
 
         return result;
@@ -438,7 +436,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
      */
     private static class CriterionTreeNode extends DefaultTreeNode {
 
-        CriterionTreeNode(Object data, List<CriterionTreeNode> children) {
+        public CriterionTreeNode(Object data, List<CriterionTreeNode> children) {
             super(data, children);
         }
 
@@ -533,9 +531,10 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
     private static class ResourceWithItsLoadRatios implements Comparable<ResourceWithItsLoadRatios> {
 
         private Resource resource;
+
         private ILoadRatiosDataType ratios;
 
-        ResourceWithItsLoadRatios(Resource resource, ILoadRatiosDataType ratios) {
+        public ResourceWithItsLoadRatios(Resource resource, ILoadRatiosDataType ratios) {
             Validate.notNull(resource);
             Validate.notNull(ratios);
             this.resource = resource;
@@ -546,7 +545,7 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
             return this.resource;
         }
 
-        ILoadRatiosDataType getRatios() {
+        public ILoadRatiosDataType getRatios() {
             return this.ratios;
         }
 
@@ -683,11 +682,11 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
         return listBoxResources.isMultiple();
     }
 
-    private void setEndFilteringDate(LocalDate d) {
+    public void setEndFilteringDate(LocalDate d) {
         endDateLoadRatiosDatebox.setValue(asDate(d));
     }
 
-    private void setStartFilteringDate(LocalDate date) {
+    public void setStartFilteringDate(LocalDate date) {
         startDateLoadRatiosDatebox.setValue(asDate(date));
     }
 
@@ -703,37 +702,34 @@ public class NewAllocationSelectorController extends AllocationSelectorControlle
         searchResources("", getSelectedCriterions());
     }
 
-    private Constraint  checkConstraintFilteringDate() {
-        return new Constraint() {
-            @Override
-            public void validate(Component comp, Object value) throws WrongValueException {
-                if ( value == null ) {
-                    if ( comp.getId().equals("startDateLoadRatiosDatebox") ) {
-                        throw new WrongValueException(comp, _("Start filtering date cannot be empty"));
-                    } else if ( comp.getId().equals("endDateLoadRatiosDatebox") ) {
-                        throw new WrongValueException(comp, _("End filtering date cannot be empty"));
-                    }
-                }
-
-                Date startDate;
-
+    public Constraint  checkConstraintFilteringDate() {
+        return (comp, value) -> {
+            if ( value == null ) {
                 if ( comp.getId().equals("startDateLoadRatiosDatebox") ) {
-                    startDate = (Date) value;
-                } else {
-                    startDate = (Date) startDateLoadRatiosDatebox.getRawValue();
+                    throw new WrongValueException(comp, _("Start filtering date cannot be empty"));
+                } else if ( comp.getId().equals("endDateLoadRatiosDatebox") ) {
+                    throw new WrongValueException(comp, _("End filtering date cannot be empty"));
                 }
+            }
 
-                Date endDate;
-                if ( comp.getId().equals("endDateLoadRatiosDatebox") ) {
-                    endDate = (Date) value;
-                } else {
-                    endDate = (Date) endDateLoadRatiosDatebox.getRawValue();
-                }
+            Date startDate;
 
-                if ( (startDate != null) && (endDate != null) ) {
-                    if ( (startDate.after(endDate)) || (startDate.equals(endDate)) ) {
-                        throw new WrongValueException(comp,_("Start filtering date must be before than end filtering date"));
-                    }
+            if ( comp.getId().equals("startDateLoadRatiosDatebox") ) {
+                startDate = (Date) value;
+            } else {
+                startDate = (Date) startDateLoadRatiosDatebox.getRawValue();
+            }
+
+            Date endDate;
+            if ( comp.getId().equals("endDateLoadRatiosDatebox") ) {
+                endDate = (Date) value;
+            } else {
+                endDate = (Date) endDateLoadRatiosDatebox.getRawValue();
+            }
+
+            if ( (startDate != null) && (endDate != null) ) {
+                if ( (startDate.after(endDate)) || (startDate.equals(endDate)) ) {
+                    throw new WrongValueException(comp,_("Start filtering date must be before than end filtering date"));
                 }
             }
         };

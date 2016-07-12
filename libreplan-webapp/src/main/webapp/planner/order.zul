@@ -22,13 +22,8 @@
 <?page title="${i18n:_('LibrePlan: Scheduling')}"?>
 <?taglib uri="/WEB-INF/tld/i18n.tld" prefix="i18n" ?>
 
-<?component name="editTaskWindow"
-    macroURI="/planner/editTask.zul"
-    inline="true" ?>
-
-<?component name="listOrderElementAdvances"
-    macroURI="/orders/_listOrderElementAdvances.zul"
-    inline="true" ?>
+<?component name="editTaskWindow"macroURI="/planner/editTask.zul" inline="true" ?>
+<?component name="listOrderElementAdvances"macroURI="/orders/_listOrderElementAdvances.zul" inline="true" ?>
 
 <zk>
     <zscript><![CDATA[
@@ -42,9 +37,10 @@
         advanceAssignmentController = planningController.advanceAssignmentPlanningController;
     ]]>
     </zscript>
-    <div>
-        <div apply="${switcher}">
-            <planner id="planner" apply="${planningController}">
+    <div height="100%">
+        <div apply="${switcher}" sclass="parentProjectScheduling" height="100%">
+            <planner id="planner" apply="${planningController}" sclass="projectScheduling"
+                     style="display: block; height: 100%;">
             </planner>
         </div>
 
