@@ -339,9 +339,10 @@ h4.message_WARNING {
 }
 
 
-.z-window-embedded {
-    margin: 5px 10px 10px;
-}
+/*.z-window-embedded {
+    margin: 10px;
+    margin-top: 5px;
+}*/
 
 .workerwindow {
 
@@ -350,7 +351,7 @@ h4.message_WARNING {
 .main-area .z-center-body > .z-div > .z-window-embedded {
     margin-top: 0;
     margin-bottom: 0;
-    padding-top: 10px;
+   /* padding-top: 10px;*/
     background: none;
 }
 
@@ -826,7 +827,7 @@ div.z-listbox-pgi-b {
 .orderTree .not-scheduled button.z-button,
 .orderTree .partially-scheduled button.z-button,
 .orderTree .completely-scheduled button.z-button {
-    margin: 4px 1px 0 0;
+    margin: -12px -6px -20px -14px;
 }
 
 .orderTree .not-scheduled span.scheduling-state,
@@ -840,7 +841,7 @@ div.z-listbox-pgi-b {
     padding: 1px 5px;
     height: 14px;
     font-size: 9px;
-    width: 5px;
+    /*width: 5px;*/
 }
 
 
@@ -1233,14 +1234,15 @@ span.z-dottree-line {
     overflow-x: auto;
 }
 
-tr.z-tree-row-seld, tr.z-listitem-seld,
-.z-combobox-pp .z-comboitem-seld,
-tr.z-treerow-seld {
-    background-color: #fdd772; /* Dark orange */
-    color: #000000;
+.z-treerow.z-treerow-selected > .z-treecell,
+.z-treerow.z-treerow-selected.z-treerow-focus:hover > .z-treecell,
+.z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell,
+.z-treerow.z-treerow-selected:hover > .z-treecell {
+    /*background: #fdd772; !* Dark orange *!*/
+    background: linear-gradient(to bottom, #fdd772 0, #fdd772 100%);
 }
 
-tr.z-treerow-seld input {
+tr.z-treerow-selected input {
     /* Soft orange */
     background: #fdf3da none;
 }
@@ -1576,9 +1578,11 @@ tr.z-tree-row-seld .z-row-content {
 
 /* Expand vertical boxes for non-ffox browsers */
 .z-vbox {
-    width:100%;/*
+    width:100%;
+    /*
     display: inline;
-    height: 100% !important;*/
+    height: 100% !important;
+    */
 }
 
 .earned-parameter-column .z-label,
@@ -2037,8 +2041,9 @@ select {
 }
 
 .icono {
-    margin: -12px;
-    background-image: none !important;
+    margin: -8px;
+    padding-left: 10px;
+    padding-right: 10px;
     border: 1px solid transparent !important;
 }
 
@@ -2051,18 +2056,25 @@ select {
     box-shadow: none !important;
 }
 
+/* Made for create buttons, because default ZK css is not work correctly for create button */
 .createButton {
     background-color: #E4F3D9;
+    background-image: none !important;
 }
 
 .createButton:hover {
-    background: none !important;
-    background-color: #C3EAAF !important;
+    background: none;
+    background-color: #C3EAAF;
 }
 
 .createButton:focus {
-    background: none !important;
-    background-color: #C3EAAF !important;
+    background: none;
+    background-color: #C3EAAF;
+}
+
+.createButton:disabled {
+    background: none;
+    background-color: #C3EAAF;
 }
 
 .z-center {
@@ -2151,6 +2163,39 @@ textarea {
     padding-left: 6px !important;
 }
 
+.z-treerow.z-treerow-selected.z-treerow-focus:hover > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow-selected:hover > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell > .z-treecell-content {
+    color: black;
+}
+
+.completely-scheduled.z-treecell {
+    min-width: 140px;
+}
+
+.depth_1.z-treecell {
+    min-width: 1152px;
+}
+.orderTree.z-dottree > .z-dottree-body > table > .z-treechildren > .z-treerow > td:nth-child(4) {
+    min-width: 50px;
+}
+
+/* Correct border line for auxheader(grid) in edit task */
+.z-auxhead .z-auxheader {
+    border-right: 1px solid rgb(204, 204, 204);
+    border-left: none;
+}
+
+
+/* Rewrite width for auto generate table */
+.normalResourceAllocation > div > table {
+    width: 100% !important;
+}
+
+/* Doesn't show tabpanel, because it isn't necessary */
+.tabNormalAllocation > .z-tabpanel > .z-tab {
+    display: none;
+}
 .z-datebox-input {
     color: #000000 !important;
 }

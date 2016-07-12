@@ -55,7 +55,7 @@ import static org.libreplan.web.planner.tabs.MultipleTabsPlannerController.getSc
  */
 public class PlanningTabCreator {
 
-    private static final int MAX_ORDERNAME_LENGHT = 90;
+    public static final int MAX_ORDERNAME_LENGHT = 90;
 
     private final Mode mode;
 
@@ -126,9 +126,11 @@ public class PlanningTabCreator {
                 companyPlanningController.setAdditional(commands);
                 companyPlanningController.setTabsController(tabsController);
                 companyPlanningController.setDoubleClickCommand(scheduleCommand);
-                HashMap<String, Object> args = new HashMap<>();args.put("companyPlanningController",
-                                companyPlanningController);
+                HashMap<String, Object> args = new HashMap<>();
+
+                args.put("companyPlanningController", companyPlanningController);
                 companyPlanningController.setURLParameters(parameters);
+
                 return Executions.createComponents("/planner/_company.zul", parent, args);
             }
 

@@ -77,6 +77,10 @@ public class Planner extends HtmlMacroComponent  {
 
     private static final Log PROFILING_LOG = ProfilingLogFactory.getLog(Planner.class);
 
+    private static int PIXELS_PER_TASK_LEVEL = 21;
+
+    private static int PIXELS_PER_CHARACTER = 5;
+
     public static boolean guessContainersExpandedByDefaultGivenPrintParameters(Map<String, String> printParameters) {
         return guessContainersExpandedByDefault(convertToURLParameters(printParameters));
     }
@@ -183,9 +187,6 @@ public class Planner extends HtmlMacroComponent  {
     public int getTaskNumber() {
         return getTaskList().getTasksNumber();
     }
-
-    private static int PIXELS_PER_TASK_LEVEL = 21;
-    private static int PIXELS_PER_CHARACTER = 5;
 
     public int calculateMinimumWidthForTaskNameColumn(boolean expand) {
         return calculateMinimumWidthForTaskNameColumn(expand, getTaskList().getAllTasks());
@@ -326,7 +327,7 @@ public class Planner extends HtmlMacroComponent  {
                 configuration.getStartConstraints(),
                 configuration.getEndConstraints(),
                 configuration.isDependenciesConstraintsHavePriority());
-        FunctionalityExposedForExtensions<T> newContext = new FunctionalityExposedForExtensions<T>(
+        FunctionalityExposedForExtensions<T> newContext = new FunctionalityExposedForExtensions<>(
                 this, configuration, diagramGraph);
 
         addGraphChangeListenersFromConfiguration(configuration);
@@ -855,14 +856,7 @@ public class Planner extends HtmlMacroComponent  {
 
     public void changeChartVisibility(boolean visible) {
         visibleChart = visible;
-        chartVisibilityListeners
-                .fireEvent(new IListenerNotification<IChartVisibilityChangedListener>() {
-                    @Override
-                    public void doNotify(
-                            IChartVisibilityChangedListener listener) {
-                        listener.chartVisibilityChanged(visibleChart);
-                    }
-                });
+        chartVisibilityListeners.fireEvent(listener -> listener.chartVisibilityChanged(visibleChart));
     }
 
     public boolean isVisibleChart() {

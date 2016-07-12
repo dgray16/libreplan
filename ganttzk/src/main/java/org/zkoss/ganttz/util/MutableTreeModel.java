@@ -178,6 +178,15 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private Node<T> find(Object domainObject) {
+        for(Map.Entry<T, Node<T>> item : nodesByDomainObject.entrySet()){
+            if (item.getKey() != null) {
+
+                if (item.getKey().equals(domainObject)) {
+                    return item.getValue();
+                }
+            }
+        }
+
         return nodesByDomainObject.get(domainObject);
     }
 

@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 
 import org.apache.commons.lang3.Validate;
-import org.libreplan.web.planner.tabs.Mode.ModeTypeChangedListener;
 import org.zkoss.ganttz.extensions.ITab;
 import org.zkoss.zk.ui.Component;
 
@@ -41,7 +40,7 @@ public class TabOnModeType implements ITab {
     private boolean beingShown = false;
 
     public static WithType forMode(Mode mode) {
-        return new WithType(mode, new EnumMap<ModeType, ITab>(ModeType.class));
+        return new WithType(mode, new EnumMap<>(ModeType.class));
     }
 
     public static class WithType{
@@ -69,16 +68,11 @@ public class TabOnModeType implements ITab {
         Validate.isTrue(handleAtLeatOneCase(tabs),
                 "must handle at least one ModeType");
         this.mode = mode;
-        this.tabs = new EnumMap<ModeType, ITab>(tabs);
-        this.mode.addListener(new ModeTypeChangedListener() {
-
-            @Override
-            public void typeChanged(ModeType oldType, ModeType newType) {
-                if (beingShown) {
-                    changeTab(oldType, newType);
-                }
+        this.tabs = new EnumMap<>(tabs);
+        this.mode.addListener((oldType, newType) -> {
+            if (beingShown) {
+                changeTab(oldType, newType);
             }
-
         });
     }
 

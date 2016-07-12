@@ -356,7 +356,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     public void expandAll() {
-        Set<Treeitem> childrenSet = new HashSet<Treeitem>();
+        Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = tree.getTreechildren();
         if ( children != null ) {
             childrenSet.addAll(children.getItems());
@@ -538,6 +538,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
             autoBudgetCell.setDisabled(true);
             addCell(autoBudgetCell);
         }
+
     }
 
     @Override
@@ -699,23 +700,23 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     public void showEditionOrderElement(final Treeitem item) {
-        OrderElement currentOrderElement = (OrderElement) item.getValue();
+        OrderElement currentOrderElement = item.getValue();
         markModifiedTreeitem(item.getTreerow());
         IOrderElementModel model = orderModel.getOrderElementModel(currentOrderElement);
         orderElementController.openWindow(model);
         refreshRow(item);
     }
 
-    void refreshRow(Treeitem item) {
+    public void refreshRow(Treeitem item) {
         try {
             getRenderer().updateColumnsFor(item.getValue());
-            getRenderer().render(item, item.getValue());
+            getRenderer().render(item, item.getValue(), 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    Treeitem getTreeitemByOrderElement(OrderElement element) {
+    public Treeitem getTreeitemByOrderElement(OrderElement element) {
         List<Treeitem> listItems = new ArrayList<>(this.tree.getItems());
         for (Treeitem item : listItems) {
             OrderElement orderElement = item.getValue();

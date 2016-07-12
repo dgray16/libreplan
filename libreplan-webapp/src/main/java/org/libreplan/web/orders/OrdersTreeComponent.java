@@ -26,17 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.libreplan.business.common.Registry;
-import org.libreplan.business.common.daos.IConfigurationDAO;
-import org.libreplan.business.common.entities.Configuration;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.business.trees.ITreeNode;
 import org.libreplan.web.orders.OrderElementTreeController.OrderElementTreeitemRenderer;
 import org.libreplan.web.tree.TreeComponent;
 import org.libreplan.web.tree.TreeController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.zkoss.zul.Treeitem;
 
 /**
@@ -67,14 +61,12 @@ public class OrdersTreeComponent extends TreeComponent {
             doCell(treeRenderer, OrderElement.class.cast(currentElement));
         }
 
-        protected abstract void doCell(
-                OrderElementTreeitemRenderer treeRenderer,
-                OrderElement currentElement);
+        protected abstract void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement);
 
     }
 
     public List<Column> getColumns() {
-        List<Column> columns = new ArrayList<Column>();
+        List<Column> columns = new ArrayList<>();
         columns.add(schedulingStateColumn);
         columns.add(codeColumn);
         columns.add(nameAndDescriptionColumn);
@@ -82,8 +74,7 @@ public class OrdersTreeComponent extends TreeComponent {
                 _("Total task hours")) {
 
             @Override
-            protected void doCell(OrderElementTreeitemRenderer treeRenderer,
-                    OrderElement currentElement) {
+            protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addHoursCell(currentElement);
             }
 
@@ -92,8 +83,7 @@ public class OrdersTreeComponent extends TreeComponent {
                 _("Total task budget")) {
 
             @Override
-            protected void doCell(OrderElementTreeitemRenderer treeRenderer,
-                    OrderElement currentElement) {
+            protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addBudgetCell(currentElement);
             }
 
@@ -104,8 +94,7 @@ public class OrdersTreeComponent extends TreeComponent {
                     _("Budget minus resources costs")) {
 
             @Override
-            protected void doCell(OrderElementTreeitemRenderer treeRenderer,
-                    OrderElement currentElement) {
+            protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addResourcesBudgetCell(currentElement);
             }
 
@@ -118,8 +107,7 @@ public class OrdersTreeComponent extends TreeComponent {
                         _("Estimated start date for the task (press enter in textbox to open calendar popup or type in date directly)")) {
 
             @Override
-            protected void doCell(OrderElementTreeitemRenderer treeRenderer,
-                    OrderElement currentElement) {
+            protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addInitDateCell(currentElement);
             }
 
@@ -131,8 +119,7 @@ public class OrdersTreeComponent extends TreeComponent {
                         _("Estimated end date for the task (press enter in textbox to open calendar popup or type in date directly)")) {
 
             @Override
-            protected void doCell(OrderElementTreeitemRenderer treeRenderer,
-                    OrderElement currentElement) {
+            protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addEndDateCell(currentElement);
             }
         });

@@ -54,16 +54,14 @@ public class NewAllocationSelector extends AllocationSelector {
     public enum AllocationType {
         GENERIC_WORKERS(_("generic workers allocation")) {
             @Override
-            public void addTo(NewAllocationSelectorController controller,
-                    INewAllocationsAdder allocationsAdder) {
+            public void addTo(NewAllocationSelectorController controller, INewAllocationsAdder allocationsAdder) {
                 allocationsAdder.addGeneric(ResourceEnum.WORKER,
                         controller.getSelectedCriterions(),
                         controller.getSelectedWorkers());
             }
 
             @Override
-            public IResourcesQuery<?> doQueryOn(
-                    IResourcesSearcher resourceSearchModel) {
+            public IResourcesQuery<?> doQueryOn(IResourcesSearcher resourceSearchModel) {
                 return resourceSearchModel.searchWorkers();
             }
 
@@ -74,37 +72,29 @@ public class NewAllocationSelector extends AllocationSelector {
         },
         GENERIC_MACHINES(_("generic machines allocation")) {
             @Override
-            public void addTo(
-                    NewAllocationSelectorController controller,
-                    INewAllocationsAdder allocationsAdder) {
+            public void addTo(NewAllocationSelectorController controller, INewAllocationsAdder allocationsAdder) {
                 List<Criterion> criteria = controller.getSelectedCriterions();
-                allocationsAdder.addGeneric(
-                        ResourceEnum.MACHINE,
-                        criteria, controller.getSelectedWorkers());
+                allocationsAdder.addGeneric(ResourceEnum.MACHINE, criteria, controller.getSelectedWorkers());
             }
 
             @Override
-            public IResourcesQuery<?> doQueryOn(
-                    IResourcesSearcher resourceSearchModel) {
+            public IResourcesQuery<?> doQueryOn(IResourcesSearcher resourceSearchModel) {
                 return resourceSearchModel.searchMachines();
             }
 
             @Override
             public String asCaption(List<Criterion> criterions) {
-                return Criterion
-                        .getCaptionFor(ResourceEnum.MACHINE, criterions);
+                return Criterion.getCaptionFor(ResourceEnum.MACHINE, criterions);
             }
         },
         SPECIFIC(_("specific allocation")) {
             @Override
-            public void addTo(NewAllocationSelectorController controller,
-                    INewAllocationsAdder allocationsAdder) {
+            public void addTo(NewAllocationSelectorController controller, INewAllocationsAdder allocationsAdder) {
                 allocationsAdder.addSpecific(controller.getSelectedWorkers());
             }
 
             @Override
-            public IResourcesQuery<?> doQueryOn(
-                    IResourcesSearcher resourceSearchModel) {
+            public IResourcesQuery<?> doQueryOn(IResourcesSearcher resourceSearchModel) {
                 return resourceSearchModel.searchBoth();
             }
 
@@ -123,7 +113,7 @@ public class NewAllocationSelector extends AllocationSelector {
 
         private final String name;
 
-        private AllocationType(String name) {
+        AllocationType(String name) {
             this.name = name;
         }
 
@@ -133,7 +123,9 @@ public class NewAllocationSelector extends AllocationSelector {
 
         public void doTheSelectionOn(Radiogroup radioGroup) {
             for (int i = 0; i < radioGroup.getItemCount(); i++) {
+
                 Radio radio = radioGroup.getItemAtIndex(i);
+
                 if (name.equals(radio.getLabel())) {
                     radioGroup.setSelectedIndex(i);
                     break;
@@ -145,8 +137,7 @@ public class NewAllocationSelector extends AllocationSelector {
                 NewAllocationSelectorController newAllocationSelectorController,
                 INewAllocationsAdder allocationsAdder);
 
-        public abstract IResourcesQuery<?> doQueryOn(
-                IResourcesSearcher resourceSearchModel);
+        public abstract IResourcesQuery<?> doQueryOn(IResourcesSearcher resourceSearchModel);
 
         public abstract String asCaption(List<Criterion> criterions);
 
@@ -155,6 +146,7 @@ public class NewAllocationSelector extends AllocationSelector {
     @Override
     public NewAllocationSelectorController getController() {
         if (selectorController == null) {
+
             selectorController = new NewAllocationSelectorController(behaviour);
             try {
                 selectorController.doAfterCompose(this);
@@ -162,6 +154,7 @@ public class NewAllocationSelector extends AllocationSelector {
                 e.printStackTrace();
             }
         }
+
         return selectorController;
     }
 
@@ -170,11 +163,9 @@ public class NewAllocationSelector extends AllocationSelector {
     }
 
     public void open(LocalDate start, LocalDate end) {
-        start = start
-                .minusDays(DAYS_LEAD_LAG_TO_TASK_LIMITS_DATES_FILTERING_INITIALIZATION);
-        end = end
-                .plusDays(DAYS_LEAD_LAG_TO_TASK_LIMITS_DATES_FILTERING_INITIALIZATION);
-        getController().open(start, end);
+        LocalDate newStart = start.minusDays(DAYS_LEAD_LAG_TO_TASK_LIMITS_DATES_FILTERING_INITIALIZATION);
+        LocalDate newEnd = end.plusDays(DAYS_LEAD_LAG_TO_TASK_LIMITS_DATES_FILTERING_INITIALIZATION);
+        getController().open(newStart, newEnd);
     }
 
 }

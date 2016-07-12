@@ -621,10 +621,20 @@ tr.z-vbox-separator {
    border-left: 0;
 }
 
-.row_resourceload {
-    height: 10px;
+.z-resourceloadcomponent {
+    height: 7px;
     border: 1px;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    margin-top: 6px;
+    padding-bottom: 2px;
+    width: 100%;
+    border-bottom: 1px dotted #CCCCCC;
+}
+
+.z-queuecomponent {
+    height: 14px;
+    border: 1px;
+    margin-bottom: 22px;
     margin-top: 8px;
     width: 100%;
     border-bottom: 1px dotted #CCCCCC;
@@ -693,8 +703,8 @@ tr.z-vbox-separator {
     border-collapse: collapse;
 }
 
-.resourceloadleftpane div.z-treecell-cnt {
-    paddding-top: 2px;
+.resourceloadleftpane div.z-treecell-content {
+    padding-top: 2px;
     border-bottom: 1px dotted #CCCCCC;
 }
 
@@ -737,14 +747,14 @@ tr.z-vbox-separator {
     cursor: default;
 }
 
-.row_resourceload.resourceload-global-generic,
-.row_resourceload.resourceload-resource {
+.z-queuecomponent.resourceload-global-generic,
+.z-queuecomponent.resourceload-resource {
     margin-bottom: 8px;
     margin-top: 6px;
     padding-bottom: 2px;
 }
 
-.resourceloadleftpane .z-tree-ico + .secondlevel span {
+.resourceloadleftpane .z-tree-line + .secondlevel span {
     font-weight: bold;
 }
 
@@ -756,7 +766,7 @@ tr.z-vbox-separator {
     overflow: visible;
 }
 .resourceloadleftpane div.z-tree-body table {
-    table-layout:auto !important;
+    table-layout:auto;
 }
 
 .resourceloadleftpane .icono .z-button-cm:active,
@@ -766,11 +776,8 @@ tr.z-vbox-separator {
 }
 
 /* ---------- Start Limiting resources --------------- */
-.limitingresourceslist .row_resourceload {
-    height: 25px;
-}
 
-.limitingresources .z-tree-ico {
+.limitingresources .z-tree-line {
     display: none;
 }
 
@@ -779,7 +786,7 @@ tr.z-vbox-separator {
 }
 
 .limitingresources td.z-treecell {
-    paddding-top: 2px;
+    padding-top: 2px;
     border-bottom: 1px dotted #CCCCCC;
 }
 
@@ -852,10 +859,6 @@ div.z-tree {
 .listdetails td {
     border-bottom: 1px dotted #CCC !important;
     border-right: 1px dotted #CCC;
-}
-
-.plannerlayout, .resourcesloadlayout, .advancedallocationlayout {
-/*    height: 100%; */
 }
 
 .temp-class {
@@ -981,14 +984,19 @@ height: 100%
 .advancedallocationlayout .unmodifiable-hours.z-label {
     color: #555555;
 }
+
 .advancedallocationlayout .consolidated-hours.z-label {
     color: #75d9b0;
 }
+
+/*
 .advancedallocationlayout .z-row .z-intbox-disd {
     color: 0 !important;
 }
+*/
+
 .advancedallocationlayout .taskspanelgap input {
-    widht: 100%;
+    width: 100%;
 }
 
 
@@ -1053,7 +1061,7 @@ height: 100%
 }
 
 .advancedassignmentdetails .z-intbox {
-    padding-left: 0px;
+    padding-left: 0;
 }
 #tasksTree div.z-tree-header, #tasksTree div.z-tree-header tr, #tasksTree div.z-tree-footer {
     overflow:visible;
@@ -1066,7 +1074,6 @@ height: 100%
 }
 
 .listdetails th {
-    display:visible;
     margin-top:10px;
 }
 
@@ -1133,10 +1140,6 @@ height: 100%
 .advancedassignmentdetails td + td + td + td {
     display:none;
 }
-/*
-.advancedassignmentdetails .z-row, .advancedallocationlayout .taskspanelgap .z-row {
-    height: 20px;
-} */
 
 .advancedallocationlayout .taskspanelgap td.z-row-inner {
     padding:1px;
@@ -1177,8 +1180,6 @@ height: 100%
     display: none;
 }
 
-
-
 .queue-element .deadline.order-deadline {
     position:absolute;
     margin-top: -5px;
@@ -1210,7 +1211,6 @@ body .perspectives-column {
 .timeTrackedTableWithLeftPane .z-grid-body table {
     width: 1px !important;
 }
-
 
 #timeTracker .second_level_ {
     border-left: solid 2px #9EB6CE;
@@ -1272,39 +1272,6 @@ body .perspectives-column {
 
 /* Workaround for zk 100% height just root components */
 
-
-
-/*.main-area {
-    height: 100%;
-}
-.main-area .z-center-body > div {
-    height: 100%;
-    display: block !important;
-}
-
-.main-area .z-center-body > div > div {
- !*   display: block !important;*!
-    width: 1803px !important;
-}
-
-.main-area .z-center-body > div > div > div  {
-    height: 100%;
-   !* display: block !important;*!
-}
-
-.main-area .z-center-body > div > div > div > div {
-    height: 100%;
-    display: block !important;
-}
-.main-area .z-center-body > div > div > div > div > div {
-    height: 100%;
-    display: block !important;
-}*/
-
-.z-ganttpanel > div > div {
-    height: 0 !important;
-}
-
 .toolbar-box > div {
     overflow: hidden;
 }
@@ -1336,78 +1303,13 @@ body .perspectives-column {
     width: 100% !important;
 }
 
-.z-tree-icon, .z-tree-line {
-    display: none;
-}
-
-/*.z-tree-line.z-tree-spacer {*/
-
-/*width: 0;*/
-/*}*/
-/*.z-center .z-center-noborder {
-    height: 100% !important;
-}*/
-
-.parentResourceLoad > div {
-    height: 100%;
-    display: block !important;
-}
-
-.parentLimitingResource > div {
-    height: 100%;
-    display: block !important;
-}
-
-.tabSwitcherTest .main-content:nth-child(1) {
-    display: none !important;
-}
-
-
-.z-ganttpanel > div > div {
-    height: 100%;
-    display: block !important;
-}
-
 .z-treecols-bar {
     display: none;
 }
 
-.main-area > div {height: 100%; display: block;}
-
-.main-area > div > div { height: 100%;}
-
-
-.main-area > div > div > div > div {
-    height: 100%;
-    display: block;
-}
-
-/*.main-area > div > div > div > div > div {
-    height: 100%;
-    display: block !important;
-}*/
-
 .main-area .advanced-assignment-area .z-center-body > div,
 .main-area .advanced-assignment-area .z-center-body > div > div > div {
     height: auto;
-}
-
-.plannerTest {
-    height:100%;
-    display: block !important;
-}
-
-.parentLimitingResource, .parentLimitingResource > div {
-    height: 100%;
-    display: block;
-}
-
-.resourcesloadlayout + div {
-    display: none;
-}
-
-.main-content:nth-child(2) .tabSwitcherTest {
-    display: none !important;
 }
 
 .advanced-allocation-layout {
@@ -1485,47 +1387,46 @@ div.z-grid-header .second_level_ tr {
 #ganttpanel .violated-dependency .mid {
     background-image: url("../../zkau/web/ganttz/img/solid-red-ver.png");
 }
+
 #ganttpanel .violated-dependency .arrow {
     background-image: url("../../zkau/web/ganttz/img/solid-red-arrows.png");
 }
+
 #ganttpanel .violated-dependency .point-west {
     background-position: 0 2px;
     margin-left: -10px;
 }
-
 #ganttpanel .resources-dependency .start, #ganttpanel .resources-dependency .end {
     background-image: url("../../zkau/web/ganttz/img/dashed-black-hor.png");
 }
-
 #ganttpanel .resources-dependency .mid {
     background-image: url("../../zkau/web/ganttz/img/dashed-black-ver.png");
 }
+
 #ganttpanel .resources-dependency .arrow {
     background-image: url("../../zkau/web/ganttz/img/dashed-black-arrows.png");
 }
+
 .point-east {
     background-position: 0 2px;
 }
-
-
 .point-south {
     background-position: -18px 0;
 }
 .point-west {
     background-position: -35px 2px;
 }
+
 .point-north {
     background-position: -48px 0;
 }
 #listlimitingdependencies .point-north {
     background-position: -53px 0;
 }
-
 #listlimitingdependencies .point-south {
     background-position: -17px 0;
     margin-top: 2px;
 }
-
 .taskspanelgap #listlimitingdependencies {
     top: -2px;
 }
@@ -1554,25 +1455,78 @@ div.z-grid-header .second_level_ tr {
     display: none;
 }
 
+.z-treerow.z-treerow-selected > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow > .z-treecell > .z-treecell-content {
+    color: black;
+}
+
+.taskdetail_grid .z-treecell .z-treecell-content {
+    display: inline-table;
+    width: 100%;
+}
+
+span.z-dottree-icon {
+    width: 18px;
+    min-height: 18px;
+    height: 100%;
+    background-repeat: no-repeat;
+    display: -moz-inline-box;
+    vertical-align: top;
+    display: inline-block;
+}
+
+div.z-dottree {
+    border: 1px solid #cfcfcf;
+    overflow: hidden;
+    zoom: 1;
+}
+
+.z-dottree-line.z-dottree-spacer {
+    width: 18px;
+}
+
+/* New css classes */
+
+.parentResourceLoad > div {
+    height: 100%;
+    display: block !important;
+}
+
+.contentTabSwitcher .main-content:nth-child(1) {
+    display: none !important;
+}
+
+.parentResourceLoad > div {
+    height: 100%;
+    display: block !important;
+}
+
+.resourcesloadlayout + div {
+    display: none;
+}
+
+.main-content:nth-child(2) .contentTabSwitcher {
+    display: none !important;
+}
+
+.main-area > div {height: 100%; display: block;}
+
 div ~ .resourcesloadlayout {
     height: 100%;
     display: block !important;
 }
 
-.tabSwitcher > .z-div {
-    height: 100%;
-}
-
-.tabSwitcher > .z-div > .z-div {
-    height: 100%;
-}
-
-.tabSwitcher > .z-div > div {
+.parentLimitingResource > div,
+.resourceLoadForOrder > div {
     height: 100%;
     display: block !important;
 }
 
-.tabSwitcher > .z-div > .z-div > div {
-    height: 100%;
+.leftpanelgap > div {
+    display: block !important;
+}
+
+.z-ganttpanel > div > div {
+    height: 0;
     display: block !important;
 }

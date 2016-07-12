@@ -18,13 +18,11 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<?component name="tabPanelTaskProperties"
-    macroURI="/planner/taskpanels/_tabPanelTaskProperties.zul"
-    inline="true" ?>
+<?component name="tabPanelTaskProperties"macroURI="/planner/taskpanels/_tabPanelTaskProperties.zul" inline="true" ?>
 
 <?component name="tabPanelNonLimitingResourceAllocation"
-    macroURI="/planner/taskpanels/_tabPanelNonLimitingResourceAllocation.zul"
-    inline="true" ?>
+        macroURI="/planner/taskpanels/_tabPanelNonLimitingResourceAllocation.zul"
+        inline="true" ?>
 
 <?component name="tabPanelLimitingResourceAllocation"
     macroURI="/planner/taskpanels/_tabPanelLimitingResourceAllocation.zul"

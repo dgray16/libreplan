@@ -229,7 +229,9 @@ public class EditTaskController extends GenericForwardComposer {
                                                PlanningState planningState, boolean fromLimitingResourcesView) {
 
         if ( isTask(taskElement) ) {
+
             Task task = asTask(taskElement);
+
             if ( task.isLimiting() ) {
                 editTaskTabbox.setSelectedPanel(limitingResourceAllocationTabpanel);
             } else {
@@ -238,6 +240,7 @@ public class EditTaskController extends GenericForwardComposer {
         } else {
             editTaskTabbox.setSelectedPanel(taskPropertiesTabpanel);
         }
+
         showEditForm(context, taskElement, planningState, fromLimitingResourcesView);
     }
 
@@ -270,6 +273,7 @@ public class EditTaskController extends GenericForwardComposer {
             if ( ResourceAllocationTypeEnum.NON_LIMITING_RESOURCES.equals(currentState) ) {
                 editTaskTabbox.setSelectedPanel(resourceAllocationTabpanel);
                 boolean mustNotExit = !resourceAllocationController.accept();
+
                 if ( mustNotExit ) {
                     return;
                 }
@@ -359,10 +363,6 @@ public class EditTaskController extends GenericForwardComposer {
 
     public boolean isTask() {
         return isTask(taskElement);
-    }
-
-    private boolean isTaskLeafConstraint() {
-        return (taskElement != null && taskElement instanceof ITaskPositionConstrained);
     }
 
     void showNonPermitChangeResourceAllocationType() {

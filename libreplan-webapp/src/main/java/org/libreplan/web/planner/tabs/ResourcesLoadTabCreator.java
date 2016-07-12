@@ -59,6 +59,7 @@ public class ResourcesLoadTabCreator {
     }
 
     private final Mode mode;
+
     private final ResourceLoadController resourceLoadController;
 
     private final ResourceLoadController resourceLoadControllerGlobal;
@@ -86,16 +87,13 @@ public class ResourcesLoadTabCreator {
     }
 
     private ITab createOrderResourcesLoadTab() {
-        IComponentCreator componentCreator = new IComponentCreator() {
-            @Override
-            public org.zkoss.zk.ui.Component create(org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<>();
-                arguments.put("resourceLoadController", resourceLoadController);
+        IComponentCreator componentCreator = parent -> {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("resourceLoadController", resourceLoadController);
 
-                return Executions.createComponents("/resourceload/_resourceloadfororder.zul", parent, arguments);
-            }
-
+            return Executions.createComponents("/resourceload/_resourceloadfororder.zul", parent, arguments);
         };
+
         return new CreatedOnDemandTab(_("Resources Load"), "order-load", componentCreator) {
 
             @Override
@@ -115,22 +113,20 @@ public class ResourcesLoadTabCreator {
         };
     }
 
+
     private ITab createGlobalResourcesLoadTab() {
 
-        final IComponentCreator componentCreator = new IComponentCreator() {
-            @Override
-            public org.zkoss.zk.ui.Component create(org.zkoss.zk.ui.Component parent) {
-                Map<String, Object> arguments = new HashMap<>();
-                arguments.put("resourceLoadController", resourceLoadControllerGlobal);
+        final IComponentCreator componentCreator = parent -> {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("resourceLoadController", resourceLoadControllerGlobal);
 
-                return Executions.createComponents("/resourceload/_resourceload.zul", parent, arguments);
-            }
-
+            return Executions.createComponents("/resourceload/_resourceload.zul", parent, arguments);
         };
+
         return new CreatedOnDemandTab(_("Resources Load"), "company-load", componentCreator) {
             @Override
             protected void beforeShowAction() {
-                if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING) ) {
+                if (!SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_PLANNING)) {
                     Util.sendForbiddenStatusCodeInHttpServletResponse();
                 }
             }

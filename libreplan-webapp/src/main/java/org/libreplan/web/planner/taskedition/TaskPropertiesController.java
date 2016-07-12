@@ -52,7 +52,6 @@ import org.libreplan.web.email.IEmailNotificationModel;
 import org.libreplan.web.planner.allocation.AllocationResult;
 import org.libreplan.web.planner.order.SaveCommandBuilder;
 import org.libreplan.web.resources.worker.IWorkerModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -156,7 +155,6 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
             order = taskElement.getOrderElement().getOrder();
         }
 
-        // WebStartConstraintType.setItems(startConstraintTypes, order);
         setItemsStartConstraintTypesCombo(order);
         originalState = getResourceAllocationType(currentTaskElement);
         setOldState(originalState);
@@ -175,7 +173,7 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
         deadLineDateBox.setDisabled(currentTaskElement.isSubcontracted());
 
         if ( context != null ) {
-            taskEditFormComposer.init(context.getRelativeTo(), context.getTask());
+            taskEditFormComposer.init(context.getTask());
         }
 
         updateComponentValuesForTask();
@@ -184,11 +182,12 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
     private void setItemsStartConstraintTypesCombo(Order order) {
         startConstraintTypes.getChildren().clear();
         for (PositionConstraintType type : PositionConstraintType.values()) {
-            if ( (type != PositionConstraintType.AS_LATE_AS_POSSIBLE &&
-                    type != PositionConstraintType.AS_SOON_AS_POSSIBLE) ||
-                    (type == PositionConstraintType.AS_LATE_AS_POSSIBLE && order.getDeadline() != null) ||
-                    (type == PositionConstraintType.AS_SOON_AS_POSSIBLE && order.getInitDate() != null) ) {
+            boolean firstCondition = type != PositionConstraintType.AS_LATE_AS_POSSIBLE &&
+                    type != PositionConstraintType.AS_SOON_AS_POSSIBLE;
+            boolean secondCondition = type == PositionConstraintType.AS_LATE_AS_POSSIBLE && order.getDeadline() != null;
+            boolean thirdCondtition = type == PositionConstraintType.AS_SOON_AS_POSSIBLE && order.getInitDate() != null;
 
+            if (firstCondition || secondCondition || thirdCondtition) {
                 Comboitem comboitem = new Comboitem(_(type.getName()));
                 comboitem.setValue(type);
                 startConstraintTypes.appendChild(comboitem);
@@ -313,10 +312,10 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
 
         if ( taskConstraint.isValid(type, inputDate) ) {
             taskConstraint.update(type, inputDate);
-            //at this point we could call currentContext.recalculatePosition(currentTaskElement)
-            //to trigger the scheduling algorithm, but we don't do it because
-            //the ResourceAllocationController, which is attached to the other
-            //tab of the same window, will do it anyway.
+            /* At this point we could call currentContext.recalculatePosition(currentTaskElement)
+            to trigger the scheduling algorithm, but we don't do it because
+            the ResourceAllocationController, which is attached to the other
+            tab of the same window, will do it anyway. */
             return true;
         } else {
             return false;
@@ -342,13 +341,9 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
         tabpanel = (Tabpanel) comp;
         taskEditFormComposer.doAfterCompose(comp);
         startConstraintTypes.addEventListener(Events.ON_SELECT,
-                new EventListener() {
-
-                    @Override
-                    public void onEvent(Event event) {
-                        PositionConstraintType constraint = startConstraintTypes.getSelectedItem().getValue();
-                        constraintTypeChoosen(constraint);
-                    }
+                event -> {
+                    PositionConstraintType constraint = startConstraintTypes.getSelectedItem().getValue();
+                    constraintTypeChoosen(constraint);
                 });
 
         lbResourceAllocationType.addEventListener(Events.ON_SELECT, new EventListener() {
@@ -364,8 +359,7 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
                         restoreOldState();
                         editTaskController.showNonPermitChangeResourceAllocationType();
                     } else {
-                        if( newState.equals(ResourceAllocationTypeEnum.SUBCONTRACT )
-                                && !checkCompatibleAllocation()){
+                        if( newState.equals(ResourceAllocationTypeEnum.SUBCONTRACT ) && !checkCompatibleAllocation()){
                             restoreOldState();
                             Messagebox.show(_("This resource allocation type is incompatible. The task has " +
                                     "an associated order element which has a progress that is of type subcontractor. "),
@@ -396,7 +390,7 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
 
     }
 
-    private boolean checkCompatibleAllocation(){
+    private boolean checkCompatibleAllocation() {
         OrderElement orderElement;
         AdvanceType advanceType = PredefinedAdvancedTypes.SUBCONTRACTOR.getType();
 
@@ -435,7 +429,9 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
     }
 
     public void accept() {
-        if ( !isResourcesAdded ) listToAdd.clear();
+        if ( !isResourcesAdded ) {
+            listToAdd.clear();
+        }
 
         SaveCommandBuilder.taskPropertiesController = getObject();
 
@@ -745,7 +741,7 @@ public class TaskPropertiesController extends GenericForwardComposer<Component> 
     }
 
     private void proceedList(EmailTemplateEnum enumeration, List<Resource> list){
-        if ( list.size() != 0 ){
+        if ( !list.isEmpty() ){
             List<Worker> workersList = workerModel.getWorkers();
             Worker currentWorker;
             Resource currentResource;

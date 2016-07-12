@@ -41,7 +41,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
 
     private static final String CONTROLLER_NAME = "treeController";
 
-    public static abstract class Column {
+    public abstract static class Column {
 
         private String label;
 
@@ -96,8 +96,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
             renderer.addCodeCell(currentElement);
         }
     };
-    protected final Column nameAndDescriptionColumn = new Column(_("Name"),
-            "name") {
+    protected final Column nameAndDescriptionColumn = new Column(_("Name"), "name") {
 
         @Override
         public <T extends ITreeNode<T>> void doCell(
@@ -106,8 +105,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
             renderer.addDescriptionCell(currentElement);
         }
     };
-    protected final Column operationsColumn = new Column(_("Op."),
-            "operations", _("Operations")) {
+    protected final Column operationsColumn = new Column(_("Op."), "operations", _("Operations")) {
 
         @Override
         public <T extends ITreeNode<T>> void doCell(

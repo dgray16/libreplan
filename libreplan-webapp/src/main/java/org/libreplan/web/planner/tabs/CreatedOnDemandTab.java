@@ -40,7 +40,7 @@ public class CreatedOnDemandTab implements ITab {
 
     private final String cssClass;
 
-    interface IComponentCreator {
+    public interface IComponentCreator {
         Component create(Component parent);
     }
 
@@ -48,7 +48,8 @@ public class CreatedOnDemandTab implements ITab {
         this(name, null, componentCreator);
     }
 
-    CreatedOnDemandTab(String name, String cssClass, IComponentCreator componentCreator) {
+    public CreatedOnDemandTab(String name, String cssClass,
+            IComponentCreator componentCreator) {
         Validate.notNull(name);
         Validate.notNull(componentCreator);
         this.componentCreator = componentCreator;

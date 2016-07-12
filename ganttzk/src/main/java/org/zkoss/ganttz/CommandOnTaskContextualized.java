@@ -36,7 +36,7 @@ public class CommandOnTaskContextualized<T> {
     public static <T> CommandOnTaskContextualized<T> create(ICommandOnTask<T> commandOnTask,
                                                             IDomainAndBeansMapper<T> mapper, IContext<T> context) {
 
-        return new CommandOnTaskContextualized<T>(commandOnTask, mapper, context);
+        return new CommandOnTaskContextualized<>(commandOnTask, mapper, context);
     }
 
     private final ICommandOnTask<T> commandOnTask;
@@ -82,12 +82,7 @@ public class CommandOnTaskContextualized<T> {
     }
 
     ItemAction<TaskComponent> toItemAction() {
-        return new ItemAction<TaskComponent>() {
-            @Override
-            public void onEvent(TaskComponent choosen, Event event) {
-                doAction(choosen);
-            }
-        };
+        return (choosen, event) -> doAction(choosen);
     }
 
     public String getIcon() {

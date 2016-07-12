@@ -101,6 +101,8 @@ public class SaveCommandBuilder {
 
     private static final Log LOG = LogFactory.getLog(SaveCommandBuilder.class);
 
+    public static TaskPropertiesController taskPropertiesController;
+
     public ISaveCommand build(PlanningState planningState, PlannerConfiguration<TaskElement> plannerConfiguration) {
         SaveCommand result = new SaveCommand(planningState, plannerConfiguration);
 
@@ -189,8 +191,6 @@ public class SaveCommandBuilder {
     @Autowired
     private ISumExpensesRecalculator sumExpensesRecalculator;
 
-    public static TaskPropertiesController taskPropertiesController;
-
 
     private class SaveCommand implements ISaveCommand {
 
@@ -230,43 +230,31 @@ public class SaveCommandBuilder {
                 return;
             }
 
-            save(null, new IAfterSaveActions() {
+            save(null, () -> {
+                // A little bit hack
+                if ( taskPropertiesController != null )
+                    taskPropertiesController.emailNotificationAddNew();
 
-                @Override
-                public void doActions() {
-                    // A little bit hack
-                    if ( taskPropertiesController != null )
-                        taskPropertiesController.emailNotificationAddNew();
-
-                    notifyUserThatSavingIsDone();
-                }
+                notifyUserThatSavingIsDone();
             });
         }
 
         @Override
         public void save(IBeforeSaveActions beforeSaveActions) {
-            save(beforeSaveActions, new IAfterSaveActions() {
-
-                @Override
-                public void doActions() {
-                    notifyUserThatSavingIsDone();
-                }
-            });
+            save(beforeSaveActions, () -> notifyUserThatSavingIsDone());
         }
 
         @Override
         public void save(final IBeforeSaveActions beforeSaveActions, IAfterSaveActions afterSaveActions) {
             try {
                 if ( state.getScenarioInfo().isUsingTheOwnerScenario() || userAcceptsCreateANewOrderVersion() ) {
-                    transactionService.runOnTransaction(new IOnTransaction<Void>() {
-                        @Override
-                        public Void execute() {
-                            if (beforeSaveActions != null) {
-                                beforeSaveActions.doActions();
-                            }
-                            doTheSaving();
-                            return null;
+                    transactionService.runOnTransaction((IOnTransaction<Void>) () -> {
+                        if (beforeSaveActions != null) {
+                            beforeSaveActions.doActions();
                         }
+                        doTheSaving();
+
+                        return null;
                     });
 
                     dontPoseAsTransientObjectAnymore(state.getOrder());
@@ -378,9 +366,8 @@ public class SaveCommandBuilder {
         }
 
         private void removeTaskElementsWithTaskSourceNull() {
-            List<TaskElement> toRemove = taskElementDAO
-                    .getTaskElementsNoMilestonesWithoutTaskSource();
-            List<TaskElement> parentsWithChangesToSave = new ArrayList<TaskElement>();
+            List<TaskElement> toRemove = taskElementDAO.getTaskElementsNoMilestonesWithoutTaskSource();
+            List<TaskElement> parentsWithChangesToSave = new ArrayList<>();
             for (TaskElement taskElement : toRemove) {
                 try {
                     taskElementDAO.remove(taskElement.getId());
@@ -491,13 +478,11 @@ public class SaveCommandBuilder {
                 if (repeatedHoursGroup != null) {
                     throw new ValidationException(_(
                             "Repeated Hours Group code {0} in Project {1}",
-                            repeatedHoursGroup.getCode(), repeatedHoursGroup
-                                    .getParentOrderLine().getName()));
+                            repeatedHoursGroup.getCode(), repeatedHoursGroup.getParentOrderLine().getName()));
                 }
             }
 
-            repeatedHoursGroup = Registry.getHoursGroupDAO()
-                    .findRepeatedHoursGroupCodeInDB(order.getHoursGroups());
+            repeatedHoursGroup = Registry.getHoursGroupDAO().findRepeatedHoursGroupCodeInDB(order.getHoursGroups());
             if (repeatedHoursGroup != null) {
                 throw new ValidationException(_(
                         "Repeated Hours Group code {0} in Project {1}",
@@ -579,9 +564,11 @@ public class SaveCommandBuilder {
 
         private void updateRootTaskPosition(TaskGroup rootTask) {
             final IntraDayDate min = TaskElement.minDate(rootTask.getChildren());
+
             if (min != null) {
                 rootTask.setIntraDayStartDate(min);
             }
+
             final IntraDayDate max = TaskElement.maxDate(rootTask.getChildren());
             if (max != null) {
                 rootTask.setIntraDayEndDate(max);
@@ -593,9 +580,11 @@ public class SaveCommandBuilder {
             if (taskSource != null) {
                 taskSourceDAO.save(taskSource);
             }
+
             if (taskElement.isLeaf()) {
                 return;
             }
+
             for (TaskElement each : taskElement.getChildren()) {
                 saveTaskSources(each);
             }
@@ -638,13 +627,13 @@ public class SaveCommandBuilder {
             boolean dependenciesHavePriority = configuration.isDependenciesConstraintsHavePriority();
             if (dependenciesHavePriority) {
                 return Constraint
-                        .<GanttDate> initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
+                        .initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
                         .withConstraints(taskConstraints)
                         .withConstraints(dependencyConstraints)
                         .applyWithoutFinalCheck();
             } else {
                 return Constraint
-                        .<GanttDate> initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
+                        .initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
                         .withConstraints(dependencyConstraints)
                         .withConstraints(taskConstraints)
                         .applyWithoutFinalCheck();
@@ -687,26 +676,21 @@ public class SaveCommandBuilder {
 
         private boolean isEmptyConsolidation(final Consolidation consolidation) {
             return transactionService
-                    .runOnTransaction(new IOnTransaction<Boolean>() {
-                        @Override
-                        public Boolean execute() {
-
-                            consolidationDAO.reattach(consolidation);
-                            if (consolidation instanceof CalculatedConsolidation) {
-                                SortedSet<CalculatedConsolidatedValue> consolidatedValues =
-                                        ((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues();
-                                return consolidatedValues.isEmpty();
-                            }
-                            if (consolidation instanceof NonCalculatedConsolidation) {
-                                SortedSet<NonCalculatedConsolidatedValue> consolidatedValues =
-                                        ((NonCalculatedConsolidation) consolidation)
-                                                .getNonCalculatedConsolidatedValues();
-                                return consolidatedValues.isEmpty();
-                            }
-
-                            return false;
-
+                    .runOnTransaction(() -> {
+                        consolidationDAO.reattach(consolidation);
+                        if (consolidation instanceof CalculatedConsolidation) {
+                            SortedSet<CalculatedConsolidatedValue> consolidatedValues =
+                                    ((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues();
+                            return consolidatedValues.isEmpty();
                         }
+                        if (consolidation instanceof NonCalculatedConsolidation) {
+                            SortedSet<NonCalculatedConsolidatedValue> consolidatedValues =
+                                    ((NonCalculatedConsolidation) consolidation).getNonCalculatedConsolidatedValues();
+                            return consolidatedValues.isEmpty();
+                        }
+
+                        return false;
+
                     });
         }
 
@@ -849,8 +833,7 @@ public class SaveCommandBuilder {
             }
         }
 
-        private void dontPoseAsTransientObjectAnymore(
-                Collection<? extends BaseEntity> collection) {
+        private void dontPoseAsTransientObjectAnymore(Collection<? extends BaseEntity> collection) {
             for (BaseEntity entity : collection) {
                 entity.dontPoseAsTransientObjectAnymore();
             }
@@ -858,9 +841,11 @@ public class SaveCommandBuilder {
 
         private List<AdvanceMeasurement> getAllMeasurements(Collection<? extends DirectAdvanceAssignment> assignments) {
             List<AdvanceMeasurement> result = new ArrayList<>();
+
             for (DirectAdvanceAssignment each : assignments) {
                 result.addAll(each.getAdvanceMeasurements());
             }
+
             return result;
         }
 
@@ -874,19 +859,23 @@ public class SaveCommandBuilder {
             if (taskElement.isNewObject()) {
                 taskElement.dontPoseAsTransientObjectAnymore();
             }
+
             dontPoseAsTransient(taskElement.getDependenciesWithThisOrigin());
             dontPoseAsTransient(taskElement.getDependenciesWithThisDestination());
             Set<ResourceAllocation<?>> resourceAllocations = taskElement.getAllResourceAllocations();
             dontPoseAsTransientAndChildrenObjects(resourceAllocations);
+
             if (!taskElement.isLeaf()) {
                 for (TaskElement each : taskElement.getChildren()) {
                     dontPoseAsTransient(each);
                 }
             }
+
             if (taskElement instanceof Task) {
                 dontPoseAsTransient(((Task) taskElement).getConsolidation());
                 dontPoseAsTransient(((Task) taskElement).getSubcontractedTaskData());
             }
+
             if (taskElement instanceof TaskGroup) {
                 ((TaskGroup) taskElement).dontPoseAsTransientPlanningData();
             }
@@ -950,8 +939,7 @@ public class SaveCommandBuilder {
     private static final class LabelCreatorForInvalidValues implements IMessagesForUser.ICustomLabelCreator {
 
         @Override
-        public org.zkoss.zk.ui.Component createLabelFor(
-                InvalidValue invalidValue) {
+        public org.zkoss.zk.ui.Component createLabelFor(InvalidValue invalidValue) {
             if ( invalidValue.getRootBean() instanceof OrderElement ) {
                 Label result = new Label();
 
@@ -964,12 +952,14 @@ public class SaveCommandBuilder {
                 }
 
                 result.setValue(orderElementName + ": " + _(invalidValue.getMessage()));
+
                 return result;
             } else if (invalidValue.getRootBean() instanceof HoursGroup) {
                 Label result = new Label();
                 HoursGroup hoursGroup = (HoursGroup) invalidValue.getRootBean();
                 result.setValue(_("Hours Group at {0}", getParentName(hoursGroup)) +
                         ": " + _(invalidValue.getMessage()));
+
                 return result;
             } else {
                 return MessagesForUser.createLabelFor(invalidValue);

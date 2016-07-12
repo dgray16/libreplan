@@ -64,7 +64,8 @@
         </tabs>
         <tabpanels>
             <tabpanel sclass="orderelements-tab">
-                <orderElementTree id="orderElementTree" showCreateTemplateButton="true" />
+                <orderElementTree id="orderElementTree" sclass="orderElementTree" style="width: 100%;"
+                                  showCreateTemplateButton="true" />
             </tabpanel>
             <tabpanel id="tabPanelGeneralData" fulfill="tabGeneralData.onSelect">
              <hbox width="100%">
