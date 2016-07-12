@@ -75,24 +75,6 @@ import org.libreplan.business.util.deepcopy.DeepCopy;
  */
 public class Order extends OrderLineGroup implements Comparable {
 
-    public static Order create() {
-        Order order = new Order();
-        order.setNewObject(true);
-        return order;
-    }
-
-    public static Order createUnvalidated(String code) {
-        Order order = create(new Order(), code);
-        return order;
-    }
-
-    /**
-     * Constructor for hibernate. Do not use!
-     */
-    public Order() {
-
-    }
-
     private String responsible;
 
     private Boolean dependenciesConstraintsHavePriority;
@@ -142,6 +124,24 @@ public class Order extends OrderLineGroup implements Comparable {
     private Integer hoursMargin;
 
     private Integer budgetMargin;
+
+
+    public Order() {
+        /**
+         * Constructor for hibernate. Do not use!
+         */
+    }
+
+    public static Order create() {
+        Order order = new Order();
+        order.setNewObject(true);
+        return order;
+    }
+
+    public static Order createUnvalidated(String code) {
+        Order order = create(new Order(), code);
+        return order;
+    }
 
     public static class CurrentVersionInfo {
 
@@ -695,7 +695,7 @@ public class Order extends OrderLineGroup implements Comparable {
 
     @AssertTrue(message = "task code is repeated inside the project")
     public boolean isUniqueCodeInsideOrderConstraint() {
-        List<String> codes = new ArrayList<String>();
+        List<String> codes = new ArrayList<>();
         codes.add(getCode());
 
         for (OrderElement child : getAllChildren()) {

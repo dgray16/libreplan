@@ -44,8 +44,8 @@ import org.libreplan.business.trees.ITreeParentNode;
 public class OrderLineGroupTemplate extends OrderElementTemplate implements
         ITreeParentNode<OrderElementTemplate> {
 
-    private final CriterionRequirementTemplateHandler criterionRequirementTemplateHandler = CriterionRequirementTemplateHandler
-            .getInstance();
+    private final CriterionRequirementTemplateHandler criterionRequirementTemplateHandler =
+            CriterionRequirementTemplateHandler.getInstance();
 
     private final class ChildrenManipulator extends
             TreeNodeOnListWithSchedulingState<OrderElementTemplate> {
@@ -165,7 +165,7 @@ public class OrderLineGroupTemplate extends OrderElementTemplate implements
 
     private static List<OrderElementTemplate> buildChildrenTemplates(
             OrderLineGroupTemplate parent, List<OrderElement> children) {
-        List<OrderElementTemplate> result = new ArrayList<OrderElementTemplate>();
+        List<OrderElementTemplate> result = new ArrayList<>();
         for (OrderElement each : children) {
             OrderElementTemplate template = each.createTemplate();
             template.setParent(parent);
@@ -174,7 +174,7 @@ public class OrderLineGroupTemplate extends OrderElementTemplate implements
         return result;
     }
 
-    private List<OrderElementTemplate> children = new ArrayList<OrderElementTemplate>();
+    private List<OrderElementTemplate> children = new ArrayList<>();
 
     @Override
     public List<OrderElementTemplate> getChildrenTemplates() {

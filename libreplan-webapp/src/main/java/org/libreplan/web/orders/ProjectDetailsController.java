@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
 import org.libreplan.business.calendars.entities.BaseCalendar;
 import org.libreplan.business.externalcompanies.entities.ExternalCompany;
@@ -38,14 +36,12 @@ import org.libreplan.business.templates.entities.OrderTemplate;
 import org.libreplan.web.common.ConstraintChecker;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
-import org.libreplan.web.planner.consolidations.AdvanceConsolidationController;
 import org.libreplan.web.planner.tabs.MultipleTabsPlannerController;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Desktop;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Checkbox;
@@ -57,8 +53,7 @@ import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 /**
- * Controller for the creation of an {@link order} with its principal
- * properties.
+ * Controller for the creation of an {@link Order} with its principal properties.
  *
  * @author Susana Montes Pedreira <smontes@wirelessgailicia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>

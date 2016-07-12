@@ -34,15 +34,20 @@ import org.zkoss.zul.RowRenderer;
 
 public class OnColumnsRowRenderer<C, T> implements RowRenderer {
 
+    private final List<C> columns;
+
+    private final ICellForDetailItemRenderer<C, T> cellRenderer;
+
+    private Class<T> type;
+
     public static <C, T> OnColumnsRowRenderer<C, T> create(ICellForDetailItemRenderer<C, T> cellRenderer,
                                                            Collection<C> columns) {
 
         return create(inferGenericType(cellRenderer), cellRenderer, columns);
     }
 
-    public static <C, T> OnColumnsRowRenderer<C, T> create(Class<T> type,
-                                                           ICellForDetailItemRenderer<C, T> cellRenderer,
-                                                           Collection<C> columns) {
+    public static <C, T> OnColumnsRowRenderer<C, T> create(
+            Class<T> type, ICellForDetailItemRenderer<C, T> cellRenderer, Collection<C> columns) {
 
         return new OnColumnsRowRenderer<>(type, cellRenderer, columns);
     }
@@ -101,13 +106,9 @@ public class OnColumnsRowRenderer<C, T> implements RowRenderer {
                 renderer.getClass().getName());
     }
 
-    private final List<C> columns;
-    private final ICellForDetailItemRenderer<C, T> cellRenderer;
-    private Class<T> type;
+    private OnColumnsRowRenderer(
+            Class<T> type, ICellForDetailItemRenderer<C, T> cellRenderer, Collection<C> columns) {
 
-    private OnColumnsRowRenderer(Class<T> type,
-                                 ICellForDetailItemRenderer<C, T> cellRenderer,
-                                 Collection<C> columns) {
         Validate.notNull(type);
         Validate.notNull(columns);
         Validate.notNull(cellRenderer);
@@ -119,7 +120,7 @@ public class OnColumnsRowRenderer<C, T> implements RowRenderer {
     }
 
     @Override
-    public void render(Row row, Object o, int i) throws Exception {
+    public void render(Row row, Object o, int index) throws Exception {
         if ( !type.isInstance(o) ) {
             throw new IllegalArgumentException(o + " is not instance of " + type);
         }

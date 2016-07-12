@@ -30,6 +30,6 @@ import org.zkoss.ganttz.extensions.ICommand;
  */
 public interface IReassignCommand extends ICommand<TaskElement> {
 
-    public void setState(PlanningState planningState);
+    void setState(PlanningState planningState);
 
 }

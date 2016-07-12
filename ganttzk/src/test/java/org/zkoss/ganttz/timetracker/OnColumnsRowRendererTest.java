@@ -43,9 +43,7 @@ import org.zkoss.zul.Label;
 
 public class OnColumnsRowRendererTest {
 
-    private static class Data {
-
-    }
+    private static class Data {}
 
     private static class CellRenderer implements ICellForDetailItemRenderer<DetailItem, Data> {
 
@@ -69,8 +67,6 @@ public class OnColumnsRowRendererTest {
 
     private OnColumnsRowRenderer<DetailItem, Data> rowRenderer;
 
-    private DateTime start;
-
     private List<Data> data;
 
     private void givenOnDetailItemsRowRenderer(ICellForDetailItemRenderer<DetailItem, Data> cellRenderer) {
@@ -82,8 +78,7 @@ public class OnColumnsRowRendererTest {
 
     private void givenDetailItems() {
         detailItems = new ArrayList<>();
-        start = new LocalDate(2010, 1, 1).toDateTimeAtStartOfDay().toDateTime();
-        DateTime current = start;
+        DateTime current = new LocalDate(2010, 1, 1).toDateTimeAtStartOfDay().toDateTime();
         Period period = Period.months(2);
 
         for (int i = 1; i <= 10; i++) {
@@ -149,8 +144,9 @@ public class OnColumnsRowRendererTest {
     @Test(expected = IllegalArgumentException.class)
     public void cantRenderObjectsOfOtherType() throws Exception {
         givenOnDetailItemsRowRenderer(createStub());
-        // TODO CHECK THIS CODE ?
-        rowRenderer.render(new Row(), new Object(), 1);
+
+        /* 0 - just dummy value, needed by ZK API*/
+        rowRenderer.render(new Row(), "", 0);
     }
 
     private ICellForDetailItemRenderer<DetailItem, Data> createStub() {
@@ -171,9 +167,9 @@ public class OnColumnsRowRendererTest {
 
     private void renderingTheData() {
         for (Data d : data) {
-            // TODO CHECK THIS CODE ?
             try {
-                rowRenderer.render(new Row(), d, 1);
+                /* 0 - just dummy value, needed by ZK API*/
+                rowRenderer.render(new Row(), d, 0);
             } catch (Exception e) {
                 e.printStackTrace();
             }

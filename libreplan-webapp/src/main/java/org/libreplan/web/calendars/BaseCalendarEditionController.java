@@ -28,7 +28,6 @@ import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.EnumMap;
@@ -53,9 +52,6 @@ import org.libreplan.business.workingday.IntraDayDate.PartialDay;
 import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.Util;
-import org.libreplan.web.common.Util.Getter;
-import org.libreplan.web.common.Util.ICreation;
-import org.libreplan.web.common.Util.Setter;
 import org.libreplan.web.common.components.CapacityPicker;
 import org.libreplan.web.common.components.EffortDurationPicker;
 import org.zkoss.util.Locales;
@@ -74,7 +70,6 @@ import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.ComboitemRenderer;
-import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Hbox;
 import org.zkoss.zul.Label;
@@ -87,9 +82,9 @@ import org.zkoss.zul.Calendar;
 import org.zkoss.zul.Window;
 
 /**
- * Controller for edit and create one {@link BaseCalendar}. It's separated of
- * {@link BaseCalendarCRUDController} to be used from other parts of the
- * application.
+ * Controller for edit and create one {@link BaseCalendar}.
+ * It's separated of {@link BaseCalendarCRUDController} to be used from other parts of the application.
+ *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
@@ -98,30 +93,6 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     private static final String TEXT_COLOR_HIGHLIGHTED_DAY = "white";
 
     private static final String BACKGROUND_COLOR_ZERO_HOURS_DAY = "lightgrey";
-
-    private static String asString(Capacity capacity) {
-        String extraEffortString = capacity.isOverAssignableWithoutLimit()
-                ? _("unl")
-                : asString(capacity.getAllowedExtraEffort());
-
-        return asString(capacity.getStandardEffort()) + " [" + extraEffortString + "]";
-    }
-
-    private static String asString(EffortDuration duration) {
-        if ( duration == null ) {
-            return "";
-        }
-        EnumMap<Granularity, Integer> decomposed = duration.decompose();
-
-        String result = decomposed.get(Granularity.HOURS) + ":";
-        result += decomposed.get(Granularity.MINUTES);
-
-        if ( decomposed.get(Granularity.SECONDS) > 0 ) {
-            result += " " + decomposed.get(Granularity.SECONDS) + "s";
-        }
-
-        return result;
-    }
 
     private IBaseCalendarModel baseCalendarModel;
 
@@ -160,6 +131,30 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         this.messagesForUser = messagesForUser;
     }
 
+    private static String asString(Capacity capacity) {
+        String extraEffortString = capacity.isOverAssignableWithoutLimit()
+                ? _("unl")
+                : asString(capacity.getAllowedExtraEffort());
+
+        return asString(capacity.getStandardEffort()) + " [" + extraEffortString + "]";
+    }
+
+    private static String asString(EffortDuration duration) {
+        if ( duration == null ) {
+            return "";
+        }
+        EnumMap<Granularity, Integer> decomposed = duration.decompose();
+
+        String result = decomposed.get(Granularity.HOURS) + ":";
+        result += decomposed.get(Granularity.MINUTES);
+
+        if ( decomposed.get(Granularity.SECONDS) > 0 ) {
+            result += " " + decomposed.get(Granularity.SECONDS) + "s";
+        }
+
+        return result;
+    }
+
     public abstract void goToList();
 
     public abstract void save();
@@ -188,30 +183,20 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     }
 
     private EffortDurationPicker findOrCreateDurationPicker(Component parent) {
-        return findOrCreate(parent, EffortDurationPicker.class,
-                new ICreation<EffortDurationPicker>() {
+        return findOrCreate(parent, EffortDurationPicker.class, parent1 -> {
+            EffortDurationPicker normalDuration = new EffortDurationPicker();
+            parent1.appendChild(normalDuration);
 
-                    @Override
-                    public EffortDurationPicker createAt(Component parent) {
-                        EffortDurationPicker normalDuration = new EffortDurationPicker();
-                        parent.appendChild(normalDuration);
-
-                        return normalDuration;
-                    }
-                });
+            return normalDuration;
+        });
     }
 
     private Checkbox findOrCreateUnlimitedCheckbox(Component parent) {
-        return findOrCreate(parent, Checkbox.class, new ICreation<Checkbox>() {
+        return findOrCreate(parent, Checkbox.class, parent1 -> {
+            Checkbox result = createUnlimitedCheckbox();
+            parent1.appendChild(result);
 
-            @Override
-            public Checkbox createAt(Component parent) {
-                Checkbox result = createUnlimitedCheckbox();
-                parent.appendChild(result);
-
-                return result;
-            }
-
+            return result;
         });
     }
 
@@ -358,53 +343,32 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             addNormalDurationCell(item, normalDurationPicker);
             addExtraEffortCell(item, extraDurationPicker, unlimitedCheckbox);
 
-            CapacityPicker capacityPicker = CapacityPicker.workWith(unlimitedCheckbox,
+            CapacityPicker capacityPicker = CapacityPicker.workWith(
+                    unlimitedCheckbox,
                     normalDurationPicker,
-                    extraDurationPicker, new Getter<Capacity>() {
-
-                        @Override
-                        public Capacity get() {
-                            return baseCalendarModel.getCapacityAt(day);
-                        }
-                    }, new Setter<Capacity>() {
-
-                        @Override
-                        public void set(Capacity value) {
-                            baseCalendarModel.setCapacityAt(day, value);
-                            reloadDayInformation();
-                        }
+                    extraDurationPicker,
+                    () -> baseCalendarModel.getCapacityAt(day), value -> {
+                        baseCalendarModel.setCapacityAt(day, value);
+                        reloadDayInformation();
                     });
+
             capacityPicker.setDisabled(baseCalendarModel.isDerived() && baseCalendarModel.isDefault(day));
 
             Listcell inheritedListcell = new Listcell();
             if ( baseCalendarModel.isDerived() ) {
-                Checkbox inheritedCheckbox = Util.bind(new Checkbox(),
-                        new Getter<Boolean>() {
 
-                            @Override
-                            public Boolean get() {
-                                return baseCalendarModel.isDefault(day);
-                            }
-                        }, new Setter<Boolean>() {
-
-                            @Override
-                            public void set(Boolean value) {
-                                if ( value ) {
-                                    baseCalendarModel.setDefault(day);
-                                } else {
-                                    baseCalendarModel.unsetDefault(day);
-                                }
+                Checkbox inheritedCheckbox = Util.bind(
+                        new Checkbox(),
+                        () -> baseCalendarModel.isDefault(day),
+                        value -> {
+                            if ( value ) {
+                                baseCalendarModel.setDefault(day);
+                            } else {
+                                baseCalendarModel.unsetDefault(day);
                             }
                         });
-                inheritedCheckbox.addEventListener(Events.ON_CHECK,
-                        new EventListener() {
 
-                            @Override
-                            public void onEvent(Event event) {
-                                reloadCurrentWindow();
-                            }
-
-                        });
+                inheritedCheckbox.addEventListener(Events.ON_CHECK, (EventListener) event -> reloadCurrentWindow());
 
                 inheritedListcell.appendChild(inheritedCheckbox);
             }
@@ -467,8 +431,10 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
         CalendarExceptionType type = baseCalendarModel.getCalendarExceptionType(new LocalDate(selectedDay));
         Combobox exceptionTypes = (Combobox) window.getFellow("exceptionTypes");
+
         @SuppressWarnings("unchecked")
         List<Comboitem> items = exceptionTypes.getItems();
+
         for (Comboitem item : items) {
             CalendarExceptionType value = item.getValue();
             if ( (value == null) && (type == null) ) {
@@ -481,8 +447,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             }
         }
 
-        Datebox dateboxStartDate = (Datebox) window
-                .getFellow("exceptionStartDate");
+        Datebox dateboxStartDate = (Datebox) window.getFellow("exceptionStartDate");
         dateboxStartDate.setValue(toDate(selectedDay));
         Datebox dateboxEndDate = (Datebox) window.getFellow("exceptionEndDate");
         dateboxEndDate.setValue(toDate(selectedDay));
@@ -524,9 +489,9 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     }
 
     private void addDayToColor(Map<String, List<Integer>> colorsMap, String color, int day) {
-        if ( colorsMap.get(color) == null)  {
-            colorsMap.put(color, new ArrayList<Integer>());
-        }
+        if ( colorsMap.get(color) == null)
+            colorsMap.put(color, new ArrayList<>());
+
         colorsMap.get(color).add(day);
     }
 
@@ -537,7 +502,9 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
         Map<String, List<Integer>> daysByColor = getDaysCurrentMonthByColor();
         for (String color : daysByColor.keySet()) {
-            Clients.response(new AuInvoke(calendar, "highlightDates",
+            Clients.response(new AuInvoke(
+                    calendar,
+                    "highlightDates",
                     daysByColor.get(color).toArray(),
                     TEXT_COLOR_HIGHLIGHTED_DAY, color));
         }
@@ -603,6 +570,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     public void createException() {
         Combobox exceptionTypes = (Combobox) window.getFellow("exceptionTypes");
         CalendarExceptionType type = exceptionTypes.getSelectedItem().getValue();
+
         if ( type == null ) {
             throw new WrongValueException(exceptionTypes, _("Please, select type of exception"));
         } else {
@@ -617,6 +585,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         } else {
             Clients.clearWrongValue(dateboxStartDate);
         }
+
         Datebox dateboxEndDate = (Datebox) window.getFellow("exceptionEndDate");
         Date endDate = dateboxEndDate.getValue();
 
@@ -625,6 +594,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         } else {
             Clients.clearWrongValue(dateboxEndDate);
         }
+
         if ( new LocalDate(startDate).compareTo(new LocalDate(endDate)) > 0 ) {
             throw new WrongValueException(dateboxEndDate,
                     _("Exception end date should be greater or equals than start date"));
@@ -633,9 +603,12 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         Capacity capacity = capacityPicker.getValue();
-        baseCalendarModel.createException(type,
-                LocalDate.fromDateFields(startDate), LocalDate.fromDateFields(endDate),
+        baseCalendarModel.createException(
+                type,
+                LocalDate.fromDateFields(startDate),
+                LocalDate.fromDateFields(endDate),
                 capacity);
+
         reloadDayInformation();
     }
 
@@ -704,32 +677,23 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
             final LocalDate dateValidFrom = baseCalendarModel.getValidFrom(version);
             if ( dateValidFrom != null ) {
-                Util.bind(datebox, new Util.Getter<Date>() {
-                    @Override
-                    public Date get() {
-                        return dateValidFrom.toDateTimeAtStartOfDay().toDate();
-                    }
-                });
+
+                Util.bind(
+                        datebox,
+                        () -> dateValidFrom.toDateTimeAtStartOfDay().toDate());
+
                 datebox.setDisabled(false);
             } else {
                 datebox.setDisabled(true);
             }
 
-            datebox.addEventListener(Events.ON_CHANGE, new EventListener() {
-                @Override
-                public void onEvent(Event event) throws Exception {
-                    reloadWorkWeeksList();
-                }
-            });
+            datebox.addEventListener(Events.ON_CHANGE, (EventListener) event -> reloadWorkWeeksList());
 
-            datebox.setConstraint(new Constraint() {
-                @Override
-                public void validate(Component comp, Object value) throws WrongValueException {
-                    try {
-                        baseCalendarModel.checkAndChangeStartDate(version, ((Date) value));
-                    } catch (ValidationException e) {
-                        throw new WrongValueException(comp, e.getMessage());
-                    }
+            datebox.setConstraint((comp, value) -> {
+                try {
+                    baseCalendarModel.checkAndChangeStartDate(version, ((Date) value));
+                } catch (ValidationException e) {
+                    throw new WrongValueException(comp, e.getMessage());
                 }
             });
 
@@ -748,43 +712,32 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                 datebox.setDisabled(true);
             }
 
-            Util.bind(datebox, new Util.Getter<Date>() {
-                @Override
-                public Date get() {
-                    LocalDate expiringDate = version.getExpiringDate();
-                    if ( expiringDate != null ) {
-                        return expiringDate.minusDays(1).toDateTimeAtStartOfDay().toDate();
-                    }
+            Util.bind(
+                    datebox,
+                    () -> {
+                        LocalDate expiringDate1 = version.getExpiringDate();
+                        if ( expiringDate1 != null ) {
+                            return expiringDate1.minusDays(1).toDateTimeAtStartOfDay().toDate();
+                        }
 
-                    return null;
-                }
-            }, new Util.Setter<Date>() {
-                @Override
-                public void set(Date value) {
-                    LocalDate expiringDate = null;
-                    if ( value != null ) {
-                        expiringDate = new LocalDate(value).plusDays(1);
-                    }
-                    version.setExpiringDate(expiringDate);
-                }
-            });
+                        return null;
+                    },
+                    value -> {
+                        LocalDate expiringDate1 = null;
+                        if ( value != null ) {
+                            expiringDate1 = new LocalDate(value).plusDays(1);
+                        }
+                        version.setExpiringDate(expiringDate1);
+                    });
 
-            datebox.addEventListener(Events.ON_CHANGE, new EventListener() {
-                @Override
-                public void onEvent(Event event) throws Exception {
-                    reloadWorkWeeksList();
-                }
-            });
+            datebox.addEventListener(Events.ON_CHANGE, (EventListener) event -> reloadWorkWeeksList());
 
-            datebox.setConstraint(new Constraint() {
-                @Override
-                public void validate(Component comp, Object value) throws WrongValueException {
-                    Date date = ((Date) value);
-                    try {
-                        baseCalendarModel.checkChangeExpiringDate(version, date);
-                    } catch (ValidationException e) {
-                        throw new WrongValueException(comp, e.getMessage());
-                    }
+            datebox.setConstraint((comp, value) -> {
+                Date date = ((Date) value);
+                try {
+                    baseCalendarModel.checkChangeExpiringDate(version, date);
+                } catch (ValidationException e) {
+                    throw new WrongValueException(comp, e.getMessage());
                 }
             });
 
@@ -820,33 +773,26 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             }
 
             comboParents.addEventListener(Events.ON_SELECT,
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event event) throws Exception {
-                            if ( comboParents.getSelectedItem() != null ) {
-                                BaseCalendar parent = (BaseCalendar) comboParents
-                                        .getSelectedItem().getValue();
-                                version.setParent(parent);
-                            }
+                    (EventListener) event -> {
+                        if ( comboParents.getSelectedItem() != null ) {
+                            BaseCalendar parent = (BaseCalendar) comboParents.getSelectedItem().getValue();
+                            version.setParent(parent);
                         }
                     });
 
-            Util.bind(comboParents, new Util.Getter<Comboitem>() {
-                @Override
-                public Comboitem get() {
-                    return comboParents.getSelectedItem();
-                }
-            }, new Util.Setter<Comboitem>() {
-                @Override
-                public void set(Comboitem comboItem) {
-                    if ( ((comboItem != null)) && (comboItem.getValue() != null ) &&
-                            (comboItem.getValue() instanceof BaseCalendar))  {
-                        BaseCalendar parent = comboItem.getValue();
-                        version.setParent(parent);
-                    }
-                }
+            Util.bind(
+                    comboParents,
+                    () -> comboParents.getSelectedItem(),
+                    comboItem -> {
+                        if ( (comboItem != null) &&
+                                (comboItem.getValue() != null ) &&
+                                (comboItem.getValue() instanceof BaseCalendar) )  {
 
-            });
+                            BaseCalendar parent = comboItem.getValue();
+                            version.setParent(parent);
+                        }
+                    });
+
             Listcell listCell = new Listcell();
             listCell.appendChild(comboParents);
             listItem.appendChild(listCell);
@@ -866,17 +812,18 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         private Button createRemoveButton(final CalendarData calendarData) {
-            Button result = createButton("/common/img/ico_borrar1.png",
-                    _("Delete"), "/common/img/ico_borrar.png", "icono",
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event event) {
-                            baseCalendarModel.removeCalendarData(calendarData);
-                            reloadWorkWeeksList();
-                        }
+            Button result = createButton(
+                    "/common/img/ico_borrar1.png",
+                    _("Delete"),
+                    "/common/img/ico_borrar.png",
+                    "icono",
+                    event -> {
+                        baseCalendarModel.removeCalendarData(calendarData);
+                        reloadWorkWeeksList();
                     });
-            if (baseCalendarModel.getBaseCalendar() == null ||
-                    baseCalendarModel.getBaseCalendar().getCalendarDataVersions().size() == 1) {
+
+            if ( baseCalendarModel.getBaseCalendar() == null ||
+                    baseCalendarModel.getBaseCalendar().getCalendarDataVersions().size() == 1 ) {
                 result.setDisabled(true);
             } else {
                 result.setDisabled(false);
@@ -890,6 +837,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                                     String hoverImage,
                                     String styleClass,
                                     EventListener eventListener) {
+
             Button result = new Button("", image);
             result.setHoverImage(hoverImage);
             result.setSclass(styleClass);
@@ -900,22 +848,19 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         private void addEventListener(Listitem item) {
-            item.addEventListener(Events.ON_CLICK, new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    Listitem item = (Listitem) event.getTarget();
-                    CalendarData calendarData = item.getValue();
+            item.addEventListener(Events.ON_CLICK, (EventListener) event -> {
+                Listitem item1 = (Listitem) event.getTarget();
+                CalendarData calendarData = item1.getValue();
 
-                    LocalDate dateValidFrom = baseCalendarModel.getValidFrom(calendarData);
-                    LocalDate expiringDate = calendarData.getExpiringDate();
+                LocalDate dateValidFrom = baseCalendarModel.getValidFrom(calendarData);
+                LocalDate expiringDate = calendarData.getExpiringDate();
 
-                    if ( dateValidFrom != null ) {
-                        goToDate(dateValidFrom.toDateTimeAtStartOfDay().toDate());
-                    } else if ( expiringDate != null ) {
-                        goToDate(expiringDate.minusDays(1).toDateTimeAtStartOfDay().toDate());
-                    } else {
-                        goToDate(new Date());
-                    }
+                if ( dateValidFrom != null ) {
+                    goToDate(dateValidFrom.toDateTimeAtStartOfDay().toDate());
+                } else if ( expiringDate != null ) {
+                    goToDate(expiringDate.minusDays(1).toDateTimeAtStartOfDay().toDate());
+                } else {
+                    goToDate(new Date());
                 }
             });
         }
@@ -1027,15 +972,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     }
 
     public List<CalendarException> getCalendarExceptions() {
-        List<CalendarException> calendarExceptions = new ArrayList<CalendarException>(baseCalendarModel.getCalendarExceptions());
-        Collections.sort(calendarExceptions,
-                new Comparator<CalendarException>() {
-                    @Override
-                    public int compare(CalendarException o1,
-                            CalendarException o2) {
-                        return o1.getDate().compareTo(o2.getDate());
-                    }
-                });
+        List<CalendarException> calendarExceptions = new ArrayList<>(baseCalendarModel.getCalendarExceptions());
+        Collections.sort(calendarExceptions, (o1, o2) -> o1.getDate().compareTo(o2.getDate()));
 
         return calendarExceptions;
     }
@@ -1084,10 +1022,9 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
         private void markAsSelected(Listitem item, CalendarException calendarException) {
             LocalDate selectedDay = baseCalendarModel.getSelectedDay();
-            if ( selectedDay != null ) {
-                if ( calendarException.getDate().equals(selectedDay) ) {
-                    item.setSelected(true);
-                }
+
+            if ( selectedDay != null && calendarException.getDate().equals(selectedDay) )
+                item.setSelected(true);
             }
         }
 
@@ -1128,23 +1065,16 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                 code.setDisabled(getBaseCalendar().isCodeAutogenerated());
             }
 
-            Util.bind(code, new Util.Getter<String>() {
-
-                @Override
-                public String get() {
-                    return calendarException.getCode();
-                }
-            }, new Util.Setter<String>() {
-
-                @Override
-                public void set(String value) {
-                    try {
-                        calendarException.setCode(value);
-                    } catch (IllegalArgumentException e) {
-                        throw new WrongValueException(code, e.getMessage());
-                    }
-                }
-            });
+            Util.bind(
+                    code,
+                    () -> calendarException.getCode(),
+                    value -> {
+                        try {
+                            calendarException.setCode(value);
+                        } catch (IllegalArgumentException e) {
+                            throw new WrongValueException(code, e.getMessage());
+                        }
+                    });
 
             code.setConstraint("no empty:" + _("cannot be empty"));
 
@@ -1155,9 +1085,10 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         private void appendOriginListcell(Listitem item, CalendarException calendarException) {
             Listcell listcell = new Listcell();
             String origin = _("Inherited");
-            if ( baseCalendarModel.isOwnException(calendarException) ) {
+
+            if ( baseCalendarModel.isOwnException(calendarException) )
                 origin = _("Direct");
-            }
+
             listcell.appendChild(new Label(origin));
             item.appendChild(listcell);
         }
@@ -1169,14 +1100,14 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         private Button createRemoveButton(final CalendarException calendarException) {
-            Button result = createButton("/common/img/ico_borrar1.png",
-                    _("Delete"), "/common/img/ico_borrar.png", "icono",
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event event) {
-                            baseCalendarModel.removeException(calendarException.getDate());
-                            reloadDayInformation();
-                        }
+            Button result = createButton(
+                    "/common/img/ico_borrar1.png",
+                    _("Delete"),
+                    "/common/img/ico_borrar.png",
+                    "icono",
+                    event -> {
+                        baseCalendarModel.removeException(calendarException.getDate());
+                        reloadDayInformation();
                     });
             if ( !baseCalendarModel.isOwnException(calendarException) ) {
                 result.setDisabled(true);
@@ -1200,7 +1131,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
             return result;
         }
-    }
+
 
     public boolean isOwnExceptionDay() {
         return baseCalendarModel.isOwnExceptionDay();
@@ -1222,6 +1153,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         } else {
             Clients.clearWrongValue(dateboxStartDate);
         }
+
         Datebox dateboxEndDate = (Datebox) window.getFellow("exceptionEndDate");
         Date endDate = dateboxEndDate.getValue();
 
@@ -1230,6 +1162,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         } else {
             Clients.clearWrongValue(dateboxEndDate);
         }
+
         if ( startDate.compareTo(endDate) > 0 ) {
             throw new WrongValueException(dateboxEndDate,
                     _("Exception end date should be greater or equals than start date"));
@@ -1238,9 +1171,12 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         Capacity capacity = capacityPicker.getValue();
-        baseCalendarModel.updateException(type,
+
+        baseCalendarModel.updateException(
+                type,
                 LocalDate.fromDateFields(startDate),
                 LocalDate.fromDateFields(endDate), capacity);
+
         reloadDayInformation();
     }
 
@@ -1282,31 +1218,24 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             Listcell listcell = new Listcell();
 
             final Datebox datebox = new Datebox();
-            Datebox dateboxValidFrom = Util.bind(datebox,
-                    new Util.Getter<Date>() {
 
-                        @Override
-                        public Date get() {
-                            LocalDate startDate = calendarAvailability.getStartDate();
-                            if ( startDate != null ) {
-                                return startDate.toDateTimeAtStartOfDay().toDate();
-                            }
-
-                            return null;
+            Datebox dateboxValidFrom = Util.bind(
+                    datebox,
+                    () -> {
+                        LocalDate startDate = calendarAvailability.getStartDate();
+                        if ( startDate != null ) {
+                            return startDate.toDateTimeAtStartOfDay().toDate();
                         }
 
-                    }, new Util.Setter<Date>() {
-
-                        @Override
-                        public void set(Date value) {
-                            LocalDate startDate = new LocalDate(value);
-                            try {
-                                baseCalendarModel.setStartDate(calendarAvailability, startDate);
-                            } catch (IllegalArgumentException e) {
-                                throw new WrongValueException(datebox, e.getMessage());
-                            }
+                        return null;
+                    },
+                    value -> {
+                        LocalDate startDate = new LocalDate(value);
+                        try {
+                            baseCalendarModel.setStartDate(calendarAvailability, startDate);
+                        } catch (IllegalArgumentException e) {
+                            throw new WrongValueException(datebox, e.getMessage());
                         }
-
                     });
 
             listcell.appendChild(dateboxValidFrom);
@@ -1317,31 +1246,24 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             Listcell listcell = new Listcell();
 
             final Datebox datebox = new Datebox();
-            Datebox dateboxExpirationDate = Util.bind(datebox,
-                    new Util.Getter<Date>() {
 
-                        @Override
-                        public Date get() {
-                            LocalDate endDate = calendarAvailability.getEndDate();
-                            if ( endDate != null ) {
-                                return endDate.toDateTimeAtStartOfDay().toDate();
-                            }
-                            return null;
+            Datebox dateboxExpirationDate = Util.bind(
+                    datebox,
+                    () -> {
+                        LocalDate endDate = calendarAvailability.getEndDate();
+                        if ( endDate != null ) {
+                            return endDate.toDateTimeAtStartOfDay().toDate();
                         }
+                        return null;
+                    },
+                    value -> {
+                        try {
+                            LocalDate endDate = getAppropiateEndDate(calendarAvailability, value);
 
-                    }, new Util.Setter<Date>() {
-
-                        @Override
-                        public void set(Date value) {
-                            try {
-                                LocalDate endDate = getAppropiateEndDate(calendarAvailability, value);
-
-                                baseCalendarModel.setEndDate(calendarAvailability, endDate);
-                            } catch (IllegalArgumentException e) {
-                                throw new WrongValueException(datebox, e.getMessage());
-                            }
+                            baseCalendarModel.setEndDate(calendarAvailability, endDate);
+                        } catch (IllegalArgumentException e) {
+                            throw new WrongValueException(datebox, e.getMessage());
                         }
-
                     });
 
             listcell.appendChild(dateboxExpirationDate);
@@ -1369,23 +1291,16 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                 code.setDisabled(getBaseCalendar().isCodeAutogenerated());
             }
 
-            Util.bind(code, new Util.Getter<String>() {
-
-                @Override
-                public String get() {
-                    return availability.getCode();
-                }
-            }, new Util.Setter<String>() {
-
-                @Override
-                public void set(String value) {
-                    try {
-                        availability.setCode(value);
-                    } catch (IllegalArgumentException e) {
-                        throw new WrongValueException(code, e.getMessage());
-                    }
-                }
-            });
+            Util.bind(
+                    code,
+                    () -> availability.getCode(),
+                    value -> {
+                        try {
+                            availability.setCode(value);
+                        } catch (IllegalArgumentException e) {
+                            throw new WrongValueException(code, e.getMessage());
+                        }
+                    });
 
             code.setConstraint("no empty:" + _("cannot be empty"));
 
@@ -1400,15 +1315,15 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         private Button createRemoveButton(final CalendarAvailability calendarAvailability) {
-            Button result = createButton("/common/img/ico_borrar1.png",
-                    _("Delete"), "/common/img/ico_borrar.png", "icono",
-                    new EventListener() {
-                        @Override
-                        public void onEvent(Event event) {
-                            baseCalendarModel.removeCalendarAvailability(calendarAvailability);
-                            reloadDayInformation();
-                            reloadActivationPeriods();
-                        }
+            Button result = createButton(
+                    "/common/img/ico_borrar1.png",
+                    _("Delete"),
+                    "/common/img/ico_borrar.png",
+                    "icono",
+                    event -> {
+                        baseCalendarModel.removeCalendarAvailability(calendarAvailability);
+                        reloadDayInformation();
+                        reloadActivationPeriods();
                     });
 
             return result;

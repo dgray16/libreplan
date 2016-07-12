@@ -80,12 +80,8 @@
     width: 500px; !important;
 }
 
-/*.listdetails input {
-    width: 80%; !important;
-} */
 
-
-#listdetails_container .z-datebox-inp,
+#listdetails_container .z-datebox-input,
 #listdetails_container div.z-tree-col-cnt {
     font-size: 9px !important;
     border-bottom: 0px;
@@ -93,7 +89,6 @@
 }
 
 .listdetails input {
-    /* min-width: 90px; */
     height: 19px;
 }
 

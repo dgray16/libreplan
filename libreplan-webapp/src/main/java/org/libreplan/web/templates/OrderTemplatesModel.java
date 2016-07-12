@@ -71,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @OnConcurrentModification(goToPage = "/templates/templates.zul")
 public class OrderTemplatesModel implements IOrderTemplatesModel {
 
-    private static final Map<CriterionType, List<Criterion>> mapCriterions = new HashMap<CriterionType, List<Criterion>>();
+    private static final Map<CriterionType, List<Criterion>> mapCriterions = new HashMap<>();
 
     @Autowired
     private IOrderElementDAO orderElementDAO;

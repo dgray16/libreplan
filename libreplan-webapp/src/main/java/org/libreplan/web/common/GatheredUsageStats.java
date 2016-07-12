@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -36,10 +35,8 @@ import java.util.Properties;
  * If you want to use it, just create a new object and set 2 private variables.
  * All needed data will be already in object.
  *
- * Created by
- * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
+ * @author Created by Vova Perebykivskyi <vova@libreplan-enterprise.com> on 02.08.2016.
  * @author Bogdan Bodnarjuk <bogdan@libreplan-enterprise.com>
- * on 02.08.2016.
  */
 
 public class GatheredUsageStats {
@@ -100,16 +97,17 @@ public class GatheredUsageStats {
 
     private String generateID(){
         // Make hash of ip + hostname
-        WebAuthenticationDetails details = (WebAuthenticationDetails) SecurityContextHolder.getContext()
-                .getAuthentication().getDetails();
+        WebAuthenticationDetails details =
+                (WebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
         String ip = details.getRemoteAddress();
 
         Execution execution = Executions.getCurrent();
         String hostname = execution.getServerName();
 
         String message = ip + hostname;
-        byte[] encoded = null;
-        StringBuffer sb = null;
+        byte[] encoded;
+        StringBuilder sb = null;
 
         try {
             byte[] bytesOfMessage = message.getBytes("UTF-8");
@@ -117,14 +115,12 @@ public class GatheredUsageStats {
             encoded = md5.digest(bytesOfMessage);
 
             // Convert bytes to hex format
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             for (byte anEncoded : encoded) {
                 sb.append(Integer.toString((anEncoded & 0xff) + 0x100, 16).substring(1));
             }
 
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return sb.toString();
@@ -164,7 +160,7 @@ public class GatheredUsageStats {
         HttpURLConnection connection = null;
 
         Properties properties = new Properties();
-        InputStream inputStream = null;
+        InputStream inputStream;
 
         try {
             // You can find it in libreplan-business/src/main/resouces
@@ -193,12 +189,9 @@ public class GatheredUsageStats {
             // No needed code, but it is not working without it
             connection.getInputStream();
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
+        } catch (IOException ignored) {
+
+        } finally {
             if ( connection != null ) {
                 connection.disconnect();
             }
@@ -269,7 +262,7 @@ public class GatheredUsageStats {
     }
 
     private void setOldestDate(List<Order> list){
-        if(!list.isEmpty()) {
+        if (!list.isEmpty()) {
             Date date = list.get(0).getInitDate();
             for (int i = 1; i < list.size(); i++) {
                 if (list.get(i).getInitDate().compareTo(date) < 0) {

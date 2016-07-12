@@ -227,7 +227,7 @@ body .advancedallocationlayout .icono .z-button-cm {
     border-right: 0;
 }
 
-.orderTree .z-datebox-inp {
+.orderTree .z-datebox-input {
     height: 20px;
 }
 
@@ -460,7 +460,7 @@ div.z-row-content {
 }
 
 .z-textbox,.z-decimalbox,.z-intbox,.z-longbox, .z-combobox-inp,
-.z-doublebox, .z-datebox,  .z-datebox-inp, .z-datebox-focus .z-datebox-inp {
+.z-doublebox, .z-datebox,  .z-datebox-input, .z-datebox-focus .z-datebox-input {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
     font-size: 11px;
     padding-left: 2px;
@@ -468,8 +468,8 @@ div.z-row-content {
 
 .leftpanelgap .z-textbox, .leftpanelgap .z-decimalbox, .leftpanelgap .z-intbox,
 .leftpanelgap .z-longbox, .leftpanelgap .z-doublebox, .leftpanelgap .z-datebox,
-.leftpanelgap .z-datebox-inp, .leftpanelgap .z-datebox-focus .z-datebox-inp,
-.leftpanelgap .z-datebox-inp {
+.leftpanelgap .z-datebox-input, .leftpanelgap .z-datebox-focus .z-datebox-input,
+.leftpanelgap .z-datebox-input {
     font-size: 11px;
 }
 
@@ -577,11 +577,11 @@ div.z-grid {
 
 .listdetails .z-textbox, .listdetails .z-decimalbox,
 .listdetails .z-intbox, .listdetails .z-longbox,
-.listdetails .z-doublebox, .listdetails .z-tree .z-datebox-inp {
+.listdetails .z-doublebox, .listdetails .z-tree .z-datebox-input {
     height: 15px;
 }
 
-.listdetails .z-tree .z-datebox-inp {
+.listdetails .z-tree .z-datebox-input {
     padding-top: 3px;
 }
 
@@ -589,7 +589,7 @@ div.z-grid {
     padding-top: 5px;
 }
 
-.z-tree .z-datebox-inp {
+.z-tree .z-datebox-input {
     height:25px;
 }
 .orderTree .operations {
@@ -633,13 +633,13 @@ div.z-grid {
     border:none;
 }
 
-.orderelements-tab .z-datebox-focus .z-datebox-inp  {
+.orderelements-tab .z-datebox-focus .z-datebox-input  {
     border-top: 0;
     border-bottom: 0;
 }
 
-.orderelements-tab .z-datebox-focus .z-datebox-inp,
-.orderelements-tab .z-datebox-inp {
+.orderelements-tab .z-datebox-focus .z-datebox-input,
+.orderelements-tab .z-datebox-input {
     width: auto;
 }
 
@@ -647,7 +647,7 @@ div.z-grid {
     background-color: #DAE7F6;
 }
 
-.listdetails .z-datebox-focus .z-datebox-inp  {
+.listdetails .z-datebox-focus .z-datebox-input {
     border-top: 0;
     border-bottom: 0;
     height: 17px;
@@ -1678,8 +1678,7 @@ tr.z-tree-row-seld .z-row-content {
     overflow: visible !important;
 }
 
-input.z-spinner-text-disd,
-input.z-datebox-text-disd {
+input.z-spinner-text-disd {
     color: #000000 !important;
 }
 .z-calendar .z-calendar-calmon td.z-calendar-seld,
@@ -1896,7 +1895,6 @@ input.z-datebox-text-disd {
 }
 
 .day-details {
-    width: 165px;
     margin: 5px;
 }
 
@@ -2153,4 +2151,6 @@ textarea {
     padding-left: 6px !important;
 }
 
-
+.z-datebox-input {
+    color: #000000 !important;
+}

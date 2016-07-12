@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.libreplan.business.templates.entities" default-access="field">
 
     <class name="OrderElementTemplate" abstract="true" table="order_element_template">
@@ -59,16 +61,16 @@
         </set>
 
         <joined-subclass name="OrderLineGroupTemplate" table="order_line_group_template">
-            <key column="group_template_id"></key>
+            <key column="group_template_id"/>
             <list name="children" access="field" cascade="all">
-                <key column="parent" not-null="false"></key>
-                <index column="position_in_container"></index>
+                <key column="parent" not-null="false"/>
+                <index column="position_in_container"/>
                 <!-- Indexed the other side -->
                 <one-to-many class="OrderElementTemplate" />
             </list>
 
             <joined-subclass name="OrderTemplate" table="order_template">
-                <key column="order_template_id"></key>
+                <key column="order_template_id"/>
                 <!-- Not indexed -->
                 <many-to-one name="calendar" column="base_calendar_id" cascade="none"
                     class="org.libreplan.business.calendars.entities.BaseCalendar"/>
