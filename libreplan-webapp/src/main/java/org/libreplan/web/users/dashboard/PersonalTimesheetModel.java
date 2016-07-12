@@ -183,7 +183,7 @@ public class PersonalTimesheetModel implements IPersonalTimesheetModel {
     private void initCapacityMap() {
         forceLoad(getWorker().getCalendar());
 
-        capacityMap = new HashMap<LocalDate, EffortDuration>();
+        capacityMap = new HashMap<>();
         for (LocalDate day = firstDay; day.compareTo(lastDay) <= 0; day = day.plusDays(1)) {
             capacityMap.put(day, getWorker().getCalendar().getCapacityOn(PartialDay.wholeDay(day)));
         }
@@ -293,9 +293,8 @@ public class PersonalTimesheetModel implements IPersonalTimesheetModel {
     }
 
     private void initMapKey(Map<Long, EffortDuration> map, Long key) {
-        if (map.get(key) == null) {
+        if (map.get(key) == null)
             map.put(key, EffortDuration.zero());
-        }
     }
 
     private void increaseMap(Map<Long, EffortDuration> map, Long key, EffortDuration valueToIncrease) {
@@ -303,9 +302,8 @@ public class PersonalTimesheetModel implements IPersonalTimesheetModel {
     }
 
     private void initMapKey(Map<LocalDate, EffortDuration> map, LocalDate key) {
-        if (map.get(key) == null) {
+        if (map.get(key) == null)
             map.put(key, EffortDuration.zero());
-        }
     }
 
     private void increaseMap(Map<LocalDate, EffortDuration> map, LocalDate key, EffortDuration valueToIncrease) {

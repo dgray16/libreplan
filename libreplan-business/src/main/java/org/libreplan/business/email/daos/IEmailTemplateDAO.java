@@ -29,7 +29,7 @@ import java.util.List;
  * Contract for {@link EmailTemplateDAO}
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 29.09.2015.
  */
 public interface IEmailTemplateDAO extends IGenericDAO<EmailTemplate, Long>{

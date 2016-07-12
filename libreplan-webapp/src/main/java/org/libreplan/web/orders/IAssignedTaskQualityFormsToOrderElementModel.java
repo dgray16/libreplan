@@ -33,7 +33,7 @@ import org.libreplan.business.qualityforms.entities.TaskQualityFormItem;
 
 /**
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public interface IAssignedTaskQualityFormsToOrderElementModel {
 

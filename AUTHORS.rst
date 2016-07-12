@@ -8,7 +8,7 @@ LibrePlan Team
 
 * Jeroen Baten <jeroen@libreplan-enterprise.com>
 * Bjørn Vos <bjorn@libreplan-enterprise.com>
-* Vova Perebykivskiy <vova@libreplan-enterprise.com>
+* Vova Perebykivskyi <vova@libreplan-enterprise.com>
 * Міша Гожда <misha@libreplan-enterprise.com>
 
 

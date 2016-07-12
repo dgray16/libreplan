@@ -63,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Cristina Alvarino Perez <cristina.alvarino@comtecsf.es>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)

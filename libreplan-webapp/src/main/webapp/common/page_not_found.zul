@@ -34,19 +34,20 @@
 
     <window self="@{define(content)}" >
 
-        <vbox apply="org.libreplan.web.error.PageForErrorOnEvent"
-            sclass="errorbox">
+        <vbox apply="org.libreplan.web.error.PageForErrorOnEvent" sclass="errorbox">
 
             <label value="${i18n:_('The page that you are requesting does not exist.')}" />
 
             <hbox>
-                <label value="${i18n:_('If you entered the URL directly in the navigation bar of the browser, please review it or click in the following link in order to go to initial page: ')}" />
+                <label value="${i18n:_('If you entered the URL directly in the navigation bar of the browser,
+                please review it or click in the following link in order to go to initial page: ')}" />
                 <n:a href="${contextPath}/">
                     <label value="${i18n:_('Go to init')}" />
                 </n:a>
             </hbox>
 
-            <label value="${i18n:_('If you reached this page from another page of LibrePlan please notify us in order to fix it as soon as possible.')}" />
+            <label value="${i18n:_('If you reached this page from another page of LibrePlan please notify us
+            in order to fix it as soon as possible.')}" />
 
             <label value="${i18n:_('Sorry for the inconvenience.')}" />
 

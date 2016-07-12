@@ -275,7 +275,6 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             this.end = end;
         }
 
-        // TODO Check this for interval import
         private org.joda.time.Interval intervalAllowed() {
             return new org.joda.time.Interval(start.toDateTimeAtStartOfDay(), end.toDateTimeAtStartOfDay());
         }
@@ -627,7 +626,6 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         table = timeTrackedTableWithLeftPane.getRightPane();
         table.setSclass("timeTrackedTableWithLeftPane");
         leftPane = timeTrackedTableWithLeftPane.getLeftPane();
-        //TODO Check this ?
         leftPane.setSizedByContent(false);
         Clients.evalJavaScript("ADVANCE_ALLOCATIONS.listenToScroll();");
         populateHorizontalListbox();
@@ -1243,7 +1241,6 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
         EffortDuration allEffort = aggregate.getTotalEffort();
         allEffortInput.setValue(allEffort);
-       //TODO Check this ?
         Clients.clearWrongValue(allEffortInput);
 
         if ( isEffortDurationBoxDisabled() ) {

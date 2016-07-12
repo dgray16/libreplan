@@ -37,7 +37,7 @@ import java.util.Properties;
  * All needed data will be already in object.
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * @author Bogdan Bodnarjuk <bogdan@libreplan-enterprise.com>
  * on 02.08.2016.
  */

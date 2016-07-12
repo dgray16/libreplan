@@ -72,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
  * into Libreplan using MPXJ.
  *
  * @author Alba Carro Pérez <alba.carro@gmail.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>>
  */
 @Component
 @Scope(BeanDefinition.SCOPE_SINGLETON)

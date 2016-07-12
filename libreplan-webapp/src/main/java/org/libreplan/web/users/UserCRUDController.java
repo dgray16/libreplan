@@ -71,7 +71,7 @@ import org.zkoss.zul.Groupbox;
  * @author Jacobo Aragunde Perez <jaragunde@igalia.com>
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  * @author Javier Moran Rua <jmoran@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @SuppressWarnings("serial")
 public class UserCRUDController extends BaseCRUDController<User> implements IUserCRUDController {

@@ -283,9 +283,9 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     private int _childCount(T parent) {
         return isLeaf(parent) ? 0 : getChildCount(parent);
     }
+
     @Override
     public T getChild(Object parent, int index) {
-        //TODO To rewrite code correctly
         Node<T> node;
 
         if (parent instanceof MutableTreeModel.Node) {
@@ -299,7 +299,6 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
     @Override
     public int getChildCount(Object parent) {
-        //TODO To rewrite code correctly
         Node<T> node;
 
             if (parent instanceof MutableTreeModel.Node) {

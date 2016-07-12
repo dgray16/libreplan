@@ -71,7 +71,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     private Scenario lastConnectedScenario;
 
-    // if a user is a LibrePlan user or not (ldap)
+    // Iif a user is a LibrePlan user or not (ldap)
     private Boolean librePlanUser = true;
 
     private boolean expandCompanyPlanningViewCharts = false;
@@ -101,8 +101,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
     /**
      * Necessary for Hibernate. Please, do not call it.
      */
-    public User() {
-    }
+    public User() {}
 
     private User(String loginName, String password, Set<UserRole> roles, Set<Profile> profiles) {
         this.loginName = loginName;
@@ -193,6 +192,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
         if (roles.contains(role)) {
             return true;
         }
+
         for (Profile profile : profiles) {
             if (profile.getRoles().contains(role)) {
                 return true;
@@ -378,29 +378,31 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     @AssertTrue(message = "You have exceeded the maximum limit of users")
     public boolean isMaxUsersConstraint() {
-        return Registry.getTransactionService()
-                .runOnAnotherReadOnlyTransaction(new IOnTransaction<Boolean>() {
-                    @Override
-                    public Boolean execute() {
-                        Configuration configuration = Registry.getConfigurationDAO().getConfiguration();
-                        if (configuration == null) {
-                            return true;
-                        }
+        return Registry.getTransactionService().runOnAnotherReadOnlyTransaction(new IOnTransaction<Boolean>() {
+            @Override
+            public Boolean execute() {
+                Configuration configuration = Registry.getConfigurationDAO().getConfiguration();
 
-                        Integer maxUsers = configuration.getMaxUsers();
-                        if (maxUsers != null && maxUsers > 0) {
-                            List<User> users = Registry.getUserDAO().findAll();
-                            int usersNumber = users.size();
-                            if (isNewObject()) {
-                                usersNumber++;
-                            }
-                            if (usersNumber > maxUsers) {
-                                return false;
-                            }
-                        }
-                        return true;
+                if (configuration == null) {
+                    return true;
+                }
+
+                Integer maxUsers = configuration.getMaxUsers();
+                if (maxUsers != null && maxUsers > 0) {
+                    List<User> users = Registry.getUserDAO().findAll();
+                    int usersNumber = users.size();
+
+                    if (isNewObject()) {
+                        usersNumber++;
                     }
-                });
+
+                    if (usersNumber > maxUsers) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     public Label getProjectsFilterLabel() {

@@ -30,7 +30,7 @@ import java.util.Date;
  * It represents the LibrePlan File to be stored in customer`s HDD.
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 25.12.2015.
  */
 

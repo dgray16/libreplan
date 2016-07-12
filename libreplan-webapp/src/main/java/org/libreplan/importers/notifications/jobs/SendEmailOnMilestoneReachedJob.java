@@ -31,7 +31,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * and that are treat to {@link EmailTemplateEnum.TEMPLATE_MILESTONE_REACHED}
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.01.2016.
  *
  */

@@ -82,7 +82,7 @@ import org.zkoss.zul.Tabpanel;
  * Controller for edit {@link Task} popup.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @org.springframework.stereotype.Component("taskPropertiesController")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)

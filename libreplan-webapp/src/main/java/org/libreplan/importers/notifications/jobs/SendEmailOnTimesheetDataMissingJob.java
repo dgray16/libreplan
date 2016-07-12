@@ -30,7 +30,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * and that are treat to {@link EmailTemplateEnum.TEMPLATE_ENTER_DATA_IN_TIMESHEET}
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.01.2016.
  *
  */

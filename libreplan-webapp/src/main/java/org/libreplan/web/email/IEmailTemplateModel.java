@@ -31,7 +31,7 @@ import java.util.List;
  * Contract for {@link EmailTemplate}
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 28.09.2015.
  */
 public interface IEmailTemplateModel {

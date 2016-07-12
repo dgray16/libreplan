@@ -38,7 +38,7 @@ import java.util.Properties;
  * Validate Email Connection properties
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.01.2016.
  */
 

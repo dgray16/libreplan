@@ -28,7 +28,7 @@ import org.libreplan.business.settings.entities.Language;
  * It represents the E-mail template to be modified by admin and send to user.
  *
  *
- * @author Created by Vova Perebykivskiy <vova@libreplan-enterprise.com> on 29.09.2015.
+ * @author Created by Vova Perebykivskyi <vova@libreplan-enterprise.com> on 29.09.2015.
  */
 public class EmailTemplate extends BaseEntity {
 

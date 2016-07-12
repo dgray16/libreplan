@@ -127,7 +127,6 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         return save();
     }
 
-    //TODO Check this exception ?
     private void validate() throws IllegalSyntaxException {
         if ( !validateDataForm() ) {
             throw new IllegalSyntaxException(_("values are not valid, the values must not be null"));

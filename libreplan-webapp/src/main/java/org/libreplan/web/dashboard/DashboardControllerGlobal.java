@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Created
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.11.15.
  */
 
@@ -146,7 +146,6 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
         if ( preSalesOrders.size() > 0 )
             for (int i = 0; i < preSalesOrders.size(); i++){
                 String outputInit = getOrderInitDate(preSalesOrders.get(i));
-                //TODO Constraint for deadLine
                 String outputDeadline = getOrderDeadline(preSalesOrders.get(i));
 
                 ( (Label) pipelineGrid.getCell(i, 0) ).setValue(preSalesOrders.get(i).getName());
@@ -266,11 +265,10 @@ public class DashboardControllerGlobal extends GenericForwardComposer {
     }
 
     public void showStoredColumn() throws ParseException {
-        if ( storedColumnVisible.isChecked() ){
-            if ( storedOrders.size() > 0 ){
-                for (int i = 0; i < storedOrders.size(); i++){
+        if ( storedColumnVisible.isChecked() ) {
+            if ( storedOrders.size() > 0 ) {
+                for (int i = 0; i < storedOrders.size(); i++) {
                     String outputInit = getOrderInitDate(storedOrders.get(i));
-                    //FIXME If deadline is null what input in method?
                     String outputDeadline = getOrderDeadline(storedOrders.get(i));
 
                     pipelineGrid.getCell(i, 8).setVisible(true);

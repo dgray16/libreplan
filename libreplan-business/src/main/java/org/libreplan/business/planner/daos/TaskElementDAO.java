@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Jacobo Aragunde Pérez <jaragunde@igalia.com>
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @Repository
 @Scope(BeanDefinition.SCOPE_SINGLETON)

@@ -130,7 +130,7 @@ public class ReassignCommand implements IReassignCommand {
                         // null if error
                         updater.doUpdate(and(doNotifications(notifications),
                                 reloadCharts(context), busyEnd(),
-                                tellUserOnEnd(context, Messagebox.INFORMATION,
+                                tellUserOnEnd(context,
                                         new Callable<String>() {
 
                                     @Override
@@ -141,7 +141,7 @@ public class ReassignCommand implements IReassignCommand {
                                 })));
                     } else {
                         updater.doUpdate(and(busyEnd(),
-                                tellUserOnEnd(context, Messagebox.EXCLAMATION,
+                                tellUserOnEnd(context,
                                         new Callable<String>() {
 
                                     @Override
@@ -184,67 +184,38 @@ public class ReassignCommand implements IReassignCommand {
     }
 
     private IDesktopUpdate busyStart(final int total) {
-        return new IDesktopUpdate() {
-            @Override
-            public void doUpdate() {
-                // TODO Check this ?
-                Clients.showBusy((org.zkoss.zk.ui.Component) new Object(),_("Doing {0} reassignations", total));
-            }
-        };
+        // TODO investigate
+        return () -> Clients.showBusy((org.zkoss.zk.ui.Component) new Object(),_("Doing {0} reassignations", total));
     }
 
     private IDesktopUpdate showCompleted(final int number, final int total) {
-        return new IDesktopUpdate() {
-
-            @Override
-            public void doUpdate() {
-                // TODO Check this ?
-                Clients.showBusy((org.zkoss.zk.ui.Component) new Object(),_("Done {0} of {1}", number, total));
-            }
-        };
+        // TODO investigate
+        return () -> Clients.showBusy((org.zkoss.zk.ui.Component) new Object(),_("Done {0} of {1}", number, total));
     }
 
     private IDesktopUpdate reloadCharts(final IContext<?> context) {
-        return new IDesktopUpdate() {
-            @Override
-            public void doUpdate() {
-                context.reloadCharts();
-            }
-        };
+        return () -> context.reloadCharts();
     }
 
-    private IDesktopUpdate doNotifications(
-            final GanttDiagramGraph<Task, Dependency>.DeferedNotifier notifier) {
-        return new IDesktopUpdate() {
-            @Override
-            public void doUpdate() {
-                notifier.doNotifications();
-            }
-        };
+    private IDesktopUpdate doNotifications(final GanttDiagramGraph<Task, Dependency>.DeferedNotifier notifier) {
+        return () -> notifier.doNotifications();
     }
 
     private IDesktopUpdate busyEnd() {
-        // TODO Check this ?
-        return new IDesktopUpdate() {
-
-            @Override
-            public void doUpdate() {
-                Clients.showBusy(null, "");
-            }
-        };
+        // TODO investigate
+        return () -> Clients.showBusy(null, "");
     }
 
     private IDesktopUpdate tellUserOnEnd(final IContext<TaskElement> context,
-            String icon, final Callable<String> message) {
-        // using callable so the message is built inside a zk execution and the
-        // locale is correctly retrieved
+                                         final Callable<String> message) {
+
+        // Using callable so the message is built inside a zk execution and the locale is correctly retrieved
 
         return new IDesktopUpdate() {
 
             @Override
             public void doUpdate() {
-                final org.zkoss.zk.ui.Component relativeTo = context
-                        .getRelativeTo();
+                final org.zkoss.zk.ui.Component relativeTo = context.getRelativeTo();
                 final String eventName = "onLater";
 
                 Events.echoEvent(eventName, relativeTo, null);
@@ -254,9 +225,7 @@ public class ReassignCommand implements IReassignCommand {
                     @Override
                     public void onEvent(Event event) {
                         relativeTo.removeEventListener(eventName, this);
-                        Messagebox.show(resolve(message),
-                                _("Reassignation"),
-                                Messagebox.OK, Messagebox.INFORMATION);
+                        Messagebox.show(resolve(message), _("Reassignation"), Messagebox.OK, Messagebox.INFORMATION);
                     }
                 });
             }

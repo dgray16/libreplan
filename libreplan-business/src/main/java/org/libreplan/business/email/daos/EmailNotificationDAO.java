@@ -31,7 +31,7 @@ import java.util.List;
  * Dao for {@link EmailNotification}
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 19.10.2015.
  */
 @Repository

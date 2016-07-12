@@ -35,7 +35,7 @@ import static org.libreplan.web.I18nHelper._;
  * and that are treat to incoming EmailNotification
  *
  * Created by
- * @author Vova Perebykivskiy <vova@libreplan-enterprise.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  * on 20.01.2016.
  */
 

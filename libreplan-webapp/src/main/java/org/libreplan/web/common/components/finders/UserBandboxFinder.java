@@ -76,7 +76,6 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
         return original.toLowerCase().contains(text);
     }
 
-    //TODO Doesn't work cast (User) for obj
     @Override
     public String objectToString(Object obj) {
         User user = (User) obj;

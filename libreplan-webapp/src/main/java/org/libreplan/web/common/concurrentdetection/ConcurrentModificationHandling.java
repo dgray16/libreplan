@@ -23,7 +23,6 @@ package org.libreplan.web.common.concurrentdetection;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -34,8 +33,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 /**
- * Responsible of handling {@link OptimisticLockingFailureException} on Spring
- * beans marked with {@link OnConcurrentModification}
+ * Responsible of handling {@link OptimisticLockingFailureException} on Spring beans
+ * marked with {@link OnConcurrentModification}
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
 @Aspect
@@ -88,7 +88,8 @@ public class ConcurrentModificationHandling {
      *            the annotation applied to object's type
      * @return the object that would be originally returned
      */
-    @Around(value = "methodWithinConcurrentModificationMarkedType(onConcurrentModification)" + " && execution(public * * (..))", argNames = "jointPoint,onConcurrentModification")
+    @Around(value = "methodWithinConcurrentModificationMarkedType(onConcurrentModification)" +
+            " && execution(public * * (..))", argNames = "jointPoint,onConcurrentModification")
     public Object whenConcurrentModification(ProceedingJoinPoint jointPoint,
                                              OnConcurrentModification onConcurrentModification) throws Throwable {
 
