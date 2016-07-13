@@ -22,7 +22,7 @@
 <!-- Task Information -->
 <zk>
 
-    <groupbox sclass="assignedresources" closable="false" width="340px" height="230px" >
+    <groupbox sclass="assignedresources" closable="false" hflex="1" height="230px" >
 
         <caption label="${i18n:_('Allocation configuration')}" />
 

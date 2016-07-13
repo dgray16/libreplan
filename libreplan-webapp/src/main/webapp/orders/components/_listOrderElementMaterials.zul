@@ -33,7 +33,7 @@
         <tab id="tbAssignedMaterials" />
         <tab id="tbSearchMaterials" />
       </tabs>
-      <tabpanels>
+      <tabpanels sclass="tabNormalAllocation">
         <tabpanel>
           <vbox width="100%">
             <!-- Categories -->

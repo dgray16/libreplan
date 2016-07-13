@@ -2199,3 +2199,8 @@ textarea {
 .z-datebox-input {
     color: #000000 !important;
 }
+
+/**/
+.allocationTreeCol > div > table > tbody > tr > td > .z-treecell-content > span.z-dottree-line {
+    display: inline-block;
+}

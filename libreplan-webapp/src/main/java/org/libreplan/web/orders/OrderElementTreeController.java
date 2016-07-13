@@ -393,9 +393,6 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         }
 
         @Override
-        public void render(Treeitem treeitem, Object o) throws Exception {}
-
-        @Override
         protected void addDescriptionCell(OrderElement element) {
             addTaskNameCell(element);
         }
