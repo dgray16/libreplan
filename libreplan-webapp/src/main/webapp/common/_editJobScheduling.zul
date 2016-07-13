@@ -63,6 +63,7 @@
                           constraint="no empty:${i18n:_('cannot be empty')}"
                           model="@{controller.jobNames}"
                           selectedItem="@{controller.jobSchedulerConfiguration.jobClassName}">
+
                     <comboitem self="@{each=jobNames}"
                                label="@{jobNames.name}"
                                value="@{jobNames}" />
@@ -74,6 +75,7 @@
                 <combobox id="connectorCombo" autodrop="true" width="400px"
                           model="@{controller.connectorNames}"
                           selectedItem="@{controller.jobSchedulerConfiguration.connectorName}">
+
                     <comboitem self="@{each=connectorNames}"
                                label="@{connectorNames.name}"
                                value="@{connectorNames}" />

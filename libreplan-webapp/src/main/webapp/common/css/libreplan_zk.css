@@ -2196,3 +2196,7 @@ textarea {
 .z-datebox-input {
     color: #000000 !important;
 }
+
+.z-button[disabled] {
+    background: none;
+}

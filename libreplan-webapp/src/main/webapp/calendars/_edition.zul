@@ -233,10 +233,13 @@
                                              itemRenderer="@{calendarController.editionController.hoursPerDayRenderer}">
                                         <listhead>
                                             <listheader label="${i18n:_('Day of week')}"/>
+
                                             <listheader label="${i18n:_('Normal Effort')}"
                                                         width="200px" />
+
                                             <listheader label="${i18n:_('Extra Effort')}"
-                                                        width="200px" />
+                                                        width="250px" />
+
                                             <listheader label="${i18n:_('Inherited')}"
                                                         width="80px"
                                                         tooltiptext="${i18n:_('Inherited from parent calendar')}" />
@@ -257,15 +260,18 @@
                                         <listbox id="historyInformation"
                                                  model="@{calendarController.editionController.historyVersions}"
                                                  itemRenderer="@{calendarController.editionController.historyVersionsRenderer}">
+
                                             <listhead>
                                                 <listheader label="${i18n:_('Parent')}"
-                                                            width="180px"
+                                                            width="190px"
                                                             visible="@{calendarController.editionController.isDerived}"/>
-                                                <listheader label="${i18n:_('Valid from')}"
-                                                            width="120px" />
-                                                <listheader label="${i18n:_('Valid until')}"
-                                                            width="120px" />
+
+                                                <listheader label="${i18n:_('Valid from')}" width="120px" />
+
+                                                <listheader label="${i18n:_('Valid until')}" width="120px" />
+
                                                 <listheader label="${i18n:_('Summary')}" />
+
                                                 <listheader label="${i18n:_('Op.')}"
                                                             tooltiptext="${i18n:_('Operations')}"
                                                             width="40px" />

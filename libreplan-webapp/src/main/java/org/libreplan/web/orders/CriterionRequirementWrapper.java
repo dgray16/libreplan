@@ -44,10 +44,6 @@ public class CriterionRequirementWrapper  implements INewObject {
 
     public final String DIRECT = _("Direct");
 
-    public static String getIndirectTypeLabel() {
-        return _("Inherited");
-    }
-
     private String type;
 
     private String criterionAndType;
@@ -73,6 +69,7 @@ public class CriterionRequirementWrapper  implements INewObject {
             CriterionRequirement criterionRequirement,
             HoursGroupWrapper hoursGroupWrapper,
             boolean isNewObject) {
+        
         this.criterionAndType = "";
         this.criterionRequirement = criterionRequirement;
         this.hoursGroupWrapper = hoursGroupWrapper;
@@ -85,6 +82,10 @@ public class CriterionRequirementWrapper  implements INewObject {
             CriterionType type = criterion.getType();
             setCriterionWithItsType(new CriterionWithItsType(type, criterion));
         }
+    }
+
+    public static String getIndirectTypeLabel() {
+        return _("Inherited");
     }
 
     public CriterionWithItsType getCriterionWithItsType() {
