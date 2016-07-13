@@ -265,9 +265,12 @@ body .advancedallocationlayout .icono .z-button-cm {
 }
 
 .z-window-header {
-    color: #009900;
-    font-weight: bold;
-    font-size: 1.2em;
+    background: none;
+
+    padding-left: 6px;
+    color: white;
+    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
+    border-radius: 5px 5px 0 0;
 }
 
 .message_ERROR, .message_INFO {
@@ -439,8 +442,14 @@ div.z-row-content {
     background-image: none;
 }
 
-.z-window-popup-header,.z-window-highlighted-header,
-.z-window-overlapped-header,.z-window-header {
+/*
+Only if header is embedded than we should use header with bullet ico.
+Else we will use header with blue image. (.z-window-header)
+*/
+.z-window-embedded .z-window-popup-header,
+.z-window-embedded .z-window-highlighted-header,
+.z-window-embedded .z-window-overlapped-header,
+.z-window-embedded .z-window-header {
     color: #0081C3;
     font-family: Georgia, Tahoma, Arial, Helvetica, sans-serif;
     font-size: 18px;
@@ -2176,6 +2185,7 @@ textarea {
 .depth_1.z-treecell {
     min-width: 1152px;
 }
+
 .orderTree.z-dottree > .z-dottree-body > table > .z-treechildren > .z-treerow > td:nth-child(4) {
     min-width: 50px;
 }
@@ -2186,7 +2196,6 @@ textarea {
     border-left: none;
 }
 
-
 /* Rewrite width for auto generate table */
 .normalResourceAllocation > div > table {
     width: 100% !important;
@@ -2196,6 +2205,7 @@ textarea {
 .tabNormalAllocation > .z-tabpanel > .z-tab {
     display: none;
 }
+
 .z-datebox-input {
     color: #000000 !important;
 }

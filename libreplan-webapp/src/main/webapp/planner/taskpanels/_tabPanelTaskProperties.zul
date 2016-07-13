@@ -41,7 +41,7 @@
             <row>
                 <label value="${i18n:_('End')}" />
                 <datebox id="endDateBox" disabled="true"
-                        value = "@{propertiesController.ganttTaskDTO.endDate}" />
+                         value = "@{propertiesController.ganttTaskDTO.endDate}" />
             </row>
             <row>
                 <label value="${i18n:_('Deadline')}"/>
@@ -62,7 +62,7 @@
             <row>
                 <label value="${i18n:_('Budget')}" />
                 <decimalbox id="budget" disabled="true"
-                    format="@{propertiesController.moneyFormat}" />
+                            format="@{propertiesController.moneyFormat}" />
             </row>
             <row id="startConstraint">
                 <label value="${i18n:_('Constraint')}" />
@@ -74,9 +74,9 @@
             <row id="resourceAllocationType" visible="@{editController.isTask}">
                 <label value="${i18n:_('Resource allocation type')}" />
                 <listbox id="lbResourceAllocationType"
-                    mold="select"
-                    model="@{propertiesController.resourceAllocationTypeOptionList}"
-                    selectedItem="@{propertiesController.resourceAllocationType}"/>
+                         mold="select"
+                         model="@{propertiesController.resourceAllocationTypeOptionList}"
+                         selectedItem="@{propertiesController.resourceAllocationType}"/>
             </row>
         </rows>
     </grid>
