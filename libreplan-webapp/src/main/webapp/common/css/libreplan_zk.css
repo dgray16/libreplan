@@ -277,7 +277,7 @@ body .advancedallocationlayout .icono .z-button-cm {
     border-radius: 10px;
     padding: 15px;
     margin: 10px;
-    width: 300px;
+    width: 367px; /* Special for Bogdan */
 }
 
 .message_WARNING {
@@ -310,7 +310,6 @@ body .advancedallocationlayout .icono .z-button-cm {
 
 .message_INFO span {
     position: relative;
-    top: -10px;
     left: 10px;
 }
 
@@ -341,20 +340,9 @@ h4.message_WARNING {
     width: 400px;
 }
 
-
-/*.z-window-embedded {
-    margin: 10px;
-    margin-top: 5px;
-}*/
-
-.workerwindow {
-
-}
-
 .main-area .z-center-body > .z-div > .z-window-embedded {
     margin-top: 0;
     margin-bottom: 0;
-   /* padding-top: 10px;*/
     background: none;
 }
 
@@ -530,11 +518,10 @@ div.z-footer-cnt,div.z-row-content,div.z-group-cnt,div.z-group-foot-cnt,div.z-co
     color: #006600;
     margin: 10px;
     padding: 15px 15px 15px 50px;
-    width: 300px;
+    width: 367px; /* Special for Bogdan */
 }
 
 div.z-grid {
-    /*background: #DAE7F6 none repeat scroll 0 0;*/
     border: 1px solid #ABC6DE;
     overflow: hidden;
 }

@@ -41,10 +41,35 @@ import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.common.exceptions.ValidationException.InvalidValue;
 import org.libreplan.business.orders.daos.IOrderDAO;
 import org.libreplan.business.orders.daos.IOrderElementDAO;
-import org.libreplan.business.orders.entities.*;
-import org.libreplan.business.planner.daos.*;
-import org.libreplan.business.planner.entities.*;
-import org.libreplan.business.planner.entities.consolidations.*;
+import org.libreplan.business.orders.entities.HoursGroup;
+import org.libreplan.business.orders.entities.ISumChargedEffortRecalculator;
+import org.libreplan.business.orders.entities.ISumExpensesRecalculator;
+import org.libreplan.business.orders.entities.Order;
+import org.libreplan.business.orders.entities.OrderElement;
+import org.libreplan.business.orders.entities.OrderLineGroup;
+import org.libreplan.business.orders.entities.TaskSource;
+import org.libreplan.business.planner.daos.IConsolidationDAO;
+import org.libreplan.business.planner.daos.IDependencyDAO;
+import org.libreplan.business.planner.daos.ISubcontractedTaskDataDAO;
+import org.libreplan.business.planner.daos.ITaskElementDAO;
+import org.libreplan.business.planner.daos.ITaskSourceDAO;
+import org.libreplan.business.planner.entities.DayAssignment;
+import org.libreplan.business.planner.entities.Dependency;
+import org.libreplan.business.planner.entities.DerivedAllocation;
+import org.libreplan.business.planner.entities.DerivedDayAssignment;
+import org.libreplan.business.planner.entities.DerivedDayAssignmentsContainer;
+import org.libreplan.business.planner.entities.ResourceAllocation;
+import org.libreplan.business.planner.entities.SubcontractedTaskData;
+import org.libreplan.business.planner.entities.SubcontractorDeliverDate;
+import org.libreplan.business.planner.entities.Task;
+import org.libreplan.business.planner.entities.TaskElement;
+import org.libreplan.business.planner.entities.TaskGroup;
+import org.libreplan.business.planner.entities.consolidations.CalculatedConsolidatedValue;
+import org.libreplan.business.planner.entities.consolidations.CalculatedConsolidation;
+import org.libreplan.business.planner.entities.consolidations.ConsolidatedValue;
+import org.libreplan.business.planner.entities.consolidations.Consolidation;
+import org.libreplan.business.planner.entities.consolidations.NonCalculatedConsolidatedValue;
+import org.libreplan.business.planner.entities.consolidations.NonCalculatedConsolidation;
 import org.libreplan.business.planner.limiting.daos.ILimitingResourceQueueDependencyDAO;
 import org.libreplan.business.planner.limiting.entities.LimitingResourceQueueDependency;
 import org.libreplan.business.planner.limiting.entities.LimitingResourceQueueElement;
@@ -77,18 +102,21 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import static org.libreplan.business.planner.limiting.entities.LimitingResourceQueueDependency.toQueueDependencyType;
 import static org.libreplan.web.I18nHelper._;
 
 /**
- * Builds a command that saves the changes in the taskElements. It can be
- * considered the final step in the conversation <br />
+ * Builds a command that saves the changes in the taskElements.
+ * It can be considered the final step in the conversation <br />
  *
  * In the save operation it is also kept the consistency of the
- * LimitingResourceQueueDependencies with the Dependecies between the task of
- * the planning gantt.
+ * LimitingResourceQueueDependencies with the Dependecies between the task of the planning gantt.
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Javier Moran Rua <jmoran@igalia.com>
@@ -102,52 +130,6 @@ public class SaveCommandBuilder {
     private static final Log LOG = LogFactory.getLog(SaveCommandBuilder.class);
 
     public static TaskPropertiesController taskPropertiesController;
-
-    public ISaveCommand build(PlanningState planningState, PlannerConfiguration<TaskElement> plannerConfiguration) {
-        SaveCommand result = new SaveCommand(planningState, plannerConfiguration);
-
-        return ConcurrentModificationHandling.addHandling(
-                "/planner/index.zul;company_scheduling", ISaveCommand.class, result);
-    }
-
-    public static void dontPoseAsTransientAndChildrenObjects(
-            Collection<? extends ResourceAllocation<?>> resourceAllocations) {
-
-        for (ResourceAllocation<?> each : resourceAllocations) {
-            each.dontPoseAsTransientObjectAnymore();
-            each.makeAssignmentsContainersDontPoseAsTransientAnyMore();
-
-            for (DayAssignment eachAssignment : each.getAssignments()) {
-                eachAssignment.dontPoseAsTransientObjectAnymore();
-            }
-
-            for (DerivedAllocation eachDerived : each.getDerivedAllocations()) {
-                eachDerived.dontPoseAsTransientObjectAnymore();
-                Collection<DerivedDayAssignmentsContainer> containers = eachDerived.getContainers();
-
-                for (DerivedDayAssignmentsContainer eachContainer : containers) {
-                    eachContainer.dontPoseAsTransientObjectAnymore();
-                }
-
-                for (DerivedDayAssignment eachAssignment : eachDerived.getAssignments()) {
-                    eachAssignment.dontPoseAsTransientObjectAnymore();
-                }
-            }
-            dontPoseAsTransient(each.getLimitingResourceQueueElement());
-        }
-    }
-
-    private static void dontPoseAsTransient(LimitingResourceQueueElement element) {
-        if ( element != null ) {
-            for (LimitingResourceQueueDependency d : element.getDependenciesAsOrigin()) {
-                d.dontPoseAsTransientObjectAnymore();
-            }
-            for (LimitingResourceQueueDependency d : element.getDependenciesAsDestiny()) {
-                d.dontPoseAsTransientObjectAnymore();
-            }
-            element.dontPoseAsTransientObjectAnymore();
-        }
-    }
 
     @Autowired
     private IConsolidationDAO consolidationDAO;
@@ -191,6 +173,53 @@ public class SaveCommandBuilder {
     @Autowired
     private ISumExpensesRecalculator sumExpensesRecalculator;
 
+    public ISaveCommand build(PlanningState planningState, PlannerConfiguration<TaskElement> plannerConfiguration) {
+        SaveCommand result = new SaveCommand(planningState, plannerConfiguration);
+
+        return ConcurrentModificationHandling.addHandling(
+                "/planner/index.zul;company_scheduling", ISaveCommand.class, result);
+    }
+
+    public static void dontPoseAsTransientAndChildrenObjects(
+            Collection<? extends ResourceAllocation<?>> resourceAllocations) {
+
+        for (ResourceAllocation<?> each : resourceAllocations) {
+            each.dontPoseAsTransientObjectAnymore();
+            each.makeAssignmentsContainersDontPoseAsTransientAnyMore();
+
+            for (DayAssignment eachAssignment : each.getAssignments()) {
+                eachAssignment.dontPoseAsTransientObjectAnymore();
+            }
+
+            for (DerivedAllocation eachDerived : each.getDerivedAllocations()) {
+                eachDerived.dontPoseAsTransientObjectAnymore();
+                Collection<DerivedDayAssignmentsContainer> containers = eachDerived.getContainers();
+
+                for (DerivedDayAssignmentsContainer eachContainer : containers) {
+                    eachContainer.dontPoseAsTransientObjectAnymore();
+                }
+
+                for (DerivedDayAssignment eachAssignment : eachDerived.getAssignments()) {
+                    eachAssignment.dontPoseAsTransientObjectAnymore();
+                }
+            }
+            dontPoseAsTransient(each.getLimitingResourceQueueElement());
+        }
+    }
+
+    private static void dontPoseAsTransient(LimitingResourceQueueElement element) {
+        if ( element != null ) {
+            for (LimitingResourceQueueDependency d : element.getDependenciesAsOrigin()) {
+                d.dontPoseAsTransientObjectAnymore();
+            }
+
+            for (LimitingResourceQueueDependency d : element.getDependenciesAsDestiny()) {
+                d.dontPoseAsTransientObjectAnymore();
+            }
+            element.dontPoseAsTransientObjectAnymore();
+        }
+    }
+
 
     private class SaveCommand implements ISaveCommand {
 
@@ -202,7 +231,7 @@ public class SaveCommandBuilder {
 
         private IAdapterToTaskFundamentalProperties<TaskElement> adapter;
 
-        private final List<IAfterSaveListener> listeners = new ArrayList<IAfterSaveListener>();
+        private final List<IAfterSaveListener> listeners = new ArrayList<>();
 
         private boolean disabled = false;
 
@@ -261,23 +290,23 @@ public class SaveCommandBuilder {
                     dontPoseAsTransientObjectAnymore(state.getOrder().getEndDateCommunicationToCustomer());
                     state.getScenarioInfo().afterCommit();
 
-                    if ( state.getOrder().isNeededToRecalculateSumChargedEfforts() ) {
+                    if ( state.getOrder().isNeededToRecalculateSumChargedEfforts() )
                         sumChargedEffortRecalculator.recalculate(state.getOrder().getId());
-                    }
 
-                    if ( state.getOrder().isNeededToRecalculateSumExpenses() ) {
+
+                    if ( state.getOrder().isNeededToRecalculateSumExpenses() )
                         sumExpensesRecalculator.recalculate(state.getOrder().getId());
-                    }
+
 
                     fireAfterSave();
-                    if ( afterSaveActions != null ) {
+                    if ( afterSaveActions != null )
                         afterSaveActions.doActions();
-                    }
+
                 }
             } catch (ValidationException validationException) {
-                if ( Executions.getCurrent() == null ) {
+                if ( Executions.getCurrent() == null )
                     throw validationException;
-                }
+
 
                 String message = "";
 
@@ -312,14 +341,17 @@ public class SaveCommandBuilder {
                 // test environment
                 return;
             }
+
             Messagebox.show(_("Project saved"), _("Information"), Messagebox.OK, Messagebox.INFORMATION);
             if ( Executions.getCurrent() != null ) {
                 // Reset timer of warning on leaving page
                 ConfirmCloseUtil.resetConfirmClose();
-                if ( SecurityUtils.loggedUserCanWrite(state.getOrder()) ) {
-                    ConfirmCloseUtil.setConfirmClose(Executions.getCurrent().getDesktop(),
-                                    _("You are about to leave the planning editing. Unsaved changes will be lost!"));
-                }
+
+                if ( SecurityUtils.loggedUserCanWrite(state.getOrder()) )
+                    ConfirmCloseUtil.setConfirmClose(
+                            Executions.getCurrent().getDesktop(),
+                            _("You are about to leave the planning editing. Unsaved changes will be lost!"));
+
             }
 
         }
@@ -353,9 +385,10 @@ public class SaveCommandBuilder {
             removeTasksToRemove();
             loadDataAccessedWithNotPosedAsTransientInOrder(state.getOrder());
             loadDataAccessedWithNotPosedAsTransient(state.getOrder());
-            if ( state.getRootTask() != null ) {
+
+            if ( state.getRootTask() != null )
                 loadDependenciesCollectionsForTaskRoot(state.getRootTask());
-            }
+
             subcontractedTaskDataDAO.removeOrphanedSubcontractedTaskData();
 
             saveOrderAuthorizations();
@@ -368,6 +401,7 @@ public class SaveCommandBuilder {
         private void removeTaskElementsWithTaskSourceNull() {
             List<TaskElement> toRemove = taskElementDAO.getTaskElementsNoMilestonesWithoutTaskSource();
             List<TaskElement> parentsWithChangesToSave = new ArrayList<>();
+
             for (TaskElement taskElement : toRemove) {
                 try {
                     taskElementDAO.remove(taskElement.getId());
@@ -378,8 +412,7 @@ public class SaveCommandBuilder {
                         parentsWithChangesToSave.add(parent);
                     }
 
-                    LOG.info("TaskElement removed because of TaskSource was null. "
-                            + taskElement);
+                    LOG.info("TaskElement removed because of TaskSource was null. " + taskElement);
                 } catch (InstanceNotFoundException e) {
                     // Do nothing
                     // Maybe it was already removed before reaching this point
@@ -392,12 +425,10 @@ public class SaveCommandBuilder {
         }
 
         private void saveOrderAuthorizations() {
-            for (OrderAuthorization each : state
-                    .getOrderAuthorizationsAddition()) {
+            for (OrderAuthorization each : state.getOrderAuthorizationsAddition()) {
                 orderAuthorizationDAO.save(each);
             }
-            for (OrderAuthorization each : state
-                    .getOrderAuthorizationsRemoval()) {
+            for (OrderAuthorization each : state.getOrderAuthorizationsRemoval()) {
                 try {
                     orderAuthorizationDAO.remove(each.getId());
                 } catch (InstanceNotFoundException e) {
@@ -415,14 +446,15 @@ public class SaveCommandBuilder {
         }
 
         private void createAdvancePercentageIfRequired(OrderElement orderElement) {
-            DirectAdvanceAssignment advancePercentage = orderElement
-                    .getDirectAdvanceAssignmentByType(PredefinedAdvancedTypes.PERCENTAGE.getType());
+            DirectAdvanceAssignment advancePercentage =
+                    orderElement.getDirectAdvanceAssignmentByType(PredefinedAdvancedTypes.PERCENTAGE.getType());
 
-            if ((orderElement.isSchedulingPoint()) && (orderElement.getReportGlobalAdvanceAssignment() == null) &&
-                    (advancePercentage == null)) {
+            if ( (orderElement.isSchedulingPoint()) &&
+                    (orderElement.getReportGlobalAdvanceAssignment() == null) &&
+                    (advancePercentage == null) )
 
                 createAdvancePercentage(orderElement);
-            }
+
         }
 
         private void createAdvancePercentage(OrderElement orderElement) {
@@ -456,18 +488,20 @@ public class SaveCommandBuilder {
             // Check no code is repeated in this order
             if (order instanceof OrderLineGroup) {
                 repeatedOrder = ((OrderLineGroup) order).findRepeatedOrderCode();
-                if (repeatedOrder != null) {
+
+                if (repeatedOrder != null)
                     throw new ValidationException(_("Repeated Project code {0} in Project {1}", repeatedOrder.getCode(),
                             repeatedOrder.getName()));
-                }
+
             }
 
             // Check no code is repeated within the DB
             repeatedOrder = Registry.getOrderElementDAO().findRepeatedOrderCodeInDB(order);
-            if (repeatedOrder != null) {
+
+            if (repeatedOrder != null)
                 throw new ValidationException(_("Repeated Project code {0} in Project {1}", repeatedOrder.getCode(),
                         repeatedOrder.getName()));
-            }
+
         }
 
         private void checkConstraintHoursGroupUniqueCode(Order order) {
@@ -475,19 +509,21 @@ public class SaveCommandBuilder {
 
             if (order != null) {
                 repeatedHoursGroup = (order).findRepeatedHoursGroupCode();
-                if (repeatedHoursGroup != null) {
+
+                if (repeatedHoursGroup != null)
                     throw new ValidationException(_(
                             "Repeated Hours Group code {0} in Project {1}",
                             repeatedHoursGroup.getCode(), repeatedHoursGroup.getParentOrderLine().getName()));
-                }
+
             }
 
             repeatedHoursGroup = Registry.getHoursGroupDAO().findRepeatedHoursGroupCodeInDB(order.getHoursGroups());
-            if (repeatedHoursGroup != null) {
+
+            if (repeatedHoursGroup != null)
                 throw new ValidationException(_(
                         "Repeated Hours Group code {0} in Project {1}",
                         repeatedHoursGroup.getCode(), repeatedHoursGroup.getParentOrderLine().getName()));
-            }
+
         }
 
         private void saveDerivedScenarios(Order order) {
@@ -500,9 +536,10 @@ public class SaveCommandBuilder {
         private void deleteOrderElementWithoutParent(Order order) throws ValidationException {
             List<OrderElement> listToBeRemoved = orderElementDAO.findWithoutParent();
             for (OrderElement orderElement : listToBeRemoved) {
-                if (!(orderElement instanceof Order)) {
+
+                if (!(orderElement instanceof Order))
                     tryToRemove(orderElement);
-                }
+
             }
         }
 
@@ -515,10 +552,10 @@ public class SaveCommandBuilder {
         }
 
         private void tryToRemove(OrderElement orderElement) {
-            // checking no work reports for that orderElement
-            if (orderElementDAO.isAlreadyInUseThisOrAnyOfItsChildren(orderElement)) {
+            // Checking no work reports for that orderElement
+            if (orderElementDAO.isAlreadyInUseThisOrAnyOfItsChildren(orderElement))
                 return;
-            }
+
             try {
                 orderElementDAO.remove(orderElement.getId());
             } catch (InstanceNotFoundException e) {
@@ -542,15 +579,17 @@ public class SaveCommandBuilder {
 
         private void updateTasksRelatedData() {
             TaskGroup rootTask = state.getRootTask();
-            if (rootTask == null) {
+
+            if (rootTask == null)
                 return;
-            }
+
             for (TaskElement taskElement : rootTask.getChildren()) {
                 removeEmptyConsolidation(taskElement);
                 updateLimitingResourceQueueElementDates(taskElement);
-                if (taskElement.getTaskSource() != null && taskElement.getTaskSource().isNewObject()) {
+
+                if (taskElement.getTaskSource() != null && taskElement.getTaskSource().isNewObject())
                     saveTaskSources(taskElement);
-                }
+
                 updateLimitingQueueDependencies(taskElement);
             }
             saveRootTask();
@@ -565,25 +604,26 @@ public class SaveCommandBuilder {
         private void updateRootTaskPosition(TaskGroup rootTask) {
             final IntraDayDate min = TaskElement.minDate(rootTask.getChildren());
 
-            if (min != null) {
+            if (min != null)
                 rootTask.setIntraDayStartDate(min);
-            }
+
 
             final IntraDayDate max = TaskElement.maxDate(rootTask.getChildren());
-            if (max != null) {
+
+            if (max != null)
                 rootTask.setIntraDayEndDate(max);
-            }
+
         }
 
         private void saveTaskSources(TaskElement taskElement) {
             TaskSource taskSource = taskElement.getTaskSource();
-            if (taskSource != null) {
+            if (taskSource != null)
                 taskSourceDAO.save(taskSource);
-            }
 
-            if (taskElement.isLeaf()) {
+
+            if (taskElement.isLeaf())
                 return;
-            }
+
 
             for (TaskElement each : taskElement.getChildren()) {
                 saveTaskSources(each);
@@ -611,20 +651,21 @@ public class SaveCommandBuilder {
                 limiting.updateDates(
                         TaskElementAdapter.toIntraDay(earliestStart),
                         TaskElementAdapter.toIntraDay(earliestEnd));
+
             } catch (Exception e) {
-                // if this fails all the saving shouldn't fail
-                LOG.error(
-                        "error updating associated LimitingResourceQueueElement for task: "
-                                + task, e);
+                // If this fails all the saving shouldn't fail
+                LOG.error("error updating associated LimitingResourceQueueElement for task: " + task, e);
             }
         }
 
         private GanttDate resolveConstraints(Task task, Point point) {
-            List<Constraint<GanttDate>> dependencyConstraints = toConstraints(
-                    adapter.getIncomingDependencies(task), point);
+            List<Constraint<GanttDate>> dependencyConstraints =
+                    toConstraints(adapter.getIncomingDependencies(task), point);
+
             List<Constraint<GanttDate>> taskConstraints = getTaskConstraints(task);
 
             boolean dependenciesHavePriority = configuration.isDependenciesConstraintsHavePriority();
+
             if (dependenciesHavePriority) {
                 return Constraint
                         .initialValue(TaskElementAdapter.toGantt(getOrderInitDate()))
@@ -648,8 +689,9 @@ public class SaveCommandBuilder {
             return LocalDate.fromDateFields(state.getRootTask().getOrderElement().getInitDate());
         }
 
-        private List<Constraint<GanttDate>> toConstraints(List<DomainDependency<TaskElement>> incomingDependencies,
-                Point point) {
+        private List<Constraint<GanttDate>> toConstraints(
+                List<DomainDependency<TaskElement>> incomingDependencies, Point point) {
+
             List<Constraint<GanttDate>> result = new ArrayList<>();
             for (DomainDependency<TaskElement> each : incomingDependencies) {
                 result.addAll(constraintCalculator.getConstraints(each, point));
@@ -661,7 +703,9 @@ public class SaveCommandBuilder {
         private void removeEmptyConsolidation(TaskElement taskElement) {
             if ((taskElement.isLeaf()) && (!taskElement.isMilestone())) {
                 Consolidation consolidation = ((Task) taskElement).getConsolidation();
+
                 if ((consolidation != null) && (isEmptyConsolidation(consolidation))) {
+
                     if (!consolidation.isNewObject()) {
                         try {
                             consolidationDAO.remove(consolidation.getId());
@@ -675,23 +719,25 @@ public class SaveCommandBuilder {
         }
 
         private boolean isEmptyConsolidation(final Consolidation consolidation) {
-            return transactionService
-                    .runOnTransaction(() -> {
-                        consolidationDAO.reattach(consolidation);
-                        if (consolidation instanceof CalculatedConsolidation) {
-                            SortedSet<CalculatedConsolidatedValue> consolidatedValues =
-                                    ((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues();
-                            return consolidatedValues.isEmpty();
-                        }
-                        if (consolidation instanceof NonCalculatedConsolidation) {
-                            SortedSet<NonCalculatedConsolidatedValue> consolidatedValues =
-                                    ((NonCalculatedConsolidation) consolidation).getNonCalculatedConsolidatedValues();
-                            return consolidatedValues.isEmpty();
-                        }
+            return transactionService.runOnTransaction(() -> {
+                consolidationDAO.reattach(consolidation);
 
-                        return false;
+                if (consolidation instanceof CalculatedConsolidation) {
+                    SortedSet<CalculatedConsolidatedValue> consolidatedValues =
+                            ((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues();
 
-                    });
+                    return consolidatedValues.isEmpty();
+                }
+
+                if (consolidation instanceof NonCalculatedConsolidation) {
+                    SortedSet<NonCalculatedConsolidatedValue> consolidatedValues =
+                            ((NonCalculatedConsolidation) consolidation).getNonCalculatedConsolidatedValues();
+
+                    return consolidatedValues.isEmpty();
+                }
+
+                return false;
+            });
         }
 
         private void updateLimitingQueueDependencies(TaskElement t) {
@@ -699,6 +745,7 @@ public class SaveCommandBuilder {
                 addLimitingDependencyIfNeeded(each);
                 removeLimitingDependencyIfNeeded(each);
             }
+
             for (TaskElement each : t.getChildren()) {
                 updateLimitingQueueDependencies(each);
             }
@@ -709,8 +756,9 @@ public class SaveCommandBuilder {
                 LimitingResourceQueueElement origin = calculateQueueElementFromDependency((Task) d.getOrigin());
                 LimitingResourceQueueElement destiny = calculateQueueElementFromDependency((Task) d.getDestination());
 
-                LimitingResourceQueueDependency queueDependency = LimitingResourceQueueDependency
-                        .create(origin, destiny, d, toQueueDependencyType(d.getType()));
+                LimitingResourceQueueDependency queueDependency =
+                        LimitingResourceQueueDependency.create(origin, destiny, d, toQueueDependencyType(d.getType()));
+
                 d.setQueueDependency(queueDependency);
                 limitingResourceQueueDependencyDAO.save(queueDependency);
             }
@@ -719,13 +767,12 @@ public class SaveCommandBuilder {
         private LimitingResourceQueueElement calculateQueueElementFromDependency(Task t) {
 
             LimitingResourceQueueElement result = null;
-            // TODO: Improve this method: One Task can only have one
-            // limiting resource allocation
+            // TODO: Improve this method: One Task can only have one limiting resource allocation
             Set<ResourceAllocation<?>> allocations = t.getLimitingResourceAllocations();
 
-            if (allocations.isEmpty() || allocations.size() != 1) {
+            if (allocations.isEmpty() || allocations.size() != 1)
                 throw new ValidationException("Incorrect limiting resource " + "allocation configuration");
-            }
+
 
             for (ResourceAllocation<?> r : allocations) {
                 result = r.getLimitingResourceQueueElement();
@@ -761,6 +808,7 @@ public class SaveCommandBuilder {
             orderElement.getLabels().size();
             orderElement.getTaskQualityForms().size();
             orderElement.getAllMaterialAssignments().size();
+
             for (HoursGroup hoursGroup : orderElement.getHoursGroups()) {
                 dontPoseAsTransientObjectAnymore(hoursGroup.getCriterionRequirements());
             }
@@ -770,8 +818,7 @@ public class SaveCommandBuilder {
             }
         }
 
-        // avoid LazyInitializationException when forcing the don't pose as
-        // transient
+        // Avoid LazyInitializationException when forcing the don't pose as transient
         private void loadDependenciesCollectionsForTaskRoot(TaskElement taskElement) {
             taskElement.getDependenciesWithThisOrigin().size();
             taskElement.getDependenciesWithThisDestination().size();
@@ -798,11 +845,10 @@ public class SaveCommandBuilder {
         }
 
         private boolean userAcceptsCreateANewOrderVersion() {
-            int status = Messagebox
-                    .show(_("Confirm creating a new project version for this scenario and derived. Are you sure?"),
-                            _("New project version"), Messagebox.OK
-                                    | Messagebox.CANCEL,
-                            Messagebox.QUESTION);
+            int status = Messagebox.show(
+                    _("Confirm creating a new project version for this scenario and derived. Are you sure?"),
+                    _("New project version"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+
             return (Messagebox.OK == status);
         }
 
@@ -850,15 +896,15 @@ public class SaveCommandBuilder {
         }
 
         private void dontPoseAsTransientObjectAnymoreTasks(Collection<? extends TaskElement> taskElements) {
-            for (TaskElement each : taskElements) {
+            for (TaskElement each : taskElements)
                 dontPoseAsTransient(each);
-            }
+
         }
 
         private void dontPoseAsTransient(TaskElement taskElement) {
-            if (taskElement.isNewObject()) {
+            if (taskElement.isNewObject())
                 taskElement.dontPoseAsTransientObjectAnymore();
-            }
+
 
             dontPoseAsTransient(taskElement.getDependenciesWithThisOrigin());
             dontPoseAsTransient(taskElement.getDependenciesWithThisDestination());
@@ -866,9 +912,9 @@ public class SaveCommandBuilder {
             dontPoseAsTransientAndChildrenObjects(resourceAllocations);
 
             if (!taskElement.isLeaf()) {
-                for (TaskElement each : taskElement.getChildren()) {
+                for (TaskElement each : taskElement.getChildren())
                     dontPoseAsTransient(each);
-                }
+
             }
 
             if (taskElement instanceof Task) {
@@ -876,19 +922,19 @@ public class SaveCommandBuilder {
                 dontPoseAsTransient(((Task) taskElement).getSubcontractedTaskData());
             }
 
-            if (taskElement instanceof TaskGroup) {
+            if (taskElement instanceof TaskGroup)
                 ((TaskGroup) taskElement).dontPoseAsTransientPlanningData();
-            }
+
         }
 
         private void dontPoseAsTransient(Consolidation consolidation) {
             if (consolidation != null) {
                 consolidation.dontPoseAsTransientObjectAnymore();
-                if (consolidation.isCalculated()) {
+
+                if (consolidation.isCalculated())
                     dontPoseAsTransient(((CalculatedConsolidation) consolidation).getCalculatedConsolidatedValues());
-                } else {
+                else
                     dontPoseAsTransient(((NonCalculatedConsolidation) consolidation).getNonCalculatedConsolidatedValues());
-                }
             }
         }
 
@@ -905,17 +951,16 @@ public class SaveCommandBuilder {
         }
 
         private void dontPoseAsTransient(SortedSet<? extends ConsolidatedValue> values) {
-            for (ConsolidatedValue value : values) {
+            for (ConsolidatedValue value : values)
                 value.dontPoseAsTransientObjectAnymore();
-            }
         }
 
         private void dontPoseAsTransient(Collection<? extends Dependency> dependencies) {
             for (Dependency each : dependencies) {
                 each.dontPoseAsTransientObjectAnymore();
-                if (each.hasLimitedQueueDependencyAssociated()) {
+
+                if (each.hasLimitedQueueDependencyAssociated())
                     each.getQueueDependency().dontPoseAsTransientObjectAnymore();
-                }
             }
         }
 
@@ -944,21 +989,23 @@ public class SaveCommandBuilder {
                 Label result = new Label();
 
                 String orderElementName;
-                if ( invalidValue.getRootBean() instanceof Order ) {
+
+                if ( invalidValue.getRootBean() instanceof Order )
                     orderElementName = _("Project");
-                } else {
-                    orderElementName = _("Task {0}",
-                            ((OrderElement) invalidValue.getRootBean()).getName());
-                }
+                 else
+                    orderElementName = _("Task {0}", ((OrderElement) invalidValue.getRootBean()).getName());
+
 
                 result.setValue(orderElementName + ": " + _(invalidValue.getMessage()));
 
                 return result;
+
             } else if (invalidValue.getRootBean() instanceof HoursGroup) {
                 Label result = new Label();
                 HoursGroup hoursGroup = (HoursGroup) invalidValue.getRootBean();
-                result.setValue(_("Hours Group at {0}", getParentName(hoursGroup)) +
-                        ": " + _(invalidValue.getMessage()));
+
+                result.setValue(
+                        _("Hours Group at {0}", getParentName(hoursGroup)) + ": " + _(invalidValue.getMessage()));
 
                 return result;
             } else {
