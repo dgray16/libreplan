@@ -264,13 +264,11 @@ public class LongOperationFeedback {
                     throw new RuntimeException(e);
                 }
 
-                if (current.isEnd()) {
+                if (current.isEnd())
                     return;
-                }
 
-                if (!desktop.isAlive() || !desktop.isServerPushEnabled()) {
+                if (!desktop.isAlive() || !desktop.isServerPushEnabled())
                     return;
-                }
 
                 try {
                     Executions.activate(desktop);
@@ -288,13 +286,13 @@ public class LongOperationFeedback {
                         batch.add(current.getValue());
                         original.doUpdate(current.getValue());
                     }
+
                 } finally {
                     Executions.deactivate(desktop);
-                    Clients.clearBusy();
                 }
-                if (current != null && current.isEnd()) {
+
+                if (current != null && current.isEnd())
                     return;
-                }
             }
         }
 
