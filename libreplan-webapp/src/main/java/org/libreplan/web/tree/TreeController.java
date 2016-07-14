@@ -39,6 +39,7 @@ import javax.validation.ValidatorFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.libreplan.business.orders.entities.OrderLineGroup;
 import org.libreplan.business.orders.entities.SchedulingState;
 import org.libreplan.business.orders.entities.SchedulingState.ITypeChangedListener;
 import org.libreplan.business.orders.entities.SchedulingState.Type;
@@ -52,6 +53,7 @@ import org.libreplan.web.common.Util.Setter;
 import org.libreplan.web.orders.DynamicDatebox;
 import org.libreplan.web.orders.SchedulingStateToggler;
 import org.libreplan.web.tree.TreeComponent.Column;
+import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.AbstractComponent;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
@@ -249,6 +251,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         try {
             if (tree.getSelectedCount() == 1) {
                 T node = getSelectedNode();
+                Treeitem selectedItem = tree.getSelectedItem();
 
                 T newNode = getModel().addElementAt(node, name.getValue(), hours.getValue());
                 getRenderer().refreshHoursValueForThisNodeAndParents(newNode);
@@ -263,9 +266,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     nameTextbox = getRenderer().getNameTextbox(node);
                 } else {
                     // select the parent row to add new children ASAP
-
-
-                    tree.setSelectedItem(getRenderer().getTreeitemForNode(newNode.getParent().getThis()));
+                    /**
+                    * Unnecessary to call methods, because org.zkoss.zul.Tree API was changed
+                      tree.setSelectedItem(getRenderer().getTreeitemForNode(node));
+                    */
                 }
             } else {
                 getModel().addElement(name.getValue(), hours.getValue());
@@ -980,7 +984,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
         public void addHoursCell(final T currentElement) {
             Intbox intboxHours = buildHoursIntboxFor(currentElement);
-            hoursIntBoxByElement.put(currentElement, intboxHours);
+                hoursIntBoxByElement.put(currentElement, intboxHours);
             if (readOnly || currentElement.isJiraIssue()) {
                 intboxHours.setDisabled(true);
             }
@@ -1079,18 +1083,9 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             }
         }
 
+       /* Unnecessary methods, because API org.zkoss.zul.Tree was changed */
         public Treeitem getTreeitemForNode(T node) {
-            Component cmp = null;
-
-            for(Map.Entry<T, Intbox> item : hoursIntBoxByElement.entrySet()){
-                if(item.getKey() != null){
-                    if(item.getKey().equals(node)){
-                        cmp = item.getValue();
-                    }
-                }
-            }
-
-            cmp = hoursIntBoxByElement.get(node);
+            Component cmp = hoursIntBoxByElement.get(node);
 
             while (!(cmp instanceof Treeitem)) {
                 cmp = cmp.getParent();
