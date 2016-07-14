@@ -23,7 +23,7 @@
     <vbox id="messagesContainer">
     </vbox>
 
-    <button label="${i18n:_('Upload')}" disabled="@{orderFilesController.isUploadButtonDisabled}" sclass="createButton"
+    <button label="${i18n:_('Upload')}" disabled="@{orderFilesController.isUploadButtonDisabled}" sclass="add-button"
             onClick="orderFilesController.upload();"/>
 
     <separator spacing="15px"/>

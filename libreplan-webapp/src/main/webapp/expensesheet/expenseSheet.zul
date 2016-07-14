@@ -34,7 +34,7 @@
                 <hbox align="center">
 
                   <!-- Create new Expense Sheet  -->
-                  <button label="${i18n:_('New expense sheet')}" sclass="createButton"
+                  <button label="${i18n:_('New expense sheet')}" sclass="add-button"
                           onClick="controller.goToCreateForm()"/>
                 </hbox>
             </div>
@@ -164,7 +164,7 @@
 
                     <separator bar="false" spacing="10px" orient="vertical"/>
 
-                    <button onClick="controller.addExpenseSheetLine();" label="${i18n:_('New')}" sclass="createButton"/>
+                    <button onClick="controller.addExpenseSheetLine();" label="${i18n:_('New')}" sclass="add-button"/>
                 </hbox>
 
                 <separator bar="false" spacing="10px" orient="horizontal"/>

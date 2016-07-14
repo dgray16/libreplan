@@ -40,10 +40,10 @@
                         onOK="treeController.addElement(self.parent);"
                         constraint="no negative" disabled="true" />
                 <button id="btnNew" label="${treeComponent.addElementLabel}"
-                        onClick="treeController.addElement(self.parent);" disabled="true" sclass="createButton" />
+                        onClick="treeController.addElement(self.parent);" disabled="true" sclass="add-button" />
                 <button id="btnNewFromTemplate" label="${i18n:_('Add From Template')}"
                         onClick="treeController.createFromTemplate();" disabled="true"
-                        visible="${treeComponent.createFromTemplateEnabled}" sclass="createButton"/>
+                        visible="${treeComponent.createFromTemplateEnabled}" sclass="add-button"/>
             </hbox>
 
             <hbox hflex="1" height="100%" style="float:right" align="right" pack="right" id="selectedRowButtons" visible="false">

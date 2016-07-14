@@ -95,7 +95,7 @@
         <hbox align="bottom" sclass="add-resources-or-criteria">
             <label value="${i18n:_('New delivery date')}" />
             <datebox id="newDeliverDate" />
-            <button label="${i18n:_('Add')}" onClick="subController.addDeliverDate(newDeliverDate)" sclass="createButton"/>
+            <button label="${i18n:_('Add')}" onClick="subController.addDeliverDate(newDeliverDate)" sclass="add-button"/>
         </hbox>
 
         <separator spacing="20px"/>

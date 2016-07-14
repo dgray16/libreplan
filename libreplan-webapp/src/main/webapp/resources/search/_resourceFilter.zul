@@ -48,7 +48,7 @@
             </hbox>
       </groupbox>
 
-    <button label="${i18n:_('Filter')}" sclass="createButton"
+    <button label="${i18n:_('Filter')}" sclass="add-button"
         tooltiptext="${i18n:_('Apply filtering to resources satisfying required criteria')}"
         onClick="controller.onApplyFilter()"/>
 

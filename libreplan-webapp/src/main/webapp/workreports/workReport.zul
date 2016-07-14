@@ -120,7 +120,7 @@
                        </listitem>
                   </listbox>
 
-                  <button label="${i18n:_('New timesheet')}" sclass="createButton" style="margin-top: -4px"
+                  <button label="${i18n:_('New timesheet')}" sclass="add-button" style="margin-top: -4px"
                           onClick="controller.onCreateNewWorkReport()"/>
                 </hbox>
                 </div>
@@ -241,7 +241,7 @@
                             <groupbox closable="false" >
                             <caption label="${i18n:_('Timesheet lines')}" />
                                     <hbox>
-                                        <button label="${i18n:_('Add new row')}" sclass="createButton"
+                                        <button label="${i18n:_('Add new row')}" sclass="add-button"
                                                 onClick="controller.addWorkReportLine()" />
                                     </hbox>
 

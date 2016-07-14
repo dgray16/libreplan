@@ -28,7 +28,7 @@
 
             <hbox>
                 <button label="${i18n:_('Add new row')}"
-                        sclass="createButton"
+                        sclass="add-button"
                         onClick="assignmentController.addCostCategory()" />
             </hbox>
 

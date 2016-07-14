@@ -81,7 +81,7 @@
                     </hbox>
                 </groupbox>
 
-                <button label="${i18n:_('Filter')}" sclass="createButton"
+                <button label="${i18n:_('Filter')}" sclass="add-button"
                         onClick="controller.onApplyFilterWorkReportLines(event)"/>
             </hbox>
         </div>

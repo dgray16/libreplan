@@ -25,7 +25,7 @@
             <vbox id="messagesContainerAdvances" />
             <vbox align="left" width="100%">
                 <hbox>
-                    <button label="${i18n:_('Add new progress assignment')}" sclass="createButton"
+                    <button label="${i18n:_('Add new progress assignment')}" sclass="add-button"
                             onClick="manageOrderElementAdvancesController.goToCreateLineAdvanceAssignment();">
                     </button>
                 </hbox>

@@ -44,7 +44,7 @@
 
         <!-- Recommended Allocation -->
         <vbox align="bottom">
-            <button id="btnRecommendedAllocation" label="${i18n:_('Recommended allocation')}" sclass="createButton" />
+            <button id="btnRecommendedAllocation" label="${i18n:_('Recommended allocation')}" sclass="add-button" />
         </vbox>
 
     </groupbox>

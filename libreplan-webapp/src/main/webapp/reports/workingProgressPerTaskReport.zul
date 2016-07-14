@@ -83,7 +83,7 @@
                             model="@{controller.allLabels}"
                             widthListbox="380px"
                             widthBandbox="350px"/>
-                        <button label="${i18n:_('Add')}" sclass="createButton"
+                        <button label="${i18n:_('Add')}" sclass="add-button"
                             onClick="controller.onSelectLabel()"
                             style="margin-top: -4px" />
                     </hbox>
@@ -124,7 +124,7 @@
                             model="@{controller.allCriterions}"
                             widthListbox="380px"
                             widthBandbox="350px"/>
-                        <button label="${i18n:_('Add')}" sclass="createButton"
+                        <button label="${i18n:_('Add')}" sclass="add-button"
                             onClick="controller.onSelectCriterion()"
                             style="margin-top: -4px" />
                     </hbox>
@@ -184,7 +184,7 @@
         </hbox>
         <separator spacing="10px" orient="horizontal" />
 
-        <button label="${i18n:_('Show')}" sclass="createButton" onClick="controller.showReport(report)" />
+        <button label="${i18n:_('Show')}" sclass="add-button" onClick="controller.showReport(report)" />
 
         <jasperreportcomponent id="report" />
 

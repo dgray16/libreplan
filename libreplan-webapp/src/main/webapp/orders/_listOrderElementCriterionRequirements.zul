@@ -33,7 +33,7 @@
                 style="overflow:auto" >
             <panelchildren>
                 <hbox align="center">
-                        <button label="${i18n:_('Add')}" sclass="createButton"
+                        <button label="${i18n:_('Add')}" sclass="add-button"
                             tooltiptext="${i18n:_('Add criterion requirement')}"
                             style="margin-bottom: 5px"
                             onClick="criterionRequirementsController.addCriterionRequirementWrapper()" />
@@ -166,7 +166,7 @@
                 <hbox align="center">
                     <button id="buttonAddHoursGroup"
                         label="${i18n:_('Add')}"
-                        sclass="createButton"
+                        sclass="add-button"
                         tooltiptext="${i18n:_('Add new hours group')}"
                         style="margin-bottom: 5px"
                         onClick="criterionRequirementsController.addHoursGroup()" />
@@ -220,11 +220,11 @@
                                     tooltiptext="${i18n:_('Delete')}"
                                     onClick="criterionRequirementsController.deleteHoursGroups(self)" />
                                 <button id="buttonAddCriterion"
-                                    label="${i18n:_('Add Criterion')}" sclass="createButton"
+                                    label="${i18n:_('Add Criterion')}" sclass="add-button"
                                     onClick="criterionRequirementsController.addCriterionToHoursGroup(self)" />
                                 <button id="buttonAddException"
                                     disabled = "@{hoursGroupWrapper.dontExistValidCriterions}"
-                                    label="${i18n:_('Add Exception')}" sclass="createButton"
+                                    label="${i18n:_('Add Exception')}" sclass="add-button"
                                     onClick="criterionRequirementsController.addExceptionToHoursGroups(self)" />
                             </hbox>
                         </row>

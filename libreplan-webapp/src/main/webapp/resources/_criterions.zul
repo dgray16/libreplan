@@ -28,7 +28,7 @@
                 <label value="${i18n:_('New criterion')}" />
 
                 <button onClick="assignedCriterionsController.addCriterionSatisfaction();"
-                        sclass="createButton"
+                        sclass="add-button"
                         label="${i18n:_('Add')}" />
             </hbox>
 

@@ -65,10 +65,10 @@
                         <newAllocationSelectorCombo id="newAllocationSelectorCombo" behaviour="NON_LIMITING"/>
                         <button label="${i18n:_('Add')}"
                             onClick="allocationController.onSelectWorkers(newAllocationSelectorCombo)"
-                            sclass="createButton"
+                            sclass="add-button"
                             disabled="@{allocationController.isAnyManualOrTaskUpdatedFromTimesheets}" />
                         <button id="advancedSearchButton" label="${i18n:_('Advanced search')}"
-                            sclass="createButton"
+                            sclass="add-button"
                             onClick="allocationController.goToAdvancedSearch()" />
                         <checkbox id="extendedViewCheckbox" label="${i18n:_('Extended view')}"
                             onCheck="allocationController.onCheckExtendedView()"/>
@@ -120,9 +120,9 @@
                 <hbox>
                     <button label="${i18n:_('Select')}"
                             onClick="allocationController.onSelectWorkers(newAllocationSelector)"
-                            sclass="createButton"/>
+                            sclass="add-button"/>
                     <button label="${i18n:_('Close')}" onClick="allocationController.onCloseSelectWorkers()"
-                            sclass="createButton"/>
+                            sclass="add-button"/>
                 </hbox>
             </tabpanel>
         </tabpanels>

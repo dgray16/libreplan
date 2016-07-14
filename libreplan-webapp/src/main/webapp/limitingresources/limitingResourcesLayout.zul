@@ -117,7 +117,7 @@
                 <!-- Assign selected elements -->
                 <hbox style="padding-left: 10px; padding-top: 3px">
                     <button id="btnAssignSelectedItems"
-                            label="${i18n:_('Assign selected items')}" sclass="createButton"
+                            label="${i18n:_('Assign selected items')}" sclass="add-button"
                             onClick="limitingResourcesController.assignAllSelectedElements()"/>
                 </hbox>
 

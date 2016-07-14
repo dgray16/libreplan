@@ -51,7 +51,7 @@
                     <caption label="${i18n:_('Association with roles')}" />
                     <hbox align="center">
                         <combobox id="userRolesCombo" autodrop="true" />
-                        <button label="${i18n:_('Add role')}" sclass="createButton"
+                        <button label="${i18n:_('Add role')}" sclass="add-button"
                             onClick="controller.addSelectedRole()"/>
                     </hbox>
                     <grid id="listing" model="@{controller.roles}"

@@ -448,6 +448,7 @@ public class OrderPlanningModel implements IOrderPlanningModel {
         Div div = new Div();
         div.appendChild(loadChart);
         div.setSclass("plannergraph");
+        div.setHeight("170px");
         hbox.appendChild(div);
 
         loadChartPannel.appendChild(hbox);
@@ -506,6 +507,7 @@ public class OrderPlanningModel implements IOrderPlanningModel {
         Div div = new Div();
         div.appendChild(chartEarnedValueTimeplot);
         div.setSclass("plannergraph");
+        div.setHeight("170px");
 
         hbox.appendChild(div);
 

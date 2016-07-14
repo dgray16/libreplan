@@ -104,7 +104,7 @@
                     <hbox>
                         <bandboxSearch id="bdOrders" finder="OrderBandboxFinder" model="@{controller.allOrders}"
                             widthListbox="680px" widthBandbox="480px"/>
-                        <button label="${i18n:_('Add')}" sclass="createButton"
+                        <button label="${i18n:_('Add')}" sclass="add-button"
                             onClick="controller.onSelectOrder()" style="margin-top: -4px" />
                     </hbox>
                  </vbox>
@@ -165,7 +165,7 @@
         </hbox>
         <separator spacing="10px" orient="horizontal" />
 
-        <button label="${i18n:_('Show')}" sclass="createButton" onClick="controller.showReport(report)" />
+        <button label="${i18n:_('Show')}" sclass="add-button" onClick="controller.showReport(report)" />
 
         <jasperreportcomponent id="report" />
     </window>

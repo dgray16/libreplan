@@ -32,7 +32,7 @@
                     <hbox>
                         <bandboxSearch id="bdQualityForms" finder="QualityFormBandboxFinder"
                             model="@{assignedTaskQualityFormsController.notAssignedQualityForms}" widthBandbox="200px" widthListbox="600px" />
-                        <button label="${i18n:_('Assign')}" sclass="createButton"
+                        <button label="${i18n:_('Assign')}" sclass="add-button"
                             onClick="assignedTaskQualityFormsController.onAssignTaskQualityForm()"
                             style="margin-top: -4px" />
                     </hbox>

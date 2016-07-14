@@ -78,7 +78,7 @@
                         <panelchildren>
 
                             <hbox sclass="hour-cost-button">
-                                <button label="${i18n:_('Add new row')}" sclass="createButton"
+                                <button label="${i18n:_('Add new row')}" sclass="add-button"
                                         onClick="controller.addHourCost()" />
                             </hbox>
 

@@ -1266,7 +1266,13 @@ tr.z-treerow-over input {
     width: 60px !important;
 }
 
-.scheduling-graphics .z-tab-ver .z-tab-ver-text {
+.scheduling-graphics .z-tab .z-tab-text {
+    white-space: normal;
+    text-overflow: clip;
+}
+
+/* Display value tab in normal white space */
+.scheduling-graphics  .z-tabbox-left>.z-tabs .z-tab-selected .z-tab-text {
     white-space: normal;
 }
 
@@ -1863,6 +1869,7 @@ td.z-calendar-selected {
 }
 
 .timeplot-container {
+    height: 170px !important;
     margin-left: 8px;
 }
 
@@ -2054,22 +2061,22 @@ select {
 }
 
 /* Made for create buttons, because default ZK css is not work correctly for create button */
-.createButton {
+.add-button {
     background-color: #E4F3D9;
     background-image: none !important;
 }
 
-.createButton:hover {
+.add-button:hover {
     background: none;
     background-color: #C3EAAF;
 }
 
-.createButton:focus {
+.add-button:focus {
     background: none;
     background-color: #C3EAAF;
 }
 
-.createButton:disabled {
+.add-button:disabled {
     background: none;
     background-color: #C3EAAF;
 }
@@ -2198,12 +2205,11 @@ textarea {
     color: #000000 !important;
 }
 
-/**/
-.allocationTreeCol > div > table > tbody > tr > td > .z-treecell-content > span.z-dottree-line {
-    display: inline-block;
+.scheduling-graphics .z-tabpanels .z-tabpanel {
+    padding: 0 !important;
 }
 
-
-.z-button[disabled] {
-    background: none;
+.scheduling-graphics .z-south-header {
+    height: 23px;
+    padding-top: 0;
 }
