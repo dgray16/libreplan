@@ -81,21 +81,20 @@
                                   value="@{calendarController.editionController.selectedDay}">
 
                             <attribute w:name="highlightDates">
-                                function (days, textColor, bgColor) {
-                                    var nodes = $('td', this).not('.z-outside');
+                                function ( days, textColor, bgColor ) {
+                                    var nodes = $('td', this).not('.z-calendar-outside');
 
                                     nodes.each(function () {
-                                        var day = parseInt($(this).attr('_dt'));
-                                        if (jQuery.inArray(day, days) > -1) {
-                                        $(this).css({color: textColor, backgroundColor: bgColor});
-                                        }
+                                        var day = parseInt( $(this).text() );
+                                        if ( jQuery.inArray(day, days) > -1 )
+                                            $(this).css({color: textColor, backgroundColor: bgColor});
                                     });
                                 }
                             </attribute>
 
                             <attribute w:name="resetHighlightedDates">
                                 function () {
-                                    var nodes = $('td', this).not('.z-outside');
+                                    var nodes = $('td', this).not('.z-calendar-outside');
                                     nodes.each(function () {
                                         $(this).css({color: "black", backgroundColor: "white"});
                                     });

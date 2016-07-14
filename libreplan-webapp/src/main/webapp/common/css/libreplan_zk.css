@@ -1681,16 +1681,17 @@ tr.z-tree-row-seld .z-row-content {
 input.z-spinner-text-disd {
     color: #000000 !important;
 }
-.z-calendar .z-calendar-calmon td.z-calendar-seld,
-.z-calendar .z-calendar-calday td.z-calendar-seld {
+.z-calendar td.z-calendar-selected,
+.z-calendar .z-calendar-body td.z-calendar-selected {
     padding: 0;
 }
 
-.z-calendar .z-outside {
+.z-calendar .z-calendar-outside {
     color: #CCC;
 }
 
-.z-calendar-calday td.z-calendar-seld {
+
+td.z-calendar-selected {
     font-weight: bold;
 }
 
