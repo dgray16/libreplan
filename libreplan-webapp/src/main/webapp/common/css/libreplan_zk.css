@@ -265,16 +265,19 @@ body .advancedallocationlayout .icono .z-button-cm {
 }
 
 .z-window-header {
-    color: #009900;
-    font-weight: bold;
-    font-size: 1.2em;
+    background: none;
+
+    padding-left: 6px;
+    color: white;
+    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
+    border-radius: 5px 5px 0 0;
 }
 
 .message_ERROR, .message_INFO {
     border-radius: 10px;
     padding: 15px;
     margin: 10px;
-    width: 300px;
+    width: 367px; /* Special for Bogdan */
 }
 
 .message_WARNING {
@@ -307,7 +310,6 @@ body .advancedallocationlayout .icono .z-button-cm {
 
 .message_INFO span {
     position: relative;
-    top: -10px;
     left: 10px;
 }
 
@@ -338,20 +340,9 @@ h4.message_WARNING {
     width: 400px;
 }
 
-
-/*.z-window-embedded {
-    margin: 10px;
-    margin-top: 5px;
-}*/
-
-.workerwindow {
-
-}
-
 .main-area .z-center-body > .z-div > .z-window-embedded {
     margin-top: 0;
     margin-bottom: 0;
-   /* padding-top: 10px;*/
     background: none;
 }
 
@@ -439,8 +430,14 @@ div.z-row-content {
     background-image: none;
 }
 
-.z-window-popup-header,.z-window-highlighted-header,
-.z-window-overlapped-header,.z-window-header {
+/*
+Only if header is embedded than we should use header with bullet ico.
+Else we will use header with blue image. (.z-window-header)
+*/
+.z-window-embedded .z-window-popup-header,
+.z-window-embedded .z-window-highlighted-header,
+.z-window-embedded .z-window-overlapped-header,
+.z-window-embedded .z-window-header {
     color: #0081C3;
     font-family: Georgia, Tahoma, Arial, Helvetica, sans-serif;
     font-size: 18px;
@@ -521,11 +518,10 @@ div.z-footer-cnt,div.z-row-content,div.z-group-cnt,div.z-group-foot-cnt,div.z-co
     color: #006600;
     margin: 10px;
     padding: 15px 15px 15px 50px;
-    width: 300px;
+    width: 367px; /* Special for Bogdan */
 }
 
 div.z-grid {
-    /*background: #DAE7F6 none repeat scroll 0 0;*/
     border: 1px solid #ABC6DE;
     overflow: hidden;
 }
@@ -1685,16 +1681,17 @@ tr.z-tree-row-seld .z-row-content {
 input.z-spinner-text-disd {
     color: #000000 !important;
 }
-.z-calendar .z-calendar-calmon td.z-calendar-seld,
-.z-calendar .z-calendar-calday td.z-calendar-seld {
+.z-calendar td.z-calendar-selected,
+.z-calendar .z-calendar-body td.z-calendar-selected {
     padding: 0;
 }
 
-.z-calendar .z-outside {
+.z-calendar .z-calendar-outside {
     color: #CCC;
 }
 
-.z-calendar-calday td.z-calendar-seld {
+
+td.z-calendar-selected {
     font-weight: bold;
 }
 
@@ -2176,6 +2173,7 @@ textarea {
 .depth_1.z-treecell {
     min-width: 1152px;
 }
+
 .orderTree.z-dottree > .z-dottree-body > table > .z-treechildren > .z-treerow > td:nth-child(4) {
     min-width: 50px;
 }
@@ -2186,7 +2184,6 @@ textarea {
     border-left: none;
 }
 
-
 /* Rewrite width for auto generate table */
 .normalResourceAllocation > div > table {
     width: 100% !important;
@@ -2196,6 +2193,7 @@ textarea {
 .tabNormalAllocation > .z-tabpanel > .z-tab {
     display: none;
 }
+
 .z-datebox-input {
     color: #000000 !important;
 }
@@ -2203,4 +2201,9 @@ textarea {
 /**/
 .allocationTreeCol > div > table > tbody > tr > td > .z-treecell-content > span.z-dottree-line {
     display: inline-block;
+}
+
+
+.z-button[disabled] {
+    background: none;
 }

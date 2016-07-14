@@ -43,15 +43,14 @@ import org.zkoss.ganttz.extensions.IContextWithPlannerTask;
 
 /**
  * Model for UI operations related to {@link Task}
+ *
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class AdvanceAssignmentPlanningModel implements
-        IAdvanceAssignmentPlanningModel {
+public class AdvanceAssignmentPlanningModel implements IAdvanceAssignmentPlanningModel {
 
-    private static final Log LOG = LogFactory
-            .getLog(AdvanceAssignmentPlanningModel.class);
+    private static final Log LOG = LogFactory.getLog(AdvanceAssignmentPlanningModel.class);
 
     @Autowired
     private ITaskElementDAO taskElementDAO;

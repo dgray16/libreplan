@@ -49,8 +49,7 @@ public interface IExpenseSheetModel extends IIntegrationEntityModel {
 
     List<ExpenseSheet> getExpenseSheets();
 
-    void removeExpenseSheet(ExpenseSheet expenseSheet)
-            throws InstanceNotFoundException;
+    void removeExpenseSheet(ExpenseSheet expenseSheet) throws InstanceNotFoundException;
 
     ExpenseSheet getExpenseSheet();
 
@@ -73,11 +72,10 @@ public interface IExpenseSheetModel extends IIntegrationEntityModel {
     void generateExpenseSheetLineCodesIfIsNecessary();
 
     /**
-     * Returns the {@link Resource} associated to the <b>personal</b>
-     * {@link ExpenseSheet}.<br />
+     * Returns the {@link Resource} associated to the <b>personal</b> {@link ExpenseSheet}.<br />
      *
-     * In <b>personal</b> {@link ExpenseSheet ExpenseSheets} all
-     * {@link ExpenseSheetLine} has the same {@link Resource}.<br />
+     * In <b>personal</b> {@link ExpenseSheet ExpenseSheets} all {@link ExpenseSheetLine} has the same {@link Resource}.
+     * <br />
      *
      * It tries to get the {@link Resource} from the first {@link ExpenseSheet}
      * and if not it tries to get it from bound {@link User}.
@@ -88,8 +86,7 @@ public interface IExpenseSheetModel extends IIntegrationEntityModel {
 
     /**
      * Returns <code>true</code> if the {@link ExpenseSheet} is
-     * <strong>personal</strong> and belongs to the worker associated to current
-     * user.
+     * <strong>personal</strong> and belongs to the worker associated to current user.
      */
     boolean isPersonalAndBelognsToCurrentUser(ExpenseSheet expenseSheet);
 

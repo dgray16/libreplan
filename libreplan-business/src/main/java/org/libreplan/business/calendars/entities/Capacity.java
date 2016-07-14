@@ -33,12 +33,17 @@ import org.libreplan.business.workingday.EffortDuration.Granularity;
 
 
 /**
- * This class is intended as a Hibernate component. It's formed by two
- * components, the standard effort and the allowed extra effort. It represents
- * the capacity for a resource.
+ * This class is intended as a Hibernate component.
+ * It's formed by two components, the standard effort and the allowed extra effort.
+ * It represents the capacity for a resource.
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
 public class Capacity {
+
+    private EffortDuration standardEffort;
+
+    private EffortDuration allowedExtraEffort;
 
     public static Capacity sum(Capacity... capacities) {
         return sum(Arrays.asList(capacities));
@@ -56,8 +61,7 @@ public class Capacity {
     }
 
     public static Capacity min(Capacity a, Capacity b) {
-        return new Capacity(EffortDuration.min(a.getStandardEffort(),
-                b.getStandardEffort()), minExtraEffort(a, b));
+        return new Capacity(EffortDuration.min(a.getStandardEffort(), b.getStandardEffort()), minExtraEffort(a, b));
     }
 
     private static EffortDuration minExtraEffort(Capacity a, Capacity b) {
@@ -90,17 +94,14 @@ public class Capacity {
     }
 
     private static Capacity noCapacity() {
-        return Capacity.create(EffortDuration.zero())
-                .notOverAssignableWithoutLimit();
+        return Capacity.create(EffortDuration.zero()).notOverAssignableWithoutLimit();
     }
 
     public static Capacity zero() {
         return new Capacity(EffortDuration.zero(), EffortDuration.zero());
     }
 
-    private EffortDuration standardEffort;
 
-    private EffortDuration allowedExtraEffort;
 
     /**
      * Default constructor for hibernate. DO NOT USE!

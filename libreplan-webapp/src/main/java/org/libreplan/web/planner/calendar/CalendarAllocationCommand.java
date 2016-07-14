@@ -41,16 +41,12 @@ public class CalendarAllocationCommand implements ICalendarAllocationCommand {
 
     private CalendarAllocationController calendarAllocationController;
 
-    public CalendarAllocationCommand() {
-    }
+    public CalendarAllocationCommand() {}
 
     @Override
-    public void doAction(IContextWithPlannerTask<TaskElement> context,
-            TaskElement task) {
-        if (isApplicableTo(task)) {
-            this.calendarAllocationController.showWindow((Task) task, context
-                    .getTask());
-        }
+    public void doAction(IContextWithPlannerTask<TaskElement> context, TaskElement task) {
+        if (isApplicableTo(task))
+            this.calendarAllocationController.showWindow((Task) task);
     }
 
     @Override
@@ -59,8 +55,7 @@ public class CalendarAllocationCommand implements ICalendarAllocationCommand {
     }
 
     @Override
-    public void setCalendarAllocationController(
-            CalendarAllocationController calendarAllocationController) {
+    public void setCalendarAllocationController(CalendarAllocationController calendarAllocationController) {
         this.calendarAllocationController = calendarAllocationController;
     }
 

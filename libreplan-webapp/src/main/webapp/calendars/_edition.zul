@@ -81,21 +81,20 @@
                                   value="@{calendarController.editionController.selectedDay}">
 
                             <attribute w:name="highlightDates">
-                                function (days, textColor, bgColor) {
-                                    var nodes = $('td', this).not('.z-outside');
+                                function ( days, textColor, bgColor ) {
+                                    var nodes = $('td', this).not('.z-calendar-outside');
 
                                     nodes.each(function () {
-                                        var day = parseInt($(this).attr('_dt'));
-                                        if (jQuery.inArray(day, days) > -1) {
-                                        $(this).css({color: textColor, backgroundColor: bgColor});
-                                        }
+                                        var day = parseInt( $(this).text() );
+                                        if ( jQuery.inArray(day, days) > -1 )
+                                            $(this).css({color: textColor, backgroundColor: bgColor});
                                     });
                                 }
                             </attribute>
 
                             <attribute w:name="resetHighlightedDates">
                                 function () {
-                                    var nodes = $('td', this).not('.z-outside');
+                                    var nodes = $('td', this).not('.z-calendar-outside');
                                     nodes.each(function () {
                                         $(this).css({color: "black", backgroundColor: "white"});
                                     });
@@ -233,10 +232,13 @@
                                              itemRenderer="@{calendarController.editionController.hoursPerDayRenderer}">
                                         <listhead>
                                             <listheader label="${i18n:_('Day of week')}"/>
+
                                             <listheader label="${i18n:_('Normal Effort')}"
                                                         width="200px" />
+
                                             <listheader label="${i18n:_('Extra Effort')}"
-                                                        width="200px" />
+                                                        width="250px" />
+
                                             <listheader label="${i18n:_('Inherited')}"
                                                         width="80px"
                                                         tooltiptext="${i18n:_('Inherited from parent calendar')}" />
@@ -257,15 +259,18 @@
                                         <listbox id="historyInformation"
                                                  model="@{calendarController.editionController.historyVersions}"
                                                  itemRenderer="@{calendarController.editionController.historyVersionsRenderer}">
+
                                             <listhead>
                                                 <listheader label="${i18n:_('Parent')}"
-                                                            width="180px"
+                                                            width="190px"
                                                             visible="@{calendarController.editionController.isDerived}"/>
-                                                <listheader label="${i18n:_('Valid from')}"
-                                                            width="120px" />
-                                                <listheader label="${i18n:_('Valid until')}"
-                                                            width="120px" />
+
+                                                <listheader label="${i18n:_('Valid from')}" width="120px" />
+
+                                                <listheader label="${i18n:_('Valid until')}" width="120px" />
+
                                                 <listheader label="${i18n:_('Summary')}" />
+
                                                 <listheader label="${i18n:_('Op.')}"
                                                             tooltiptext="${i18n:_('Operations')}"
                                                             width="40px" />

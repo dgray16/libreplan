@@ -24,6 +24,7 @@ package org.zkoss.ganttz.timetracker.zoom;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.zkoss.ganttz.i18n.I18nHelper;
+
 /**
  * @author Francisco Javier Moran Rúa
  */
@@ -113,6 +114,12 @@ public enum ZoomLevel {
         }
     };
 
+    private String internalName;
+
+    ZoomLevel(String name) {
+        this.internalName = name;
+    }
+
     /**
      * Forces to mark the string as needing translation.
      */
@@ -120,19 +127,12 @@ public enum ZoomLevel {
         return string;
     }
 
-    private String internalName;
-
     public String getInternalName() {
         return internalName;
     }
 
-    ZoomLevel(String name) {
-        this.internalName = name;
-    }
-
     /**
-     * @return if there is no next, returns <code>this</code>. Otherwise returns
-     *         the next one.
+     * @return if there is no next, returns <code>this</code>. Otherwise returns the next one.
      */
     public ZoomLevel next() {
         final int next = ordinal() + 1;
@@ -143,8 +143,7 @@ public enum ZoomLevel {
     }
 
     /**
-     * @return if there is no previous, returns <code>this</code>. Otherwise
-     *         returns the previous one.
+     * @return if there is no previous, returns <code>this</code>. Otherwise returns the previous one.
      */
     public ZoomLevel previous() {
         if (ordinal() == 0) {

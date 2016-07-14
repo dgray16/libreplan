@@ -294,6 +294,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     private String getCurrentExpiringDateLabel() {
         Date date = baseCalendarModel.getCurrentExpiringDate();
         String label = "";
+
         if ( date != null ) {
             label = " " + _("to {0}", Util.formatDate(date));
         }
@@ -304,6 +305,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
     private String getCurrentStartDateLabel() {
         Date date = baseCalendarModel.getCurrentStartDate();
         String label = "";
+
         if ( date != null ) {
             label = " " + _("from {0}", Util.formatDate(date));
         }
@@ -471,12 +473,18 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             CalendarExceptionType calendarExceptionType = calendar.getExceptionType(date);
 
             if ( calendarExceptionType != null ) {
+
                 if (calendar.getOwnExceptionDay(date) != null) {
-                    addDayToColor(colorsMap, calendarExceptionType.getColor()
-                            .getColorOwnException(), date.getDayOfMonth());
+
+                    addDayToColor(
+                            colorsMap,
+                            calendarExceptionType.getColor().getColorOwnException(),
+                            date.getDayOfMonth());
                 } else {
-                    addDayToColor(colorsMap, calendarExceptionType.getColor()
-                            .getColorDerivedException(), date.getDayOfMonth());
+                    addDayToColor(
+                            colorsMap,
+                            calendarExceptionType.getColor().getColorDerivedException(),
+                            date.getDayOfMonth());
                 }
             } else {
                 if ( calendar.getCapacityOn(PartialDay.wholeDay(date)).isZero() ) {
@@ -506,7 +514,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                     calendar,
                     "highlightDates",
                     daysByColor.get(color).toArray(),
-                    TEXT_COLOR_HIGHLIGHTED_DAY, color));
+                    TEXT_COLOR_HIGHLIGHTED_DAY,
+                    color));
         }
     }
 
@@ -772,13 +781,12 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                 }
             }
 
-            comboParents.addEventListener(Events.ON_SELECT,
-                    (EventListener) event -> {
+            comboParents.addEventListener(Events.ON_SELECT, (EventListener) event -> {
                         if ( comboParents.getSelectedItem() != null ) {
-                            BaseCalendar parent = (BaseCalendar) comboParents.getSelectedItem().getValue();
+                            BaseCalendar parent = comboParents.getSelectedItem().getValue();
                             version.setParent(parent);
                         }
-                    });
+            });
 
             Util.bind(
                     comboParents,
@@ -817,6 +825,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                     _("Delete"),
                     "/common/img/ico_borrar.png",
                     "icono",
+
                     event -> {
                         baseCalendarModel.removeCalendarData(calendarData);
                         reloadWorkWeeksList();
@@ -824,6 +833,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
             if ( baseCalendarModel.getBaseCalendar() == null ||
                     baseCalendarModel.getBaseCalendar().getCalendarDataVersions().size() == 1 ) {
+
                 result.setDisabled(true);
             } else {
                 result.setDisabled(false);
@@ -1109,6 +1119,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                         baseCalendarModel.removeException(calendarException.getDate());
                         reloadDayInformation();
                     });
+
             if ( !baseCalendarModel.isOwnException(calendarException) ) {
                 result.setDisabled(true);
                 result.setTooltiptext(_("inherited exception can not be removed"));
@@ -1315,7 +1326,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         private Button createRemoveButton(final CalendarAvailability calendarAvailability) {
-            Button result = createButton(
+            return createButton(
                     "/common/img/ico_borrar1.png",
                     _("Delete"),
                     "/common/img/ico_borrar.png",
@@ -1325,8 +1336,6 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                         reloadDayInformation();
                         reloadActivationPeriods();
                     });
-
-            return result;
         }
 
         private Button createButton(String image,

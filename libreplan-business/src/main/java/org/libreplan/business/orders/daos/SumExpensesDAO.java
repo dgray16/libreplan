@@ -69,8 +69,7 @@ public class SumExpensesDAO extends GenericDAOHibernate<SumExpenses, Long> imple
     private Map<OrderElement, SumExpenses> mapSumExpenses;
 
     @Override
-    public void updateRelatedSumExpensesWithExpenseSheetLineSet(
-            Set<ExpenseSheetLine> expenseSheetLineSet) {
+    public void updateRelatedSumExpensesWithExpenseSheetLineSet(Set<ExpenseSheetLine> expenseSheetLineSet) {
         resetMapSumExpenses();
 
         for (ExpenseSheetLine expenseSheetLine : expenseSheetLineSet) {

@@ -42,6 +42,7 @@ import org.libreplan.business.common.entities.Connector;
 import org.libreplan.business.common.entities.EntitySequence;
 import org.libreplan.business.common.entities.PredefinedConnectorProperties;
 import org.libreplan.business.common.entities.PredefinedConnectors;
+import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.business.orders.entities.OrderLine;
@@ -131,15 +132,6 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(OrderElementTreeController.class);
 
-    public List<org.libreplan.business.labels.entities.Label> getLabels() {
-        return orderModel.getLabels();
-    }
-
-    @Override
-    public OrderElementTreeitemRenderer getRenderer() {
-        return renderer;
-    }
-
     public OrderElementTreeController(IOrderModel orderModel,
                                       OrderElementController orderElementController,
                                       IMessagesForUser messagesForUser) {
@@ -151,9 +143,18 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         initializeOperationsForOrderElement();
     }
 
+    public List<Label> getLabels() {
+        return orderModel.getLabels();
+    }
+
+    @Override
+    public OrderElementTreeitemRenderer getRenderer() {
+        return renderer;
+    }
+
     /**
-     * Initializes operationsForOrderTemplate. A reference to variables tree and
-     * orderTemplates will be set later in doAfterCompose()
+     * Initializes operationsForOrderTemplate.
+     * A reference to variables tree and orderTemplates will be set later in doAfterCompose()
      */
     private void initializeOperationsForOrderElement() {
         operationsForOrderElement = OrderElementOperations.build()
@@ -204,14 +205,13 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     public void createFromTemplate() {
-        templateFinderPopup.openForSubElemenetCreation(tree, "after_pointer",
-                template -> {
-                    OrderLineGroup parent = (OrderLineGroup) getModel().getRoot();
-                    orderModel.createFrom(parent, template);
-                    getModel().addNewlyAddedChildrenOf(parent);
+        templateFinderPopup.openForSubElemenetCreation(tree, "after_pointer", template -> {
+            OrderLineGroup parent = (OrderLineGroup) getModel().getRoot();
+            orderModel.createFrom(parent, template);
+            getModel().addNewlyAddedChildrenOf(parent);
 
-                    reloadTreeUIAfterChanges();
-                });
+            reloadTreeUIAfterChanges();
+        });
     }
 
     @Override
@@ -225,7 +225,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     public void disabledCodeBoxes(boolean disabled) {
-        Set<Treeitem> childrenSet = new HashSet<Treeitem>();
+        Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren treeChildren = tree.getTreechildren();
         if ( treeChildren != null ) {
             childrenSet.addAll(treeChildren.getItems());
@@ -401,12 +401,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
             int[] path = getModel().getPath(orderElementForThisRow);
             String cssClass = "depth_" + path.length;
 
-            Textbox textBox = Util.bind(new Textbox(),
-                    () -> {
-                        return orderElementForThisRow.getName();
-                    }, value -> {
-                        orderElementForThisRow.setName(value);
-                    });
+            Textbox textBox = Util.bind(
+                    new Textbox(),
+                    () -> orderElementForThisRow.getName(),
+                    value -> orderElementForThisRow.setName(value)
+            );
 
             if ( readOnly ) {
                 textBox.setDisabled(true);
@@ -440,11 +439,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         private void addTextbox(final OrderElement orderElement) {
             Textbox textBoxCode = new Textbox();
 
-            Util.bind(textBoxCode, () -> {
-                return orderElement.getCode();
-            }, value -> {
-                orderElement.setCode(value);
-            });
+            Util.bind(
+                    textBoxCode,
+                    () -> orderElement.getCode(),
+                    value -> orderElement.setCode(value)
+            );
 
             textBoxCode.setConstraint((comp, value) -> {
                 if ( !orderElement.isFormatCodeValid((String) value) ) {
@@ -760,7 +759,8 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     public void remove(OrderElement element) {
         boolean hasImputedExpenseSheets = orderModel.hasImputedExpenseSheetsThisOrAnyOfItsChildren(element);
         if ( hasImputedExpenseSheets ) {
-            messagesForUser.showMessage(Level.ERROR,
+            messagesForUser.showMessage(
+                    Level.ERROR,
                     _("You can not remove the project \"{0}\" because this one has imputed expense sheets.",
                             element.getName()));
             return;
@@ -768,8 +768,9 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
         boolean alreadyInUse = orderModel.isAlreadyInUse(element);
         if ( alreadyInUse ) {
-            messagesForUser.showMessage(Level.ERROR,
-                            _("You cannot remove the task \"{0}\" because it has work reported on it or any of its children",
+            messagesForUser.showMessage(
+                    Level.ERROR,
+                    _("You cannot remove the task \"{0}\" because it has work reported on it or any of its children",
                                     element.getName()));
             return;
         }
@@ -778,9 +779,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                 orderModel.isOnlyChildAndParentAlreadyInUseByHoursOrExpenses(element);
 
         if ( onlyChildAndParentAlreadyInUseByHoursOrExpenses ) {
-            messagesForUser.showMessage(Level.ERROR,
-                            _("You cannot remove the task \"{0}\" because it is the only child of its parent and its parent has tracked time or imputed expenses",
-                                    element.getName()));
+            messagesForUser.showMessage(
+                    Level.ERROR,
+                    _("You cannot remove the task \"{0}\" because it is the only child of its parent " +
+                            "and its parent has tracked time or imputed expenses",
+                            element.getName()));
             return;
         }
 

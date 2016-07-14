@@ -46,8 +46,7 @@ import org.zkoss.zk.ui.util.Clients;
  */
 public class LongOperationFeedback {
 
-    private static final Log LOG = LogFactory
-            .getLog(LongOperationFeedback.class);
+    private static final Log LOG = LogFactory.getLog(LongOperationFeedback.class);
 
     public interface ILongOperation {
         void doAction() throws Exception;
@@ -64,6 +63,7 @@ public class LongOperationFeedback {
 
     public static void execute(final Component component,
                                final ILongOperation longOperation) {
+
         Validate.notNull(component);
         Validate.notNull(longOperation);
 
@@ -108,8 +108,7 @@ public class LongOperationFeedback {
         Events.echoEvent(eventName, component, null);
     }
 
-    private static void dispatchActionDirectly(
-            final ILongOperation longOperation) {
+    private static void dispatchActionDirectly(final ILongOperation longOperation) {
         try {
             longOperation.doAction();
         } catch (Exception e) {
@@ -125,11 +124,11 @@ public class LongOperationFeedback {
     }
 
     public interface IDesktopUpdatesEmitter<T> {
-        public void doUpdate(T value);
+        void doUpdate(T value);
     }
 
     public interface IDesktopUpdate {
-        public void doUpdate();
+        void doUpdate();
     }
 
     public static IDesktopUpdate and(final IDesktopUpdate... desktopUpdates) {
@@ -145,11 +144,10 @@ public class LongOperationFeedback {
     }
 
     public interface IBackGroundOperation<T> {
-        public void doOperation(IDesktopUpdatesEmitter<T> desktopUpdateEmitter);
+        void doOperation(IDesktopUpdatesEmitter<T> desktopUpdateEmitter);
     }
 
-    private static final ExecutorService executor = Executors
-            .newCachedThreadPool();
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     public static <T> IDesktopUpdatesEmitter<T> doNothingEmitter() {
         return new IDesktopUpdatesEmitter<T>() {
@@ -166,6 +164,7 @@ public class LongOperationFeedback {
      */
     public static void progressive(final Desktop desktop,
                                    final IBackGroundOperation<IDesktopUpdate> operation) {
+
         progressive(desktop, operation,
                 new IDesktopUpdatesEmitter<IDesktopUpdate>() {
 
@@ -189,8 +188,7 @@ public class LongOperationFeedback {
         executor.execute(new Runnable() {
             public void run() {
                 try {
-                    IBackGroundOperation<T> operationWithAsyncUpates = withAsyncUpates(
-                            operation, desktop);
+                    IBackGroundOperation<T> operationWithAsyncUpates = withAsyncUpates(operation, desktop);
                     operationWithAsyncUpates.doOperation(emitter);
                 } catch (Exception e) {
                     LOG.error("error executing background operation", e);
@@ -204,13 +202,15 @@ public class LongOperationFeedback {
     private static <T> IBackGroundOperation<T> withAsyncUpates(
             final IBackGroundOperation<T> backgroundOperation,
             final Desktop desktop) {
+
         return new IBackGroundOperation<T>() {
 
             @Override
-            public void doOperation(
-                    IDesktopUpdatesEmitter<T> originalEmitter) {
-                NotBlockingDesktopUpdates<T> notBlockingDesktopUpdates = new NotBlockingDesktopUpdates<T>(
-                        desktop, originalEmitter);
+            public void doOperation(IDesktopUpdatesEmitter<T> originalEmitter) {
+
+                NotBlockingDesktopUpdates<T> notBlockingDesktopUpdates =
+                        new NotBlockingDesktopUpdates<>(desktop, originalEmitter);
+
                 Future<?> future = executor.submit(notBlockingDesktopUpdates);
                 try {
                     backgroundOperation.doOperation(notBlockingDesktopUpdates);
@@ -230,15 +230,15 @@ public class LongOperationFeedback {
         };
     }
 
-    private static class NotBlockingDesktopUpdates<T> implements
-            IDesktopUpdatesEmitter<T>, Runnable {
+    private static class NotBlockingDesktopUpdates<T> implements IDesktopUpdatesEmitter<T>, Runnable {
 
-        private BlockingQueue<EndOrValue<T>> queue = new LinkedBlockingQueue<EndOrValue<T>>();
+        private BlockingQueue<EndOrValue<T>> queue = new LinkedBlockingQueue<>();
         private final IDesktopUpdatesEmitter<T> original;
         private final Desktop desktop;
 
         NotBlockingDesktopUpdates(Desktop desktop,
                                   IDesktopUpdatesEmitter<T> original) {
+
             this.original = original;
             this.desktop = desktop;
         }
@@ -249,32 +249,34 @@ public class LongOperationFeedback {
         }
 
         void finish() {
-            queue.add(EndOrValue.<T> end());
+            queue.add(EndOrValue.end());
         }
 
         @Override
         public void run() {
-            List<T> batch = new ArrayList<T>();
+            List<T> batch = new ArrayList<>();
             while (true) {
                 batch.clear();
-                EndOrValue<T> current = null;
+                EndOrValue<T> current;
                 try {
                     current = queue.take();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                if (current.isEnd()) {
+
+                if (current.isEnd())
                     return;
-                }
-                if (!desktop.isAlive() || !desktop.isServerPushEnabled()) {
+
+                if (!desktop.isAlive() || !desktop.isServerPushEnabled())
                     return;
-                }
+
                 try {
                     Executions.activate(desktop);
                 } catch (Exception e) {
                     LOG.error("unable to access desktop", e);
                     throw new RuntimeException(e);
                 }
+
                 try {
                     original.doUpdate(current.getValue());
                     while ((current = queue.poll()) != null) {
@@ -284,13 +286,13 @@ public class LongOperationFeedback {
                         batch.add(current.getValue());
                         original.doUpdate(current.getValue());
                     }
+
                 } finally {
                     Executions.deactivate(desktop);
-                    Clients.clearBusy();
                 }
-                if (current != null && current.isEnd()) {
+
+                if (current != null && current.isEnd())
                     return;
-                }
             }
         }
 
@@ -298,14 +300,15 @@ public class LongOperationFeedback {
 
     private static abstract class EndOrValue<T> {
         public static <T> EndOrValue<T> end() {
-            return new End<T>();
+            return new End<>();
         }
 
         public static <T> EndOrValue<T> value(T value) {
-            return new Value<T>(value);
+            return new Value<>(value);
         }
 
         public abstract boolean isEnd();
+
         public abstract T getValue() throws UnsupportedOperationException;
     }
 

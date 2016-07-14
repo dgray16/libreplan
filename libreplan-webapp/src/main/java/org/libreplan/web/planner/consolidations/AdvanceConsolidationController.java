@@ -25,8 +25,6 @@ import static org.libreplan.web.I18nHelper._;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.planner.entities.Task;
 import org.libreplan.business.planner.entities.TaskElement;
 import org.libreplan.web.common.Util;
@@ -44,6 +42,7 @@ import org.zkoss.zul.Window;
 
 /**
  * Controller for {@link Advance} consolidation view.
+ *
  * @author Susana Montes Pedreira <smontes@wirelessgailicia.com>
  */
 @org.springframework.stereotype.Component("advanceConsolidationController")
@@ -104,11 +103,9 @@ public class AdvanceConsolidationController extends GenericForwardComposer {
     public String getInfoAdvance() {
         String infoAdvanceAssignment = advanceConsolidationModel.getInfoAdvanceAssignment();
 
-        if (infoAdvanceAssignment.isEmpty()) {
-            return _("Progress measurements");
-        }
-
-        return _("Progress measurements") + ": " + infoAdvanceAssignment;
+        return infoAdvanceAssignment.isEmpty()
+                ? _("Progress measurements")
+                : _("Progress measurements") + ": " + infoAdvanceAssignment;
     }
 
     public List<AdvanceConsolidationDTO> getAdvances() {
@@ -134,11 +131,7 @@ public class AdvanceConsolidationController extends GenericForwardComposer {
     }
 
     public String getReadOnlySclass() {
-        if (advanceConsolidationModel.hasLimitingResourceAllocation()) {
-            return "readonly";
-        }
-
-        return "";
+        return advanceConsolidationModel.hasLimitingResourceAllocation() ? "readonly" : "";
     }
 
     public boolean isUnitType() {

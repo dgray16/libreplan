@@ -1451,10 +1451,6 @@ div.z-grid-header .second_level_ tr {
     font-size: 12px;
 }
 
-.z-window-header{
-    display: none;
-}
-
 .z-treerow.z-treerow-selected > .z-treecell > .z-treecell-content,
 .z-treerow.z-treerow > .z-treecell > .z-treecell-content {
     color: black;

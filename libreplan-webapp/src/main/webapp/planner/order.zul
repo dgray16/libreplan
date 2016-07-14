@@ -26,22 +26,25 @@
 <?component name="listOrderElementAdvances"macroURI="/orders/_listOrderElementAdvances.zul" inline="true" ?>
 
 <zk>
-    <zscript><![CDATA[
-        planningController = arg.get("orderPlanningController");
-        switcher = planningController.viewSwitcher;
+    <zscript>
+        <![CDATA[
+            planningController = arg.get("orderPlanningController");
+            switcher = planningController.viewSwitcher;
 
-        editController = planningController.editTaskController;
-        planningController.advancedAllocationTaskController.switcher = switcher;
-        calendarController = planningController.calendarAllocationController;
-        advanceController = planningController.advanceConsolidationController;
-        advanceAssignmentController = planningController.advanceAssignmentPlanningController;
-    ]]>
+            editController = planningController.editTaskController;
+            planningController.advancedAllocationTaskController.switcher = switcher;
+            calendarController = planningController.calendarAllocationController;
+            advanceController = planningController.advanceConsolidationController;
+            advanceAssignmentController = planningController.advanceAssignmentPlanningController;
+        ]]>
     </zscript>
     <div height="100%">
         <div apply="${switcher}" sclass="parentProjectScheduling" height="100%">
+
             <planner id="planner" apply="${planningController}" sclass="projectScheduling"
                      style="display: block; height: 100%;">
             </planner>
+
         </div>
 
         <editTaskWindow id="editTaskWindow" editController="${editController}" />
@@ -92,11 +95,11 @@
                     <vbox>
                         <label value="@{advanceController.infoAdvance}"/>
                         <grid id="advancesGrid"
-                                model="@{advanceController.advances}"
-                                mold="paging"
-                                pageSize="10"
-                                sclass="@{advanceController.readOnlySclass}"
-                                span="true">
+                              model="@{advanceController.advances}"
+                              mold="paging"
+                              pageSize="10"
+                              sclass="@{advanceController.readOnlySclass}"
+                              span="true">
                             <columns>
                                 <column label="${i18n:_('Value')}" align="center" visible="@{advanceController.unitType}"/>
                                 <column label="${i18n:_('Percentage')}" align="center"/>
@@ -105,13 +108,17 @@
                             </columns>
                             <rows>
                                 <row self="@{each='advanceConsolidationDTO'}" value="@{advanceConsolidationDTO}">
+
                                     <label value="@{advanceConsolidationDTO.labelUnits}"
-                                        visible="@{advanceController.unitType}"/>
+                                           visible="@{advanceController.unitType}"/>
+
                                     <label value="@{advanceConsolidationDTO.labelPercentage}" />
+
                                     <label value="@{advanceConsolidationDTO.date,converter='org.libreplan.web.common.typeconverters.DateConverter'}" />
+
                                     <checkbox checked="@{advanceConsolidationDTO.consolidated}"
-                                        onCheck="advanceController.reloadAdvanceGrid();"
-                                        disabled="@{advanceConsolidationDTO.canNotBeConsolidated}"/>
+                                              onCheck="advanceController.reloadAdvanceGrid();"
+                                              disabled="@{advanceConsolidationDTO.canNotBeConsolidated}"/>
                                  </row>
                             </rows>
                         </grid>
@@ -144,12 +151,12 @@
 
             <vbox>
 
-                <panel title="${i18n:_('Calendar')}"
-                        border="normal" style="overflow:auto" >
+                <panel title="${i18n:_('Calendar')}" border="normal" style="overflow:auto" >
                     <panelchildren>
-                        <combobox id="calendarCombo">
-                            <comboitem self="@{each='baseCalendar'}" value="@{baseCalendar}"
-                                    label="@{baseCalendar.name}" />
+                        <combobox id="calendarCombo" style="margin: 10px;">
+                            <comboitem self="@{each='baseCalendar'}"
+                                       value="@{baseCalendar}"
+                                       label="@{baseCalendar.name}" />
                         </combobox>
                     </panelchildren>
                 </panel>
@@ -159,6 +166,7 @@
                     <button label="${i18n:_('Accept')}"
                             sclass="save-button global-action"
                             onClick="calendarController.assign(calendarCombo.selectedItem);" />
+
                     <button label="${i18n:_('Cancel')}"
                             sclass="cancel-button global-action"
                             onClick="calendarController.cancel();" />
