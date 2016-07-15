@@ -117,7 +117,7 @@
                                    finder="OrderElementBandboxFinder"
                                    widthBandbox="400px"
                                    widthListbox="700px" />
-                    <button onClick="controller.addOrderElement();" label="${i18n:_('Add task')}" />
+                    <button onClick="controller.addOrderElement();" label="${i18n:_('Add task')}" sclass="add-button"/>
                 </hbox>
                 <hbox width="100%">
                     <grid id="timesheet" sizedByContent="true" hflex="min" sclass="timesheet"

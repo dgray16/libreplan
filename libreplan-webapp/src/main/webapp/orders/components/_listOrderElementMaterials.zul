@@ -94,9 +94,9 @@
                             <!-- Search textbox -->
                             <hbox>
                                 <textbox id="txtSearchMaterial" width="250px" style="margin-top: 2px" />
-                                <button label="${i18n:_('Search')}"
+                                <button label="${i18n:_('Search')}" sclass="add-button"
                                     onClick="assignedMaterialsController.searchMaterials()"/>
-                                <button label="${i18n:_('Assign')}"
+                                <button label="${i18n:_('Assign')}" sclass="add-button"
                                     onClick="assignedMaterialsController.assignSelectedMaterials()" />
                             </hbox>
 

@@ -166,8 +166,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     }
 
     private Column getEarlierStartingDateColumn() {
-        return (Column) gridUnassignedLimitingResourceQueueElements
-                .getColumns().getChildren().get(4);
+        return (Column) gridUnassignedLimitingResourceQueueElements.getColumns().getChildren().get(4);
     }
 
     private void initManualAllocationWindow() {
@@ -220,7 +219,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
      * @return
      */
     public List<LimitingResourceQueueElementDTO> getUnassignedLimitingResourceQueueElements() {
-        List<LimitingResourceQueueElementDTO> result = new ArrayList<LimitingResourceQueueElementDTO>();
+        List<LimitingResourceQueueElementDTO> result = new ArrayList<>();
         for (LimitingResourceQueueElement each : limitingResourceQueueModel
                 .getUnassignedLimitingResourceQueueElements()) {
             result.add(toLimitingResourceQueueElementDTO(each));
@@ -446,10 +445,10 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         private Button manualButton(final LimitingResourceQueueElementDTO element) {
             Button result = new Button();
             result.setLabel(_("Manual"));
+            result.setClass("add-button");
             result.setTooltiptext(_("Assign element to queue manually"));
 
-            result.addEventListener(Events.ON_CLICK,
-                    event -> showManualAllocationWindow(element.getOriginal()));
+            result.addEventListener(Events.ON_CLICK, event -> showManualAllocationWindow(element.getOriginal()));
 
             return result;
         }
@@ -475,10 +474,10 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         private Button automaticButton(final LimitingResourceQueueElementDTO element) {
             Button result = new Button();
             result.setLabel(_("Automatic"));
+            result.setClass("add-button");
             result.setTooltiptext(_("Assign element to queue automatically"));
 
-            result.addEventListener(Events.ON_CLICK,
-                    event -> assignLimitingResourceQueueElement(element));
+            result.addEventListener(Events.ON_CLICK, event -> assignLimitingResourceQueueElement(element));
 
             return result;
         }

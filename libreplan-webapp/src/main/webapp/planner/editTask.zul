@@ -67,7 +67,7 @@
             <tabpanels>
                 <tabPanelTaskProperties id="taskPropertiesTabpanel" />
                 <tabPanelNonLimitingResourceAllocation id="resourceAllocationTabpanel" />
-                <tabPanelLimitingResourceAllocation id="limitingResourceAllocationTabpanel" />
+                <tabPanelLimitingResourceAllocation id="limitingResourceAllocationTabpanel"/>
                 <tabPanelSubcontract id="subcontractTabpanel" />
             </tabpanels>
         </tabbox>

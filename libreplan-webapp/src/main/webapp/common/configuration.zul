@@ -283,7 +283,7 @@
                                     <textbox id="prefixBox" />
                                     <label value="${i18n:_('Number of digits')}" />
                                     <intbox id="numDigitBox" value="5" />
-                                    <button label="${i18n:_('add')}"
+                                    <button label="${i18n:_('Add')}" sclass="add-button"
                                             onClick="configurationController.addNewEntitySequence()" />
                                 </hbox>
 
@@ -380,7 +380,7 @@
                             </rows>
                         </grid>
                         <separator />
-                        <button label="${i18n:_('Test LDAP connection')}"
+                        <button label="${i18n:_('Test LDAP connection')}" sclass="add-button"
                                 onClick="configurationController.testLDAPConnection()" />
                         <separator />
                     </groupbox>
@@ -520,7 +520,7 @@
                             </grid>
                         </vbox>
                         <separator />
-                        <button label="${i18n:_('Test connection')}"
+                        <button label="${i18n:_('Test connection')}" sclass="add-button"
                                 onClick="configurationController.testConnection()" />
                     </groupbox>
                 </tabpanel>

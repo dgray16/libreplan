@@ -69,7 +69,7 @@
                         <label value="${i18n:_('New label')}" />
                         <textbox id="newLabelTextbox" value=""
                             width="200px" onOK="controller.createLabel()" />
-                        <button label="${i18n:_('Add')}" onClick="controller.createLabel()" />
+                        <button label="${i18n:_('Add')}" onClick="controller.createLabel()" sclass="add-button" />
                     </hbox>
                     <grid id="gridLabels" height="320px"
                         model="@{controller.labels}" fixedLayout="true">

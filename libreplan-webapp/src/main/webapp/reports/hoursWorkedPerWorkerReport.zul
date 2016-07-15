@@ -75,13 +75,13 @@
                 </hbox>
                 <separator spacing="10px"/>
                 <listbox id="lbResources"
-                         width="700px"
+                         width="710px"
                          multiple="true"
                          model="@{controller.resources}"
                          itemRenderer="@{controller.renderer}">
                     <listhead>
                         <listheader label="${i18n:_('Type')}" align="center" width="50px"/>
-                        <listheader label="${i18n:_('Queue-based')}" align="center" width="60px"/>
+                        <listheader label="${i18n:_('Queue-based')}" align="center" width="62px"/>
                         <listheader label="${i18n:_('Name')}" sort="auto(name)" align="center" width="250px"/>
                         <listheader label="${i18n:_('Code')}" align="center" width="270px"/>
                         <listheader label="${i18n:_('Operations')}" align="center" width="70px"/>

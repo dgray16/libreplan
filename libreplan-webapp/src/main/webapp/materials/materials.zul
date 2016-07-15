@@ -45,9 +45,10 @@
                         <textbox id="txtCategory" onOK="materialsController.addMaterialCategory()"
                             style="padding-bottom: 4px" />
                         <button label="${i18n:_('Add')}"
-                            onClick="materialsController.addMaterialCategory()" />
+                            onClick="materialsController.addMaterialCategory()" sclass="add-button"/>
                         <separator spacing="20px" orient="vertical" />
-                        <button label="${i18n:_('Unselect')}" onClick="materialsController.clearSelectionCategoriesTree()" />
+                        <button label="${i18n:_('Unselect')}"
+                                onClick="materialsController.clearSelectionCategoriesTree()" sclass="add-button"/>
                     </hbox>
 
 
@@ -72,7 +73,7 @@
         <groupbox closable="false">
             <caption id="materialsCaption" label="${i18n:_('List of materials for all categories (select one to filter)')}"/>
                     <button id="btnAddMaterial"
-                        label="${i18n:_('New')}"
+                        label="${i18n:_('New')}" sclass="add-button"
                         onClick="materialsController.addMaterialToMaterialCategory(categoriesTree.selectedItem)" />
                     <separator spacing="15px" orient="horizontal" />
                     <newdatasortablegrid id="gridMaterials"

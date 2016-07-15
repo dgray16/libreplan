@@ -33,7 +33,6 @@ import org.libreplan.web.common.components.AllocationSelector;
 import org.libreplan.web.common.components.NewAllocationSelector;
 import org.libreplan.web.common.components.NewAllocationSelectorCombo;
 import org.libreplan.web.planner.allocation.TaskInformation;
-import org.libreplan.web.planner.allocation.TaskInformation.ITotalHoursCalculationListener;
 import org.libreplan.web.planner.order.PlanningStateCreator.PlanningState;
 import org.libreplan.web.planner.taskedition.EditTaskController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.zkoss.ganttz.extensions.IContextWithPlannerTask;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Intbox;
@@ -132,13 +129,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
     private void initializeTaskInformationComponent() {
         limitingTaskInformation.initializeGridTaskRows(resourceAllocationModel.getHoursAggregatedByCriteria());
         limitingTaskInformation.hideRecomendedAllocationButton();
-        limitingTaskInformation.onCalculateTotalHours(new ITotalHoursCalculationListener() {
-
-                    @Override
-                    public Integer getTotalHours() {
-                        return resourceAllocationModel.getOrderHours();
-                    }
-                });
+        limitingTaskInformation.onCalculateTotalHours(() -> resourceAllocationModel.getOrderHours());
         limitingTaskInformation.refreshTotalHours();
     }
 
@@ -155,7 +146,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         }
     }
 
-    private void closeSelectWorkers() {
+    public void closeSelectWorkers() {
         clear();
         tabLimitingResourceAllocation.setSelected(true);
     }
@@ -172,7 +163,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         resourceAllocationModel.confirmSave();
     }
 
-    private class GridLimitingAllocationRenderer implements RowRenderer {
+    public class GridLimitingAllocationRenderer implements RowRenderer {
 
         @Override
         public void render(Row row, Object data, int i) {
@@ -196,19 +187,10 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         }
 
         private Intbox bindToHours(Intbox intbox, final LimitingAllocationRow resourceAllocation) {
-            Util.bind(intbox, new Util.Getter<Integer>() {
-
-                @Override
-                public Integer get() {
-                    return resourceAllocation.getHours();
-                }
-
-            }, new Util.Setter<Integer>() {
-
-                @Override
-                public void set(Integer value) {
-                    resourceAllocation.setHours(value);
-                }
+            Util.bind(intbox, () -> {
+                return resourceAllocation.getHours();
+            }, value -> {
+                resourceAllocation.setHours(value);
             });
 
             return intbox;
@@ -225,7 +207,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
             Listbox result = listbox();
             for (int i = 1; i <= 10; i++) {
                 Listitem item = new Listitem();
-                Listcell cell = new Listcell(i + "");
+                Listcell cell = new Listcell(Integer.toString(i));
                 cell.setParent(item);
                 if (i == selectedValue) {
                     item.setSelected(true);
@@ -243,13 +225,9 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         }
 
         private Listbox bindToPriority(Listbox listbox, final LimitingAllocationRow resourceAllocation) {
-            listbox.addEventListener("onSelect", new EventListener() {
-
-                @Override
-                public void onEvent(Event event) {
-                    String priority = getSelectedValue((Listbox) event.getTarget());
-                    resourceAllocation.setPriorityStr(priority);
-                }
+            listbox.addEventListener("onSelect", event -> {
+                String priority = getSelectedValue((Listbox) event.getTarget());
+                resourceAllocation.setPriorityStr(priority);
             });
 
             return listbox;
@@ -264,7 +242,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
 
     }
 
-    private boolean existsResourceAllocationWithDayAssignments() {
+    public boolean existsResourceAllocationWithDayAssignments() {
         final LimitingAllocationRow limitingAllocationRow = getLimitingAllocationRow();
 
         return (limitingAllocationRow != null) && limitingAllocationRow.hasDayAssignments();

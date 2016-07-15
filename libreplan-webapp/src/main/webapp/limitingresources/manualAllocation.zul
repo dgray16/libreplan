@@ -130,9 +130,9 @@
 
     <!-- Controls -->
     <hbox>
-        <button id="ok" label="${i18n:_('Accept')}"
+        <button id="ok" label="${i18n:_('Accept')}" sclass="add-button"
             onClick="manualAllocationController.accept(event)" />
-        <button id="cancel" label="${i18n:_('Cancel')}"
+        <button id="cancel" label="${i18n:_('Cancel')}" sclass="add-button"
             onClick="manualAllocationController.cancel()" />
     </hbox>
 </window>

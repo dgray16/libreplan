@@ -113,11 +113,12 @@
                         </rows>
                     </grid>
                     <button label="${i18n:_('Go to edit worker window')}"
+                        sclass="add-button"
                         onClick="controller.goToWorkerEdition();"
                         visible="@{controller.bound}"
                         disabled="@{controller.noRoleWorkers}"
                         tooltiptext="@{controller.workerEditionButtonTooltip}" />
-                    <button label="${i18n:_('Unbound resource')}"
+                    <button label="${i18n:_('Unbound resource')}" sclass="add-button"
                         onClick="controller.unboundResource();"
                         visible="@{controller.bound}" />
                     </groupbox>
@@ -130,7 +131,8 @@
                     </vbox>
                     <hbox align="center">
                         <combobox id="userRolesCombo" autodrop="true" />
-                        <button label="${i18n:_('Add role')}" sclass="add-button"
+                        <button label="${i18n:_('Add role')}"
+                            sclass="add-button"
                             onClick="controller.addSelectedRole()"
                             disabled="@{controller.areRolesAndProfilesDisabled}" />
                     </hbox>

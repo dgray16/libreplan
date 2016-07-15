@@ -40,7 +40,7 @@
             <tab id="tabLimitingResourceAllocation" />
             <tab id="tabLimitingWorkerSearch" />
         </tabs>
-        <tabpanels>
+        <tabpanels sclass="tabNormalAllocation">
             <tabpanel>
 
                 <!-- Order element information -->
@@ -56,8 +56,10 @@
 
                     <hbox>
                         <newAllocationSelectorCombo id="limitingNewAllocationSelectorCombo" behaviour="LIMITING" />
-                        <button label="${i18n:_('Add')}" onClick="limitingAllocationController.selectWorkers(limitingNewAllocationSelectorCombo)" />
-                        <button label="${i18n:_('Advanced search')}" onClick="tabLimitingWorkerSearch.setSelected(true); " />
+                        <button label="${i18n:_('Add')}" sclass="add-button"
+                                onClick="limitingAllocationController.selectWorkers(limitingNewAllocationSelectorCombo)" />
+                        <button label="${i18n:_('Advanced search')}" onClick="tabLimitingWorkerSearch.setSelected(true);"
+                                sclass="add-button"/>
                     </hbox>
 
                     <separator spacing="10px"/>
@@ -81,8 +83,10 @@
             <tabpanel >
                 <newAllocationSelector id="limitingNewAllocationSelector"  behaviour="LIMITING" />
                 <hbox>
-                    <button label="${i18n:_('Select')}" onClick="limitingAllocationController.selectWorkers(limitingNewAllocationSelector)" />
-                    <button label="${i18n:_('Close')}" onClick="limitingAllocationController.closeSelectWorkers()" />
+                    <button label="${i18n:_('Select')}" sclass="add-button"
+                            onClick="limitingAllocationController.selectWorkers(limitingNewAllocationSelector)" />
+                    <button label="${i18n:_('Close')}"  sclass="add-button"
+                            onClick="limitingAllocationController.closeSelectWorkers()" />
                </hbox>
             </tabpanel>
         </tabpanels>

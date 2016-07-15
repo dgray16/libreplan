@@ -26,7 +26,7 @@
           <label value="${i18n:_('Filter quality forms by')}:"/>
           <label value="${i18n:_('name')}"/>
           <textbox value="" id="txtFilter"/>
-          <button label="${i18n:_('Filter')}" onClick="controller.onApplyFilter(event)"/>
+          <button label="${i18n:_('Filter')}" onClick="controller.onApplyFilter(event)" sclass="add-button"/>
         </hbox>
     </div>
     <separator bar="false" spacing="5px" orient="vertical"/>

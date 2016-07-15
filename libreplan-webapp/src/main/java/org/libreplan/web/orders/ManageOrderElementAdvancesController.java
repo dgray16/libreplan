@@ -1175,7 +1175,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
     private Button createAddMeasurementButton() {
         Button addButton = new Button();
         addButton.setLabel(_("Add measure"));
-        addButton.setClass("createButton");
+        addButton.setClass("add-button");
         addButton.setTooltiptext(_("Add new progress measurement"));
 
         return addButton;

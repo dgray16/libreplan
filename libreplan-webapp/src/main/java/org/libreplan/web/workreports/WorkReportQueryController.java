@@ -112,8 +112,6 @@ public class WorkReportQueryController extends GenericForwardComposer {
 
     public WorkReportQueryController(){
         workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
-
-        /* It needs to inject own annotations */
         workReportCRUD = (IWorkReportCRUDControllerEntryPoints) SpringUtil.getBean("workReportCRUD");
         personalTimesheetController = (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
     }

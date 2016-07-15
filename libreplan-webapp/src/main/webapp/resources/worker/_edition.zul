@@ -43,7 +43,7 @@
                 <groupbox style="margin-top: 5px" closable="false">
                     <caption label="${i18n:_('Basic data')}" />
 
-                    <grid sizedByContent="true">
+                    <grid fixedLayout="true">
                         <columns>
                             <column width="200px" />
                             <column  />
@@ -122,7 +122,7 @@
                            visible="@{controller.existingUser}">
 
                         <panelchildren>
-                            <grid sizedByContent="true">
+                            <grid fixedLayout="true">
                                 <columns>
                                     <column width="200px" />
                                     <column />
@@ -148,15 +148,15 @@
                                     onClick="controller.goToUserEdition();"
                                     visible="@{controller.userSelected}"
                                     disabled="@{controller.noRoleUserAccounts}"
-                                    tooltiptext="@{controller.userEditionButtonTooltip}" />
+                                    tooltiptext="@{controller.userEditionButtonTooltip}"
+                                    sclass="add-button"/>
                         </panelchildren>
 
                     </panel>
                     <panel title="${i18n:_('New user')}" border="normal"
                            visible="@{controller.createNewUser}">
                         <panelchildren>
-
-                            <grid sizedByContent="true">
+                            <grid fixedLayout="true">
                                 <columns>
                                     <column width="200px" />
                                     <column />

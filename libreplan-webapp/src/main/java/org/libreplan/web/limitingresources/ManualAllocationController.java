@@ -122,15 +122,15 @@ public class ManualAllocationController extends GenericForwardComposer {
         gridCurrentQueue = (Grid) self.getFellowIfAny("gridCurrentQueue");
     }
 
-    void setLimitingResourcesPanel(LimitingResourcesPanel limitingResourcesPanel) {
+    public void setLimitingResourcesPanel(LimitingResourcesPanel limitingResourcesPanel) {
         this.limitingResourcesPanel = limitingResourcesPanel;
     }
 
-    void setLimitingResourcesController(LimitingResourcesController limitingResourcesController) {
+    public void setLimitingResourcesController(LimitingResourcesController limitingResourcesController) {
         this.limitingResourcesController = limitingResourcesController;
     }
 
-    private ILimitingResourceQueueModel getLimitingResourceQueueModel() {
+    public ILimitingResourceQueueModel getLimitingResourceQueueModel() {
         return limitingResourcesController.getLimitingResourceQueueModel();
     }
 
@@ -430,7 +430,7 @@ public class ManualAllocationController extends GenericForwardComposer {
      * @param uuid
      * @param gap
      */
-    private void highlightDaysInGap(String uuid, Gap gap) {
+    public void highlightDaysInGap(String uuid, Gap gap) {
         final LocalDate start = gap.getStartTime().getDate();
         final LocalDate end = gap.getEndTime() != null ? gap.getEndTime()
                 .getDate() : null;
@@ -448,7 +448,7 @@ public class ManualAllocationController extends GenericForwardComposer {
      * @param uuid
      * @param start
      */
-    private void highlightDaysFromDate(String uuid, LocalDate start) {
+    public void highlightDaysFromDate(String uuid, LocalDate start) {
         final String jsCall = "highlightDaysInInterval('"
                 + uuid + "', '"
                 + jsonInterval(formatDate(start), null) + "', '"

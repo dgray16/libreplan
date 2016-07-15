@@ -192,6 +192,7 @@
                                                 visible="@{calendarController.editionController.isNotOwnExceptionDay}" />
 
                                         <button label="${i18n:_('Update exception')}"
+                                                sclass="add-button"
                                                 onClick="calendarController.editionController.updateException();"
                                                 visible="@{calendarController.editionController.isOwnExceptionDay}" />
                                     </hbox>

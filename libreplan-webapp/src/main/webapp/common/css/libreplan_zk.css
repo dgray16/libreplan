@@ -152,14 +152,18 @@ body .advancedallocationlayout .icono .z-button-cm {
 
 /* Global action button styles
 --------------------------------------------------- */
-.global-action.z-button {
+.global-action.z-button,
+.save-button.z-button[disabled],
+.create-button.z-button[disabled] {
     margin-top: 10px;
     font-weight: bold;
     background-repeat: no-repeat;
     background-position: 5%;
 }
 
-.global-action.z-button {
+.global-action.z-button,
+.save-button.z-button[disabled],
+.create-button.z-button[disabled] {
     padding: 4px 25px !important;
     font-size: 12px;
     background-color: #E4F3D9;
@@ -178,7 +182,7 @@ body .advancedallocationlayout .icono .z-button-cm {
     background-image: url(../img/bt_ok.png) !important;
 }
 
-.create-button.z-button  {
+.create-button.z-button {
     background-image: url(../img/bt_create.png) !important;
 }
 
@@ -1233,9 +1237,14 @@ span.z-dottree-line {
 .z-treerow.z-treerow-selected > .z-treecell,
 .z-treerow.z-treerow-selected.z-treerow-focus:hover > .z-treecell,
 .z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell,
-.z-treerow.z-treerow-selected:hover > .z-treecell {
+.z-treerow.z-treerow-selected:hover > .z-treecell,
+.z-listitem.z-listitem-selected > .z-listcell,
+.z-listitem.z-listitem-selected:hover > .z-listcell,
+.z-listitem.z-listitem-selected.z-listitem-focus > .z-listcell,
+.z-listitem.z-listitem-selected.z-listitem-focus:hover > .z-listcell {
     /*background: #fdd772; !* Dark orange *!*/
     background: linear-gradient(to bottom, #fdd772 0, #fdd772 100%);
+    border-left: none;
 }
 
 tr.z-treerow-selected input {
@@ -2079,7 +2088,7 @@ select {
 
 .add-button:disabled {
     background: none;
-    background-color: #C3EAAF;
+    background-color: #C3EAAF !important;
 }
 
 .z-center {
@@ -2213,4 +2222,13 @@ textarea {
 .scheduling-graphics .z-south-header {
     height: 23px;
     padding-top: 0;
+}
+
+/* It needs for correctly show tree item in project planning */
+.allocationTreeCol > div > table > tbody > tr > td > .z-treecell-content > span.z-dottree-line {
+    display: inline-block;
+}
+
+.z-button[disabled] {
+    background: none;
 }

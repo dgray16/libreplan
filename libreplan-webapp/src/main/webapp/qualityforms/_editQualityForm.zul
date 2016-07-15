@@ -74,7 +74,7 @@
                 <panel title="${i18n:_('Quality form items list')}" border="normal">
                     <panelchildren>
                         <hbox pack="center">
-                            <button label="${i18n:_('New quality form item')}"
+                            <button label="${i18n:_('New quality form item')}" sclass="add-button"
                             onClick="controller.createQualityFormItem()" />
                         </hbox>
                         <grid id="gridQualityFormItems"
