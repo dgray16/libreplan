@@ -32,11 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.LogFactory;
-import org.libreplan.business.common.IAdHocTransactionService;
 import org.libreplan.business.common.daos.IConnectorDAO;
 import org.libreplan.business.common.entities.Connector;
 import org.libreplan.business.common.entities.EntitySequence;
@@ -49,7 +45,6 @@ import org.libreplan.business.orders.entities.OrderLine;
 import org.libreplan.business.orders.entities.OrderLineGroup;
 import org.libreplan.business.orders.entities.SchedulingState;
 import org.libreplan.business.requirements.entities.CriterionRequirement;
-import org.libreplan.business.resources.daos.ICriterionDAO;
 import org.libreplan.business.users.entities.UserRole;
 import org.libreplan.web.common.FilterUtils;
 import org.libreplan.web.common.IMessagesForUser;
@@ -115,22 +110,15 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
     private transient IPredicate predicate;
 
-    @Resource
-    private IOrderTemplatesControllerEntryPoints orderTemplates;
-
     private OrderElementOperations operationsForOrderElement;
 
     private final IMessagesForUser messagesForUser;
 
-    private Popup filterOptionsPopup;
-
     private IConnectorDAO connectorDAO;
 
-    private ICriterionDAO criterionDAO;
+    private Tab tabGeneralData;
 
-    private IAdHocTransactionService transactionService;
-
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(OrderElementTreeController.class);
+    private TemplateFinderPopup templateFinderPopup;
 
     public OrderElementTreeController(IOrderModel orderModel,
                                       OrderElementController orderElementController,
@@ -157,10 +145,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
      * A reference to variables tree and orderTemplates will be set later in doAfterCompose()
      */
     private void initializeOperationsForOrderElement() {
-        operationsForOrderElement = OrderElementOperations.build()
-            .treeController(this)
-            .orderModel(this.orderModel)
-            .orderElementController(this.orderElementController);
+        operationsForOrderElement = OrderElementOperations
+                .build()
+                .treeController(this)
+                .orderModel(this.orderModel)
+                .orderElementController(this.orderElementController);
     }
 
     public OrderElementController getOrderElementController() {
@@ -227,9 +216,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     public void disabledCodeBoxes(boolean disabled) {
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren treeChildren = tree.getTreechildren();
+
         if ( treeChildren != null ) {
             childrenSet.addAll(treeChildren.getItems());
         }
+
         for (Treeitem each : childrenSet) {
             disableCodeBoxes(each, disabled);
         }
@@ -243,6 +234,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = item.getTreechildren();
+
         if ( children != null ) {
             childrenSet.addAll(children.getItems());
         }
@@ -259,8 +251,6 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         appendExpandCollapseButton();
 
         connectorDAO = (IConnectorDAO) SpringUtil.getBean("connectorDAO");
-        criterionDAO = (ICriterionDAO) SpringUtil.getBean("criterionDAO");
-        transactionService = (IAdHocTransactionService) SpringUtil.getBean("adHocTransactionService");
 
         // Configuration of the order elements filter
         Component filterComponent = Executions.createComponents(
@@ -268,16 +258,19 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                 orderElementFilter,
                 new HashMap<String, String>());
 
+        IOrderTemplatesControllerEntryPoints orderTemplates =
+                (IOrderTemplatesControllerEntryPoints) SpringUtil.getBean("orderTemplates");
+
         filterComponent.setAttribute("treeController", this, true);
         bdFiltersOrderElement = (BandboxMultipleSearch) filterComponent.getFellow("bdFiltersOrderElement");
-        filterOptionsPopup = (Popup) filterComponent.getFellow("filterOptionsPopup");
+        Popup filterOptionsPopup = (Popup) filterComponent.getFellow("filterOptionsPopup");
         filterStartDateOrderElement = (Datebox) filterOptionsPopup.getFellow("filterStartDateOrderElement");
         filterFinishDateOrderElement = (Datebox) filterOptionsPopup.getFellow("filterFinishDateOrderElement");
         labelsWithoutInheritance = (Checkbox) filterOptionsPopup.getFellow("labelsWithoutInheritance");
         filterNameOrderElement = (Textbox) filterComponent.getFellow("filterNameOrderElement");
         labelsWithoutInheritance = (Checkbox) filterComponent.getFellow("labelsWithoutInheritance");
         templateFinderPopup = (TemplateFinderPopup) comp.getFellow("templateFinderPopupAtTree");
-        operationsForOrderElement.tree(tree).orderTemplates(this.orderTemplates);
+        operationsForOrderElement.tree(tree).orderTemplates(orderTemplates);
 
         importOrderFiltersFromSession();
         disableCreateTemplateButtonIfNeeded(comp);
@@ -288,6 +281,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         filterNameOrderElement.setValue(FilterUtils.readOrderTaskName(order));
         filterStartDateOrderElement.setValue(FilterUtils.readOrderStartDate(order));
         filterFinishDateOrderElement.setValue(FilterUtils.readOrderEndDate(order));
+
         if ( FilterUtils.readOrderParameters(order) != null ) {
             for (FilterPair each : FilterUtils.readOrderParameters(order)) {
                 if ( toOrderFilterEnum(each) != null ) {
@@ -310,8 +304,9 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
             case Resource:
                 // Resources are discarded on WBS filter
-            }
-        return null;
+
+            default: return null;
+        }
     }
 
     private void disableCreateTemplateButtonIfNeeded(Component comp) {
@@ -329,6 +324,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
         // Is already added?
         Button button = (Button) ComponentsFinder.findById("expandAllButton", children);
+
         if ( button != null ) {
             if ( button.getSclass().equals("planner-command clicked") ) {
                 button.setSclass("planner-command");
@@ -343,6 +339,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         expandAllButton.setClass("planner-command");
         expandAllButton.setTooltiptext(_("Expand/Collapse all"));
         expandAllButton.setImage("/common/img/ico_expand.png");
+
         expandAllButton.addEventListener("onClick",  event -> {
             if ( expandAllButton.getSclass().equals("planner-command") ) {
                 expandAll();
@@ -352,12 +349,14 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                 expandAllButton.setSclass("planner-command");
             }
         });
+
         children.add(expandAllButton);
     }
 
     public void expandAll() {
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = tree.getTreechildren();
+
         if ( children != null ) {
             childrenSet.addAll(children.getItems());
         }
@@ -369,6 +368,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
         Set<Treeitem> childrenSet = new HashSet<>();
         Treechildren children = item.getTreechildren();
+
         if ( children != null ) {
             childrenSet.addAll(children.getItems());
         }
@@ -389,8 +389,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
     public class OrderElementTreeitemRenderer extends Renderer {
 
-        public OrderElementTreeitemRenderer() {
-        }
+        public OrderElementTreeitemRenderer() {}
 
         @Override
         protected void addDescriptionCell(OrderElement element) {
@@ -410,6 +409,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
             if ( readOnly ) {
                 textBox.setDisabled(true);
             }
+
             textBox.setConstraint("no empty:" + _("cannot be empty"));
             addCell(cssClass, textBox);
             putNameTextbox(orderElementForThisRow, textBox);
@@ -447,7 +447,9 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
             textBoxCode.setConstraint((comp, value) -> {
                 if ( !orderElement.isFormatCodeValid((String) value) ) {
-                    throw new WrongValueException(comp,
+
+                    throw new WrongValueException(
+                            comp,
                             _("Value is not valid.\n Code cannot contain chars like '_' \n " +
                                     "and should not be empty"));
                 }
@@ -507,6 +509,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
                 dinamicDatebox.setDisabled(true);
             }
+
             addDateCell(dinamicDatebox, _("end"));
             putEndDateDynamicDatebox(currentOrderElement, dinamicDatebox);
         }
@@ -518,8 +521,11 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
 
         private Button createEditButton(final Treeitem item) {
 
-            return createButton("/common/img/ico_editar1.png",
-                    _("Edit"), "/common/img/ico_editar.png", "icono",
+            return createButton(
+                    "/common/img/ico_editar1.png",
+                    _("Edit"),
+                    "/common/img/ico_editar.png",
+                    "icono",
                     event -> showEditionOrderElement(item));
         }
 
@@ -568,19 +574,22 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         for (FilterPair filterPair : (List<FilterPair>) bdFiltersOrderElement.getSelectedElements()) {
             result.add(toTasKElementFilterEnum(filterPair));
         }
+
         FilterUtils.writeOrderParameters(order, result);
         FilterUtils.writeOrderWBSFiltersChanged(order, true);
     }
 
     private FilterPair toTasKElementFilterEnum(FilterPair each) {
         switch ((OrderElementFilterEnum) each.getType()) {
-        case Label:
-            return new FilterPair(TaskElementFilterEnum.Label, each.getPattern(), each.getValue());
+            case Label:
+                return new FilterPair(TaskElementFilterEnum.Label, each.getPattern(), each.getValue());
 
-        case Criterion:
-            return new FilterPair(TaskElementFilterEnum.Criterion, each.getPattern(), each.getValue());
+            case Criterion:
+                return new FilterPair(TaskElementFilterEnum.Criterion, each.getPattern(), each.getValue());
+
+            default:
+                return null;
         }
-        return null;
     }
 
     private OrderElementPredicate createPredicate() {
@@ -590,18 +599,15 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         boolean ignoreLabelsInheritance = labelsWithoutInheritance.isChecked();
         String name = filterNameOrderElement.getValue();
 
-        if ( listFilters.isEmpty() && startDate == null && finishDate == null && name == null ) {
-            return null;
-        }
-        return new OrderElementPredicate(listFilters, startDate, finishDate, name, ignoreLabelsInheritance);
+        return listFilters.isEmpty() && startDate == null && finishDate == null && name == null
+                ? null
+                : new OrderElementPredicate(listFilters, startDate, finishDate, name, ignoreLabelsInheritance);
     }
 
     public TreeModel getFilteredTreeModel() {
         OrderElementTreeModel filteredModel = getFilteredModel();
-        if ( filteredModel == null ) {
-            return null;
-        }
-        return filteredModel.asTree();
+
+        return filteredModel == null ? null : filteredModel.asTree();
     }
 
     public OrderElementTreeModel getFilteredModel() {
@@ -612,11 +618,9 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         OrderElementPredicate predicate = createPredicate();
         this.predicate = predicate;
 
-        if ( predicate != null ) {
-            return orderModel.getOrderElementsFilteredByPredicate(predicate);
-        } else {
-            return orderModel.getOrderElementTreeModel();
-        }
+        return predicate != null
+                ? orderModel.getOrderElementsFilteredByPredicate(predicate)
+                : orderModel.getOrderElementTreeModel();
     }
 
     private void filterByPredicate(OrderElementPredicate predicate) {
@@ -637,18 +641,13 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     }
 
     /**
-     * Clear {@link BandboxSearch} for Labels, and initializes
-     * {@link IPredicate}
+     * Clear {@link BandboxSearch} for Labels, and initializes {@link IPredicate}
      */
     public void clear() {
         selectDefaultTab();
         bdFiltersOrderElement.clear();
         predicate = null;
     }
-
-    Tab tabGeneralData;
-
-    private TemplateFinderPopup templateFinderPopup;
 
     private void selectDefaultTab() {
         tabGeneralData.setSelected(true);
@@ -659,7 +658,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(elem.getName()).append(". ");
 
-        if ( (elem.getDescription() != null) && (!elem.getDescription().equals("")) ) {
+        if ( (elem.getDescription() != null) && !("".equals(elem.getDescription())) ) {
             tooltipText.append(elem.getDescription());
             tooltipText.append(". ");
         }
@@ -686,12 +685,10 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                 tooltipText.append(".");
             }
         }
-        // To calculate other unit advances implement
-        // getOtherAdvancesPercentage()
+        // To calculate other unit advances implement getOtherAdvancesPercentage()
         tooltipText.append(" ").append(_("Progress")).append(":").append(elem.getAdvancePercentage());
         tooltipText.append(".");
 
-        // tooltipText.append(elem.getAdvancePercentage());
         return tooltipText.toString();
     }
 
@@ -758,6 +755,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     @Override
     public void remove(OrderElement element) {
         boolean hasImputedExpenseSheets = orderModel.hasImputedExpenseSheetsThisOrAnyOfItsChildren(element);
+
         if ( hasImputedExpenseSheets ) {
             messagesForUser.showMessage(
                     Level.ERROR,
