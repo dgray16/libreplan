@@ -58,7 +58,7 @@
                   <datebox id="filterFinishDate" constraint = "@{controller.checkConstraintFinishDate}"/>
 
                   <button label="${i18n:_('Filter')}" style="margin-top: -4px"
-                          onClick="controller.onApplyFilter(event)"/>
+                          onClick="controller.onApplyFilter(event)" sclass="add-button"/>
                 </hbox>
 
                 </vbox>

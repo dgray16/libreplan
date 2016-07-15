@@ -2058,6 +2058,7 @@ select {
 .icono:focus {
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
+    background: none;
 }
 
 /* Made for create buttons, because default ZK css is not work correctly for create button */

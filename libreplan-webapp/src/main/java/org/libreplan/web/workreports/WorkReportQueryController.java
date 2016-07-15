@@ -106,14 +106,16 @@ public class WorkReportQueryController extends GenericForwardComposer {
 
     private IMessagesForUser messagesForUser;
 
-    @javax.annotation.Resource
     private IWorkReportCRUDControllerEntryPoints workReportCRUD;
 
-    @javax.annotation.Resource
     private IPersonalTimesheetController personalTimesheetController;
 
     public WorkReportQueryController(){
         workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
+
+        /* It needs to inject own annotations */
+        workReportCRUD = (IWorkReportCRUDControllerEntryPoints) SpringUtil.getBean("workReportCRUD");
+        personalTimesheetController = (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
     }
 
     @Override
