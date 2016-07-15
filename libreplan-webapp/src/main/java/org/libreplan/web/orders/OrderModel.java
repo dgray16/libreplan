@@ -88,7 +88,6 @@ import org.libreplan.web.common.concurrentdetection.OnConcurrentModification;
 import org.libreplan.web.orders.labels.LabelsOnConversation;
 import org.libreplan.web.planner.order.ISaveCommand.IBeforeSaveActions;
 import org.libreplan.web.planner.order.PlanningStateCreator;
-import org.libreplan.web.planner.order.PlanningStateCreator.IActionsOnRetrieval;
 import org.libreplan.web.planner.order.PlanningStateCreator.PlanningState;
 import org.libreplan.web.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,8 +226,8 @@ public class OrderModel extends IntegrationEntityModel implements IOrderModel {
     @Override
     @Transactional(readOnly = true)
     public List<Order> getOrders(Date startDate, Date endDate,
-            List<Label> labels, List<Criterion> criteria,
-            ExternalCompany customer, OrderStatusEnum state) {
+                                 List<Label> labels, List<Criterion> criteria,
+                                 ExternalCompany customer, OrderStatusEnum state) {
         getLabelsOnConversation().reattachLabels();
         List<Order> orders = orderDAO
                 .getOrdersByReadAuthorizationBetweenDatesByLabelsCriteriaCustomerAndState(
@@ -786,7 +785,7 @@ public class OrderModel extends IntegrationEntityModel implements IOrderModel {
         }
         if (order.isNewObject()
                 & SecurityUtils
-                        .isSuperuserOrUserInRoles(UserRole.ROLE_CREATE_PROJECTS)) {
+                .isSuperuserOrUserInRoles(UserRole.ROLE_CREATE_PROJECTS)) {
             return true;
         }
         try {
@@ -795,8 +794,8 @@ public class OrderModel extends IntegrationEntityModel implements IOrderModel {
                     orderAuthorizationDAO.listByOrderUserAndItsProfiles(order, user)) {
                 if(authorization.getAuthorizationType() ==
                         OrderAuthorizationType.READ_AUTHORIZATION ||
-                    authorization.getAuthorizationType() ==
-                        OrderAuthorizationType.WRITE_AUTHORIZATION) {
+                        authorization.getAuthorizationType() ==
+                                OrderAuthorizationType.WRITE_AUTHORIZATION) {
                     return true;
                 }
             }

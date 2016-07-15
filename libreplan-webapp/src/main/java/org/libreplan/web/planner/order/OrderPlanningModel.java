@@ -72,7 +72,6 @@ import org.libreplan.web.planner.consolidations.IAdvanceConsolidationCommand;
 import org.libreplan.web.planner.milestone.IAddMilestoneCommand;
 import org.libreplan.web.planner.milestone.IDeleteMilestoneCommand;
 import org.libreplan.web.planner.order.ISaveCommand.IAfterSaveListener;
-import org.libreplan.web.planner.order.PlanningStateCreator.IActionsOnRetrieval;
 import org.libreplan.web.planner.order.PlanningStateCreator.PlanningState;
 import org.libreplan.web.planner.reassign.IReassignCommand;
 import org.libreplan.web.planner.taskedition.AdvancedAllocationTaskController;
@@ -98,7 +97,6 @@ import org.zkoss.ganttz.extensions.ICommandOnTask;
 import org.zkoss.ganttz.extensions.IContext;
 import org.zkoss.ganttz.extensions.IContextWithPlannerTask;
 import org.zkoss.ganttz.timetracker.TimeTracker;
-import org.zkoss.ganttz.timetracker.zoom.*;
 import org.zkoss.ganttz.util.Interval;
 import org.zkoss.ganttz.util.ProfilingLogFactory;
 import org.zkoss.zk.ui.Executions;
@@ -106,11 +104,39 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.zkoss.ganttz.timetracker.zoom.DetailItem;
+import org.zkoss.ganttz.timetracker.zoom.IDetailItemModificator;
+import org.zkoss.ganttz.timetracker.zoom.IZoomLevelChangedListener;
+import org.zkoss.ganttz.timetracker.zoom.SeveralModificators;
+import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
+
+import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Constraint;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Hbox;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Tab;
+import org.zkoss.zul.Tabbox;
+import org.zkoss.zul.Tabpanel;
+import org.zkoss.zul.Tabpanels;
+import org.zkoss.zul.Tabs;
+import org.zkoss.zul.Vbox;
 
 import static org.libreplan.business.planner.chart.ContiguousDaysLine.*;
 import static org.libreplan.web.I18nHelper._;
@@ -130,11 +156,11 @@ public class OrderPlanningModel implements IOrderPlanningModel {
     private static final Log PROFILING_LOG = ProfilingLogFactory
             .getLog(OrderPlanningModel.class);
 
-    public static <T extends Collection<Resource>> T loadRequiredDataFor(
-            T resources) {
+    public static <T extends Collection<Resource>> T loadRequiredDataFor(T resources) {
         for (Resource each : resources) {
             reattachCalendarFor(each);
-            // loading criterions so there are no repeated instances
+
+            // Loading criterions so there are no repeated instances
             forceLoadOfCriterions(each);
         }
         return resources;

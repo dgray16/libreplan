@@ -38,18 +38,19 @@ import org.zkoss.zul.Window;
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  *
  */
-public abstract class StrechesFunctionConfiguration implements
-        IAssignmentFunctionConfiguration {
+public abstract class StrechesFunctionConfiguration implements IAssignmentFunctionConfiguration {
 
     @Override
     public void goToConfigure() {
-        StretchesFunctionController stretchesFunctionController = new StretchesFunctionController(getGraphicsGenerators());
+        StretchesFunctionController stretchesFunctionController =
+                new StretchesFunctionController(getGraphicsGenerators());
+
         stretchesFunctionController.setTitle(getTitle());
         HashMap<String, Object> args = new HashMap<>();
         args.put("stretchesFunctionController", stretchesFunctionController);
 
-        Window window = (Window) Executions.createComponents("/planner/stretches_function.zul",
-                getParentOnWhichOpenWindow(), args);
+        Window window = (Window)
+                Executions.createComponents("/planner/stretches_function.zul", getParentOnWhichOpenWindow(), args);
 
         Util.createBindingsFor(window);
         ResourceAllocation<?> allocation = getAllocation();
@@ -79,16 +80,11 @@ public abstract class StrechesFunctionConfiguration implements
 
     protected abstract Component getParentOnWhichOpenWindow();
 
-    public abstract String getName();
-
     @Override
     public boolean isTargetedTo(AssignmentFunction function) {
-        if ( (function instanceof StretchesFunction) ) {
-            return false;
-        }
-        StretchesFunction s = (StretchesFunction) function;
-
-        return s.getType() == getType();
+        return !(function instanceof StretchesFunction)
+                ? false
+                : ((StretchesFunction) function).getType() == getType();
     }
 
     @Override

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -72,12 +73,10 @@ import org.zkoss.ganttz.timetracker.TimeTracker;
 import org.zkoss.ganttz.timetracker.TimeTracker.IDetailItemFilter;
 import org.zkoss.ganttz.timetracker.TimeTrackerComponentWithoutColumns;
 import org.zkoss.ganttz.timetracker.zoom.DetailItem;
-import org.zkoss.ganttz.timetracker.zoom.IZoomLevelChangedListener;
 import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
 import org.zkoss.ganttz.util.Interval;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.Clients;
@@ -147,10 +146,10 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
         Interval calculateInterval() {
             List<ResourceAllocation<?>> all = getAllocationsSortedByStartDate();
-            if ( all.isEmpty() ) {
-                return new Interval(task.getStartDate(), task
-                        .getEndDate());
-            } else {
+
+            if ( all.isEmpty() )
+                return new Interval(task.getStartDate(), task.getEndDate());
+            else {
                 LocalDate start = min(all.get(0).getStartConsideringAssignments(), all.get(0).getStartDate());
                 LocalDate taskEndDate = LocalDate.fromDateFields(task.getEndDate());
                 LocalDate end = max(getEnd(all), taskEndDate);
@@ -171,14 +170,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             ArrayList<ResourceAllocation<?>> reversed = reverse(all);
             LocalDate end = reversed.get(0).getEndDate();
             ListIterator<ResourceAllocation<?>> listIterator = reversed.listIterator(1);
+
             while (listIterator.hasNext()) {
                 ResourceAllocation<?> current = listIterator.next();
 
-                if ( current.getEndDate().compareTo(end) >= 0 ) {
+                if ( current.getEndDate().compareTo(end) >= 0 )
                     end = current.getEndDate();
-                } else {
+                else
                     return end;
-                }
             }
 
             return end;
@@ -232,13 +231,16 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             switch (restrictionSource.getCalculatedValue()) {
                 case END_DATE:
                     return Restriction.emptyRestriction();
+
                 case NUMBER_OF_HOURS:
                     return Restriction.onlyAssignOnInterval(restrictionSource.getStart(), restrictionSource.getEnd());
+
                 case RESOURCES_PER_DAY:
                     return Restriction.emptyRestriction();
+
                 default:
                     throw new RuntimeException("unhandled case: " + restrictionSource.getCalculatedValue());
-                }
+            }
         }
 
         private static Restriction emptyRestriction() {
@@ -421,9 +423,10 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
     private void loadAndInitializeComponents() {
         messages = new MessagesForUser(associatedComponent.getFellow("messages"));
-        if ( allocationInputs.isEmpty() ) {
+
+        if ( allocationInputs.isEmpty() )
             onlyOneVisible.showOnly(noDataLayout);
-        } else {
+        else {
             onlyOneVisible.showOnly(normalLayout);
             createComponents();
             insertComponentsInLayout();
@@ -453,15 +456,19 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             switch (zoomLevel) {
                 case DETAIL_ONE:
                     return Period.years(5);
+
                 case DETAIL_TWO:
                     return Period.years(5);
+
                 case DETAIL_THREE:
                     return Period.years(2);
+
                 case DETAIL_FOUR:
                     return Period.months(6);
+
                 case DETAIL_FIVE:
                     return Period.weeks(6);
-                }
+            }
 
             return Period.years(5);
         }
@@ -472,11 +479,11 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             if ( intervalStart != null ) {
                 DateTime itemStart = intervalStart;
                 DateTime itemEnd = intervalStart.plus(intervalIncrease());
+
                 while (intervalEnd.isAfter(itemStart)) {
 
-                    if ( intervalEnd.isBefore(itemEnd) || itemEnd.plus(intervalIncrease()).isAfter(intervalEnd) ) {
+                    if ( intervalEnd.isBefore(itemEnd) || itemEnd.plus(intervalIncrease()).isAfter(intervalEnd) )
                         itemEnd = intervalEnd;
-                    }
 
                     Listitem item = new Listitem(Util.formatDate(itemStart) + " - " + Util.formatDate(itemEnd.minusDays(1)));
                     advancedAllocationHorizontalPagination.appendChild(item);
@@ -484,6 +491,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
                     itemEnd = itemEnd.plus(intervalIncrease());
                 }
             }
+
             int size = advancedAllocationHorizontalPagination.getItems().size();
             advancedAllocationHorizontalPagination.setDisabled(size < 2);
 
@@ -494,15 +502,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             if ( interval >= 0 ) {
                 paginatorStart = intervalStart;
 
-                for (int i = 0; i < interval; i++) {
+                for (int i = 0; i < interval; i++)
                     paginatorStart = paginatorStart.plus(intervalIncrease());
-                }
 
                 paginatorEnd = paginatorStart.plus(intervalIncrease());
+
                 // Avoid reduced intervals
-                if ( !intervalEnd.isAfter(paginatorEnd.plus(intervalIncrease())) ) {
+                if ( !intervalEnd.isAfter(paginatorEnd.plus(intervalIncrease())) )
                     paginatorEnd = intervalEnd;
-                }
 
                 updatePaginationButtons();
             }
@@ -511,12 +518,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         @Override
         public Collection<DetailItem> selectsFirstLevel(Collection<DetailItem> firstLevelDetails) {
             ArrayList<DetailItem> result = new ArrayList<>();
-            for (DetailItem each : firstLevelDetails) {
-                if ( (each.getStartDate() == null) || !(each.getStartDate().isBefore(paginatorStart)) &&
-                        (each.getStartDate().isBefore(paginatorEnd)) ) {
+
+            for (DetailItem each : firstLevelDetails)
+
+                if ( (each.getStartDate() == null) ||
+                        !(each.getStartDate().isBefore(paginatorStart)) &&
+                                (each.getStartDate().isBefore(paginatorEnd)) )
+
                     result.add(each);
-                }
-            }
 
             return result;
         }
@@ -524,12 +533,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         @Override
         public Collection<DetailItem> selectsSecondLevel(Collection<DetailItem> secondLevelDetails) {
             ArrayList<DetailItem> result = new ArrayList<>();
-            for (DetailItem each : secondLevelDetails) {
-                if ( (each.getStartDate() == null) || !(each.getStartDate().isBefore(paginatorStart)) &&
-                        (each.getStartDate().isBefore(paginatorEnd)) ) {
+
+            for (DetailItem each : secondLevelDetails)
+
+                if ( (each.getStartDate() == null) ||
+                        !(each.getStartDate().isBefore(paginatorStart)) &&
+                                (each.getStartDate().isBefore(paginatorEnd)) )
+
                     result.add(each);
-                }
-            }
 
             return result;
         }
@@ -537,10 +548,10 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         public void next() {
             paginatorStart = paginatorStart.plus(intervalIncrease());
             paginatorEnd = paginatorEnd.plus(intervalIncrease());
+
             // Avoid reduced last intervals
-            if ( !intervalEnd.isAfter(paginatorEnd.plus(intervalIncrease())) ) {
+            if ( !intervalEnd.isAfter(paginatorEnd.plus(intervalIncrease())) )
                 paginatorEnd = paginatorEnd.plus(intervalIncrease());
-            }
 
             updatePaginationButtons();
         }
@@ -574,9 +585,8 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             paginatorStart = intervalStart;
             paginatorEnd = intervalStart.plus(intervalIncrease());
 
-            if ( (paginatorEnd.plus(intervalIncrease()).isAfter(intervalEnd)) ) {
+            if ( (paginatorEnd.plus(intervalIncrease()).isAfter(intervalEnd)) )
                 paginatorEnd = intervalEnd;
-            }
 
             updatePaginationButtons();
         }
@@ -592,9 +602,8 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         paginatorFilter = new PaginatorFilter();
         zoomLevel = FilterUtils.readZoomLevel(order);
 
-        if ( zoomLevel != null ) {
+        if ( zoomLevel != null )
             timeTracker.setZoomLevel(zoomLevel);
-        }
 
         paginatorFilter.setZoomLevel(timeTracker.getDetailLevel());
         paginatorFilter.setInterval(timeTracker.getRealInterval());
@@ -602,22 +611,21 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         advancedAllocationZoomLevel.setSelectedIndex(timeTracker.getDetailLevel().ordinal());
         timeTracker.setFilter(paginatorFilter);
 
-        timeTracker.addZoomListener(new IZoomLevelChangedListener() {
-            @Override
-            public void zoomLevelChanged(ZoomLevel detailLevel) {
-                FilterUtils.writeZoomLevel(order, detailLevel);
-                zoomLevel = detailLevel;
+        timeTracker.addZoomListener(detailLevel -> {
+            FilterUtils.writeZoomLevel(order, detailLevel);
+            zoomLevel = detailLevel;
 
-                paginatorFilter.setZoomLevel(detailLevel);
-                paginatorFilter.setInterval(timeTracker.getRealInterval());
-                timeTracker.setFilter(paginatorFilter);
-                populateHorizontalListbox();
-                Clients.evalJavaScript("ADVANCE_ALLOCATIONS.listenToScroll();");
-            }
+            paginatorFilter.setZoomLevel(detailLevel);
+            paginatorFilter.setInterval(timeTracker.getRealInterval());
+            timeTracker.setFilter(paginatorFilter);
+            populateHorizontalListbox();
+            Clients.evalJavaScript("ADVANCE_ALLOCATIONS.listenToScroll();");
         });
 
         timeTrackerComponent = new TimeTrackerComponentWithoutColumns(timeTracker, "timetrackerheader");
-        timeTrackedTableWithLeftPane = new TimeTrackedTableWithLeftPane<>(getDataSource(),
+
+        timeTrackedTableWithLeftPane = new TimeTrackedTableWithLeftPane<>(
+                getDataSource(),
                 getColumnsForLeft(),
                 getLeftRenderer(),
                 getRightRenderer(),
@@ -636,22 +644,20 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         reloadComponent();
 
         advancedAllocationHorizontalPagination
-                .setSelectedIndex(advancedAllocationHorizontalPagination
-                        .getSelectedIndex() - 1);
+                .setSelectedIndex(advancedAllocationHorizontalPagination.getSelectedIndex() - 1);
 
     }
 
     public void paginationUp() {
         paginatorFilter.next();
         reloadComponent();
-        advancedAllocationHorizontalPagination.setSelectedIndex(Math.max(0,
-                advancedAllocationHorizontalPagination.getSelectedIndex()) + 1);
+
+        advancedAllocationHorizontalPagination
+                .setSelectedIndex(Math.max(0, advancedAllocationHorizontalPagination.getSelectedIndex()) + 1);
     }
 
     public void goToSelectedHorizontalPage() {
-        paginatorFilter
-                .goToHorizontalPage(advancedAllocationHorizontalPagination
-                        .getSelectedIndex());
+        paginatorFilter.goToHorizontalPage(advancedAllocationHorizontalPagination.getSelectedIndex());
         reloadComponent();
     }
 
@@ -663,16 +669,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     private void reloadComponent() {
         timeTrackedTableWithLeftPane.reload();
         timeTrackerComponent.recreate();
+
         // Reattach listener for zoomLevel changes. May be optimized
-        timeTracker.addZoomListener(new IZoomLevelChangedListener() {
-            @Override
-            public void zoomLevelChanged(ZoomLevel detailLevel) {
-                paginatorFilter.setZoomLevel(detailLevel);
-                paginatorFilter.setInterval(timeTracker.getRealInterval());
-                timeTracker.setFilter(paginatorFilter);
-                populateHorizontalListbox();
-                Clients.evalJavaScript("ADVANCE_ALLOCATIONS.listenToScroll();");
-            }
+        timeTracker.addZoomListener(detailLevel -> {
+            paginatorFilter.setZoomLevel(detailLevel);
+            paginatorFilter.setInterval(timeTracker.getRealInterval());
+            timeTracker.setFilter(paginatorFilter);
+            populateHorizontalListbox();
+            Clients.evalJavaScript("ADVANCE_ALLOCATIONS.listenToScroll();");
         });
 
         Clients.evalJavaScript("ADVANCE_ALLOCATIONS.listenToScroll();");
@@ -708,39 +712,39 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
         back.goBack();
 
-        for (AllocationInput allocationInput : allocationInputs) {
+        for (AllocationInput allocationInput : allocationInputs)
             allocationInput.getResultReceiver().accepted(allocationInput.getAggregate());
-        }
     }
 
     public void onClick$saveButton() {
         for (AllocationInput allocationInput : allocationInputs) {
             EffortDuration totalEffort = allocationInput.getTotalEffort();
             Restriction restriction = allocationInput.getResultReceiver().createRestriction();
+
             if ( restriction.isInvalidTotalEffort(totalEffort) ) {
                 Row groupingRow = groupingRows.get(allocationInput);
                 restriction.markInvalidEffort(groupingRow, totalEffort);
             }
         }
-        for (AllocationInput allocationInput : allocationInputs) {
-            allocationInput.getResultReceiver().accepted(
-                    allocationInput.getAggregate());
-        }
+        for (AllocationInput allocationInput : allocationInputs)
+            allocationInput.getResultReceiver().accepted(allocationInput.getAggregate());
 
         Messagebox.show(_("Changes applied"), _("Information"), Messagebox.OK, Messagebox.INFORMATION);
     }
 
     public void onClick$cancelButton() {
         back.goBack();
-        for (AllocationInput allocationInput : allocationInputs) {
+        for (AllocationInput allocationInput : allocationInputs)
             allocationInput.getResultReceiver().cancel();
-        }
     }
 
     public ListModel<? extends ZoomLevel> getZoomLevels() {
-        ZoomLevel[] selectableZoomlevels = { ZoomLevel.DETAIL_ONE,
-                ZoomLevel.DETAIL_TWO, ZoomLevel.DETAIL_THREE,
-                ZoomLevel.DETAIL_FOUR, ZoomLevel.DETAIL_FIVE };
+        ZoomLevel[] selectableZoomlevels = {
+                ZoomLevel.DETAIL_ONE,
+                ZoomLevel.DETAIL_TWO,
+                ZoomLevel.DETAIL_THREE,
+                ZoomLevel.DETAIL_FOUR,
+                ZoomLevel.DETAIL_FIVE };
 
         return new SimpleListModel<>(selectableZoomlevels);
     }
@@ -776,12 +780,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     private int verticalPage;
 
     private List<Row> getRows() {
-        if ( rowsCached != null ) {
+        if ( rowsCached != null )
             return filterRows(rowsCached);
-        }
+
         rowsCached = new ArrayList<>();
         int position = 1;
+
         for (AllocationInput allocationInput : allocationInputs) {
+
             if ( !allocationInput.getAggregate().getAllocationsSortedByStartDate().isEmpty() ) {
                 Row groupingRow = buildGroupingRow(allocationInput);
                 groupingRow.setDescription(position + " " + allocationInput.getTaskName());
@@ -804,17 +810,18 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     private List<Row> filterRows(List<Row> rows) {
         verticalPaginationUpButton.setDisabled(verticalIndex <= 0);
         verticalPaginationDownButton.setDisabled((verticalIndex + VERTICAL_MAX_ELEMENTS) >= rows.size());
-        if( advancedAllocationVerticalPagination.getChildren().size() >= 2 ) {
+
+        if ( advancedAllocationVerticalPagination.getChildren().size() >= 2 ) {
             advancedAllocationVerticalPagination.setDisabled(false);
             advancedAllocationVerticalPagination.setSelectedIndex(verticalPage);
         }
         else {
             advancedAllocationVerticalPagination.setDisabled(true);
         }
-        return rows.subList(verticalIndex,
-                verticalPage + 1 < verticalPaginationIndexes.size() ?
-                       verticalPaginationIndexes.get(verticalPage + 1) :
-                       rows.size());
+        return rows.subList(
+                verticalIndex, verticalPage + 1 < verticalPaginationIndexes.size()
+                        ? verticalPaginationIndexes.get(verticalPage + 1)
+                        : rows.size());
     }
 
     public void verticalPagedown() {
@@ -834,8 +841,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     public void goToSelectedVerticalPage() {
-        verticalPage = advancedAllocationVerticalPagination.
-            getSelectedIndex();
+        verticalPage = advancedAllocationVerticalPagination.getSelectedIndex();
         verticalIndex = verticalPaginationIndexes.get(verticalPage);
         timeTrackedTableWithLeftPane.reload();
     }
@@ -845,12 +851,13 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             verticalPaginationIndexes = new ArrayList<>();
             advancedAllocationVerticalPagination.getChildren().clear();
 
-            for(int i=0; i<rowsCached.size(); i= correctVerticalPageDownPosition(i+VERTICAL_MAX_ELEMENTS)) {
-                int endPosition = correctVerticalPageUpPosition(
-                        Math.min(rowsCached.size(), i + VERTICAL_MAX_ELEMENTS) - 1);
+            for (int i = 0; i < rowsCached.size(); i = correctVerticalPageDownPosition(i + VERTICAL_MAX_ELEMENTS)) {
 
-                String label = rowsCached.get(i).getDescription() + " - " +
-                        rowsCached.get(endPosition).getDescription();
+                int endPosition =
+                        correctVerticalPageUpPosition(Math.min(rowsCached.size(), i + VERTICAL_MAX_ELEMENTS) - 1);
+
+                String label =
+                        rowsCached.get(i).getDescription() + " - " + rowsCached.get(endPosition).getDescription();
 
                 Listitem item = new Listitem();
                 item.appendChild(new Listcell(label));
@@ -858,53 +865,49 @@ public class AdvancedAllocationController extends GenericForwardComposer {
                 verticalPaginationIndexes.add(i);
             }
 
-            if ( !rowsCached.isEmpty() ) {
+            if ( !rowsCached.isEmpty() )
                 advancedAllocationVerticalPagination.setSelectedIndex(0);
-            }
         }
     }
 
     private int correctVerticalPageUpPosition(int position) {
         int correctedPosition = position;
-        //moves the pointer up until it finds the previous grouping row
-        //or the beginning of the list
-        while(correctedPosition > 0 &&
-                !rowsCached.get(correctedPosition).isGroupingRow()) {
+
+        // Moves the pointer up until it finds the previous grouping row or the beginning of the list
+        while (correctedPosition > 0 && !rowsCached.get(correctedPosition).isGroupingRow())
             correctedPosition--;
-        }
 
         return correctedPosition;
     }
 
     private int correctVerticalPageDownPosition(int position) {
         int correctedPosition = position;
-        //moves the pointer down until it finds the next grouping row
-        //or the end of the list
-        while(correctedPosition < rowsCached.size() &&
-                !rowsCached.get(correctedPosition).isGroupingRow()) {
+
+        // Moves the pointer down until it finds the next grouping row or the end of the list
+        while(correctedPosition < rowsCached.size() && !rowsCached.get(correctedPosition).isGroupingRow())
             correctedPosition++;
-        }
 
         return correctedPosition;
     }
 
     private List<Row> specificRows(AllocationInput allocationInput) {
-        List<Row> result = new ArrayList<>();
-
-        for (SpecificResourceAllocation specificResourceAllocation : allocationInput.getAggregate()
-                .getSpecificAllocations()) {
-            result.add(createSpecificRow(specificResourceAllocation,
-                    allocationInput.getResultReceiver().createRestriction(), allocationInput.task));
-        }
-
-        return result;
+        return allocationInput
+                .getAggregate()
+                .getSpecificAllocations()
+                .parallelStream()
+                .map(specificResourceAllocation -> createSpecificRow(
+                        specificResourceAllocation,
+                        allocationInput.getResultReceiver().createRestriction(),
+                        allocationInput.task))
+                .collect(Collectors.toList());
     }
 
     private Row createSpecificRow(SpecificResourceAllocation specificResourceAllocation,
                                   Restriction restriction,
                                   TaskElement task) {
 
-        return Row.createRow(messages,
+        return Row.createRow(
+                messages,
                 restriction,
                 specificResourceAllocation.getResource().getName(),
                 1,
@@ -915,25 +918,25 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private List<Row> genericRows(AllocationInput allocationInput) {
-        List<Row> result = new ArrayList<>();
-
-        for (GenericResourceAllocation genericResourceAllocation : allocationInput.getAggregate()
-                .getGenericAllocations()) {
-            result.add(buildGenericRow(genericResourceAllocation,
-                    allocationInput.getResultReceiver().createRestriction(), allocationInput.task));
-        }
-
-        return result;
+        return allocationInput
+                .getAggregate()
+                .getGenericAllocations()
+                .parallelStream()
+                .map(genericResourceAllocation -> buildGenericRow(
+                        genericResourceAllocation,
+                        allocationInput.getResultReceiver().createRestriction(),
+                        allocationInput.task))
+                .collect(Collectors.toList());
     }
 
     private Row buildGenericRow(GenericResourceAllocation genericResourceAllocation,
                                 Restriction restriction,
                                 TaskElement task) {
 
-        return Row.createRow(messages,
+        return Row.createRow(
+                messages,
                 restriction,
-                Criterion
-                .getCaptionFor(genericResourceAllocation),
+                Criterion.getCaptionFor(genericResourceAllocation),
                 1,
                 Collections.singletonList(genericResourceAllocation),
                 genericResourceAllocation.isLimiting(),
@@ -944,7 +947,8 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         Restriction restriction = allocationInput.getResultReceiver().createRestriction();
         String taskName = allocationInput.getTaskName();
 
-        return Row.createRow(messages,
+        return Row.createRow(
+                messages,
                 restriction,
                 taskName,
                 0,
@@ -954,6 +958,12 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private ICellForDetailItemRenderer<ColumnOnRow, Row> getLeftRenderer() {
+        /*
+        Do not replace it with method reference or lambda expression.
+        It will be the reason of
+        java.lang.IllegalArgumentException:
+        the generic type cannot be inferred if actual type parameters are not declared or implements the raw interface
+        */
         return new ICellForDetailItemRenderer<ColumnOnRow, Row>() {
 
             @Override
@@ -992,17 +1002,20 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private Callable<PairOfLists<Row, Row>> getDataSource() {
-        return new Callable<PairOfLists<Row, Row>>() {
+        return () -> {
+            List<Row> rows = getRows();
 
-            @Override
-            public PairOfLists<Row, Row> call() {
-                List<Row> rows = getRows();
-                return new PairOfLists<>(rows, rows);
-            }
+            return new PairOfLists<>(rows, rows);
         };
     }
 
     private ICellForDetailItemRenderer<DetailItem, Row> getRightRenderer() {
+        /*
+        Do not replace it with method reference or lambda expression.
+        It will be the reason of
+        java.lang.IllegalArgumentException:
+        the generic type cannot be inferred if actual type parameters are not declared or implements the raw interface
+        */
         return new ICellForDetailItemRenderer<DetailItem, Row>() {
 
             @Override
@@ -1034,85 +1047,55 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
 }
 
-    abstract class ColumnOnRow implements IConvertibleToColumn {
+abstract class ColumnOnRow implements IConvertibleToColumn {
 
-        private final String columnName;
+    private final String columnName;
 
-        private String width = null;
+    private String width = null;
 
-        ColumnOnRow(String columnName) {
-            this.columnName = columnName;
-        }
-
-        ColumnOnRow(String columnName, String width) {
-            this.columnName = columnName;
-            this.width = width;
-        }
-
-        public abstract Component cellFor(Row row);
-
-        @Override
-        public Column toColumn() {
-            Column column = new org.zkoss.zul.Column();
-            column.setLabel(_(columnName));
-            column.setSclass(columnName.toLowerCase());
-            if ( width != null ) {
-                column.setWidth(width);
-            }
-
-            return column;
-        }
-
-        public String getName() {
-            return columnName;
-        }
+    ColumnOnRow(String columnName) {
+        this.columnName = columnName;
     }
 
-    interface CellChangedListener {
-        void changeOn(DetailItem detailItem);
-
-        void changeOnGlobal();
+    ColumnOnRow(String columnName, String width) {
+        this.columnName = columnName;
+        this.width = width;
     }
 
-    class Row {
+    public abstract Component cellFor(Row row);
 
-        static Row createRow(IMessagesForUser messages,
-                             AdvancedAllocationController.Restriction restriction,
-                             String name,
-                             int level,
-                             List<? extends ResourceAllocation<?>> allocations,
-                             String description,
-                             boolean limiting,
-                             TaskElement task) {
+    @Override
+    public Column toColumn() {
+        Column column = new Column();
+        column.setLabel(_(columnName));
+        column.setSclass(columnName.toLowerCase());
 
-            Row newRow = new Row(messages, restriction, name, level, allocations, limiting, task);
-            newRow.setDescription(description);
+        if ( width != null )
+            column.setWidth(width);
 
-            return newRow;
+        return column;
     }
 
-    static Row createRow(IMessagesForUser messages,
-                         AdvancedAllocationController.Restriction restriction,
-                         String name,
-                         int level,
-                         List<? extends ResourceAllocation<?>> allocations,
-                         boolean limiting,
-                         TaskElement task) {
-
-        return new Row(messages, restriction, name, level, allocations, limiting, task);
+    public String getName() {
+        return columnName;
     }
+}
 
-    public void markErrorOnTotal(String message) {
-        throw new WrongValueException(allEffortInput, message);
-    }
+interface CellChangedListener {
+    void changeOn(DetailItem detailItem);
+
+    void changeOnGlobal();
+}
+
+class Row {
 
     private EffortDurationBox allEffortInput;
 
     private Label nameLabel;
 
-    private List<CellChangedListener> listeners = new ArrayList<CellChangedListener>();
+    private List<CellChangedListener> listeners = new ArrayList<>();
 
-    private Map<DetailItem, Component> componentsByDetailItem = new WeakHashMap<DetailItem, Component>();
+    private Map<DetailItem, Component> componentsByDetailItem = new WeakHashMap<>();
 
     private String name;
 
@@ -1126,272 +1109,19 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
     private final IMessagesForUser messages;
 
-    private final String functionName;
-
     private TaskElement task;
 
-    void listenTo(Collection<Row> rows) {
-        for (Row row : rows) {
-            listenTo(row);
-        }
-    }
-
-    private void listenTo(Row row) {
-        row.add(new CellChangedListener() {
-
-            @Override
-            public void changeOnGlobal() {
-                reloadAllEffort();
-                reloadEffortsSameRowForDetailItems();
-            }
-
-            @Override
-            public void changeOn(DetailItem detailItem) {
-                Component component = componentsByDetailItem.get(detailItem);
-                if (component == null) {
-                    return;
-                }
-                reloadEffortOnInterval(component, detailItem);
-                reloadAllEffort();
-            }
-        });
-    }
-
-    private void add(CellChangedListener listener) {
-        listeners.add(listener);
-    }
-
-    private void fireCellChanged(DetailItem detailItem) {
-        for (CellChangedListener cellChangedListener : listeners) {
-            cellChangedListener.changeOn(detailItem);
-        }
-    }
-
-    private void fireCellChanged() {
-        for (CellChangedListener cellChangedListener : listeners) {
-            cellChangedListener.changeOnGlobal();
-        }
-    }
-
-    Component getAllEffort() {
-        if ( allEffortInput == null ) {
-            allEffortInput = buildSumAllEffort();
-            reloadAllEffort();
-            addListenerIfNeeded(allEffortInput);
-        }
-
-        return allEffortInput;
-    }
-
-    private EffortDurationBox buildSumAllEffort() {
-
-        EffortDurationBox box = isEffortDurationBoxDisabled() ? EffortDurationBox.notEditable()
-                                                            : new EffortDurationBox();
-
-        box.setWidth("40px");
-
-        return box;
-    }
-
-    private void addListenerIfNeeded(Component allEffortComponent) {
-        if ( isEffortDurationBoxDisabled() ) {
-            return;
-        }
-
-        final EffortDurationBox effortDurationBox = (EffortDurationBox) allEffortComponent;
-        effortDurationBox.addEventListener(Events.ON_CHANGE,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        EffortDuration value = effortDurationBox.getEffortDurationValue();
-
-                        ResourceAllocation<?> resourceAllocation = getAllocation();
-                        resourceAllocation
-                                .withPreviousAssociatedResources()
-                                .onIntervalWithinTask(resourceAllocation.getStartDate(),
-                                        resourceAllocation.getEndDate())
-                                .allocate(value);
-                        AssignmentFunction assignmentFunction = resourceAllocation.getAssignmentFunction();
-
-                        if ( assignmentFunction != null ) {
-                            assignmentFunction.applyTo(resourceAllocation);
-                        }
-
-                        fireCellChanged();
-                        reloadEffortsSameRowForDetailItems();
-                        reloadAllEffort();
-                    }
-                });
-    }
-
-    private boolean isEffortDurationBoxDisabled() {
-        return isGroupingRow() || isLimiting || task.isUpdatedFromTimesheets();
-    }
-
-    private void reloadEffortsSameRowForDetailItems() {
-        for (Entry<DetailItem, Component> entry : componentsByDetailItem.entrySet()) {
-            reloadEffortOnInterval(entry.getValue(), entry.getKey());
-        }
-    }
-
-    private void reloadAllEffort() {
-        if ( allEffortInput == null ) {
-            return;
-        }
-
-        EffortDuration allEffort = aggregate.getTotalEffort();
-        allEffortInput.setValue(allEffort);
-        Clients.clearWrongValue(allEffortInput);
-
-        if ( isEffortDurationBoxDisabled() ) {
-            allEffortInput.setDisabled(true);
-        }
-        if ( restriction.isInvalidTotalEffort(allEffort) ) {
-            restriction.showInvalidEffort(messages, allEffort);
-        }
-    }
-
     private Hbox hboxAssigmentFunctionsCombo = null;
-
-    Component getFunction() {
-        if ( isGroupingRow() ) {
-            return new Label();
-        } else if ( isLimiting ) {
-            return new Label(_("Queue-based assignment"));
-        } else {
-            if ( hboxAssigmentFunctionsCombo == null ) {
-                initializeAssigmentFunctionsCombo();
-            }
-
-            return hboxAssigmentFunctionsCombo;
-        }
-    }
 
     private AssignmentFunctionListbox assignmentFunctionsCombo = null;
 
     private Button assignmentFunctionsConfigureButton = null;
 
-    private void initializeAssigmentFunctionsCombo() {
-        hboxAssigmentFunctionsCombo = new Hbox();
-        assignmentFunctionsCombo = new AssignmentFunctionListbox(functions, getAllocation().getAssignmentFunction());
-        hboxAssigmentFunctionsCombo.appendChild(assignmentFunctionsCombo);
-        assignmentFunctionsConfigureButton = getAssignmentFunctionsConfigureButton(assignmentFunctionsCombo);
-        hboxAssigmentFunctionsCombo.appendChild(assignmentFunctionsConfigureButton);
-
-        // Disable if task is updated from timesheets
-        assignmentFunctionsCombo.setDisabled(task.isUpdatedFromTimesheets());
-        assignmentFunctionsConfigureButton.setDisabled(assignmentFunctionsConfigureButton.isDisabled() ||
-                                                                task.isUpdatedFromTimesheets());
-    }
-
-    /**
-     * @author Diego Pino García <dpino@igalia.com>
-     *
-     *         Encapsulates the logic of the combobox used for selecting what
-     *         type of assignment function to apply
-     */
-    private class AssignmentFunctionListbox extends Listbox {
-
-        private Listitem previousListitem;
-
-        AssignmentFunctionListbox(IAssignmentFunctionConfiguration[] functions, AssignmentFunction initialValue) {
-
-            for (IAssignmentFunctionConfiguration each : functions) {
-                Listitem listitem = listItem(each);
-                this.appendChild(listitem);
-
-                if ( each.isTargetedTo(initialValue) ) {
-                    selectItemAndSavePreviousValue(listitem);
-                }
-            }
-
-            this.addEventListener(Events.ON_SELECT, onSelectListbox());
-            this.setMold("select");
-            this.setStyle("font-size: 10px");
-        }
-
-        private void selectItemAndSavePreviousValue(Listitem listitem) {
-            setSelectedItem(listitem);
-            previousListitem = listitem;
-        }
-
-        private Listitem listItem(IAssignmentFunctionConfiguration assignmentFunction) {
-            Listitem listitem = new Listitem(_(assignmentFunction.getName()));
-            listitem.setValue(assignmentFunction);
-
-            return listitem;
-        }
-
-        private EventListener onSelectListbox() {
-            return new EventListener() {
-
-                @Override
-                public void onEvent(Event event) throws Exception {
-                    IAssignmentFunctionConfiguration function = (IAssignmentFunctionConfiguration) getSelectedItem()
-                            .getValue();
-
-                    // Cannot apply function if task contains consolidated day assignments
-                    final ResourceAllocation<?> resourceAllocation = getAllocation();
-                    if ( function.isSigmoid() && !resourceAllocation.getConsolidatedAssignments().isEmpty() ) {
-                        showCannotApplySigmoidFunction();
-                        setSelectedItem(getPreviousListitem());
-                        return;
-                    }
-                    // User didn't accept
-                    if ( showConfirmChangeFunctionDialog() != Messagebox.YES ) {
-                        setSelectedItem(getPreviousListitem());
-                        return;
-                    }
-                    // Apply assignment function
-                    setPreviousListitem(getSelectedItem());
-                    function.applyOn(resourceAllocation);
-                    updateAssignmentFunctionsConfigureButton(assignmentFunctionsConfigureButton,
-                            function.isConfigurable());
-                }
-            };
-        }
-
-        private Listitem getPreviousListitem() {
-            return previousListitem;
-        }
-
-        private void setPreviousListitem(Listitem previousListitem) {
-            this.previousListitem = previousListitem;
-        }
-
-        private void showCannotApplySigmoidFunction() {
-            Messagebox
-                    .show(_("Task contains consolidated progress. Cannot apply sigmoid function."),
-                            _("Error"), Messagebox.OK, Messagebox.ERROR);
-        }
-
-        private int showConfirmChangeFunctionDialog()
-                throws InterruptedException {
-            return Messagebox
-                    .show(_("Assignment function will be changed. Are you sure?"),
-                            _("Confirm change"),
-                            Messagebox.YES | Messagebox.NO, Messagebox.QUESTION);
-        }
-
-        private void setSelectedFunction(String functionName) {
-            List<Listitem> children = getChildren();
-
-            for (Listitem item : children) {
-                IAssignmentFunctionConfiguration function = item.getValue();
-                if ( function.getName().equals(functionName) ) {
-                    setSelectedItem(item);
-                }
-            }
-        }
-
-    }
-
     private IAssignmentFunctionConfiguration flat = new IAssignmentFunctionConfiguration() {
 
         @Override
         public void goToConfigure() {
-            throw new UnsupportedOperationException(
-                    "Flat allocation is not configurable");
+            throw new UnsupportedOperationException("Flat allocation is not configurable");
         }
 
         @Override
@@ -1407,6 +1137,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         @Override
         public void applyOn(ResourceAllocation<?> resourceAllocation) {
             resourceAllocation.setAssignmentFunctionWithoutApply(null);
+
             resourceAllocation
                     .withPreviousAssociatedResources()
                     .onIntervalWithinTask(resourceAllocation.getStartDate(), resourceAllocation.getEndDate())
@@ -1510,7 +1241,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         }
     };
 
-    private IAssignmentFunctionConfiguration strechesWithInterpolation = new CommonStrechesConfiguration() {
+    private IAssignmentFunctionConfiguration stretchesWithInterpolation = new CommonStrechesConfiguration() {
 
         @Override
         protected String getTitle() {
@@ -1578,20 +1309,294 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             flat,
             manualFunction,
             defaultStrechesFunction,
-            strechesWithInterpolation,
+            stretchesWithInterpolation,
             sigmoidFunction
     };
 
     private boolean isLimiting;
 
-    private Button getAssignmentFunctionsConfigureButton(final Listbox assignmentFunctionsListbox) {
-        Button button = Util.createEditButton(new EventListener() {
+    static Row createRow(IMessagesForUser messages,
+                         AdvancedAllocationController.Restriction restriction,
+                         String name,
+                         int level,
+                         List<? extends ResourceAllocation<?>> allocations,
+                         String description,
+                         boolean limiting,
+                         TaskElement task) {
+
+        Row newRow = new Row(messages, restriction, name, level, allocations, limiting, task);
+        newRow.setDescription(description);
+
+        return newRow;
+    }
+    static Row createRow(IMessagesForUser messages,
+                         AdvancedAllocationController.Restriction restriction,
+                         String name,
+                         int level,
+                         List<? extends ResourceAllocation<?>> allocations,
+                         boolean limiting,
+                         TaskElement task) {
+
+        return new Row(messages, restriction, name, level, allocations, limiting, task);
+    }
+
+    public void markErrorOnTotal(String message) {
+        throw new WrongValueException(allEffortInput, message);
+    }
+
+    void listenTo(Collection<Row> rows) {
+        for (Row row : rows) {
+            listenTo(row);
+        }
+    }
+
+    private void listenTo(Row row) {
+        row.add(new CellChangedListener() {
+
             @Override
-            public void onEvent(Event event) {
-                IAssignmentFunctionConfiguration configuration = assignmentFunctionsListbox
-                        .getSelectedItem().getValue();
-                configuration.goToConfigure();
+            public void changeOnGlobal() {
+                reloadAllEffort();
+                reloadEffortsSameRowForDetailItems();
             }
+
+            @Override
+            public void changeOn(DetailItem detailItem) {
+                Component component = componentsByDetailItem.get(detailItem);
+
+                if (component == null)
+                    return;
+
+                reloadEffortOnInterval(component, detailItem);
+                reloadAllEffort();
+            }
+        });
+    }
+
+    private void add(CellChangedListener listener) {
+        listeners.add(listener);
+    }
+
+    private void fireCellChanged(DetailItem detailItem) {
+        for (CellChangedListener cellChangedListener : listeners) {
+            cellChangedListener.changeOn(detailItem);
+        }
+    }
+
+    private void fireCellChanged() {
+        for (CellChangedListener cellChangedListener : listeners) {
+            cellChangedListener.changeOnGlobal();
+        }
+    }
+
+    Component getAllEffort() {
+        if ( allEffortInput == null ) {
+            allEffortInput = buildSumAllEffort();
+            reloadAllEffort();
+            addListenerIfNeeded(allEffortInput);
+        }
+
+        return allEffortInput;
+    }
+
+    private EffortDurationBox buildSumAllEffort() {
+
+        EffortDurationBox box = isEffortDurationBoxDisabled()
+                ? EffortDurationBox.notEditable()
+                : new EffortDurationBox();
+
+        box.setWidth("40px");
+
+        return box;
+    }
+
+    private void addListenerIfNeeded(Component allEffortComponent) {
+        if ( isEffortDurationBoxDisabled() )
+            return;
+
+        final EffortDurationBox effortDurationBox = (EffortDurationBox) allEffortComponent;
+
+        effortDurationBox.addEventListener(Events.ON_CHANGE, (EventListener) event -> {
+            EffortDuration value = effortDurationBox.getEffortDurationValue();
+
+            ResourceAllocation<?> resourceAllocation = getAllocation();
+
+            resourceAllocation
+                    .withPreviousAssociatedResources()
+                    .onIntervalWithinTask(resourceAllocation.getStartDate(), resourceAllocation.getEndDate())
+                    .allocate(value);
+
+            AssignmentFunction assignmentFunction = resourceAllocation.getAssignmentFunction();
+
+            if ( assignmentFunction != null )
+                assignmentFunction.applyTo(resourceAllocation);
+
+            fireCellChanged();
+            reloadEffortsSameRowForDetailItems();
+            reloadAllEffort();
+        });
+    }
+
+    private boolean isEffortDurationBoxDisabled() {
+        return isGroupingRow() || isLimiting || task.isUpdatedFromTimesheets();
+    }
+
+    private void reloadEffortsSameRowForDetailItems() {
+        for (Entry<DetailItem, Component> entry : componentsByDetailItem.entrySet()) {
+            reloadEffortOnInterval(entry.getValue(), entry.getKey());
+        }
+    }
+
+    private void reloadAllEffort() {
+        if ( allEffortInput == null )
+            return;
+
+        EffortDuration allEffort = aggregate.getTotalEffort();
+        allEffortInput.setValue(allEffort);
+        Clients.clearWrongValue(allEffortInput);
+
+        if ( isEffortDurationBoxDisabled() )
+            allEffortInput.setDisabled(true);
+
+        if ( restriction.isInvalidTotalEffort(allEffort) )
+            restriction.showInvalidEffort(messages, allEffort);
+    }
+
+    Component getFunction() {
+        if ( isGroupingRow() )
+            return new Label();
+
+        else if ( isLimiting )
+            return new Label(_("Queue-based assignment"));
+
+        else {
+            if ( hboxAssigmentFunctionsCombo == null )
+                initializeAssigmentFunctionsCombo();
+
+            return hboxAssigmentFunctionsCombo;
+        }
+    }
+
+    private void initializeAssigmentFunctionsCombo() {
+        hboxAssigmentFunctionsCombo = new Hbox();
+
+        assignmentFunctionsCombo =
+                new AssignmentFunctionListbox(functions, getAllocation().getAssignmentFunction());
+
+        hboxAssigmentFunctionsCombo.appendChild(assignmentFunctionsCombo);
+        assignmentFunctionsConfigureButton = getAssignmentFunctionsConfigureButton(assignmentFunctionsCombo);
+        hboxAssigmentFunctionsCombo.appendChild(assignmentFunctionsConfigureButton);
+
+        // Disable if task is updated from timesheets
+        assignmentFunctionsCombo.setDisabled(task.isUpdatedFromTimesheets());
+
+        assignmentFunctionsConfigureButton
+                .setDisabled(assignmentFunctionsConfigureButton.isDisabled() || task.isUpdatedFromTimesheets());
+    }
+
+    /**
+     * @author Diego Pino García <dpino@igalia.com>
+     *
+     * Encapsulates the logic of the combobox used for selecting what type of assignment function to apply.
+     */
+    private class AssignmentFunctionListbox extends Listbox {
+
+        private Listitem previousListitem;
+
+        AssignmentFunctionListbox(IAssignmentFunctionConfiguration[] functions, AssignmentFunction initialValue) {
+
+            for (IAssignmentFunctionConfiguration each : functions) {
+                Listitem listitem = listItem(each);
+                this.appendChild(listitem);
+
+                if ( each.isTargetedTo(initialValue) )
+                    selectItemAndSavePreviousValue(listitem);
+            }
+
+            this.addEventListener(Events.ON_SELECT, onSelectListbox());
+            this.setMold("select");
+            this.setStyle("font-size: 10px");
+        }
+
+        private void selectItemAndSavePreviousValue(Listitem listitem) {
+            setSelectedItem(listitem);
+            previousListitem = listitem;
+        }
+
+        private Listitem listItem(IAssignmentFunctionConfiguration assignmentFunction) {
+            Listitem listitem = new Listitem(_(assignmentFunction.getName()));
+            listitem.setValue(assignmentFunction);
+
+            return listitem;
+        }
+
+        private EventListener onSelectListbox() {
+            return event -> {
+                IAssignmentFunctionConfiguration function = getSelectedItem().getValue();
+
+                // Cannot apply function if task contains consolidated day assignments
+                final ResourceAllocation<?> resourceAllocation = getAllocation();
+
+                if ( function.isSigmoid() && !resourceAllocation.getConsolidatedAssignments().isEmpty() ) {
+                    showCannotApplySigmoidFunction();
+                    setSelectedItem(getPreviousListitem());
+
+                    return;
+                }
+
+                // User didn't accept
+                if ( showConfirmChangeFunctionDialog() != Messagebox.YES ) {
+                    setSelectedItem(getPreviousListitem());
+
+                    return;
+                }
+
+                // Apply assignment function
+                setPreviousListitem(getSelectedItem());
+                function.applyOn(resourceAllocation);
+
+                updateAssignmentFunctionsConfigureButton(
+                        assignmentFunctionsConfigureButton, function.isConfigurable());
+            };
+        }
+
+        private Listitem getPreviousListitem() {
+            return previousListitem;
+        }
+
+        private void setPreviousListitem(Listitem previousListitem) {
+            this.previousListitem = previousListitem;
+        }
+
+        private void showCannotApplySigmoidFunction() {
+            Messagebox.show(
+                    _("Task contains consolidated progress. Cannot apply sigmoid function."),
+                    _("Error"), Messagebox.OK, Messagebox.ERROR);
+        }
+
+        private int showConfirmChangeFunctionDialog() throws InterruptedException {
+            return Messagebox.show(
+                    _("Assignment function will be changed. Are you sure?"),
+                    _("Confirm change"), Messagebox.YES | Messagebox.NO, Messagebox.QUESTION);
+        }
+
+        private void setSelectedFunction(String functionName) {
+            List<Listitem> children = getChildren();
+
+            for (Listitem item : children) {
+                IAssignmentFunctionConfiguration function = item.getValue();
+                if ( function.getName().equals(functionName) )
+                    setSelectedItem(item);
+            }
+        }
+    }
+
+    private Button getAssignmentFunctionsConfigureButton(final Listbox assignmentFunctionsListbox) {
+        Button button = Util.createEditButton(event -> {
+
+            IAssignmentFunctionConfiguration configuration =
+                    assignmentFunctionsListbox.getSelectedItem().getValue();
+
+            configuration.goToConfigure();
         });
 
         IAssignmentFunctionConfiguration configuration = assignmentFunctionsListbox.getSelectedItem().getValue();
@@ -1615,11 +1620,10 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             nameLabel = new Label();
             nameLabel.setValue(name);
 
-            if ( !StringUtils.isBlank(description) ) {
+            if ( !StringUtils.isBlank(description) )
                 nameLabel.setTooltiptext(description);
-            } else {
+            else
                 nameLabel.setTooltiptext(name);
-            }
 
             nameLabel.setSclass("level" + level);
         }
@@ -1642,7 +1646,6 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         this.isLimiting = limiting;
         this.task = task;
         this.aggregate = AggregateOfResourceAllocations.createFromSatisfied(new ArrayList<>(allocations));
-        this.functionName = getAssignmentFunctionName(allocations);
     }
 
     private String getAssignmentFunctionName(List<? extends ResourceAllocation<?>> allocations) {
@@ -1652,13 +1655,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private AssignmentFunction getAssignmentFunction(List<? extends ResourceAllocation<?>> allocations) {
-        if ( allocations != null ) {
-            ResourceAllocation<?> allocation = allocations.iterator().next();
-
-            return allocation.getAssignmentFunction();
-        }
-
-        return null;
+        return allocations != null
+                ? allocations.iterator().next().getAssignmentFunction()
+                : null;
     }
 
     private EffortDuration getEffortForDetailItem(DetailItem item) {
@@ -1678,8 +1677,10 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private boolean cannotBeEdited(DetailItem item) {
-        return isGroupingRow() || doesNotIntersectWithTask(item) ||
-                isBeforeLatestConsolidation(item) || task.isUpdatedFromTimesheets();
+        return isGroupingRow() ||
+                doesNotIntersectWithTask(item) ||
+                isBeforeLatestConsolidation(item) ||
+                task.isUpdatedFromTimesheets();
     }
 
     private EffortDurationBox disableIfNeeded(DetailItem item, EffortDurationBox effortDurationBox) {
@@ -1689,27 +1690,26 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private void addListenerIfNeeded(final DetailItem item, final Component component) {
-        if ( cannotBeEdited(item) ) {
+        if ( cannotBeEdited(item) )
             return;
-        }
 
         final EffortDurationBox effortBox = (EffortDurationBox) component;
-        component.addEventListener(Events.ON_CHANGE, new EventListener() {
+        component.addEventListener(Events.ON_CHANGE, (EventListener) event -> {
+            EffortDuration value = effortBox.getEffortDurationValue();
+            LocalDate startDate = restriction.limitStartDate(item.getStartDate().toLocalDate());
+            LocalDate endDate = restriction.limitEndDate(item.getEndDate().toLocalDate());
 
-            @Override
-            public void onEvent(Event event) {
-                EffortDuration value = effortBox.getEffortDurationValue();
-                LocalDate startDate = restriction.limitStartDate(item.getStartDate().toLocalDate());
-                LocalDate endDate = restriction.limitEndDate(item.getEndDate().toLocalDate());
+            changeAssignmentFunctionToManual();
 
-                changeAssignmentFunctionToManual();
-                getAllocation().withPreviousAssociatedResources().onIntervalWithinTask(startDate, endDate)
-                        .allocate(value);
-                fireCellChanged(item);
+            getAllocation()
+                    .withPreviousAssociatedResources()
+                    .onIntervalWithinTask(startDate, endDate)
+                    .allocate(value);
 
-                effortBox.setRawValue(getEffortForDetailItem(item));
-                reloadAllEffort();
-            }
+            fireCellChanged(item);
+
+            effortBox.setRawValue(getEffortForDetailItem(item));
+            reloadAllEffort();
         });
     }
 
@@ -1717,9 +1717,8 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         assignmentFunctionsCombo.setSelectedFunction(AssignmentFunctionName.MANUAL.toString());
         ResourceAllocation<?> allocation = getAllocation();
 
-        if ( !(allocation.getAssignmentFunction() instanceof ManualFunction) ) {
+        if ( !(allocation.getAssignmentFunction() instanceof ManualFunction) )
             allocation.setAssignmentFunctionAndApplyIfNotFlat(ManualFunction.create());
-        }
     }
 
     private void reloadEffortOnInterval(Component component, DetailItem item) {
@@ -1730,6 +1729,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         } else {
             EffortDurationBox effortDurationBox = (EffortDurationBox) component;
             effortDurationBox.setValue(getEffortForDetailItem(item));
+
             if ( isLimiting ) {
                 effortDurationBox.setDisabled(true);
                 effortDurationBox.setSclass(" limiting");
@@ -1738,15 +1738,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private String getLabelClassFor(DetailItem item) {
-        if ( isGroupingRow() ) {
+        if ( isGroupingRow() )
             return "calculated-hours";
-        }
-        if ( doesNotIntersectWithTask(item) ) {
+
+        if ( doesNotIntersectWithTask(item) )
             return "unmodifiable-hours";
-        }
-        if ( isBeforeLatestConsolidation(item) ) {
+
+        if ( isBeforeLatestConsolidation(item) )
             return "consolidated-hours";
-        }
 
         return "";
     }
@@ -1764,19 +1763,20 @@ public class AdvancedAllocationController extends GenericForwardComposer {
     }
 
     private boolean isBeforeLatestConsolidation(DetailItem item) {
-        if( !(task).hasConsolidations() ) {
+        if ( !(task).hasConsolidations() )
             return false;
-        }
+
         LocalDate d = ((Task) task).getFirstDayNotConsolidated().getDate();
-        DateTime firstDayNotConsolidated = new DateTime(d.getYear(), d.getMonthOfYear(), d.getDayOfMonth(), 0, 0, 0, 0);
+
+        DateTime firstDayNotConsolidated =
+                new DateTime(d.getYear(), d.getMonthOfYear(), d.getDayOfMonth(), 0, 0, 0, 0);
 
         return item.getStartDate().compareTo(firstDayNotConsolidated) < 0;
     }
 
     private ResourceAllocation<?> getAllocation() {
-        if ( isGroupingRow() ) {
+        if ( isGroupingRow() )
             throw new IllegalStateException("is grouping row");
-        }
 
         return aggregate.getAllocationsSortedByStartDate().get(0);
     }
