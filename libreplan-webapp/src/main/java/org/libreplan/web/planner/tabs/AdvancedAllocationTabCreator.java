@@ -62,24 +62,24 @@ import org.zkoss.zul.Label;
  */
 public class AdvancedAllocationTabCreator {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(AdvancedAllocationTabCreator.class);
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(AdvancedAllocationTabCreator.class);
 
-    private final class ResultReceiver implements
-            IAdvanceAllocationResultReceiver {
+    private final class ResultReceiver implements IAdvanceAllocationResultReceiver {
 
         private final CalculatedValue calculatedValue;
+
         private final AggregateOfResourceAllocations aggregate;
+
         private AllocationResult allocationResult;
+
         private final Task task;
+
         private final PlanningState planningState;
 
-        public ResultReceiver(PlanningState planningState,
-                Task task) {
+        public ResultReceiver(PlanningState planningState, Task task) {
             this.planningState = planningState;
             this.calculatedValue = task.getCalculatedValue();
-            this.allocationResult = AllocationResult.createCurrent(
-                    planningState.getCurrentScenario(), task);
+            this.allocationResult = AllocationResult.createCurrent(planningState.getCurrentScenario(), task);
             this.aggregate = this.allocationResult.getAggregate();
             this.task = task;
         }
@@ -162,11 +162,13 @@ public class AdvancedAllocationTabCreator {
     private final Component breadcrumbs;
 
     public static ITab create(final Mode mode,
-            IAdHocTransactionService adHocTransactionService,
-            PlanningStateCreator planningStateCreator, IBack onBack,
-            Component breadcrumbs) {
-        return new AdvancedAllocationTabCreator(mode, adHocTransactionService,
-                planningStateCreator, onBack, breadcrumbs).build();
+                              IAdHocTransactionService adHocTransactionService,
+                              PlanningStateCreator planningStateCreator,
+                              IBack onBack,
+                              Component breadcrumbs) {
+
+        return new AdvancedAllocationTabCreator(
+                mode, adHocTransactionService, planningStateCreator, onBack, breadcrumbs).build();
     }
 
     private AdvancedAllocationTabCreator(Mode mode,
@@ -191,22 +193,18 @@ public class AdvancedAllocationTabCreator {
 
         @Override
         public Component create(final Component parent) {
-            return adHocTransactionService
-                    .runOnReadOnlyTransaction(new IOnTransaction<Component>() {
-                        @Override
-                        public Component execute() {
-                            planningState = createPlanningState(parent,
-                                    mode.getOrder());
-                            return createComponent(parent, planningState);
-                        }
+            return adHocTransactionService.runOnReadOnlyTransaction(new IOnTransaction<Component>() {
+                @Override
+                public Component execute() {
+                    planningState = createPlanningState(parent, mode.getOrder());
 
-                        private PlanningState createPlanningState(
-                                final Component parent, Order order) {
-                            return planningStateCreator.retrieveOrCreate(
-                                    parent.getDesktop(), order);
-                        }
+                    return createComponent(parent, planningState);
+                }
 
-                    });
+                private PlanningState createPlanningState(final Component parent, Order order) {
+                    return planningStateCreator.retrieveOrCreate(parent.getDesktop(), order);
+                }
+            });
         }
 
         public PlanningState getState() {
@@ -255,19 +253,21 @@ public class AdvancedAllocationTabCreator {
         };
     }
 
-    private Component createComponent(final Component parent,
-            PlanningState planningState) {
-        return Executions.createComponents("advance_allocation.zul", parent,
-                argsWithController(planningState));
+    private Component createComponent(final Component parent, PlanningState planningState) {
+        return Executions.createComponents("advance_allocation.zul", parent, argsWithController(planningState));
     }
 
 
     private Map<String, Object> argsWithController(PlanningState planningState) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
+
         advancedAllocationController = new AdvancedAllocationController(
-                planningState.getOrder(), onBack,
+                planningState.getOrder(),
+                onBack,
                 createAllocationInputsFor(planningState));
+
         result.put("advancedAllocationController", advancedAllocationController);
+
         return result;
     }
 

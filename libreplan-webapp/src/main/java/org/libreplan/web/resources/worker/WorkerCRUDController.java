@@ -90,8 +90,6 @@ import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Window;
 
-import javax.annotation.Resource;
-
 /**
  * Controller for {@link Worker} resource <br />
  *
@@ -110,7 +108,6 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     private IResourceDAO resourceDAO;
 
-    @Resource
     private IUserCRUDController userCRUD;
 
     private Window listWindow;
@@ -201,6 +198,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public WorkerCRUDController() {
         workerCRUD = (IWorkerCRUDControllerEntryPoints) SpringUtil.getBean("workerCRUD");
+        userCRUD = (IUserCRUDController) SpringUtil.getBean("userCRUD");
     }
 
     public WorkerCRUDController(Window listWindow,
@@ -1086,18 +1084,15 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
 
     public void goToUserEdition() {
         User user = getWorker().getUser();
-        if (user != null) {
-            if (showConfirmUserEditionDialog() == Messagebox.OK) {
-                userCRUD.goToEditForm(user);
-            }
+        if (user != null && showConfirmUserEditionDialog() == Messagebox.OK) {
+            userCRUD.goToEditForm(user);
         }
     }
 
     private int showConfirmUserEditionDialog() {
-        return Messagebox
-                .show(
-                        _("Unsaved changes will be lost. Would you like to continue?"),
-                        _("Confirm editing user"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+        return Messagebox.show(
+                _("Unsaved changes will be lost. Would you like to continue?"),
+                _("Confirm editing user"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
     }
 
     public boolean isNoRoleUserAccounts() {
@@ -1105,11 +1100,9 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
     }
 
     public String getUserEditionButtonTooltip() {
-        if (isNoRoleUserAccounts()) {
-            return _("You do not have permissions to go to edit user window");
-        }
-
-        return "";
+        return isNoRoleUserAccounts()
+                ? _("You do not have permissions to go to edit user window")
+                : "";
     }
 
     public boolean isCreateButtonDisabled() {

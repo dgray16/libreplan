@@ -100,14 +100,11 @@ public class OnColumnsRowRenderer<C, T> implements RowRenderer {
 
     private static void informCannotBeInferred(ICellForDetailItemRenderer<?, ?> renderer) {
         throw new IllegalArgumentException(
-                "the generic type cannot be inferred " +
-                "if actual type parameters are not declared " +
-                "or implements the raw interface: " +
-                renderer.getClass().getName());
+                "the generic type cannot be inferred if actual type parameters are not declared " +
+                        "or implements the raw interface: " + renderer.getClass().getName());
     }
 
-    private OnColumnsRowRenderer(
-            Class<T> type, ICellForDetailItemRenderer<C, T> cellRenderer, Collection<C> columns) {
+    private OnColumnsRowRenderer(Class<T> type, ICellForDetailItemRenderer<C, T> cellRenderer, Collection<C> columns) {
 
         Validate.notNull(type);
         Validate.notNull(columns);
