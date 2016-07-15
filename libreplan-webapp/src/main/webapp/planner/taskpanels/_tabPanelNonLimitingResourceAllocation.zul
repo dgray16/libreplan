@@ -130,6 +130,6 @@
 
     <!-- Control buttons -->
     <hbox>
-        <button label="${i18n:_('Apply tab changes')}" id="applyButton" sclass="createButton global-action" />
+        <button label="${i18n:_('Apply tab changes')}" id="applyButton" sclass="add-button global-action" />
     </hbox>
 </tabpanel>
