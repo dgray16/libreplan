@@ -35,9 +35,9 @@
                     <hbox>
                         <bandboxSearch id="qualityFormFinder" finder="QualityFormBandboxFinder"
                             model="@{assignedQualityForms.notAssignedQualityForms}" widthBandbox="200px" widthListbox="600px" />
-                        <button label="${i18n:_('Assign')}"
+                        <button label="${i18n:_('Assign')}" sclass="add-button"
                             onClick="assignedQualityForms.onAssignTaskQualityForm()"
-                            style="margin-top: -4px" />
+                        />
                     </hbox>
                 </vbox>
                 <separator bar="false" spacing="40px" orient="vertical"/>

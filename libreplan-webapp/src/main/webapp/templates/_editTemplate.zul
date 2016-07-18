@@ -52,7 +52,7 @@
         </tabs>
         <tabpanels>
             <tabpanel id="tabPanelGeneralData">
-                <grid sizedByContent="true">
+                <grid fixedLayout="true">
                     <columns>
                         <column width="200px" />
                         <column  />

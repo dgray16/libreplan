@@ -52,6 +52,7 @@ import org.libreplan.web.common.Util.Getter;
 import org.libreplan.web.common.Util.Setter;
 import org.libreplan.web.orders.DynamicDatebox;
 import org.libreplan.web.orders.SchedulingStateToggler;
+import org.libreplan.web.templates.TemplatesTreeComponent;
 import org.libreplan.web.tree.TreeComponent.Column;
 import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.AbstractComponent;
@@ -63,6 +64,8 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.KeyEvent;
+import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Constraint;
@@ -251,7 +254,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         try {
             if (tree.getSelectedCount() == 1) {
                 T node = getSelectedNode();
-                Treeitem selectedItem = tree.getSelectedItem();
 
                 T newNode = getModel().addElementAt(node, name.getValue(), hours.getValue());
                 getRenderer().refreshHoursValueForThisNodeAndParents(newNode);
@@ -369,6 +371,11 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        if (this.orderElementTreeComponent == null){
+            this.orderElementTreeComponent = (TemplatesTreeComponent) comp;
+        }
+
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
@@ -1263,6 +1270,9 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
     protected boolean readOnly = true;
 
+    @Wire
+    protected TreeComponent orderElementTreeComponent;
+
     public void setReadOnly(boolean readOnly) {
         if (this.readOnly != readOnly) {
             this.readOnly = readOnly;
@@ -1274,8 +1284,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             Util.reloadBindings(orderElementTreeComponent);
         }
     }
-
-    protected TreeComponent orderElementTreeComponent;
 
     public void setTreeComponent(TreeComponent orderElementsTree) {
         this.orderElementTreeComponent = orderElementsTree;
