@@ -1466,6 +1466,10 @@ tr.z-tree-row-seld .z-row-content {
     overflow: hidden;
 }
 
+.current-queue-information {
+    margin: 5px;
+}
+
 .z-fieldset legend {
     color:#0F3B82;
 }
@@ -2231,4 +2235,8 @@ textarea {
 
 .z-button[disabled] {
     background: none;
+}
+
+.queue-element-information {
+    margin: 5px;
 }
