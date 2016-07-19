@@ -40,7 +40,7 @@ body .footer-print {
 }
 
 .main-area, .orderslayout-area, .orderelements-tab, #timetrackedtable,
-.plannerlayout .taskspanelgap #timetracker, .leftpanelcontainer {
+.plannerlayout .taskspanel-gap #timetracker, .leftpanelcontainer {
     overflow: hidden !important;
 }
 

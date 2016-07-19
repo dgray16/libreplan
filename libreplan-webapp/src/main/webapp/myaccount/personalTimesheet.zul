@@ -33,18 +33,19 @@
 
         <div id="messagesContainer" />
 
-        <div visible="@{controller.notCurrentUser}" sclass="footer-messages-area">
+        <div visible="@{controller.notCurrentUser}" class="footer-messages-area">
             <label value="${i18n:_('Warning: Not editing from home page of bound users')}" />
         </div>
 
         <hbox width="100%">
             <groupbox style="margin-top: 5px" closable="false" hflex="1">
                 <caption label="${i18n:_('Timesheet data')}" />
-                <grid sizedByContent="true">
+                <grid fixedLayout="true">
                     <columns>
                         <column width="200px" />
                         <column />
                     </columns>
+
                     <rows>
                         <row>
                             <label value="${i18n:_('Date')}" />
@@ -56,7 +57,9 @@
                                             tooltiptext="${i18n:_('Previous')}"
                                             disabled="@{controller.firstPeriod}" />
                                 </div>
+
                                 <label value="@{controller.timesheetString}" />
+
                                 <div visible="@{controller.currentUser}">
                                     <button id="nextPeriod"
                                             onClick="controller.nextPeriod();" image="/common/img/ico_step_right.png"
@@ -65,6 +68,7 @@
                                 </div>
                             </hbox>
                         </row>
+
                         <row>
                             <label value="${i18n:_('Resource')}" />
                             <label value="@{controller.resource}" />
@@ -72,34 +76,41 @@
                     </rows>
                 </grid>
             </groupbox>
-            <groupbox style="margin-top: 5px" closable="false" hflex="1">
+
+            <groupbox style="margin-top: 5px; margin-left: 10px;" closable="false" hflex="1">
                 <caption label="${i18n:_('Timesheet summary')}" />
-                <grid sizedByContent="true">
+                <grid fixedLayout="true">
                     <columns>
                         <column width="200px" />
                         <column />
                     </columns>
+
                     <rows>
                         <row visible="@{controller.hasOtherReports}">
                             <label value="${i18n:_('Total personal timesheet')}" />
                             <label id="summaryTotalPersonalTimesheet" />
                         </row>
+
                         <row visible="@{controller.hasOtherReports}">
                             <label value="${i18n:_('Total other')}" />
                             <label id="summaryTotalOther" />
                         </row>
+
                         <row>
                             <label value="${i18n:_('Total')}" />
                             <label id="summaryTotal" />
                         </row>
+
                         <row>
                             <label value="${i18n:_('Total capacity')}" />
                             <label id="summaryTotalCapacity" />
                         </row>
+
                         <row>
                             <label value="${i18n:_('Total extra per day')}" />
                             <label id="summaryTotalExtraPerDay" />
                         </row>
+
                         <row>
                             <label value="${i18n:_('Total extra')}" />
                             <label id="summaryTotalExtra" />
@@ -112,6 +123,7 @@
         <hbox width="100%">
             <groupbox width="100%" closable="false" hflex="min" style="margin-top:5px">
                 <caption label="${i18n:_('Time tracking')}" />
+
                 <hbox align="center" width="100%" style="padding-bottom:5px">
                     <bandboxSearch id="orderElementBandboxSearch"
                                    finder="OrderElementBandboxFinder"
@@ -119,10 +131,11 @@
                                    widthListbox="700px" />
                     <button onClick="controller.addOrderElement();" label="${i18n:_('Add task')}" sclass="add-button"/>
                 </hbox>
+
                 <hbox width="100%">
-                    <grid id="timesheet" sizedByContent="true" hflex="min" sclass="timesheet"
-                          model="@{controller.rows}"
-                          rowRenderer="@{controller.rowRenderer}"/>
+                    <grid id="timesheet" sizedByContent="true" hflex="1" sclass="timesheet"
+                        model="@{controller.rows}"
+                        rowRenderer="@{controller.rowRenderer}"/>
                 </hbox>
             </groupbox>
         </hbox>
