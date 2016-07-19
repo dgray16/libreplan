@@ -19,9 +19,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <zk>
-<zscript><![CDATA[
-    assignedQualityForms = self;
-]]>
+<zscript>
+    <![CDATA[
+        assignedQualityForms = self;
+    ]]>
 </zscript>
 <vbox>
     <!-- Quality Forms-->
@@ -34,9 +35,9 @@
                     <label value="${i18n:_('Assign quality form')}" />
                     <hbox style="margin-left: 5px;">
                         <bandboxSearch id="qualityFormFinder" finder="QualityFormBandboxFinder"
-                            model="@{assignedQualityForms.notAssignedQualityForms}" widthBandbox="200px" widthListbox="600px" />
+                                       model="@{assignedQualityForms.notAssignedQualityForms}" widthBandbox="200px" widthListbox="600px" />
                         <button label="${i18n:_('Assign')}" sclass="add-button"
-                            onClick="assignedQualityForms.onAssignTaskQualityForm()"
+                                onClick="assignedQualityForms.onAssignTaskQualityForm()"
                         />
                     </hbox>
                 </vbox>

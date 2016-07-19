@@ -120,6 +120,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
     private IMessagesForUser messagesForUser;
 
+    private Combobox exceptionTypes;
+
     public BaseCalendarEditionController(IBaseCalendarModel baseCalendarModel,
                                          Window window,
                                          Window createNewVersionWindow,
@@ -179,6 +181,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         normalDuration.initializeFor24HoursAnd0Minutes();
         EffortDurationPicker extraDuration = findOrCreateDurationPicker(extraEffortRow);
         Checkbox checkbox = findOrCreateUnlimitedCheckbox(extraEffortRow);
+
         return CapacityPicker.workWith(checkbox, normalDuration, extraDuration, Capacity.create(EffortDuration.zero()));
     }
 
@@ -216,14 +219,11 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
     private CalendarExceptionType getSelectedExceptionType() {
         Comboitem selectedItem = exceptionTypes.getSelectedItem();
-        if ( selectedItem != null ) {
-            return (CalendarExceptionType) selectedItem.getValue();
-        }
 
-        return null;
+        return selectedItem != null
+                ? selectedItem.getValue()
+                : null;
     }
-
-    private Combobox exceptionTypes;
 
     private void prepareExceptionTypeCombo() {
         exceptionTypes = (Combobox) window.getFellow("exceptionTypes");
@@ -280,6 +280,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         return baseCalendarModel.getBaseCalendar();
     }
 
+    /* Should be public! */
     public String getCalendarType() {
         if ( baseCalendarModel.isDerived() ) {
             String currentStartDate = this.getCurrentStartDateLabel();
@@ -349,7 +350,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                     unlimitedCheckbox,
                     normalDurationPicker,
                     extraDurationPicker,
-                    () -> baseCalendarModel.getCapacityAt(day), value -> {
+                    () -> baseCalendarModel.getCapacityAt(day),
+                    value -> {
                         baseCalendarModel.setCapacityAt(day, value);
                         reloadDayInformation();
                     });
@@ -443,6 +445,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                 exceptionTypes.setSelectedItem(item);
                 break;
             }
+
             if ( (value != null) && (type != null) && (value.getName().equals(type.getName())) ) {
                 exceptionTypes.setSelectedItem(item);
                 break;
@@ -510,6 +513,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
         Map<String, List<Integer>> daysByColor = getDaysCurrentMonthByColor();
         for (String color : daysByColor.keySet()) {
+
             Clients.response(new AuInvoke(
                     calendar,
                     "highlightDates",
@@ -521,27 +525,16 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
     public Date getSelectedDay() {
         Date selectedDay = toDate(baseCalendarModel.getSelectedDay());
-        if ( selectedDay == null)  {
-            return new Date();
-        }
 
-        return selectedDay;
+        return selectedDay == null ? new Date() : selectedDay;
     }
 
     private static Date toDate(LocalDate date) {
-        if ( date == null ) {
-            return null;
-        }
-
-        return date.toDateTimeAtStartOfDay().toDate();
+        return date == null ? null : date.toDateTimeAtStartOfDay().toDate();
     }
 
     private static LocalDate toLocalDate(Date date) {
-        if ( date == null ) {
-            return null;
-        }
-
-        return LocalDate.fromDateFields(date);
+        return date == null ? null : LocalDate.fromDateFields(date);
     }
 
     public void setSelectedDay(LocalDate date) {
@@ -612,6 +605,7 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
         }
 
         Capacity capacity = capacityPicker.getValue();
+
         baseCalendarModel.createException(
                 type,
                 LocalDate.fromDateFields(startDate),
@@ -782,10 +776,10 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
             }
 
             comboParents.addEventListener(Events.ON_SELECT, (EventListener) event -> {
-                        if ( comboParents.getSelectedItem() != null ) {
-                            BaseCalendar parent = comboParents.getSelectedItem().getValue();
-                            version.setParent(parent);
-                        }
+                if ( comboParents.getSelectedItem() != null ) {
+                    BaseCalendar parent = comboParents.getSelectedItem().getValue();
+                    version.setParent(parent);
+                }
             });
 
             Util.bind(
@@ -949,11 +943,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
     private static LocalDate getLocalDateFrom(Datebox datebox) {
         Date value = datebox.getValue();
-        if ( value == null ) {
-            return null;
-        }
 
-        return LocalDate.fromDateFields(value);
+        return value == null ? null : LocalDate.fromDateFields(value);
     }
 
     public void cancelNewVersion() {
@@ -1193,11 +1184,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
 
     public String getNameParentCalendar() {
         BaseCalendar parent = baseCalendarModel.getCurrentParent();
-        if ( parent != null ) {
-            return parent.getName();
-        }
 
-        return "";
+        return parent != null ? parent.getName() : "";
     }
 
     public boolean isResourceCalendar() {
@@ -1234,11 +1222,8 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                     datebox,
                     () -> {
                         LocalDate startDate = calendarAvailability.getStartDate();
-                        if ( startDate != null ) {
-                            return startDate.toDateTimeAtStartOfDay().toDate();
-                        }
 
-                        return null;
+                        return startDate != null ? startDate.toDateTimeAtStartOfDay().toDate() : null;
                     },
                     value -> {
                         LocalDate startDate = new LocalDate(value);
@@ -1262,15 +1247,12 @@ public abstract class BaseCalendarEditionController extends GenericForwardCompos
                     datebox,
                     () -> {
                         LocalDate endDate = calendarAvailability.getEndDate();
-                        if ( endDate != null ) {
-                            return endDate.toDateTimeAtStartOfDay().toDate();
-                        }
-                        return null;
+
+                        return endDate != null ? endDate.toDateTimeAtStartOfDay().toDate() : null;
                     },
                     value -> {
                         try {
                             LocalDate endDate = getAppropiateEndDate(calendarAvailability, value);
-
                             baseCalendarModel.setEndDate(calendarAvailability, endDate);
                         } catch (IllegalArgumentException e) {
                             throw new WrongValueException(datebox, e.getMessage());

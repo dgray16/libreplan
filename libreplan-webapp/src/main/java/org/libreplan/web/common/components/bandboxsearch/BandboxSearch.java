@@ -186,7 +186,9 @@ public class BandboxSearch extends HtmlMacroComponent {
             bandbox.setValue("");
         }
 
+        // TODO resolve deprecated
         DataBinder binder = Util.getBinder(this);
+
         if (binder != null) {
             binder.saveAttribute(this, "selectedElement");
         }

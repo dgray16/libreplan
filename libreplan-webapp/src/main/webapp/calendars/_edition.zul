@@ -21,6 +21,8 @@
 
 <window id="${arg.top_id}" xmlns:w="client">
 
+    <caption id="caption" sclass="caption-title calendar-title" />
+
     <tabbox sclass="calendar-tabbox">
         <tabs>
             <tab label="${i18n:_('Calendar data')}"/>
@@ -116,6 +118,7 @@
                                     <datebox disabled="true" buttonVisible="false"
                                              value="@{calendarController.editionController.selectedDay}" />
                                 </row>
+
                                 <row>
                                     <label value="${i18n:_('Type')}" />
                                     <label value="@{calendarController.editionController.typeOfDay}" />
@@ -207,12 +210,18 @@
                                                  rows="4">
                                             <listhead>
                                                 <listheader label="${i18n:_('Day')}" />
+
                                                 <listheader label="${i18n:_('Exception Type')}" width="180px" />
+
                                                 <listheader label="${i18n:_('Normal Effort')}" width="100px" />
+
                                                 <listheader label="${i18n:_('Extra Effort')}" width="100px" />
+
                                                 <listheader label="${i18n:_('Code')}" width="200px"
                                                             visible="@{calendarController.editionController.notResourceCalendar}" />
+
                                                 <listheader label="${i18n:_('Origin')}" />
+
                                                 <listheader label="${i18n:_('Op.')}" />
                                             </listhead>
                                         </listbox>
@@ -318,12 +327,27 @@
                 label="${arg.save_button_label}"
                 sclass="save-button global-action"
                 visible="${arg.save_button_visible}" />
+
         <button onClick="calendarController.editionController.saveAndContinue();"
                 label="${arg.saveandcontinue_button_label}"
                 sclass="saveandcontinue-button global-action"
                 visible="${arg.save_button_visible}" />
+
         <button onClick="calendarController.editionController.cancel();"
                 label="${arg.cancel_button_label}"
                 sclass="cancel-button global-action" />
     </hbox>
+
+    <script>
+        <!--
+        It is needed because there is a case when Edit Calendar caption is visible even
+        in edit worker -> Calendar tab.
+        In ZK5 it was invisible inside Edit worker tab. Who knows why...
+        -->
+        zk.afterMount(function() {
+            if ( window.location.pathname.indexOf("calendars") == -1 ) {
+                $('.calendar-title').parent().css('display', 'none');
+            }
+        });
+    </script>
 </window>

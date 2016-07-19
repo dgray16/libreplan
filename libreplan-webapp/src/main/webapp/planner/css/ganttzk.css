@@ -442,7 +442,7 @@ div.box.limiting-unassigned {
     background-position: -8px 0, -8px 0, -8px 0, -8px 0, -8px 0, -8px 0, -8px 0;
 }
 
-.limitingresources #watermark .bankHoliday {
+.limiting-resources #watermark .bankHoliday {
     height: 650px;
 }
 
@@ -506,13 +506,13 @@ table {
     position: absolute;
 }
 
-#timetracker { /* border: solid 1px red; */
+#timetracker {
     position: absolute;
     float: left;
     z-index: -20;
 }
 
-.resourcesload #timetracker {
+.resources-load #timetracker {
     position: absolute;
     left: 0px;
     top: 0px;
@@ -590,7 +590,7 @@ tr.z-vbox-separator {
     /* overflow: auto; */
 }
 
-.advancedallocationlayout #timetrackedtable {
+.advanced-allocation-layout #timetrackedtable {
     float: none;
     width: auto;
     overflow: visible;
@@ -675,17 +675,17 @@ tr.z-vbox-separator {
     height: 17px;
 }
 
-/* -- Upper taskpannel is hidden --*/
-.taskspanelgap #timetracker {
+/* -- Upper task pannel is hidden --*/
+.taskspanel-gap #timetracker {
     border-top: 0px;
     margin: 0px;
 }
 
-.resourcesload .taskspanelgap #timetracker table {
+.resources-load .taskspanel-gap #timetracker table {
     margin-top: -10px;
 }
 
-.resourcesload .taskspanelgap #timetracker th {
+.resources-load .taskspanel-gap #timetracker th {
     display: none;
     border: 0px;
     margin: 0px;
@@ -777,15 +777,15 @@ tr.z-vbox-separator {
 
 /* ---------- Start Limiting resources --------------- */
 
-.limitingresources .z-tree-line {
+.limiting-resources .z-tree-line {
     display: none;
 }
 
-.limitingresources .z-treerow {
+.limiting-resources .z-treerow {
     height: 35px;
 }
 
-.limitingresources td.z-treecell {
+.limiting-resources td.z-treecell {
     padding-top: 2px;
     border-bottom: 1px dotted #CCCCCC;
 }
@@ -933,134 +933,128 @@ height: 100%
     padding: 1px 4px;
 }
 
-.advancedallocationlayout .name {
+.advanced-allocation-layout .name {
     min-width:200px;
 }
 
-.advancedallocationlayout .second_level_ {
+.advanced-allocation-layout .second_level_ {
     border-collapse: collapse;
 }
 
-.advancedallocationlayout .second_level_ th {
+.advanced-allocation-layout .second_level_ th {
     width:150px;
 }
 
-.advancedallocationlayout .taskspanelgap td.z-row-inner {
+.advanced-allocation-layout .taskspanel-gap td.z-row-inner {
     padding:0 !important;
 }
-.advancedallocationlayout .taskspanelgap td.z-row-inner input {
+.advanced-allocation-layout .taskspanel-gap td.z-row-inner input {
     padding-top: 1px;
     padding-bottom:1px;
 }
-.advancedallocationlayout .taskspanelgap .z-label {
+.advanced-allocation-layout .taskspanel-gap .z-label {
   margin-left:3px;
 }
 
-.advancedallocationlayout .taskspanelgap .level1 {
+.advanced-allocation-layout .taskspanel-gap .level1 {
   margin-left:8px;
 }
 
-.taskspanelgap table {
+.taskspanel-gap table {
     border-collapse: collapse;
 }
 
 
-.advancedallocationlayout .taskspanelgap input {
+.advanced-allocation-layout .taskspanel-gap input {
     width: 100%;
     heigth: 21px;
 }
 
-.advancedallocationlayout .taskspanelgap tr.z-grid-odd td.z-row-inner, tr.z-grid-odd,
-.advancedallocationlayout .taskspanelgap tr.z-row {
+.advanced-allocation-layout .taskspanel-gap tr.z-grid-odd td.z-row-inner, tr.z-grid-odd,
+.advanced-allocation-layout .taskspanel-gap tr.z-row {
     background: #f2f2f2;
 }
 
-.advancedallocationlayout .calculated-hours.z-label {
+.advanced-allocation-layout .calculated-hours.z-label {
     font-weight: bold;
     color: #555555;
     cursor: default;
 }
 
-.advancedallocationlayout .unmodifiable-hours.z-label {
+.advanced-allocation-layout .unmodifiable-hours.z-label {
     color: #555555;
 }
 
-.advancedallocationlayout .consolidated-hours.z-label {
+.advanced-allocation-layout .consolidated-hours.z-label {
     color: #75d9b0;
 }
 
-/*
-.advancedallocationlayout .z-row .z-intbox-disd {
-    color: 0 !important;
-}
-*/
-
-.advancedallocationlayout .taskspanelgap input {
+.advanced-allocation-layout .taskspanel-gap input {
     width: 100%;
 }
 
 
-.taskspanelgap input {
+.taskspanel-gap input {
     border: 0;
     height: 19px;
 }
 
-.advancedassignmentdetails tr.z-row,
-.taskspanelgap tr.z-row {
+.advanced-assignment-details tr.z-row,
+.taskspanel-gap tr.z-row {
     height: 23px;
 }
 
-.advancedassignmentdetails td {
+.advanced-assignment-details td {
     overflow:hidden;
     white-space: nowrap;
 }
 
-.advancedassignmentdetails .level1 {
+.advanced-assignment-details .level1 {
   margin-left:12px;
 }
 
-.advancedassignmentdetails .level0 {
+.advanced-assignment-details .level0 {
   font-weight:bold;
 }
 
-.advancedallocationlayout .leftpanelgap .z-grid-header {
+.advanced-allocation-layout .leftpanelgap .z-grid-header {
     /* padding-bottom: 3px; */
     border-bottom: solid 1px #DDDDDD;
     background: #FFFFFF;
 }
 
-.advancedallocationlayout div.z-row-content {
+.advanced-allocation-layout div.z-row-content {
     padding: 0;
 }
 
-.advancedallocationlayout .leftpanelgap td.z-row-inner {
+.advanced-allocation-layout .leftpanelgap td.z-row-inner {
     padding-top:0;
     padding-bottom:0;
 }
 
-.advancedassignmentdetails .z-intbox {
+.advanced-assignment-details .z-intbox {
     width: 50px;
 }
 
-.advancedassignmentdetails .z-combobox-inp {
+.advanced-assignment-details .z-combobox-inp {
     width: 60px;
 }
-.advancedallocationlayout .leftpanelgap .name {
+.advanced-allocation-layout .leftpanelgap .name {
 }
 
-.advancedassignmentdetails .hours {
+.advanced-assignment-details .hours {
     width: 60px;
 }
 
-.advancedassignmentdetails .function {
+.advanced-assignment-details .function {
     width: 110px;
 }
 
-.advancedassignmentdetails .z-combobox {
+.advanced-assignment-details .z-combobox {
     margin-top: 2px;
 }
 
-.advancedassignmentdetails .z-intbox {
+.advanced-assignment-details .z-intbox {
     padding-left: 0;
 }
 #tasksTree div.z-tree-header, #tasksTree div.z-tree-header tr, #tasksTree div.z-tree-footer {
@@ -1094,7 +1088,7 @@ height: 100%
 }
 
 .plannerlayout div.z-tree, .plannerlayout div.z-grid,
-.resourcesload div.z-tree, .resourcesload div.z-grid {
+.resources-load div.z-tree, .resources-load div.z-grid {
     border: 0;
 }
 
@@ -1110,26 +1104,26 @@ height: 100%
     position:relative;
 }
 
-.advancedassignmentdetails .z-grid-header table {
+.advanced-assignment-details .z-grid-header table {
     height:30px;
 }
 
 /* Advanced assignment */
 
-.advancedallocationlayout #timeTracker .z-vbox table {
+.advanced-allocation-layout #timeTracker .z-vbox table {
     height:15px;
 }
-.advancedallocationlayout #timeTracker .z-vbox .z-grid-body {
+.advanced-allocation-layout #timeTracker .z-vbox .z-grid-body {
     display:none;
 }
 
-.advancedassignmentdetails .z-grid-body {
+.advanced-assignment-details .z-grid-body {
     position:relative;
     margin-top: 31px;
     overflow:hidden;
 }
 
-.advancedassignmentdetails .z-grid-header {
+.advanced-assignment-details .z-grid-header {
     z-index:2;
     position:absolute;
     overflow:hidden;
@@ -1137,11 +1131,11 @@ height: 100%
 
 /* Workaround for extra column when configuring functions */
 
-.advancedassignmentdetails td + td + td + td {
+.advanced-assignment-details td + td + td + td {
     display:none;
 }
 
-.advancedallocationlayout .taskspanelgap td.z-row-inner {
+.advanced-allocation-layout .taskspanel-gap td.z-row-inner {
     padding:1px;
     padding-left: 3px;
     padding-right: 3px;
@@ -1427,7 +1421,7 @@ div.z-grid-header .second_level_ tr {
     background-position: -17px 0;
     margin-top: 2px;
 }
-.taskspanelgap #listlimitingdependencies {
+.taskspanel-gap #listlimitingdependencies {
     top: -2px;
 }
 

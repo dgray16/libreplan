@@ -113,7 +113,6 @@
         <mold>
             <mold-name>default</mold-name>
             <mold-uri>mold/queue-list-component.js</mold-uri>
-            <!-- <mold-uri>/limitingresources/queuelistcomponent.dsp</mold-uri> -->
         </mold>
     </component>
 
@@ -130,7 +129,6 @@
         <mold>
             <mold-name>default</mold-name>
             <mold-uri>mold/queue-component.js</mold-uri>
-            <!-- <mold-uri>/limitingresources/queuecomponent.dsp</mold-uri> -->
         </mold>
     </component>
 
@@ -148,7 +146,6 @@
         <mold>
             <mold-name>default</mold-name>
             <mold-uri>mold/limiting-dependency-list.js</mold-uri>
-            <!-- <mold-uri>/limitingresources/limitingdependencylist.dsp</mold-uri> -->
         </mold>
     </component>
 
@@ -159,7 +156,6 @@
         <mold>
             <mold-name>default</mold-name>
             <mold-uri>mold/limiting-dependency-component.js</mold-uri>
-            <!-- <mold-uri>/limitingresources/limitingdependency.dsp</mold-uri> -->
         </mold>
     </component>
 

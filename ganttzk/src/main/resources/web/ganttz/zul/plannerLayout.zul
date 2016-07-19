@@ -23,9 +23,10 @@
 <?xel-method prefix="ganttzk_i18n" name="_" class="org.zkoss.ganttz.i18n.I18nHelper"
     signature="java.lang.String _(java.lang.String name)" ?>
 
-    <zscript><![CDATA[
-        planner = self;
-    ]]>
+    <zscript>
+        <![CDATA[
+            planner = self;
+        ]]>
     </zscript>
 
     <borderlayout sclass="plannerlayout" width="auto">
@@ -33,65 +34,71 @@
             <hbox align="center" id="toolbar" sclass="filtering-area">
 
                 <separator/>
+
                 <!--  Commands -->
 
                 <button onClick="planner.invalidate()"
-                    image="/common/img/ico_refresh.png"
-                    tooltiptext="${ganttzk_i18n:_('Refresh')}" visible="false" />
+                        image="/common/img/ico_refresh.png"
+                        tooltiptext="${ganttzk_i18n:_('Refresh')}" visible="false" />
 
                 <hbox id="plannerButtonsInsertionPoint" />
 
                 <button id="btnPrint" onClick="planner.print()"
-                    image="/common/img/ico_print.png"
-                    tooltiptext="${ganttzk_i18n:_('Print')}" />
+                        image="/common/img/ico_print.png"
+                        tooltiptext="${ganttzk_i18n:_('Print')}" />
                 <separator/>
 
                 <!--  Visualization modes -->
                 <space bar="true" />
                 <label>${ganttzk_i18n:_('Zoom')}:</label>
-                <listbox id="listZoomLevels" mold="select" rows="1"
-                    model="${planner.zoomLevels}">
+                <listbox id="listZoomLevels" mold="select" rows="1" model="${planner.zoomLevels}">
                 </listbox>
 
                 <!-- Progress type -->
 
                 <button id="showCriticalPath" onClick="planner.showCriticalPath();"
-                    image="/common/img/ico_criticalpath.png"
-                    tooltiptext="${ganttzk_i18n:_('Show/Hide critical path')}" />
+                        image="/common/img/ico_criticalpath.png"
+                        tooltiptext="${ganttzk_i18n:_('Show/Hide critical path')}" />
+
                 <button id="showAllLabels" onClick="planner.showAllLabels();"
-                    image="/common/img/ico_labels.png"
-                    tooltiptext="${ganttzk_i18n:_('Show/Hide labels')}" sclass="planner-command show-labels" />
+                        image="/common/img/ico_labels.png"
+                        tooltiptext="${ganttzk_i18n:_('Show/Hide labels')}" sclass="planner-command show-labels" />
+
                 <button id="showAllResources" onClick="planner.showAllResources();"
-                    image="/common/img/ico_resources.png"
-                    tooltiptext="${ganttzk_i18n:_('Show/Hide resources')}" sclass="planner-command show-resources" />
+                        image="/common/img/ico_resources.png"
+                        tooltiptext="${ganttzk_i18n:_('Show/Hide resources')}"
+                        sclass="planner-command show-resources" />
+
                 <button id="expandAll" onClick="planner.expandAll();"
-                    image="/common/img/ico_expand.png"
-                    tooltiptext="${ganttzk_i18n:_('Expand/Collapse all')}"
-                    sclass="planner-command" />
+                        image="/common/img/ico_expand.png"
+                        tooltiptext="${ganttzk_i18n:_('Expand/Collapse all')}"
+                        sclass="planner-command" />
+
                 <button id="flattenTree" onClick="planner.flattenTree();"
-                    image="/common/img/ico_flatten.png"
-                    tooltiptext="${ganttzk_i18n:_('Flatten/Unflatten tree')}"
-                    sclass="planner-command" />
+                        image="/common/img/ico_flatten.png"
+                        tooltiptext="${ganttzk_i18n:_('Flatten/Unflatten tree')}"
+                        sclass="planner-command" />
 
                 <hbox sclass="show-advances" align="center">
                     <button id="showAdvances" onClick="planner.showAdvances();"
-                        image="/common/img/ico_progress.png"
-                        style="width:46px"
-                        tooltiptext="${ganttzk_i18n:_('Show/Hide progress')}"
-                        sclass="planner-command" />
+                            image="/common/img/ico_progress.png"
+                            style="width:46px"
+                            tooltiptext="${ganttzk_i18n:_('Show/Hide progress')}"
+                            sclass="planner-command" />
+
                     <combobox id="cbProgressTypes" width="1px" visible="false" sclass="progress-types"/>
                 </hbox>
 
                 <button id="showReportedHours" onClick="planner.showReportedHours();"
-                    image="/common/img/ico_costs.png"
-                    tooltiptext="${ganttzk_i18n:_('Show/Hide reported hours')}"
-                    sclass="planner-command"/>
+                        image="/common/img/ico_costs.png"
+                        tooltiptext="${ganttzk_i18n:_('Show/Hide reported hours')}"
+                        sclass="planner-command"/>
                 <separator />
 
                 <button id="showMoneyCostBar" onClick="planner.showMoneyCostBar();"
-                    image="/common/img/ico_money_cost_bar.png"
-                    tooltiptext="${ganttzk_i18n:_('Show/Hide money cost bar')}"
-                    sclass="planner-command"/>
+                        image="/common/img/ico_money_cost_bar.png"
+                        tooltiptext="${ganttzk_i18n:_('Show/Hide money cost bar')}"
+                        sclass="planner-command"/>
                 <separator />
 
                 <!--  Filtering -->
@@ -105,17 +112,19 @@
         <center border="0">
             <borderlayout sclass="plannerlayout_center" height="100%">
                 <west vflex="min" collapsible="true" splittable="true" width="375px"
-                    id="taskdetailsContainer" sclass="taskdetailsContainer">
-                    <div sclass="leftpanelgap" id="insertionPointLeftPanel"></div>
+                      id="taskdetailsContainer" sclass="taskdetailsContainer">
+                    <div sclass="leftpanelgap" id="insertionPointLeftPanel"/>
                 </west>
                 <center sclass="taskspanel" >
                     <borderlayout>
                         <north border="0" height="32px" vflex="min" >
+
         <!--TODO Timetracker doesn't show the second panel with the division into quarters, months, days. Repair it!-->
-                            <div sclass="timetrackergap" id="insertionPointTimetracker"></div>
+                            <div sclass="timetrackergap" id="insertionPointTimetracker"/>
+
                         </north>
                         <center autoscroll="true" border="0" sclass="rightpanellayout">
-                            <div id="insertionPointRightPanel" sclass="taskspanelgap"></div>
+                            <div id="insertionPointRightPanel" sclass="taskspanel-gap"/>
                         </center>
                     </borderlayout>
 
@@ -123,7 +132,7 @@
             </borderlayout>
         </center>
         <south collapsible="true" title="${ganttzk_i18n:_('Graphics')}" sclass="scheduling-graphics"
-            id="graphics" onOpen="planner.changeChartVisibility(event.open);" height="200px">
+               id="graphics" onOpen="planner.changeChartVisibility(event.open);" height="200px">
             <div id="insertionPointChart"/>
         </south>
     </borderlayout>

@@ -24,7 +24,7 @@
     height: 99999px !important;
 }
 
-.plannerlayout .taskspanelgap #timetracker {
+.plannerlayout .taskspanel-gap #timetracker {
     overflow-y: hidden;
 }
 
@@ -73,7 +73,7 @@ table {
 .icono .z-button-cm,
 body .z-window-embedded .icono .z-button-cm,
 body .z-window-modal .icono .z-button-cm,
-body .advancedallocationlayout .icono .z-button-cm {
+body .advanced-allocation-layout .icono .z-button-cm {
     color: #007bbe;
     background: transparent none;
     border: 0 solid #007bbe;
@@ -116,7 +116,7 @@ body .advancedallocationlayout .icono .z-button-cm {
 }
 
 .toolbar-box .z-button .z-button-cm,
-.advancedallocationlayout .z-north-body .z-button-cm {
+.advanced-allocation-layout .z-north-body .z-button-cm {
     height: 24px;
     padding: 2px;
 }
@@ -332,7 +332,7 @@ div.z-errbox {
     border-radius: 10px;
 }
 
-.advancedallocationlayout .message_WARNING {
+.advanced-allocation-layout .message_WARNING {
     padding: 3px 20px 3px 20px;
     margin: 0;
     width: auto;
@@ -373,8 +373,8 @@ div.z-column-content, div.z-list-footer-cnt, div.z-list-cell-cnt, .z-bandbox, .z
     font-weight: normal;
 }
 
-.z-textbox-disd, .z-decimalbox-disd, .z-intbox-disd, .z-longbox-disd, .z-doublebox-disd,
-.z-textbox-disd *, .z-decimalbox-disd *, .z-intbox-disd *, .z-longbox-disd *, .z-doublebox-disd * {
+.z-textbox-disabled, .z-decimalbox-disd, .z-intbox-disd, .z-longbox-disd, .z-doublebox-disd,
+.z-textbox-disabled *, .z-decimalbox-disd *, .z-intbox-disd *, .z-longbox-disd *, .z-doublebox-disd * {
     color:#333333 !important;
 }
 
@@ -677,11 +677,11 @@ div.z-grid {
     height: 17px !important;
 }
 
-/* Highlight advancedallocation grouping row */
-.resourcesload .taskspanelgap .z-grid-body tr:first-child {
+/* Highlight advanced allocation grouping row */
+.resources-load .taskspanel-gap .z-grid-body tr:first-child {
     background-color: #E8E8E8;
 }
-.resourcesload .taskspanelgap .z-grid-body tr.z-row td {
+.resources-load .taskspanel-gap .z-grid-body tr.z-row td {
     background-color:transparent;
 }
 
@@ -1270,7 +1270,7 @@ tr.z-treerow-over input {
     overflow:hidden;
 }
 
-.resourcesload .timetracker-secondlevel {
+.resources-load .timetracker-secondlevel {
     height: 2000px;
 }
 
@@ -1296,8 +1296,8 @@ tr.z-treerow-over input {
     padding: 10px;
 }
 
-.resourcesload .z-west-body .z-tree-header ,
-.limitingresources .z-west-body .z-tree-header {
+.resources-load .z-west-body .z-tree-header ,
+.limiting-resources .z-west-body .z-tree-header {
     width: 100% !important;
 }
 
@@ -1346,7 +1346,7 @@ tr.z-treerow-over input {
     background-image: url(../img/ico_submenu.png);
 }
 
-.advancedallocationlayout .global-action.z-button {
+.advanced-allocation-layout .global-action.z-button {
     margin-top: 1px;
 }
 
@@ -1366,7 +1366,7 @@ tr.z-treerow-over input {
     overflow: visible;
 }
 
-.advancedallocationlayout #timeTracker .z-vbox {
+.advanced-allocation-layout #timeTracker .z-vbox {
     position:relative;
 }
 
@@ -1374,7 +1374,7 @@ tr.z-treerow-over input {
     opacity:0.3;
 }
 
-.advancedallocationlayout #timeTracker {
+.advanced-allocation-layout #timeTracker {
     background-color: #CDE6F5;
 }
 
@@ -1405,11 +1405,11 @@ tr.z-treerow-over input {
 
 /* Advanced allocation */
 
-.advancedallocationlayout #timeTrackedTableWithLeftPane div.z-grid {
+.advanced-allocation-layout #timeTrackedTableWithLeftPane div.z-grid {
     overflow:auto;
 }
 
-.advancedallocationlayout .timetrackergap {
+.advanced-allocation-layout .timetrackergap {
     overflow: visible;
 }
 
@@ -1646,21 +1646,21 @@ tr.z-tree-row-seld .z-row-content {
     border: 0;
 }
 
-.advancedallocationlayout .second_level_ td {
+.advanced-allocation-layout .second_level_ td {
     border-right: solid 1px #ABC6DE;
     border-bottom: solid 1px #ABC6DE;
 }
 
-.advancedallocationlayout .second_level_ th {
+.advanced-allocation-layout .second_level_ th {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
 
-.advancedallocationlayout div.z-grid {
+.advanced-allocation-layout div.z-grid {
     border-top: 0;
 }
 
-.advancedallocationlayout .timeTrackedTableWithLeftPane .z-grid-body .z-row-inner {
+.advanced-allocation-layout .timeTrackedTableWithLeftPane .z-grid-body .z-row-inner {
     background-color: #F2F2F2;
     cursor: default;
 }
@@ -2242,6 +2242,10 @@ textarea {
 
 .queue-element-information {
     margin: 5px;
+}
+
+.z-textbox:focus, .z-decimalbox:focus, .z-intbox:focus, .z-longbox:focus, .z-doublebox:focus {
+    border: 1px solid #90BCE6 !important;
 }
 
 .margin-border {

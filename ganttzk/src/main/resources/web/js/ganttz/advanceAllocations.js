@@ -25,7 +25,7 @@ ADVANCE_ALLOCATIONS = {};
 ADVANCE_ALLOCATIONS.listenToScroll = function() {
     var scrollableArea = jq('.advanced-assignment-area');
     var innerScrollableArea = jq('.z-center-body', scrollableArea);
-    var taskDetails = jq('.advancedassignmentdetails .z-grid-body');
+    var taskDetails = jq('.advanced-assignment-details .z-grid-body');
     var timeTracker = ganttz.TimeTracker.getInstance();
 
     scrollableArea.bind('scroll', function() {

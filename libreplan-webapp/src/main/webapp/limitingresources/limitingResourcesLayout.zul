@@ -82,9 +82,8 @@
 
         <!-- List of queues -->
         <center border="0">
-            <borderlayout sclass="resourcesload limitingresources">
-                <west width="250px" vflex="1" collapsible="true"
-                    splittable="true" autoscroll="true">
+            <borderlayout sclass="resources-load limitingresources">
+                <west width="250px" vflex="1" collapsible="true" splittable="true" autoscroll="true">
 
                     <borderlayout >
                         <north border="0" height="31px" vflex="min" hflex="1" collapsible="true">
@@ -95,7 +94,7 @@
                             </tree>
                         </north>
                         <center border="0" style="overflow-x:scroll">
-                            <div sclass="leftpanelgap" id="insertionPointLeftPanel" height="100%"></div>
+                            <div sclass="leftpanelgap" id="insertionPointLeftPanel" height="100%"/>
                         </center>
                     </borderlayout>
                 </west>
@@ -103,9 +102,10 @@
                 <center sclass="taskspanel">
                     <borderlayout>
                         <north border="0">
-                            <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/></north>
+                            <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/>
+                        </north>
                         <center autoscroll="true" border="0" sclass="rightpanellayout">
-                            <div id="insertionPointRightPanel" sclass="taskspanelgap" height="100%"></div>
+                            <div id="insertionPointRightPanel" sclass="taskspanel-gap" height="100%"/>
                         </center>
                     </borderlayout>
                 </center>

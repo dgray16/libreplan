@@ -50,6 +50,11 @@ public class OrderLineTemplate extends OrderElementTemplate {
 
     private Integer lastHoursGroupSequenceCode = 0;
 
+    private BigDecimal budget = BigDecimal.ZERO.setScale(2);
+
+    private HoursGroupOrderLineTemplateHandler hoursGroupOrderLineTemplateHandler =
+                HoursGroupOrderLineTemplateHandler.getInstance();
+
     public static OrderLineTemplate create(OrderLine orderLine) {
         OrderLineTemplate beingBuilt = new OrderLineTemplate();
         copyHoursGroup(orderLine.getHoursGroups(), beingBuilt);
@@ -60,16 +65,13 @@ public class OrderLineTemplate extends OrderElementTemplate {
 
     private static void copyHoursGroup(final Collection<HoursGroup> hoursGroups, OrderLineTemplate orderLineTemplate) {
         for (HoursGroup each: hoursGroups) {
-            orderLineTemplate.addHoursGroup(HoursGroup.copyFrom(each,
-                    orderLineTemplate));
+            orderLineTemplate.addHoursGroup(HoursGroup.copyFrom(each, orderLineTemplate));
         }
     }
 
     public static OrderLineTemplate createNew() {
         return createNew(new OrderLineTemplate());
     }
-
-    private BigDecimal budget = BigDecimal.ZERO.setScale(2);
 
     protected <T extends OrderElement> T setupElementParts(T orderElement) {
         super.setupElementParts(orderElement);
@@ -124,18 +126,23 @@ public class OrderLineTemplate extends OrderElementTemplate {
         if (getWorkHours() != 0) {
             return false;
         }
+
         if (!getDirectCriterionRequirements().isEmpty()) {
             return false;
         }
+
         if (!getAdvanceAssignmentTemplates().isEmpty()) {
             return false;
         }
+
         if (!getQualityForms().isEmpty()) {
             return false;
         }
+
         if (!getLabels().isEmpty()) {
             return false;
         }
+
         if (!getMaterialAssignments().isEmpty()) {
             return false;
         }
@@ -145,8 +152,9 @@ public class OrderLineTemplate extends OrderElementTemplate {
 
     @Override
     public OrderElement createElement(OrderLineGroup parent) {
-        OrderLine line = setupSchedulingStateType(setupVersioningInfo(parent,
-                OrderLine.createOrderLineWithUnfixedPercentage(getWorkHours())));
+        OrderLine line = setupSchedulingStateType(
+                setupVersioningInfo(parent, OrderLine.createOrderLineWithUnfixedPercentage(getWorkHours())));
+
         line.initializeTemplate(this);
         parent.add(line);
 
@@ -163,7 +171,7 @@ public class OrderLineTemplate extends OrderElementTemplate {
     }
 
     public void incrementLastHoursGroupSequenceCode() {
-        if(lastHoursGroupSequenceCode==null){
+        if (lastHoursGroupSequenceCode == null) {
             lastHoursGroupSequenceCode = 0;
         }
         lastHoursGroupSequenceCode++;
@@ -207,9 +215,6 @@ public class OrderLineTemplate extends OrderElementTemplate {
         hoursGroups.remove(hoursGroup);
         recalculateHoursGroups();
     }
-
-    private HoursGroupOrderLineTemplateHandler hoursGroupOrderLineTemplateHandler = HoursGroupOrderLineTemplateHandler
-            .getInstance();
 
     public void setWorkHours(Integer workHours) throws IllegalArgumentException {
         hoursGroupOrderLineTemplateHandler.setWorkHours(this, workHours);

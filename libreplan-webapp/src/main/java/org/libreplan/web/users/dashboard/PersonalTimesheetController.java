@@ -135,6 +135,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
     private RowRenderer rowRenderer = new RowRenderer() {
 
         private LocalDate first;
+
         private LocalDate last;
 
         @Override
@@ -179,6 +180,10 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         }
 
         private void renderOrderElementRow(Row row, OrderElement orderElement) {
+            /* Flattening of orderElement row by height */
+            row.setHeight("27px");
+            row.setClass("row-timetracking");
+
             Util.appendLabel(row, personalTimesheetModel.getOrder(orderElement).getName());
             Util.appendLabel(row, orderElement.getName());
 
@@ -200,12 +205,8 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
                 Util.bind(
                         textbox,
-                        () -> {
-                            EffortDuration effortDuration =
-                                    personalTimesheetModel.getEffortDuration(orderElement, textboxDate);
-
-                            return effortDurationToString(effortDuration);
-                        },
+                        () -> effortDurationToString(
+                                personalTimesheetModel.getEffortDuration(orderElement, textboxDate)),
                         new Util.Setter<String>() {
                             @Override
                             public void set(String value) {
@@ -647,12 +648,15 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
     }
 
     private void createProjectAndTaskColumns() {
+        /* setWidth() was used because setStyle(min-width) was not working */
+
         Column project = new Column(_("Project"));
-        project.setStyle("min-width:100px");
+        project.setWidth("150px");
+
         columns.appendChild(project);
 
         Column task = new Column(_("Task"));
-        task.setStyle("min-width:100px");
+        task.setWidth("150px");
 
         columns.appendChild(project);
         columns.appendChild(task);
@@ -746,6 +750,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         Executions.getCurrent().sendRedirect(url);
     }
 
+    /* Should be public! */
     public void addOrderElement() {
         OrderElement orderElement = (OrderElement) orderElementBandboxSearch.getSelectedElement();
         if ( orderElement != null ) {
@@ -838,11 +843,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
     }
 
     private static String effortDurationToString(EffortDuration effort) {
-        if ( effort == null || effort.isZero() ) {
-            return "";
-        }
-
-        return effort.toFormattedString();
+        return effort == null || effort.isZero() ? "" : effort.toFormattedString();
     }
 
     private static EffortDuration effortDurationFromString(String effort) {
@@ -912,17 +913,24 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 }
 
 /**
- * Simple class to represent the the rows in the personal timesheet grid.<br />
+ * Simple class to represent the the rows in the personal timesheet grid.
+ *
+ * <br />
  *
  * This is used to mark the special rows like capacity and total.
  */
 class PersonalTimesheetRow {
 
     enum PersonalTimesheetRowType {
-        ORDER_ELEMENT, OTHER, CAPACITY, TOTAL, EXTRA
+        ORDER_ELEMENT,
+        OTHER,
+        CAPACITY,
+        TOTAL,
+        EXTRA
     }
 
     private PersonalTimesheetRowType type;
+
     private OrderElement orderElemement;
 
     public static PersonalTimesheetRow createOrderElementRow(OrderElement orderElemement) {
