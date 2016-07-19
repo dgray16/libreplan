@@ -170,11 +170,14 @@ body .advancedallocationlayout .icono .z-button-cm {
     margin-right: 10px;
 }
 
-.global-action.z-button:hover {
+.global-action.z-button:active,
+.global-action.z-button:hover,
+.global-action.z-button:focus {
     margin-right: 10px;
     border-bottom: 0;
     border-right: 0;
     background-color: #C3EAAF;
+    background-repeat: no-repeat;
 }
 
 
@@ -2238,5 +2241,9 @@ textarea {
 }
 
 .queue-element-information {
+    margin: 5px;
+}
+
+.margin-border {
     margin: 5px;
 }

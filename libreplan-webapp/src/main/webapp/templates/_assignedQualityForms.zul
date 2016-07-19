@@ -32,7 +32,7 @@
                 <!-- Assign quality form -->
                 <vbox>
                     <label value="${i18n:_('Assign quality form')}" />
-                    <hbox>
+                    <hbox style="margin-left: 5px;">
                         <bandboxSearch id="qualityFormFinder" finder="QualityFormBandboxFinder"
                             model="@{assignedQualityForms.notAssignedQualityForms}" widthBandbox="200px" widthListbox="600px" />
                         <button label="${i18n:_('Assign')}" sclass="add-button"
@@ -41,7 +41,7 @@
                     </hbox>
                 </vbox>
                 <separator bar="false" spacing="40px" orient="vertical"/>
-                <grid height="300px" fixedLayout="true"
+                <grid height="300px" fixedLayout="true" style="margin: 0 5px 0 5px;"
                     model="@{assignedQualityForms.assigned}">
                     <columns>
                         <column width="25px"/>

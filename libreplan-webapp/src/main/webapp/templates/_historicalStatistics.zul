@@ -29,7 +29,7 @@
         <vbox id="messagesContainerHistoricStatistics" />
         <panel title="${i18n:_('Statistics list ')}" border="normal">
             <panelchildren>
-               <grid>
+               <grid sclass="margin-border">
                     <columns>
                         <column />
                         <column width="700px"/>

@@ -88,8 +88,8 @@ public class ConcurrentModificationHandling {
      *            the annotation applied to object's type
      * @return the object that would be originally returned
      */
-    @Around(value = "methodWithinConcurrentModificationMarkedType(onConcurrentModification)" +
-            " && execution(public * * (..))", argNames = "jointPoint,onConcurrentModification")
+    @Around("methodWithinConcurrentModificationMarkedType(onConcurrentModification)"
+            + " && execution(public * * (..))")
     public Object whenConcurrentModification(ProceedingJoinPoint jointPoint,
                                              OnConcurrentModification onConcurrentModification) throws Throwable {
 

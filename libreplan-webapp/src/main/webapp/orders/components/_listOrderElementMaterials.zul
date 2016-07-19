@@ -43,7 +43,7 @@
                   <button label="${i18n:_('Unselect')}"
                     onClick="assignedMaterialsController.clearSelectionCategoriesTree()" />
                   <separator spacing="5px" orient="horizontal" />
-                  <tree id="categoriesTree" sizedByContent="false"
+                  <tree id="categoriesTree" fixedLayout="false"
                     width="280px" rows="10" vflex="1" multiple="false"
                     onSelect="assignedMaterialsController.refreshMaterialAssigments()">
                     <treecols>
@@ -127,9 +127,9 @@
                     </panel>
                 </hbox>
 
-          <button label="${i18n:_('Assign materials')}" sclass="global-action"
+          <button label="${i18n:_('Assign materials')}" sclass="add-button global-action"
             onClick="assignedMaterialsController.assignSelectedMaterials()" />
-          <button label="${i18n:_('Cancel')}" sclass="global-action"
+          <button label="${i18n:_('Cancel')}" sclass="add-button global-action"
             onClick="materialsAccordion.setSelectedIndex(0);" />
 
         </tabpanel>

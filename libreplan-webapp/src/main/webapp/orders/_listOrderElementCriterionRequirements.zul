@@ -35,10 +35,10 @@
                 <hbox align="center">
                         <button label="${i18n:_('Add')}" sclass="add-button"
                             tooltiptext="${i18n:_('Add criterion requirement')}"
-                            style="margin-bottom: 5px"
+                            style="margin: 5px;"
                             onClick="criterionRequirementsController.addCriterionRequirementWrapper()" />
                 </hbox>
-                <newdatasortablegrid id="listingRequirements"
+                <newdatasortablegrid id="listingRequirements" sclass="margin-border"
                         model="@{criterionRequirementsController.criterionRequirementWrappers}"
                         mold="paging"
                         pageSize="10"
