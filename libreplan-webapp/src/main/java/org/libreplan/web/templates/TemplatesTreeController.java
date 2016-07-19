@@ -25,13 +25,9 @@ import org.libreplan.business.orders.entities.SchedulingState;
 import org.libreplan.business.templates.entities.OrderElementTemplate;
 import org.libreplan.business.templates.entities.OrderLineTemplate;
 import org.libreplan.web.common.Util;
-import org.libreplan.web.common.Util.Getter;
-import org.libreplan.web.common.Util.Setter;
 import org.libreplan.web.tree.EntitiesTree;
 import org.libreplan.web.tree.TreeController;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Textbox;
@@ -264,7 +260,7 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
         return element -> "";
     }
 
-    void refreshRow(Treeitem item) {
+    public void refreshRow(Treeitem item) {
         try {
             OrderElementTemplate orderElement = item.getValue();
             getRenderer().updateColumnsFor(orderElement);
