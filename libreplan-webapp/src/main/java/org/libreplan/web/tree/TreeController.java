@@ -39,10 +39,7 @@ import javax.validation.ValidatorFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.libreplan.business.orders.entities.OrderLineGroup;
 import org.libreplan.business.orders.entities.SchedulingState;
-import org.libreplan.business.orders.entities.SchedulingState.ITypeChangedListener;
-import org.libreplan.business.orders.entities.SchedulingState.Type;
 import org.libreplan.business.trees.ITreeNode;
 import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
@@ -52,8 +49,8 @@ import org.libreplan.web.common.Util.Getter;
 import org.libreplan.web.common.Util.Setter;
 import org.libreplan.web.orders.DynamicDatebox;
 import org.libreplan.web.orders.SchedulingStateToggler;
+import org.libreplan.web.templates.TemplatesTreeComponent;
 import org.libreplan.web.tree.TreeComponent.Column;
-import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.AbstractComponent;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
@@ -63,6 +60,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.KeyEvent;
+import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Constraint;
@@ -77,7 +75,6 @@ import org.zkoss.zul.Treechildren;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.TreeitemRenderer;
 import org.zkoss.zul.Treerow;
-import org.zkoss.zul.Hbox;
 import org.zkoss.zul.impl.InputElement;
 
 
@@ -106,6 +103,27 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     protected TreeViewStateSnapshot viewStateSnapshot;
 
     private final Class<T> type;
+
+    protected Button btnNew;
+
+    private List<Column> columns;
+
+    private Button btnNewFromTemplate;
+
+    private Button downButton;
+
+    private Button upButton;
+
+    private Button leftButton;
+
+    private Button rightButton;
+
+    protected Set<Treecell> cellsMarkedAsModified = new HashSet<>();
+
+    protected boolean readOnly = true;
+
+    @Wire
+    protected TreeComponent orderElementTreeComponent;
 
     public abstract Renderer getRenderer();
 
@@ -180,8 +198,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
     public T getSelectedNode() {
         Treeitem item = tree.getSelectedItem();
+
         if (item != null) {
             Object value = item.getValue();
+
             return value != null ? type.cast(value) : null;
         }
 
@@ -200,13 +220,16 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             Treerow from = (Treerow) dragged;
             fromNode = type.cast(((Treeitem) from.getParent()).getValue());
         }
+
         if (dragged instanceof Treeitem) {
             Treeitem from = (Treeitem) dragged;
             fromNode = type.cast(from.getValue());
         }
+
         if (dropedIn instanceof Tree) {
             getModel().moveToRoot(fromNode);
         }
+
         if (dropedIn instanceof Treerow) {
             Treerow to = (Treerow) dropedIn;
             T toNode = type.cast(((Treeitem) to.getParent()).getValue());
@@ -251,7 +274,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         try {
             if (tree.getSelectedCount() == 1) {
                 T node = getSelectedNode();
-                Treeitem selectedItem = tree.getSelectedItem();
 
                 T newNode = getModel().addElementAt(node, name.getValue(), hours.getValue());
                 getRenderer().refreshHoursValueForThisNodeAndParents(newNode);
@@ -265,17 +287,16 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     // Then a new container will be created
                     nameTextbox = getRenderer().getNameTextbox(node);
                 } else {
-                    // select the parent row to add new children ASAP
+                    // Select the parent row to add new children ASAP
                     /**
-                    * Unnecessary to call methods, because org.zkoss.zul.Tree API was changed
-                      tree.setSelectedItem(getRenderer().getTreeitemForNode(node));
-                    */
+                     * Unnecessary to call methods, because org.zkoss.zul.Tree API was changed
+                     * tree.setSelectedItem(getRenderer().getTreeitemForNode(node));
+                     */
                 }
             } else {
                 getModel().addElement(name.getValue(), hours.getValue());
 
-                // This is needed in both parts of the if, but it's repeated in
-                // order to simplify the code
+                // This is needed in both parts of the if, but it's repeated in order to simplify the code
                 reloadTreeUIAfterChanges();
             }
         } catch (IllegalStateException e) {
@@ -296,8 +317,11 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     protected abstract void reloadTreeUIAfterChanges();
 
     protected static class TreeViewStateSnapshot {
+
         private final Set<Object> all;
+
         private final Set<Object> dataOpen;
+
         private final Object selected;
 
         private TreeViewStateSnapshot(Set<Object> dataOpen, Set<Object> all, Object selected) {
@@ -310,6 +334,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             Set<Object> dataOpen = new HashSet<>();
             Set<Object> all = new HashSet<>();
             Object selected = null;
+
             if (tree != null && tree.getTreechildren() != null) {
                 for (Treeitem treeitem : tree.getTreechildren().getItems()) {
                     Object value = getAssociatedValue(treeitem);
@@ -317,6 +342,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     if (treeitem.isOpen()) {
                         dataOpen.add(value);
                     }
+
                     if (treeitem.isSelected()) {
                         selected = value;
                     }
@@ -369,6 +395,11 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        if (this.orderElementTreeComponent == null) {
+            this.orderElementTreeComponent = (TemplatesTreeComponent) comp;
+        }
+
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
@@ -379,20 +410,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     public boolean isNotItemSelected() {
         return !isItemSelected();
     }
-
-    protected Button btnNew;
-
-    private List<Column> columns;
-
-    private Button btnNewFromTemplate;
-
-    private Button downButton;
-
-    private Button upButton;
-
-    private Button leftButton;
-
-    private Button rightButton;
 
     protected TreeViewStateSnapshot getSnapshotOfOpenedNodes() {
         return viewStateSnapshot;
@@ -480,28 +497,29 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     case UP:
                         focusGoUp(treerow, position);
                         break;
+
                     case DOWN:
                         focusGoDown(treerow, position);
                         break;
+
                     case LEFT:
                         if (position == 0) {
                             focusGoUp(treerow, boxes.size() - 1);
                         } else {
                             if (boxes.get(position - 1).isDisabled()) {
-                                moveFocusTo(boxes.get(position - 1),
-                                        Navigation.LEFT, treerow);
+                                moveFocusTo(boxes.get(position - 1), Navigation.LEFT, treerow);
                             } else {
                                 boxes.get(position - 1).focus();
                             }
                         }
                         break;
+
                     case RIGHT:
                         if (position == boxes.size() - 1) {
                             focusGoDown(treerow, 0);
                         } else {
                             if (boxes.get(position + 1).isDisabled()) {
-                                moveFocusTo(boxes.get(position + 1),
-                                        Navigation.RIGHT, treerow);
+                                moveFocusTo(boxes.get(position + 1), Navigation.RIGHT, treerow);
                             } else {
                                 boxes.get(position + 1).focus();
                             }
@@ -513,23 +531,23 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
             private void focusGoUp(Treerow treerow, int position) {
                 Treeitem parent = (Treeitem) treerow.getParent();
+
                 @SuppressWarnings("unchecked")
                 List<Treeitem> treeItems = parent.getParent().getChildren();
+
                 int myPosition = parent.getIndex();
 
                 if (myPosition > 0) {
-                    // the current node is not the first brother
+                    // The current node is not the first brother
                     Treechildren treechildren = treeItems.get(myPosition - 1).getTreechildren();
 
                     if (treechildren == null || treechildren.getChildren().size() == 0) {
-                        // the previous brother doesn't have children,
-                        // or it has children but they are unloaded
+                        // The previous brother doesn't have children, or it has children but they are unloaded
                         Treerow upTreerow = treeItems.get(myPosition - 1).getTreerow();
 
                         focusCorrectBox(upTreerow, position, Navigation.LEFT);
                     } else {
-                        // we have to move to the last child of the previous
-                        // brother
+                        // We have to move to the last child of the previous brother
                         Treerow upTreerow = findLastTreerow(treeItems.get(myPosition - 1));
 
                         while (!upTreerow.isVisible()) {
@@ -539,9 +557,9 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                         focusCorrectBox(upTreerow, position, Navigation.LEFT);
                     }
                 } else {
-                    // the node is the first brother
+                    // The node is the first brother
                     if (parent.getParent().getParent() instanceof Treeitem) {
-                        // the node has a parent, so we move up to it
+                        // The node has a parent, so we move up to it
                         Treerow upTreerow = ((Treeitem) parent.getParent().getParent()).getTreerow();
 
                         focusCorrectBox(upTreerow, position, Navigation.LEFT);
@@ -553,8 +571,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 if (item.getTreechildren() == null) {
                     return item.getTreerow();
                 }
+
                 @SuppressWarnings("unchecked")
                 List<Treeitem> children = item.getTreechildren().getChildren();
+
                 Treeitem lastchild = children.get(children.size() - 1);
 
                 return findLastTreerow(lastchild);
@@ -567,18 +587,20 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
             private void focusGoDown(Treeitem parent, int position, boolean skipChildren) {
                 if (parent.getTreechildren() == null || skipChildren) {
+
                     // Moving from a node to its brother
                     @SuppressWarnings("unchecked")
                     List<Treeitem> treeItems = parent.getParent().getChildren();
+
                     int myPosition = parent.getIndex();
 
                     if (myPosition < treeItems.size() - 1) {
-                        // the current node is not the last one
+                        // The current node is not the last one
                         Treerow downTreerow = treeItems.get(myPosition + 1).getTreerow();
 
                         focusCorrectBox(downTreerow, position, Navigation.RIGHT);
                     } else {
-                        // the node is the last brother
+                        // The node is the last brother
                         if (parent.getParent().getParent() instanceof Treeitem) {
                             focusGoDown((Treeitem) parent.getParent().getParent(), position, true);
                         }
@@ -588,7 +610,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     Treechildren treechildren = parent.getTreechildren();
 
                     if (treechildren.getChildren().size() == 0) {
-                        // the children are unloaded yet
+                        // The children are unloaded yet
                         focusGoDown(parent, position, true);
 
                         return;
@@ -596,7 +618,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     Treerow downTreerow = ((Treeitem) treechildren.getChildren().get(0)).getTreerow();
 
                     if (!downTreerow.isVisible()) {
-                        // children are loaded but not visible
+                        // Children are loaded but not visible
                         focusGoDown(parent, position, true);
 
                         return;
@@ -618,13 +640,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             }
 
             private List<InputElement> getNavigableElements(Treerow row) {
-                if (!navigableElementsByRow.containsKey(row)) {
-                    return Collections.emptyList();
-                }
-
-                return Collections.unmodifiableList(navigableElementsByRow.get(row));
+                return !navigableElementsByRow.containsKey(row)
+                        ? Collections.emptyList()
+                        : Collections.unmodifiableList(navigableElementsByRow.get(row));
             }
-
         }
 
         private Map<T, Textbox> codeTextboxByElement = new HashMap<>();
@@ -647,8 +666,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             return currentTreeRow;
         }
 
-        public Renderer() {
-        }
+        public Renderer() {}
 
         protected Textbox getNameTextbox(T key) {
             return nameTextboxByElement.get(key);
@@ -679,23 +697,21 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         }
 
         protected void registerFocusEvent(final InputElement inputElement) {
-            inputElement.addEventListener(Events.ON_FOCUS,
-                    new EventListener() {
+            inputElement.addEventListener(Events.ON_FOCUS, new EventListener() {
+                private Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
 
-                        private Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
-
-                        @Override
-                        public void onEvent(Event event) {
-                            item.setSelected(true);
-                            Util.reloadBindings(item.getParent());
-                        }
-                    });
+                @Override
+                public void onEvent(Event event) {
+                    item.setSelected(true);
+                    Util.reloadBindings(item.getParent());
+                }
+            });
         }
 
-        protected void addDateCell(final DynamicDatebox dinamicDatebox, final String dateboxName) {
+        protected void addDateCell(final DynamicDatebox dinamicDatebox) {
 
-            Component cell = Executions.getCurrent().createComponents(
-                    "/common/components/dynamicDatebox.zul", null, null);
+            Component cell =
+                    Executions.getCurrent().createComponents("/common/components/dynamicDatebox.zul", null, null);
             try {
                 dinamicDatebox.doAfterCompose(cell);
             } catch (Exception e) {
@@ -711,9 +727,11 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
         protected Treecell addCell(String cssClass, Component... components) {
             Treecell cell = new Treecell();
+
             if (cssClass != null) {
                 cell.setSclass(cssClass);
             }
+
             for (Component component : components) {
                 cell.appendChild(component);
                 if (component instanceof InputElement) {
@@ -740,7 +758,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             onDropMoveFromDraggedToTarget();
         }
 
-        protected void checkInvalidValues(Class<?> beanType, String property, Integer value, final Intbox component) {
+        protected void checkInvalidValues(String property, Integer value, final Intbox component) {
             Set<ConstraintViolation<T>> violations = validator.validateValue(type, property, value);
             if (!violations.isEmpty()) {
                 throw new WrongValueException(component, _(violations.iterator().next().getMessage()));
@@ -809,6 +827,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             final SchedulingState schedulingState = getSchedulingStateFrom(currentElement);
             SchedulingStateToggler schedulingStateToggler = new SchedulingStateToggler(schedulingState);
             schedulingStateToggler.setReadOnly(readOnly || currentElement.isUpdatedFromTimesheets());
+
             final Treecell cell = addCell(
                     getDecorationFromState(getSchedulingStateFrom(currentElement)),
                     schedulingStateToggler);
@@ -831,6 +850,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
             schedulingState.addTypeChangeListener(
                     newType -> cell.setSclass(getDecorationFromState(schedulingState)));
+
             schedulingStateToggler.afterCompose();
 
         }
@@ -859,7 +879,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             Decimalbox result = new DecimalboxDirectValue();
             if (element.isLeaf()) {
                 Util.bind(result, getBudgetGetterFor(element), getBudgetSetterFor(element));
-                result.setConstraint(getBudgetConstraintFor(element));
+                result.setConstraint(getBudgetConstraintFor());
             } else {
                 // If it's a container budget cell is not editable
                 Util.bind(result, getBudgetGetterFor(element));
@@ -879,8 +899,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 public void set(BigDecimal value) {
                     getBudgetHandler().setBudgetHours(element, value);
                     List<T> parentNodes = getModel().getParents(element);
-                    // Remove the last element because it's an
-                    // Order node, not an OrderElement
+                    // Remove the last element because it's an Order node, not an OrderElement
                     parentNodes.remove(parentNodes.size() - 1);
                     for (T node : parentNodes) {
                         DecimalboxDirectValue decimalbox = (DecimalboxDirectValue) budgetDecimalboxByElement.get(node);
@@ -969,25 +988,27 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             }
         }
 
-        private Constraint getBudgetConstraintFor(final T line) {
+        private Constraint getBudgetConstraintFor() {
             return (comp, value) -> {
+
                 if (value == null) {
-                    throw new WrongValueException(comp,
-                            _("cannot be empty"));
+                    throw new WrongValueException(comp, _("cannot be empty"));
                 }
+
                 if (((BigDecimal) value).compareTo(BigDecimal.ZERO) < 0) {
-                    throw new WrongValueException(comp,
-                            _("cannot be negative"));
+                    throw new WrongValueException(comp, _("cannot be negative"));
                 }
             };
         }
 
         public void addHoursCell(final T currentElement) {
             Intbox intboxHours = buildHoursIntboxFor(currentElement);
-                hoursIntBoxByElement.put(currentElement, intboxHours);
+            hoursIntBoxByElement.put(currentElement, intboxHours);
+
             if (readOnly || currentElement.isJiraIssue()) {
                 intboxHours.setDisabled(true);
             }
+
             Treecell cellHours = addCell(intboxHours);
             setReadOnlyHoursCell(currentElement, intboxHours, cellHours);
         }
@@ -1027,12 +1048,13 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 public void set(Integer value) {
                     getHoursGroupHandler().setWorkHours(element, value);
                     List<T> parentNodes = getModel().getParents(element);
-                    // Remove the last element because it's an
-                    // Order node, not an OrderElement
+                    // Remove the last element because it's an Order node, not an OrderElement
                     parentNodes.remove(parentNodes.size() - 1);
+
                     for (T node : parentNodes) {
                         IntboxDirectValue intbox = (IntboxDirectValue) hoursIntBoxByElement.get(node);
                         Integer hours = getHoursGroupHandler().getWorkHoursFor(node);
+
                         if (isInCurrentPage(intbox)) {
                             intbox.setValue(hours);
                         } else {
@@ -1047,8 +1069,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     int position = treeItems.indexOf(treeItem);
 
                     if (position < 0) {
-                        throw new RuntimeException("Treeitem " + treeItem
-                                + " has to belong to tree.getItems() list");
+                        throw new RuntimeException("Treeitem " + treeItem + " has to belong to tree.getItems() list");
                     }
 
                     return (position / tree.getPageSize()) == tree.getActivePage();
@@ -1114,14 +1135,22 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 reloadTreeUIAfterChanges();
             };
             final Button result;
+
             if (readOnly) {
-                result = createButton("/common/img/ico_borrar_out.png",
-                        _("Delete"), "/common/img/ico_borrar_out.png", "icono",
+                result = createButton(
+                        "/common/img/ico_borrar_out.png",
+                        _("Delete"),
+                        "/common/img/ico_borrar_out.png",
+                        "icono",
                         removeListener);
+
                 result.setDisabled(readOnly);
             } else {
-                result = createButton("/common/img/ico_borrar1.png",
-                        _("Delete"), "/common/img/ico_borrar.png", "icono",
+                result = createButton(
+                        "/common/img/ico_borrar1.png",
+                        _("Delete"),
+                        "/common/img/ico_borrar.png",
+                        "icono",
                         removeListener);
             }
 
@@ -1133,6 +1162,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                                       String hoverImage,
                                       String styleClass,
                                       EventListener eventListener) {
+
             Button result = new Button("", image);
             result.setHoverImage(hoverImage);
             result.setSclass(styleClass);
@@ -1206,11 +1236,13 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
      */
     public void updateControlButtons() {
         T element = getSelectedNode();
+
         if (element == null) {
             resetControlButtons();
 
             return;
         }
+
         Treeitem item = tree.getSelectedItem();
 
         btnNew.setDisabled(isNewButtonDisabled() || element.isUpdatedFromTimesheets());
@@ -1239,8 +1271,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
     protected abstract String createTooltipText(T currentElement);
 
-    protected Set<Treecell> cellsMarkedAsModified = new HashSet<>();
-
     public void markModifiedTreeitem(Treerow item) {
         Treecell tc = (Treecell) item.getFirstChild();
         // Check if marked label has been previously added
@@ -1261,8 +1291,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         cellsMarkedAsModified.clear();
     }
 
-    protected boolean readOnly = true;
-
     public void setReadOnly(boolean readOnly) {
         if (this.readOnly != readOnly) {
             this.readOnly = readOnly;
@@ -1275,24 +1303,21 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         }
     }
 
-    protected TreeComponent orderElementTreeComponent;
-
     public void setTreeComponent(TreeComponent orderElementsTree) {
         this.orderElementTreeComponent = orderElementsTree;
     }
 
     /**
      * This class is to give visibility to method
-     * {@link Intbox#setValueDirectly} which is marked as protected in
-     * {@link Intbox} class.
-     * <p>
+     * {@link Intbox#setValueDirectly} which is marked as protected in {@link Intbox} class.
+     *
      * <br />
-     * <p>
+     *
      * This is needed to prevent calling {@link AbstractComponent#smartUpdate}
-     * when the {@link Intbox} is not in current page. <tt>smartUpdate</tt> is
-     * called by {@link Intbox#setValue(Integer)}. This call causes a JavaScript
-     * error when trying to update {@link Intbox} that are not in current page
-     * in the tree.
+     * when the {@link Intbox} is not in current page.
+     * <tt>smartUpdate</tt> is called by {@link Intbox#setValue(Integer)}.
+     * This call causes a JavaScript error when trying to update {@link Intbox}
+     * that are not in current page in the tree.
      */
     private class IntboxDirectValue extends Intbox {
         @Override
@@ -1303,16 +1328,15 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
     /**
      * This class is to give visibility to method
-     * {@link Decimalbox#setValueDirectly} which is marked as protected in
-     * {@link Decimalbox} class.
-     * <p>
+     * {@link Decimalbox#setValueDirectly} which is marked as protected in {@link Decimalbox} class.
+     *
      * <br />
-     * <p>
+     *
      * This is needed to prevent calling {@link AbstractComponent#smartUpdate}
-     * when the {@link Decimalbox} is not in current page. <tt>smartUpdate</tt>
-     * is called by {@link Decimalbox#setValue(Integer)}. This call causes a
-     * JavaScript error when trying to update {@link Decimalbox} that are not in
-     * current page in the tree.
+     * when the {@link Decimalbox} is not in current page.
+     * <tt>smartUpdate</tt> is called by {@link Decimalbox#setValue(Integer)}.
+     * This call causes a JavaScript error when trying to update {@link Decimalbox}
+     * that are not in current page in the tree.
      */
     private class DecimalboxDirectValue extends Decimalbox {
         @Override

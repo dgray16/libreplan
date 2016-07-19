@@ -19,9 +19,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <zk>
-<zscript><![CDATA[
-    assignedLabelsController = self.controller;
-]]>
+<zscript>
+    <![CDATA[
+        assignedLabelsController = self.controller;
+    ]]>
 </zscript>
 <vbox apply="${assignedLabelsController}" width="100%">
     <!-- Inherited labels -->
@@ -29,7 +30,7 @@
         <panel title="${i18n:_('Inherited labels')}" border="normal">
             <panelchildren>
                 <grid id="inheritedLabels" fixedLayout="true"
-                    model="@{assignedLabelsController.inheritedLabels}">
+                      model="@{assignedLabelsController.inheritedLabels}">
                     <columns>
                         <column label="${i18n:_('Label type')}" />
                         <column label="${i18n:_('Value')}" />
@@ -50,7 +51,7 @@
         <panel title="${i18n:_('Direct labels')}" border="normal">
             <panelchildren>
                 <newdatasortablegrid id="directLabels" fixedLayout="true"
-                    model="@{assignedLabelsController.labels}">
+                                     model="@{assignedLabelsController.labels}">
                     <columns>
                         <newdatasortablecolumn label="${i18n:_('Label type')}" sort="auto(lower(type.name))"/>
                         <newdatasortablecolumn label="${i18n:_('Value')}" />
@@ -62,10 +63,10 @@
                             <label value="@{label.name}" />
 
                             <button sclass="icono"
-                                image="/common/img/ico_borrar1.png"
-                                hoverImage="/common/img/ico_borrar.png"
-                                tooltiptext="${i18n:_('Delete')}"
-                                onClick="assignedLabelsController.deleteLabel(self.parent.value)">
+                                    image="/common/img/ico_borrar1.png"
+                                    hoverImage="/common/img/ico_borrar.png"
+                                    tooltiptext="${i18n:_('Delete')}"
+                                    onClick="assignedLabelsController.deleteLabel(self.parent.value)">
                             </button>
 
                         </row>
@@ -77,10 +78,10 @@
                     <label value="${i18n:_('Assign Label')}" />
                     <hbox>
                         <bandboxSearch id="bdLabels" finder="LabelBandboxFinder"
-                            model="@{assignedLabelsController.allLabels}" />
+                                       model="@{assignedLabelsController.allLabels}" />
                         <button label="${i18n:_('Assign')}" sclass="add-button"
-                            onClick="assignedLabelsController.onAssignLabel()"
-                            style="margin-top: -4px" />
+                                onClick="assignedLabelsController.onAssignLabel()"
+                            />
                     </hbox>
                 </vbox>
 
@@ -90,11 +91,11 @@
                 </vbox>
                 <hbox>
                     <autocomplete id="cbLabelType" onChange="txtLabelName.clearErrorMessage()"
-                        finder="LabelTypeFinder" buttonVisible="true" />
+                                  finder="LabelTypeFinder" buttonVisible="true" />
                     <textbox id="txtLabelName" />
-                    <button id="buttonCreateAndAssign" style="margin-top: -4px"
-                        label="${i18n:_('Create &amp; Assign')}" sclass="add-button"
-                        onClick="assignedLabelsController.onCreateAndAssign()" />
+                    <button id="buttonCreateAndAssign"
+                            label="${i18n:_('Create &amp; Assign')}" sclass="add-button"
+                            onClick="assignedLabelsController.onCreateAndAssign()" />
                 </hbox>
             </panelchildren>
         </panel>

@@ -43,6 +43,7 @@ import static org.libreplan.web.I18nHelper._;
 
 /**
  * Controller for template element tree <br />
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
 public class TemplatesTreeController extends TreeController<OrderElementTemplate> {
@@ -63,18 +64,19 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
 
         @Override
         protected void addOperationsCell(Treeitem item, OrderElementTemplate currentElement) {
-            addCell(createEditButton(currentElement), createRemoveButton(currentElement));
+            addCell(createEditButton(), createRemoveButton(currentElement));
         }
 
-        private Button createEditButton(final OrderElementTemplate currentTemplate) {
-            Button result = createButton("/common/img/ico_editar1.png",
-                    _("Edit"), "/common/img/ico_editar.png", "icono",
+        private Button createEditButton() {
+            return createButton(
+                    "/common/img/ico_editar1.png",
+                    _("Edit"),
+                    "/common/img/ico_editar.png",
+                    "icono",
                     event -> {
                         Treeitem item = getTreeitem(event.getTarget());
                         operationsForOrderTemplate.showEditElement(item);
                     });
-
-            return result;
         }
 
         private Treeitem getTreeitem(Component comp) {
@@ -83,12 +85,11 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
 
         @Override
         protected void addDescriptionCell(final OrderElementTemplate element) {
-            Textbox textBox = Util.bind(new Textbox(),
-                    () -> {
-                        return element.getName();
-                    }, value -> {
-                        element.setName(value);
-                    });
+            Textbox textBox = Util.bind(
+                    new Textbox(),
+                    () -> element.getName(),
+                    value -> element.setName(value));
+
             textBox.setConstraint("no empty:" + _("cannot be empty"));
             addCell(textBox);
             putNameTextbox(element, textBox);
@@ -96,35 +97,41 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
 
         @Override
         protected void addCodeCell(final OrderElementTemplate element) {
-            //empty because templates don't have code attribute
+            // Empty because templates don't have code attribute
         }
 
 
         void addInitCell(final OrderElementTemplate currentElement) {
             final Intbox intbox = new Intbox();
-            Util.bind(intbox, () -> {
-                return currentElement.getStartAsDaysFromBeginning();
-            }, value -> {
-                checkInvalidValues(OrderElementTemplate.class, "startAsDaysFromBeginning", value, intbox);
-                currentElement.setStartAsDaysFromBeginning(value);
-            });
+
+            Util.bind(
+                    intbox,
+                    () -> currentElement.getStartAsDaysFromBeginning(),
+                    value -> {
+                        checkInvalidValues("startAsDaysFromBeginning", value, intbox);
+                        currentElement.setStartAsDaysFromBeginning(value);
+                    });
+
             addCell(intbox);
         }
 
         void addEndCell(final OrderElementTemplate currentElement) {
             final Intbox intbox = new Intbox();
-            Util.bind(intbox, () -> {
-                return currentElement.getDeadlineAsDaysFromBeginning();
-            }, value -> {
-                checkInvalidValues(OrderElementTemplate.class, "deadlineAsDaysFromBeginning", value, intbox);
-                currentElement.setDeadlineAsDaysFromBeginning(value);
-            });
+
+            Util.bind(
+                    intbox,
+                    () -> currentElement.getDeadlineAsDaysFromBeginning(),
+                    value -> {
+                        checkInvalidValues("deadlineAsDaysFromBeginning", value, intbox);
+                        currentElement.setDeadlineAsDaysFromBeginning(value);
+                    });
+
             addCell(intbox);
         }
 
         @Override
         protected void onDoubleClickForSchedulingStateCell(OrderElementTemplate currentElement) {
-            // do nothing
+            // Do nothing
         }
 
         @Override
@@ -143,18 +150,18 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
     }
 
     /**
-     * Initializes operationsForOrderTemplate. A reference to variable tree is
-     * needed to be added later in doAfterCompose()
+     * Initializes operationsForOrderTemplate.
+     * A reference to variable tree is needed to be added later in doAfterCompose()
      */
     private void initializeOperationsForOrderTemplate() {
-        operationsForOrderTemplate = TemplateElementOperations.build()
+        operationsForOrderTemplate = TemplateElementOperations
+                .build()
                 .treeController(this)
                 .orderTemplatesController(this.orderTemplatesController);
     }
 
     @Override
-    protected void reloadTreeUIAfterChanges() {
-    }
+    protected void reloadTreeUIAfterChanges() {}
 
     @Override
     protected EntitiesTree<OrderElementTemplate> getModel() {
@@ -178,23 +185,24 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
 
     @Override
     protected String createTooltipText(OrderElementTemplate elem) {
-            StringBuilder tooltipText = new StringBuilder();
-            tooltipText.append(elem.getName()).append(". ");
+        StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(elem.getName()).append(". ");
 
-            if ((elem.getDescription() != null) && (!elem.getDescription().equals(""))) {
-                tooltipText.append(elem.getDescription());
-                tooltipText.
-                        append(". ");
-            }
-            if ((elem.getLabels() != null) && (!elem.getLabels().isEmpty())) {
-
-                tooltipText.append(" ").append(_("Labels")).append(":");
-                tooltipText.append(StringUtils.join(elem.getLabels(), ","));
-                tooltipText.append(".");
-            }
-        // There are no CriterionRequirement or advances in templates
-            return tooltipText.toString();
+        if ((elem.getDescription() != null) && (!elem.getDescription().equals(""))) {
+            tooltipText.append(elem.getDescription());
+            tooltipText.append(". ");
         }
+
+        if ((elem.getLabels() != null) && (!elem.getLabels().isEmpty())) {
+
+            tooltipText.append(" ").append(_("Labels")).append(":");
+            tooltipText.append(StringUtils.join(elem.getLabels(), ","));
+            tooltipText.append(".");
+        }
+
+        // There are no CriterionRequirement or advances in templates
+        return tooltipText.toString();
+    }
 
     @Override
     protected IHoursGroupHandler<OrderElementTemplate> getHoursGroupHandler() {
@@ -252,10 +260,8 @@ public class TemplatesTreeController extends TreeController<OrderElementTemplate
 
     @Override
     protected ICodeHandler<OrderElementTemplate> getCodeHandler() {
-        return element -> {
-            // Empty as OrderElementTemplate doesn't have code
-            return "";
-        };
+        // Empty as OrderElementTemplate doesn't have code
+        return element -> "";
     }
 
     void refreshRow(Treeitem item) {
