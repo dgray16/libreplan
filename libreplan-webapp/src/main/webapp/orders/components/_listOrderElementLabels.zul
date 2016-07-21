@@ -29,8 +29,8 @@
     <vbox width="100%">
         <panel title="${i18n:_('Inherited labels')}" border="normal">
             <panelchildren>
-                <grid id="inheritedLabels" fixedLayout="true"
-                      model="@{assignedLabelsController.inheritedLabels}">
+                <grid id="inheritedLabels" fixedLayout="true" sclass="margin-border"
+                    model="@{assignedLabelsController.inheritedLabels}">
                     <columns>
                         <column label="${i18n:_('Label type')}" />
                         <column label="${i18n:_('Value')}" />
@@ -50,8 +50,8 @@
     <vbox width="100%">
         <panel title="${i18n:_('Direct labels')}" border="normal">
             <panelchildren>
-                <newdatasortablegrid id="directLabels" fixedLayout="true"
-                                     model="@{assignedLabelsController.labels}">
+                <newdatasortablegrid id="directLabels" fixedLayout="true" sclass="margin-border"
+                    model="@{assignedLabelsController.labels}">
                     <columns>
                         <newdatasortablecolumn label="${i18n:_('Label type')}" sort="auto(lower(type.name))"/>
                         <newdatasortablecolumn label="${i18n:_('Value')}" />
@@ -76,7 +76,7 @@
                 <!-- Assign label -->
                 <vbox>
                     <label value="${i18n:_('Assign Label')}" />
-                    <hbox>
+                    <hbox sclass="margin-border">
                         <bandboxSearch id="bdLabels" finder="LabelBandboxFinder"
                                        model="@{assignedLabelsController.allLabels}" />
                         <button label="${i18n:_('Assign')}" sclass="add-button"
@@ -89,7 +89,7 @@
                 <vbox>
                     <label value="${i18n:_('Create and assign label')}" />
                 </vbox>
-                <hbox>
+                <hbox sclass="margin-border">
                     <autocomplete id="cbLabelType" onChange="txtLabelName.clearErrorMessage()"
                                   finder="LabelTypeFinder" buttonVisible="true" />
                     <textbox id="txtLabelName" />

@@ -81,8 +81,8 @@
                     <rows>
                         <row>
                             <label value="${i18n:_('Name')}" />
-                            <textbox id="name" value="@{templatesForOrdersController.template.name}" width="500px"
-                                     constraint = "@{templatesForOrdersController.validateTemplateName}"/>
+                            <textbox id="name" value="@{templatesForOrdersController.test}" width="500px"
+                                constraint = "@{templatesForOrdersController.validateTemplateName}"/>
                         </row>
 
                         <row>

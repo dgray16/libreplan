@@ -170,11 +170,14 @@ body .advanced-allocation-layout .icono .z-button-cm {
     margin-right: 10px;
 }
 
-.global-action.z-button:hover {
+.global-action.z-button:active,
+.global-action.z-button:hover,
+.global-action.z-button:focus {
     margin-right: 10px;
     border-bottom: 0;
     border-right: 0;
     background-color: #C3EAAF;
+    background-repeat: no-repeat;
 }
 
 
@@ -1466,6 +1469,10 @@ tr.z-tree-row-seld .z-row-content {
     overflow: hidden;
 }
 
+.current-queue-information {
+    margin: 5px;
+}
+
 .z-fieldset legend {
     color:#0F3B82;
 }
@@ -2233,6 +2240,14 @@ textarea {
     background: none;
 }
 
+.queue-element-information {
+    margin: 5px;
+}
+
 .z-textbox:focus, .z-decimalbox:focus, .z-intbox:focus, .z-longbox:focus, .z-doublebox:focus {
     border: 1px solid #90BCE6 !important;
+}
+
+.margin-border {
+    margin: 5px;
 }

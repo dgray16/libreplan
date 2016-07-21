@@ -59,6 +59,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Constraint;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Image;
@@ -76,10 +77,9 @@ import org.zkoss.zul.Window;
  */
 @org.springframework.stereotype.Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class OrderTemplatesController extends GenericForwardComposer implements
-        IOrderTemplatesControllerEntryPoints {
+public class OrderTemplatesController extends GenericForwardComposer
+                                      implements IOrderTemplatesControllerEntryPoints {
 
-    @Autowired
     private IOrderTemplatesModel model;
 
     private OnlyOneVisible cachedOnlyOneVisible;
@@ -104,8 +104,9 @@ public class OrderTemplatesController extends GenericForwardComposer implements
 
     private EditTemplateWindowController editTemplateController;
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory
-            .getLog(OrderTemplatesController.class);
+    public OrderTemplatesController(){
+        model = (IOrderTemplatesModel) SpringUtil.getBean("orderTemplatesModel");
+    }
 
     public List<OrderElementTemplate> getTemplates() {
         return model.getRootTemplates();
@@ -115,6 +116,7 @@ public class OrderTemplatesController extends GenericForwardComposer implements
         if (cachedOnlyOneVisible == null) {
             cachedOnlyOneVisible = new OnlyOneVisible(listWindow, editWindow);
         }
+
         return cachedOnlyOneVisible;
     }
 
@@ -152,55 +154,52 @@ public class OrderTemplatesController extends GenericForwardComposer implements
     }
 
     private void bindAdvancesComponentWithCurrentTemplate() {
-        AdvancesAssignmentComponent c = findAtEditWindow("advancesAssignment",
-                AdvancesAssignmentComponent.class);
+        AdvancesAssignmentComponent c = findAtEditWindow("advancesAssignment", AdvancesAssignmentComponent.class);
         c.useModel(model);
     }
 
     private void bindMaterialsControllerWithCurrentTemplate() {
-        MaterialAssignmentTemplateComponent c = findAtEditWindow(
-                "listOrderElementMaterials",
-                MaterialAssignmentTemplateComponent.class);
+        MaterialAssignmentTemplateComponent c =
+                findAtEditWindow("listOrderElementMaterials", MaterialAssignmentTemplateComponent.class);
+
         c.getController().openWindow(model.getTemplate());
     }
 
     private void bindCriterionRequirementControllerWithCurrentTemplate() {
-        CriterionRequirementTemplateComponent c = findAtEditWindow(
-                "listOrderElementCriterionRequirements",
-                CriterionRequirementTemplateComponent.class);
+        CriterionRequirementTemplateComponent c =
+                findAtEditWindow("listOrderElementCriterionRequirements", CriterionRequirementTemplateComponent.class);
+
         c.getController().openWindow(model);
     }
 
     private void bindLabelsControllerWithCurrentTemplate() {
-        LabelsAssignmentToTemplateComponent c = findAtEditWindow(
-                "listOrderElementLabels",
-                LabelsAssignmentToTemplateComponent.class);
+        LabelsAssignmentToTemplateComponent c =
+                findAtEditWindow("listOrderElementLabels", LabelsAssignmentToTemplateComponent.class);
+
         c.getController().openWindow(model);
     }
 
     private void bindQualityFormWithCurrentTemplate() {
-        QualityFormAssignerComponent c = findAtEditWindow(
-                "assignedQualityForms",
-                QualityFormAssignerComponent.class);
+        QualityFormAssignerComponent c = findAtEditWindow("assignedQualityForms", QualityFormAssignerComponent.class);
         c.useModel(model);
     }
 
     private void bindEditTemplateWindowWithController() {
-        Window editTemplateWindow = (Window) editWindow
-                .getFellow("editTemplateWindow");
-        editTemplateController = EditTemplateWindowController.bindTo(model,
-                editTemplateWindow);
+        Window editTemplateWindow = (Window) editWindow.getFellow("editTemplateWindow");
+        editTemplateController = EditTemplateWindowController.bindTo(model, editTemplateWindow);
     }
 
     private void bindHistoricalArragenmentWithCurrentTemplate() {
-        OrderElementHistoricalAssignmentComponent c = (OrderElementHistoricalAssignmentComponent) editWindow
-                .getFellow("historicalAssignment");
+        OrderElementHistoricalAssignmentComponent c =
+                (OrderElementHistoricalAssignmentComponent) editWindow.getFellow("historicalAssignment");
+
         c.useModel(model, globalView);
     }
 
     private void bindHistoricalStatisticsWithCurrentTemplate() {
-        OrderElementHistoricalStatisticsComponent c = (OrderElementHistoricalStatisticsComponent) editWindow
-                .getFellow("historicalStatistics");
+        OrderElementHistoricalStatisticsComponent c =
+                (OrderElementHistoricalStatisticsComponent) editWindow.getFellow("historicalStatistics");
+
         c.useModel(model);
     }
 
@@ -251,11 +250,13 @@ public class OrderTemplatesController extends GenericForwardComposer implements
         // validate template name
         ConstraintChecker.isValid(editWindow);
         name = (Textbox) editWindow.getFellowIfAny("name");
+
         if ((name != null) && (!name.isValid())) {
             selectTab("tabGeneralData");
             showInvalidWorkReportTypeName();
             return false;
         }
+
         if (model.getTemplate().isOrderTemplate()) {
             OrderTemplate orderTemplate = (OrderTemplate) model.getTemplate();
             if (orderTemplate.getCalendar() == null) {
@@ -263,11 +264,13 @@ public class OrderTemplatesController extends GenericForwardComposer implements
                         _("calendar not specified"));
             }
         }
+
         return true;
     }
 
     private void selectTab(String str) {
         Tab tab = (Tab) editWindow.getFellowIfAny(str);
+
         if (tab != null) {
             tab.setSelected(true);
         }
@@ -287,8 +290,8 @@ public class OrderTemplatesController extends GenericForwardComposer implements
         messagesForUser = new MessagesForUser(messagesContainer);
         getVisibility().showOnly(listWindow);
 
-        final EntryPointsHandler<IOrderTemplatesControllerEntryPoints> handler = handlerRegistry
-                .getRedirectorFor(IOrderTemplatesControllerEntryPoints.class);
+        final EntryPointsHandler<IOrderTemplatesControllerEntryPoints> handler =
+                handlerRegistry.getRedirectorFor(IOrderTemplatesControllerEntryPoints.class);
         handler.register(this, page);
 
         setBreadcrumbs(comp);
@@ -296,9 +299,11 @@ public class OrderTemplatesController extends GenericForwardComposer implements
 
     private void setBreadcrumbs(Component comp) {
         Component breadcrumbs = comp.getPage().getFellow("breadcrumbs");
+
         if (breadcrumbs.getChildren() != null) {
             breadcrumbs.getChildren().clear();
         }
+
         breadcrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
         breadcrumbs.appendChild(new Label(_("Planning")));
         breadcrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
@@ -315,14 +320,14 @@ public class OrderTemplatesController extends GenericForwardComposer implements
      */
     public void openTemplateTree() {
         if (treeComponent == null) {
-            final TemplatesTreeController treeController = new TemplatesTreeController(
-                    model, this);
+            final TemplatesTreeController treeController = new TemplatesTreeController(model, this);
             treeComponent = (TreeComponent) editWindow.getFellow("orderElementTree");
             treeComponent.useController(treeController);
             controlSelectionWithOnClick(getTreeFrom(treeComponent));
             treeController.setReadOnly(false);
             setTreeRenderer(treeComponent);
         }
+
         bindTemplatesTreeWithModel();
     }
 
@@ -331,6 +336,7 @@ public class OrderTemplatesController extends GenericForwardComposer implements
             // if the tree is not initialized yet no bind has to be done
             return;
         }
+
         treeComponent.getController().bindModelIfNeeded();
     }
 
@@ -339,31 +345,24 @@ public class OrderTemplatesController extends GenericForwardComposer implements
     }
 
     private void controlSelectionWithOnClick(final Tree tree) {
-        tree.addEventListener(Events.ON_SELECT, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                //undo the work done by this event
-                //to be able to control it from the ON_CLICK event
-                tree.clearSelection();
-            }
+        tree.addEventListener(Events.ON_SELECT, event -> {
+            //undo the work done by this event
+            //to be able to control it from the ON_CLICK event
+            tree.clearSelection();
         });
     }
 
     private void setTreeRenderer(TreeComponent orderElementsTree) {
         final Tree tree = (Tree) orderElementsTree.getFellowIfAny("tree");
-        tree.setTreeitemRenderer(orderElementsTree.getController().getRenderer());
+        tree.setItemRenderer(orderElementsTree.getController().getRenderer());
     }
 
     public Constraint validateTemplateName() {
-        return new Constraint() {
-            @Override
-            public void validate(Component comp, Object value)
-                    throws WrongValueException {
-                try {
-                    model.validateTemplateName((String) value);
-                } catch (IllegalArgumentException e) {
-                    throw new WrongValueException(comp, _(e.getMessage()));
-                }
+        return (comp, value) -> {
+            try {
+                model.validateTemplateName((String) value);
+            } catch (IllegalArgumentException e) {
+                throw new WrongValueException(comp, _(e.getMessage()));
             }
         };
     }
@@ -376,10 +375,11 @@ public class OrderTemplatesController extends GenericForwardComposer implements
         if (Messagebox.show(_("Delete template. Are you sure?"),
                 _("Confirm"),
                 Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
+
             if (this.model.hasNotApplications(template)) {
                 this.model.confirmDelete(template);
-                Grid gridOrderTemplates = (Grid) listWindow
-                        .getFellowIfAny("listing");
+                Grid gridOrderTemplates = (Grid) listWindow.getFellowIfAny("listing");
+
                 if (gridOrderTemplates != null) {
                     Util.reloadBindings(gridOrderTemplates);
                 }
@@ -394,15 +394,11 @@ public class OrderTemplatesController extends GenericForwardComposer implements
     }
 
     public boolean isContainer() {
-        if (model.getTemplate() == null) {
-            return false;
-        }
-        return !model.getTemplate().isLeaf();
+        return model.getTemplate() != null && !model.getTemplate().isLeaf();
     }
 
     public void reloadBudget() {
-        Tabpanel tabPanel = (Tabpanel) editWindow
-                .getFellow("tabPanelGeneralData");
+        Tabpanel tabPanel = (Tabpanel) editWindow.getFellow("tabPanelGeneralData");
         Util.reloadBindings(tabPanel);
     }
 
@@ -411,10 +407,7 @@ public class OrderTemplatesController extends GenericForwardComposer implements
     }
 
     public boolean isOrderTemplate() {
-        if (model.getTemplate() == null) {
-            return false;
-        }
-        return model.getTemplate().isOrderTemplate();
+        return model.getTemplate() != null && model.getTemplate().isOrderTemplate();
     }
 
     public BaseCalendar getCalendar() {
@@ -428,6 +421,15 @@ public class OrderTemplatesController extends GenericForwardComposer implements
         if (isOrderTemplate()) {
             ((OrderTemplate) model.getTemplate()).setCalendar(calendar);
         }
+    }
+
+    public String getTest(){
+        if(model.getTemplate() != null) {
+            return model.getTemplate().getName();
+
+        }
+
+        return "YE is test";
     }
 
 }
