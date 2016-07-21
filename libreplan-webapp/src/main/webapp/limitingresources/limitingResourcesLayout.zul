@@ -104,7 +104,7 @@
                         <north border="0">
                             <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/>
                         </north>
-                        <center autoscroll="true" border="0" sclass="rightpanellayout">
+                        <center autoscroll="true" border="0" sclass="rightpanel-layout">
                             <div id="insertionPointRightPanel" sclass="taskspanel-gap" height="100%"/>
                         </center>
                     </borderlayout>

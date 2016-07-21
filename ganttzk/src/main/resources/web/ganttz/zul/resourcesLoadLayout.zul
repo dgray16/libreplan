@@ -48,8 +48,11 @@
 
                <combobox id="filterByNameCombo" width="50px"
                          onChange="resourcesLoadPanel.onSelectFilterByName(self)" />
+
                <separator/>
+
                ${ganttzk_i18n:_('Group by')}:
+
                <listbox id="listFilters" mold="select" rows="1" width="150px"
                         model="${resourcesLoadPanel.filters}"
                         selectedIndex="0"
@@ -85,7 +88,7 @@
                         <north border="0">
                             <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/>
                         </north>
-                        <center autoscroll="true" border="0" sclass="rightpanellayout">
+                        <center autoscroll="true" border="0" sclass="rightpanel-layout">
                             <div id="insertionPointRightPanel" sclass="taskspanel-gap"/>
                         </center>
                     </borderlayout>

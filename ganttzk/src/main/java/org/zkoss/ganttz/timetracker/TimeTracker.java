@@ -23,8 +23,6 @@ package org.zkoss.ganttz.timetracker;
 
 import static org.zkoss.ganttz.i18n.I18nHelper._;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
@@ -43,7 +41,6 @@ import org.zkoss.ganttz.util.Interval;
 import org.zkoss.ganttz.util.LongOperationFeedback;
 import org.zkoss.ganttz.util.WeakReferencedListeners;
 import org.zkoss.ganttz.util.LongOperationFeedback.ILongOperation;
-import org.zkoss.ganttz.util.WeakReferencedListeners.IListenerNotification;
 import org.zkoss.zk.ui.Component;
 
 public class TimeTracker {
@@ -81,6 +78,8 @@ public class TimeTracker {
     private boolean registeredFirstTask = false;
 
     private IDetailItemFilter filter = null;
+
+    private Interval realIntervalCached;
 
     public IDetailItemFilter getFilter() {
         return filter;
@@ -167,8 +166,6 @@ public class TimeTracker {
         return filter.selectsSecondLevel(secondLevelDetails);
     }
 
-    private Interval realIntervalCached;
-
     public Interval getRealInterval() {
         if ( realIntervalCached == null ) {
             realIntervalCached = getTimeTrackerState().getRealIntervalFor(interval);
@@ -182,12 +179,7 @@ public class TimeTracker {
     }
 
     private void fireZoomChanged() {
-        zoomListeners.fireEvent(new IListenerNotification<IZoomLevelChangedListener>() {
-            @Override
-            public void doNotify(IZoomLevelChangedListener listener) {
-                listener.zoomLevelChanged(detailLevel);
-            }
-        });
+        zoomListeners.fireEvent(listener -> listener.zoomLevelChanged(detailLevel));
     }
 
     public int getHorizontalSize() {
@@ -257,13 +249,7 @@ public class TimeTracker {
     }
 
     public void trackPosition(final Task task) {
-        task.addFundamentalPropertiesChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateIntervalIfNeeded(task);
-            }
-        });
-
+        task.addFundamentalPropertiesChangeListener(evt -> updateIntervalIfNeeded(task));
         updateIntervalIfNeeded(task);
     }
 
@@ -325,10 +311,10 @@ public class TimeTracker {
     }
 
     private LocalDate startMinusTwoWeeks(Task task) {
-        // the deadline could be before the start
+        // The deadline could be before the start
         Date start = min(task.getBeginDate().toDayRoundedDate(), task.getDeadline());
 
-        // the last consolidated value could be before the start
+        // The last consolidated value could be before the start
         if ( task.getConsolidatedline() != null ) {
             start = min(start, task.getConsolidatedline().toDayRoundedDate());
         }
