@@ -53,7 +53,7 @@
 
                 <separator/>
 
-                <button image="/common/img/ico_save.png" style="margin-top: -4px"
+                <button image="/common/img/ico_save.png"
                         tooltiptext="${i18n:_('Save')}"
                         onClick="limitingResourcesController.saveQueues()"/>
 
