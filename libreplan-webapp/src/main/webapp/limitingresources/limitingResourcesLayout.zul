@@ -38,10 +38,11 @@
 
     <n:script type="text/javascript" src="${contextPath}/js/highlightDaysInInterval.js" />
 
-    <zscript><![CDATA[
-        limitingResourcesPanel = self;
-        editController = editTaskController;
-    ]]>
+    <zscript>
+        <![CDATA[
+            limitingResourcesPanel = self;
+            editController = editTaskController;
+        ]]>
     </zscript>
 
     <borderlayout sclass="resourcesloadlayout" width="auto" height="100%">
@@ -53,16 +54,16 @@
                 <separator/>
 
                 <button image="/common/img/ico_save.png" style="margin-top: -4px"
-                    tooltiptext="${i18n:_('Save')}"
-                    onClick="limitingResourcesController.saveQueues()"/>
+                        tooltiptext="${i18n:_('Save')}"
+                        onClick="limitingResourcesController.saveQueues()"/>
 
                 <separator/>
 
                 <!-- Zoom -->
                 <label>${i18n:_('Zoom')}:</label>
                 <listbox id="listZoomLevels" mold="select" rows="1"
-                    model="${limitingResourcesPanel.zoomLevels}"
-                    onSelect="limitingResourcesPanel.setZoomLevel(self.selectedItem.value);" >
+                         model="${limitingResourcesPanel.zoomLevels}"
+                         onSelect="limitingResourcesPanel.setZoomLevel(self.selectedItem.value);" >
                 </listbox>
 
                 <separator/>
@@ -71,8 +72,10 @@
                 <button id="paginationDownButton" tooltiptext="${i18n:_('Page down')}" disabled="true"
                         image="/common/img/ico_left.png"
                         onClick="limitingResourcesPanel.paginationDown();" />
+
                 <listbox id="horizontalPagination" mold="select" rows="1" visible="true"
                         onSelect="limitingResourcesPanel.goToSelectedHorizontalPage();" />
+
                 <button id="paginationUpButton" tooltiptext="${i18n:_('Page up')}"
                         image="/common/img/ico_right.png"
                         onClick="limitingResourcesPanel.paginationUp();" />
@@ -112,7 +115,9 @@
             </borderlayout>
         </center>
 
-        <south height="170px" collapsible="true" title="${i18n:_('Tasks input buffer')}" sclass="limiting-resources-buffer">
+        <south height="187px" collapsible="true" title="${i18n:_('Tasks input buffer')}"
+               sclass="limiting-resources-buffer">
+
             <vbox width="100%">
                 <!-- Assign selected elements -->
                 <hbox style="padding-left: 10px; padding-top: 3px">
@@ -123,21 +128,28 @@
 
                 <!-- List of unassigned queue elements -->
                 <newdatasortablegrid id="gridUnassignedLimitingResourceQueueElements"
-                        sizedByContent="false" height="100px"
-                        style="margin: 10px" >
+                                     sizedByContent="false" height="100px"
+                                     style="margin: 10px" >
+
                     <columns sizable="true">
                         <newdatasortablecolumn width="40px" >
                             <hbox pack="center" style="margin-left:2px">
                                 <checkbox id="cbSelectAll"
-                                    onCheck="limitingResourcesController.selectedAllUnassignedQueueElements()"
-                                    tooltiptext="Select/deselect all"/>
+                                          onCheck="limitingResourcesController.selectedAllUnassignedQueueElements()"
+                                          tooltiptext="Select/deselect all"/>
                             </hbox>
                         </newdatasortablecolumn>
+
                         <newdatasortablecolumn label="${i18n:_('Project')}" sort="auto(lower(orderName))"/>
+
                         <newdatasortablecolumn label="${i18n:_('Task')}" sort="auto(lower(taskName))"/>
+
                         <newdatasortablecolumn label="${i18n:_('Resource / Criteria')}" sort="auto(resourceOrCriteria)"/>
+
                         <newdatasortablecolumn label="${i18n:_('Earlier starting date')}" sort="auto(date)"/>
+
                         <newdatasortablecolumn label="${i18n:_('Hours to allocate')}" sort="auto(hoursToAllocate)"/>
+
                         <newdatasortablecolumn label="${i18n:_('Operations')}" width="200px"/>
                     </columns>
                 </newdatasortablegrid>

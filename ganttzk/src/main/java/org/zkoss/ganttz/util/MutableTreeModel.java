@@ -235,8 +235,9 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
             int position = path[i];
 
             if ( position >= getChildCount(current) ) {
-                throw new IllegalArgumentException("Failure acessing the path at: "
-                        + stringRepresentationUntil(path, i));
+
+                throw new IllegalArgumentException(
+                        "Failure acessing the path at: " + stringRepresentationUntil(path, i));
             }
             current = getChild(current, position);
         }
@@ -315,7 +316,6 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         Node<T> node = find(object);
 
         return node.children.isEmpty();
-
     }
 
     @SuppressWarnings("unchecked")
@@ -432,9 +432,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     public boolean isRoot(T node) {
-        Node<T> associatedNode = find(node);
-
-        return associatedNode.isRoot();
+        return find(node).isRoot();
     }
 
     public void replace(T nodeToRemove, T nodeToAdd, IChildrenExtractor<T> childrenExtractor) {
