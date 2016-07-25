@@ -33,6 +33,7 @@ ADVANCE_ALLOCATIONS.listenToScroll = function() {
       taskDetails.css({top : -scrollableArea.scrollTop()});
     });
 
-    if (timeTracker != undefined ) innerScrollableArea.width(timeTracker.realWidth());
+    if (timeTracker != undefined )
+        innerScrollableArea.width(timeTracker.realWidth());
 
 };

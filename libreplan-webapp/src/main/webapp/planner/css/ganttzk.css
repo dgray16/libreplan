@@ -27,7 +27,7 @@
 
 /* -------------- Listdetails -------------- */
 .listdetails {
-    margin-top: 0px;
+    margin-top: 0;
     font-size: 10px !important;
 }
 
@@ -53,10 +53,10 @@
 }
 
 #listdetails_container td {
-    padding: 0px;
+    padding: 0;
 }
 
-.listdetails th.z-tree-col .z-tree-col-cnt {
+.listdetails th.z-tree-col .z-tree-col-content {
     font-size:11px;
     font-weight:bold;
 }
@@ -64,28 +64,25 @@
 .listdetails input {
     width: 100%;
     font-size: 10px !important;
-    border-bottom: 0px;
-    border-right: 0px;
-    border-top: 0;
-    border-left: 0;
+    border-width: 0;
     height: 16px;
-    padding-left:2px;
+    padding-left: 2px;
 }
 
 .listdetails input.task-name {
     border-left: dotted 1px #CCC;
 }
 
-.listdetails div.z-tree-cell-cnt {
+.listdetails div.z-tree-cell-content {
     width: 500px; !important;
 }
 
 
 #listdetails_container .z-datebox-input,
-#listdetails_container div.z-tree-col-cnt {
+#listdetails_container div.z-tree-col-content {
     font-size: 9px !important;
-    border-bottom: 0px;
-    border-right: 0px;
+    border-bottom: 0;
+    border-right: 0;
 }
 
 .listdetails input {
@@ -453,13 +450,11 @@ div.box.limiting-unassigned {
 
 /* Background image for current day vertical line */
 #watermark .timetracker_column_today {
-    background-image: url("../img/watermark_today.png");
-    background-repeat: repeat-y;
+    background: url("../img/watermark_today.png") repeat-y;
 }
 
 #watermark .timetracker_column_start {
-    background-image: url("../img/watermark_start.png");
-    background-repeat: repeat-y;
+    background: url("../img/watermark_start.png") repeat-y;
     width: 100%;
     height: 100%;
     float: left;
@@ -467,15 +462,11 @@ div.box.limiting-unassigned {
 
 
 #watermark .timetracker_column_deadline {
-    background-image:
-        url("../../zkau/web/ganttz/img/pixel.gif");
-    background-repeat: repeat-y;
+    background: url("../../zkau/web/ganttz/img/pixel.gif") repeat-y;
 }
 
 #watermark .timetracker_column_today_deadline {
-    background-image:
-        url("../img/watermark_today.png"), url("../../zkau/web/ganttz/img/pixel.gif");
-    background-repeat: repeat-y, repeat-y;
+    background: url("../img/watermark_today.png"), url("../../zkau/web/ganttz/img/pixel.gif") repeat-y, repeat-y;
 }
 
 
@@ -489,19 +480,19 @@ div.box.limiting-unassigned {
 
 /* Reduce spacing and font-size for watermark legend */
 .z-columns,.z-column {
-    font-size: 8px !important;
+    font-size: 9px !important;
     text-align: center !important;
     padding: 0 0 0 0 !important;
 }
 
 table {
-    margin: 0px;
-    padding: 0px;
-    border: 0px;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 #scroll_container {
-    margin-top: 0px;
+    margin-top: 0;
     float: left;
     position: absolute;
 }
@@ -514,17 +505,17 @@ table {
 
 .resources-load #timetracker {
     position: absolute;
-    left: 0px;
-    top: 0px;
-    height: auto; width : 600px;
-    overflow-x: visible;
+    left: 0;
+    top: 0;
+    height: auto;
     width: 600px;
+    overflow-x: visible;
 }
 
 tr.z-vbox-separator {
-
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
+    height: 0;
 }
 
 #ganttpanel_scroller_x,#ganttpanel_scroller_y {
@@ -790,24 +781,24 @@ tr.z-vbox-separator {
     border-bottom: 1px dotted #CCCCCC;
 }
 
-.limitingresourcesleftpane .secondlevel {
+.limitingresources-left-pane .secondlevel {
     display: inline;
 }
 
-.limitingresourcesleftpane .secondlevel .z-label,
-.limitingresourcesleftpane .z-tree-body {
+.limitingresources-left-pane .secondlevel .z-label,
+.limitingresources-left-pane .z-tree-body {
     white-space: nowrap;
 }
 
-.limitingresourcesleftpane div.z-tree-body {
+.limitingresources-left-pane div.z-tree-body {
     overflow: visible;
 }
 
-.limitingresourcesleftpane div.z-tree-body table {
+.limitingresources-left-pane div.z-tree-body table {
     table-layout:auto !important;
 }
 
-div.limitingresourcesleftpane  {
+div.limitingresources-left-pane  {
     background-color: white;
 }
 
@@ -833,10 +824,7 @@ div.limitingresourcesleftpane  {
 
 .timetrackergap {
     position: relative;
-    left : 0px;
-}
-
-.timetrackergap {
+    left : 0;
     height: 32px;
 }
 

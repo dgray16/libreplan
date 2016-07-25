@@ -379,9 +379,12 @@
                                 </row>
                             </rows>
                         </grid>
+
                         <separator />
+
                         <button label="${i18n:_('Test LDAP connection')}" sclass="add-button"
                                 onClick="configurationController.testLDAPConnection()" />
+
                         <separator />
                     </groupbox>
 
@@ -472,6 +475,7 @@
                         </grid>
 
                         <separator />
+
                         <separator />
 
                         <vbox id="ldapRoles">
@@ -519,7 +523,9 @@
 
                             </grid>
                         </vbox>
+
                         <separator />
+
                         <button label="${i18n:_('Test connection')}" sclass="add-button"
                                 onClick="configurationController.testConnection()" />
                     </groupbox>

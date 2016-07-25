@@ -75,7 +75,7 @@
                 </n:table>
             </n:td>
 
-            <n:td valign="top" align="right" class="help-link">
+            <n:td align="right" class="help-link">
 
                 <div>
                     <n:a href="${contextPath}/help/${i18n:_('en')}/${menuContainer.helpLink}" target="_blank">

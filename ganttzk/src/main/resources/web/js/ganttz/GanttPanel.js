@@ -1,7 +1,9 @@
 zk.$package("ganttz");
 
 ganttz.GanttPanel = zk.$extends(
+
     zk.Widget,
+
     {
         $define: {
             xMouse : null,
@@ -50,9 +52,9 @@ ganttz.GanttPanel = zk.$extends(
             this.timeplotContainerRescroll();
         },
         /*
-         The canvas is inserted in the DOM after this component so it's not available right now. 
-         It is queried instead. 
-         Using throttle to not re-query it constantly 
+         * The canvas is inserted in the DOM after this component so it's not available right now.
+         * It is queried instead.
+         * Using throttle to not re-query it constantly
          */
         _getTimeplotContainer: common.Common.throttle(500, function() {
             return jq('canvas.timeplot-canvas').parent();

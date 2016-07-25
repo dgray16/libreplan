@@ -30,9 +30,11 @@
     </zscript>
 
     <borderlayout id="resourcesloadlayout" sclass="resourcesloadlayout" width="auto" height="100%">
-       <north height="30px" border="0" sclass="toolbar-box">
+       <north height="60px" border="0" sclass="toolbar-box">
            <hbox align="center" id="toolbar" >
+
                <separator height="30px"/>
+
                <label>${ganttzk_i18n:_('Zoom')}:</label>
 
                <listbox id="listZoomLevels" mold="select" rows="1"
@@ -40,6 +42,7 @@
                         onSelect="resourcesLoadPanel.setZoomLevel(self.selectedItem.value);" />
 
                <separator/>
+
                <hbox id="additionalFilterInsertionPoint1" />
 
                <separator/>
@@ -86,8 +89,9 @@
                 <center sclass="taskspanel">
                     <borderlayout>
                         <north border="0">
-                            <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/>
+                            <div sclass="timetrackergap" height="60px" id="insertionPointTimetracker"/>
                         </north>
+
                         <center autoscroll="true" border="0" sclass="rightpanel-layout">
                             <div id="insertionPointRightPanel" sclass="taskspanel-gap"/>
                         </center>

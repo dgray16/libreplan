@@ -72,7 +72,7 @@ Date.prototype.getDaysInMonth = function() {
     return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate();
 }
 
-String.prototype.trim = function(string) {
+String.prototype.trim = function () {
     return this.replace("^\s+", "").replace("\s+$", "");
 }
 
@@ -165,7 +165,6 @@ function daysDelta(start, end) {
 
 /**
  * Highlights elements in days array, turns off those days that are not in days.
- *
  **/
 function setStyleForDays(nodes, days, colors) {
     nodes.each(function() {

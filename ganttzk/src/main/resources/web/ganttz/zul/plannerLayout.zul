@@ -30,7 +30,7 @@
     </zscript>
 
     <borderlayout sclass="plannerlayout" width="auto">
-       <north height="30px" border="0" sclass="toolbar-box">
+       <north height="60px" border="0" sclass="toolbar-box">
             <hbox align="center" id="toolbar" sclass="filtering-area">
 
                 <separator/>
@@ -79,7 +79,7 @@
                         tooltiptext="${ganttzk_i18n:_('Flatten/Unflatten tree')}"
                         sclass="planner-command" />
 
-                <hbox sclass="show-advances" align="center">
+                <hbox class="show-advances" align="center">
                     <button id="showAdvances" onClick="planner.showAdvances();"
                             image="/common/img/ico_progress.png"
                             style="width:46px"
@@ -111,18 +111,19 @@
 
         <center border="0">
             <borderlayout sclass="plannerlayout_center" height="100%">
-                <west vflex="min" collapsible="true" splittable="true" width="375px"
-                      id="taskdetailsContainer" sclass="taskdetailsContainer">
+                <west id="taskdetailsContainer"
+                      vflex="min" collapsible="true" splittable="true" width="375px"
+                      sclass="taskdetailsContainer">
+
                     <div sclass="leftpanelgap" id="insertionPointLeftPanel"/>
                 </west>
+
                 <center sclass="taskspanel" >
                     <borderlayout>
                         <north border="0" height="32px" vflex="min" >
-
-        <!--TODO Timetracker doesn't show the second panel with the division into quarters, months, days. Repair it!-->
                             <div sclass="timetrackergap" id="insertionPointTimetracker"/>
-
                         </north>
+
                         <center autoscroll="true" border="0" sclass="rightpanel-layout">
                             <div id="insertionPointRightPanel" sclass="taskspanel-gap"/>
                         </center>
@@ -131,8 +132,10 @@
                 </center>
             </borderlayout>
         </center>
+
         <south collapsible="true" title="${ganttzk_i18n:_('Graphics')}" sclass="scheduling-graphics"
                id="graphics" onOpen="planner.changeChartVisibility(event.open);" height="200px">
+
             <div id="insertionPointChart"/>
         </south>
     </borderlayout>

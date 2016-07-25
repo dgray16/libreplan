@@ -81,10 +81,6 @@ public class TimeTracker {
 
     private Interval realIntervalCached;
 
-    public IDetailItemFilter getFilter() {
-        return filter;
-    }
-
     public TimeTracker(Interval interval, ZoomLevel zoomLevel, Component parent) {
         this(interval, zoomLevel, SeveralModificators.empty(), SeveralModificators.empty(), parent);
     }
@@ -121,6 +117,10 @@ public class TimeTracker {
         detailLevel = zoomLevel;
     }
 
+    public IDetailItemFilter getFilter() {
+        return filter;
+    }
+
     public void setFilter(IDetailItemFilter filter) {
         this.filter = filter;
         datesMapper = null;
@@ -143,11 +143,7 @@ public class TimeTracker {
     }
 
     private Collection<DetailItem> filterFirstLevel(Collection<DetailItem> firstLevelDetails) {
-        if ( filter == null ) {
-            return firstLevelDetails;
-        }
-
-        return filter.selectsFirstLevel(firstLevelDetails);
+        return filter == null ? firstLevelDetails : filter.selectsFirstLevel(firstLevelDetails);
     }
 
     public Collection<DetailItem> getDetailsSecondLevel() {
@@ -159,11 +155,7 @@ public class TimeTracker {
     }
 
     private Collection<DetailItem> filterSecondLevel(Collection<DetailItem> secondLevelDetails) {
-        if ( filter == null ) {
-            return secondLevelDetails;
-        }
-
-        return filter.selectsSecondLevel(secondLevelDetails);
+        return filter == null ? secondLevelDetails : filter.selectsSecondLevel(secondLevelDetails);
     }
 
     public Interval getRealInterval() {
@@ -305,9 +297,7 @@ public class TimeTracker {
     }
 
     private LocalDate endPlusOneMonth(Task task) {
-        Date taskEnd = max(task.getEndDate().toDayRoundedDate(), task.getDeadline());
-
-        return new LocalDate(taskEnd).plusMonths(1);
+        return new LocalDate(max(task.getEndDate().toDayRoundedDate(), task.getDeadline())).plusMonths(1);
     }
 
     private LocalDate startMinusTwoWeeks(Task task) {

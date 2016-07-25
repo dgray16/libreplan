@@ -275,7 +275,9 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         return new TimeTrackerComponent(timeTracker) {
             @Override
             protected void scrollHorizontalPercentage(int daysDisplacement) {
-                response("", new AuInvoke(queueListComponent, "scroll_horizontal", Integer.toString(daysDisplacement )));
+                response(
+                        "", new AuInvoke(queueListComponent, "scroll_horizontal", Integer.toString(daysDisplacement )));
+
                 moveCurrentPositionScroll();
             }
 
@@ -298,7 +300,6 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
 
                 response("update_day_scroll", new AuInvoke(
                         queueListComponent, "update_day_scroll", Double.toString(previousPixelPerDay)));
-
             }
         };
     }

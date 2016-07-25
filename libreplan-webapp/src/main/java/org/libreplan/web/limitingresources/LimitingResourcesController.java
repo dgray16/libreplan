@@ -76,6 +76,7 @@ import org.zkoss.zul.Rows;
 
 /**
  * Controller for limiting resources view.
+ * Queue-based Resources Planning page.
  *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  */
@@ -332,7 +333,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         try {
             Task task = oldElement.getTask();
 
-            EditTaskController editTaskController = getEditController(editTaskWindow);
+            EditTaskController editTaskController = getEditController();
             editTaskController.showEditFormResourceAllocationFromLimitingResources(task);
 
             // New resource allocation or resource allocation modified ?
@@ -366,30 +367,30 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     }
 
     /**
-     * Copies earliestStartDateBecauseOfGantt and dependencies from source to dest
+     * Copies earliestStartDateBecauseOfGantt and dependencies from source to destination.
      *
      * @param source
-     * @param dest
+     * @param destination
      * @return
      */
     private LimitingResourceQueueElement copyFrom(LimitingResourceQueueElement source,
-                                                  LimitingResourceQueueElement dest) {
+                                                  LimitingResourceQueueElement destination) {
 
-        dest.setEarlierStartDateBecauseOfGantt(source.getEarliestStartDateBecauseOfGantt());
+        destination.setEarlierStartDateBecauseOfGantt(source.getEarliestStartDateBecauseOfGantt());
 
         for (LimitingResourceQueueDependency each : source.getDependenciesAsOrigin()) {
-            each.setOrigin(dest);
-            dest.add(each);
+            each.setOrigin(destination);
+            destination.add(each);
         }
         for (LimitingResourceQueueDependency each : source.getDependenciesAsDestiny()) {
-            each.setDestiny(dest);
-            dest.add(each);
+            each.setDestiny(destination);
+            destination.add(each);
         }
 
-        return dest;
+        return destination;
     }
 
-    private EditTaskController getEditController(Window window) {
+    private EditTaskController getEditController() {
         return (EditTaskController) editTaskWindow.getAttribute("editController", true);
     }
 
@@ -487,8 +488,9 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
                     limitingResourceQueueModel.assignLimitingResourceQueueElement(dto.getOriginal());
 
             if ( inserted.isEmpty() ) {
-                showErrorMessage(_("Cannot allocate selected element. There is not any queue " +
-                        "that matches resource allocation criteria at any interval of time"));
+                showErrorMessage(
+                        _("Cannot allocate selected element. There is not any queue " +
+                                "that matches resource allocation criteria at any interval of time"));
                 return;
             }
 

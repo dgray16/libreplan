@@ -26,7 +26,7 @@ limitingresources.QueueListComponent = zk.$extends(
         },
 
         adjustResourceLoadRows: function () {
-            var width = jq('.rightpanel-layout #timetracker .z-grid-header :first').innerWidth();
+            var width = jq('.rightpanel-layout #timetracker .z-grid-header:first').innerWidth();
             
             jq('.row_resourceload').each(function (index, element) {
                 jq(element).width(width);
