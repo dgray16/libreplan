@@ -31,7 +31,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.Months;
 
 /**
- * Zoom level for months and years and weeks in the second level
+ * Zoom level for months and years and weeks in the second level.
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  */
@@ -39,12 +40,13 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
 
     private static final int NUMBER_OF_WEEKS_MINIMUM = 40;
 
-    DetailFourTimeTrackerState(IDetailItemModificator firstLevelModificator,
-            IDetailItemModificator secondLevelModificator) {
+    private static final int SECOND_LEVEL_SIZE = 56;
+
+    DetailFourTimeTrackerState(
+            IDetailItemModificator firstLevelModificator, IDetailItemModificator secondLevelModificator) {
+
         super(firstLevelModificator, secondLevelModificator);
     }
-
-    private static final int SECOND_LEVEL_SIZE = 56;
 
     public final double pixelPerDay() {
         return (SECOND_LEVEL_SIZE / (double) 7);
@@ -54,38 +56,23 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
         return ((double) 7 / SECOND_LEVEL_SIZE);
     }
 
-
-    private IDetailItemCreator firstLevelCreator;
-
     @Override
     protected IDetailItemCreator getDetailItemCreatorFirstLevel() {
-        firstLevelCreator = new IDetailItemCreator() {
-
-            @Override
-            public DetailItem create(DateTime dateTime) {
-                return new DetailItem(getSizeMonth(dateTime), dateTime
-                        .toString("MMMM,YYYY"), dateTime, dateTime
-                        .plusMonths(1));
-            }
-        };
-        return firstLevelCreator;
+        return dateTime -> new DetailItem(
+                getSizeMonth(dateTime), dateTime.toString("MMMM,YYYY"), dateTime, dateTime.plusMonths(1));
     }
 
     @Override
     protected IDetailItemCreator getDetailItemCreatorSecondLevel() {
-        return new IDetailItemCreator() {
+        return dateTime ->  {
+            int daysUntilFirstDayNextWeek = getDaysUntilFirstDayNextWeek(dateTime.toLocalDate());
+            int sizeWeek = new BigDecimal(pixelPerDay() * daysUntilFirstDayNextWeek).intValue();
 
-            @Override
-            public DetailItem create(DateTime dateTime) {
-                int daysUntilFirstDayNextWeek = getDaysUntilFirstDayNextWeek(dateTime
-                        .toLocalDate());
-                int sizeWeek = new BigDecimal(pixelPerDay()
-                        * daysUntilFirstDayNextWeek).intValue();
-
-                return new DetailItem(sizeWeek, dateTime.getWeekOfWeekyear()
-                        + "", dateTime,
-                        dateTime.plusDays(daysUntilFirstDayNextWeek));
-            }
+            return new DetailItem(
+                    sizeWeek,
+                    dateTime.getWeekOfWeekyear() + "",
+                    dateTime,
+                    dateTime.plusDays(daysUntilFirstDayNextWeek));
         };
     }
 
@@ -94,8 +81,8 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
         if (date.getDayOfMonth() == 1) {
             return date;
         }
-        return down ? date.withDayOfMonth(1) : date.plusMonths(1)
-                .withDayOfMonth(1);
+
+        return down ? date.withDayOfMonth(1) : date.plusMonths(1).withDayOfMonth(1);
     }
 
     @Override
@@ -114,10 +101,12 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
     }
 
     private int getSizeMonth(DateTime dateTime) {
-        Calendar cal = new GregorianCalendar(dateTime.getYear(), dateTime
-                .getMonthOfYear() - 1, dateTime.getDayOfMonth());
+        Calendar cal =
+                new GregorianCalendar(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
+
         // Get the number of days in that month
         int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
         return new BigDecimal(pixelPerDay() * days).intValue();
     }
 
@@ -138,11 +127,7 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
 
             @Override
             protected LocalDate next(LocalDate last) {
-                if (last.getDayOfWeek() != 1) {
-                    return last.plusDays(getDaysUntilFirstDayNextWeek(last));
-                } else {
-                    return last.plusWeeks(1);
-                }
+                return last.getDayOfWeek() != 1 ? last.plusDays(getDaysUntilFirstDayNextWeek(last)) : last.plusWeeks(1);
             }
         };
     }

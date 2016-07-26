@@ -39,38 +39,33 @@ import org.zkoss.zul.Image;
 import org.zkoss.zul.Label;
 
 /**
+ * Handles the Queue-based Resource Planning tab.
+ *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  */
 public class LimitingResourcesTabCreator {
 
-    public static ITab create(Mode mode,
-                              LimitingResourcesController LimitingResourcesController,
-                              LimitingResourcesController LimitingResourcesControllerGlobal,
-                              Component breadcrumbs) {
-
-        return new LimitingResourcesTabCreator(mode,
-                LimitingResourcesController, LimitingResourcesControllerGlobal,
-                breadcrumbs)
-                .build();
-    }
-
     private final Mode mode;
-
-    private final LimitingResourcesController limitingResourcesController;
 
     private final LimitingResourcesController limitingResourcesControllerGlobal;
 
     private final Component breadcrumbs;
 
     private LimitingResourcesTabCreator(Mode mode,
-                                        LimitingResourcesController LimitingResourcesController,
-                                        LimitingResourcesController LimitingResourcesControllerGlobal,
+                                        LimitingResourcesController limitingResourcesControllerGlobal,
                                         Component breadcrumbs) {
 
         this.mode = mode;
-        this.limitingResourcesController = LimitingResourcesController;
-        this.limitingResourcesControllerGlobal = LimitingResourcesControllerGlobal;
+        this.limitingResourcesControllerGlobal = limitingResourcesControllerGlobal;
         this.breadcrumbs = breadcrumbs;
+    }
+
+    public static ITab create(Mode mode,
+                              LimitingResourcesController limitingResourcesControllerGlobal,
+                              Component breadcrumbs) {
+
+        return new LimitingResourcesTabCreator(
+                mode, limitingResourcesControllerGlobal, breadcrumbs).build();
     }
 
     private ITab build() {
@@ -85,6 +80,7 @@ public class LimitingResourcesTabCreator {
 
             return Executions.createComponents("/limitingresources/_limitingresources.zul", parent, arguments);
         };
+
         return new CreatedOnDemandTab(_("Queue-based Resources Planning"), "limiting-resources", componentCreator) {
             @Override
             protected void beforeShowAction() {

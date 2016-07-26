@@ -51,7 +51,6 @@ import org.libreplan.web.planner.company.CompanyPlanningController;
 import org.libreplan.web.planner.order.IOrderPlanningGate;
 import org.libreplan.web.planner.order.OrderPlanningController;
 import org.libreplan.web.planner.order.PlanningStateCreator;
-import org.libreplan.web.planner.tabs.Mode.ModeTypeChangedListener;
 import org.libreplan.web.resourceload.ResourceLoadController;
 import org.libreplan.web.resources.machine.IMachineModel;
 import org.libreplan.web.resources.worker.IWorkerModel;
@@ -97,88 +96,46 @@ import static org.zkoss.ganttz.adapters.TabsConfiguration.configure;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class MultipleTabsPlannerController implements Composer, IGlobalViewEntryPoints {
 
+    /* URL used for Email Template functionality */
     public static String WELCOME_URL = "-- no URL provided --";
-
-    private final class TabWithLoadingFeedback extends TabProxy {
-
-        private boolean feedback = true;
-
-        private TabWithLoadingFeedback(ITab tab) {
-            super(tab);
-        }
-
-        @Override
-        public void show() {
-            if ( feedback ) {
-                showWithFeedback();
-            } else {
-                showWithoutFeedback();
-            }
-        }
-
-        private void showWithFeedback() {
-            LongOperationFeedback.execute(tabsSwitcher,
-                new ILongOperation() {
-
-                    @Override
-                    public String getName() {
-                        return _("changing perspective");
-                    }
-
-                    @Override
-                    public void doAction() {
-                        proxiedTab.show();
-                    }
-                });
-        }
-
-        private void showWithoutFeedback() {
-            proxiedTab.show();
-        }
-
-        public void toggleToNoFeedback() {
-            feedback = false;
-        }
-
-        public void toggleToFeedback() {
-            feedback = true;
-        }
-    }
-
-    public static String getSchedulingLabel() {
-        return _("Planning");
-    };
 
     public static final String BREADCRUMBS_SEPARATOR = "/common/img/migas_separacion.gif";
 
     private Mode mode = Mode.initial();
 
-
     private CompanyPlanningController companyPlanningController;
-
 
     private OrderCRUDController orderCRUDController;
 
-
     private PlanningStateCreator planningStateCreator;
 
+    /* Projects Planning */
     private TabWithLoadingFeedback planningTab;
 
+    /* Resources Load */
     private ITab resourceLoadTab;
 
+    /* Queue-based Resources Planning */
     private ITab limitingResourcesTab;
 
+    /* Monte Carlo Method */
     private ITab monteCarloTab;
 
+    /* Projects List */
     private ITab ordersTab;
 
+    /* Advanced Allocation */
     private ITab advancedAllocationTab;
 
+    /* Dashboard */
     private ITab dashboardTab;
 
+    /* Logs */
     private ITab logsTab;
 
     private TabSwitcher tabsSwitcher;
+
+    private org.zkoss.zk.ui.Component breadcrumbs;
 
     @Autowired
     private OrderPlanningController orderPlanningController;
@@ -188,9 +145,6 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     @Autowired
     private ResourceLoadController resourceLoadControllerGlobal;
-
-    @Autowired
-    private LimitingResourcesController limitingResourcesController;
 
     @Autowired
     private MonteCarloController monteCarloController;
@@ -209,8 +163,6 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     @Autowired
     private  LogsController logsControllerGlobal;
-
-    private org.zkoss.zk.ui.Component breadcrumbs;
 
     @Autowired
     private IAdHocTransactionService transactionService;
@@ -250,6 +202,54 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     @Autowired
     private IAssignedTaskQualityFormsToOrderElementModel assignedQualityFormsModel;
+
+    private final class TabWithLoadingFeedback extends TabProxy {
+
+        private boolean feedback = true;
+
+        private TabWithLoadingFeedback(ITab tab) {
+            super(tab);
+        }
+
+        @Override
+        public void show() {
+            if ( feedback ) {
+                showWithFeedback();
+            } else {
+                showWithoutFeedback();
+            }
+        }
+
+        private void showWithFeedback() {
+            LongOperationFeedback.execute(tabsSwitcher, new ILongOperation() {
+                @Override
+                public String getName() {
+                    return _("changing perspective");
+                }
+
+                @Override
+                public void doAction() {
+                    proxiedTab.show();
+                }
+            });
+        }
+
+        private void showWithoutFeedback() {
+            proxiedTab.show();
+        }
+
+        public void toggleToNoFeedback() {
+            feedback = false;
+        }
+
+        public void toggleToFeedback() {
+            feedback = true;
+        }
+    }
+
+    public static String getSchedulingLabel() {
+        return _("Planning");
+    };
 
     public MultipleTabsPlannerController(){
         orderCRUDController = (OrderCRUDController) SpringUtil.getBean("orderCRUDController");
@@ -309,46 +309,17 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
                     @Override
                     public void goToDashboard(Order order) {
-                        // do nothing
+                        // Do nothing
                     }
 
                 }, breadcrumbs);
 
-        limitingResourcesTab = LimitingResourcesTabCreator.create(mode,
-                limitingResourcesController, limitingResourcesControllerGlobal,
+        limitingResourcesTab = LimitingResourcesTabCreator.create(
+                mode,
+                limitingResourcesControllerGlobal,
                 breadcrumbs);
 
-        ordersTab = OrdersTabCreator.create(mode, orderCRUDController,
-                breadcrumbs, new IOrderPlanningGate() {
-
-                    @Override
-                    public void goToScheduleOf(Order order) {
-                        getTabsRegistry().show(planningTab, changeModeTo(order));
-                    }
-
-                    @Override
-                    public void goToOrderDetails(Order order) {
-                        getTabsRegistry().show(ordersTab, changeModeTo(order));
-                    }
-
-                    @Override
-                    public void goToTaskResourceAllocation(Order order, TaskElement task) {
-                        // do nothing
-                    }
-
-                    @Override
-                    public void goToDashboard(Order order) {
-                        // do nothing
-                    }
-
-                }, parameters);
-
-        dashboardTab = DashboardTabCreator.create(mode, planningStateCreator,
-                dashboardController, dashboardControllerGlobal, orderPlanningController, breadcrumbs,
-                resourcesSearcher);
-
-        logsTab = LogsTabCreator.create(mode, logsController, logsControllerGlobal, breadcrumbs, new IOrderPlanningGate() {
-
+        ordersTab = OrdersTabCreator.create(mode, orderCRUDController, breadcrumbs, new IOrderPlanningGate() {
             @Override
             public void goToScheduleOf(Order order) {
                 getTabsRegistry().show(planningTab, changeModeTo(order));
@@ -361,21 +332,56 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
             @Override
             public void goToTaskResourceAllocation(Order order, TaskElement task) {
-                // do nothing
+                // Do nothing
             }
 
             @Override
             public void goToDashboard(Order order) {
-                // do nothing
+                // Do nothing
             }
-
         }, parameters);
+
+        dashboardTab = DashboardTabCreator.create(
+                mode,
+                planningStateCreator,
+                dashboardController,
+                dashboardControllerGlobal,
+                orderPlanningController,
+                breadcrumbs,
+                resourcesSearcher);
+
+        logsTab = LogsTabCreator.create(
+                mode, logsController, logsControllerGlobal, breadcrumbs, new IOrderPlanningGate() {
+                    @Override
+                    public void goToScheduleOf(Order order) {
+                        getTabsRegistry().show(planningTab, changeModeTo(order));
+                    }
+
+                    @Override
+                    public void goToOrderDetails(Order order) {
+                        getTabsRegistry().show(ordersTab, changeModeTo(order));
+                    }
+
+                    @Override
+                    public void goToTaskResourceAllocation(Order order, TaskElement task) {
+                        // Do nothing
+                    }
+
+                    @Override
+                    public void goToDashboard(Order order) {
+                        // Do nothing
+                    }
+                }, parameters);
 
         final boolean isMontecarloVisible = isMonteCarloVisible();
         if (isMontecarloVisible) {
-            monteCarloTab = MonteCarloTabCreator.create(mode,
-                    planningStateCreator, monteCarloController,
-                    orderPlanningController, breadcrumbs,
+
+            monteCarloTab = MonteCarloTabCreator.create(
+                    mode,
+                    planningStateCreator,
+                    monteCarloController,
+                    orderPlanningController,
+                    breadcrumbs,
                     resourcesSearcher);
         }
 

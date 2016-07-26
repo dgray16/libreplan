@@ -34,13 +34,13 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.HtmlMacroComponent;
 
 /**
+ * Works with time header of some pages.
+ *
  * @author Javier Moran Rua <jmoran@igalia.com>
  */
 public abstract class TimeTrackerComponent extends HtmlMacroComponent {
 
     private final TimeTracker timeTracker;
-
-    private IZoomLevelChangedListener zoomListener;
 
     private final String secondLevelZul;
 
@@ -56,14 +56,10 @@ public abstract class TimeTrackerComponent extends HtmlMacroComponent {
         this.secondLevelZul = secondLevelZul;
         this.timeTracker = timeTracker;
 
-        zoomListener = new IZoomLevelChangedListener() {
-
-            @Override
-            public void zoomLevelChanged(ZoomLevel detailLevel) {
-                if ( isInPage() ) {
-                    recreate();
-                    changeDetailLevel(getDaysFor(scrollLeft));
-                }
+        IZoomLevelChangedListener zoomListener = detailLevel ->  {
+            if ( isInPage() ) {
+                recreate();
+                changeDetailLevel(getDaysFor(scrollLeft));
             }
         };
 
@@ -84,8 +80,11 @@ public abstract class TimeTrackerComponent extends HtmlMacroComponent {
     }
 
     /*
-     *  fsanjurjo: I'm temporary changing the name of this method
-     *  (from afterCompose to compose) to get it called after calling recreate().
+     *  fsanjurjo:
+     *  I'm temporary changing the name of this method
+     *  (from afterCompose to compose)
+     *  to get it called after calling recreate().
+     *
      *  To understand why, please read this: http://www.zkoss.org/forum/listComment/14905
      *  Also renamed the call to its parent.
      * */
@@ -148,7 +147,7 @@ public abstract class TimeTrackerComponent extends HtmlMacroComponent {
     }
 
     public int getDiffDays(LocalDate previousStart) {
-        // get the current data
+        // Get the current data
         LocalDate start = getTimeTracker().getRealInterval().getStart();
 
         return Days.daysBetween(start, previousStart).getDays();

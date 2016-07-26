@@ -214,8 +214,7 @@ public class OrderTemplatesModel implements IOrderTemplatesModel {
         }
     }
 
-    private static void attachDirectCriterionRequirement(
-            Set<DirectCriterionRequirement> requirements) {
+    private static void attachDirectCriterionRequirement(Set<DirectCriterionRequirement> requirements) {
         for (DirectCriterionRequirement requirement : requirements) {
             requirement.getChildren().size();
             requirement.getCriterion().getName();
@@ -300,9 +299,9 @@ public class OrderTemplatesModel implements IOrderTemplatesModel {
         }
 
         getTemplate().setName(name);
+
         if (!getTemplate().isUniqueRootTemplateNameConstraint()) {
-            throw new IllegalArgumentException(
-                    _("Already exists another template with the same name"));
+            throw new IllegalArgumentException(_("Already exists another template with the same name"));
         }
     }
 
@@ -315,6 +314,7 @@ public class OrderTemplatesModel implements IOrderTemplatesModel {
     public Map<CriterionType, List<Criterion>> getMapCriterions() {
         final Map<CriterionType, List<Criterion>> result = new HashMap<>();
         result.putAll(mapCriterions);
+
         return result;
     }
 

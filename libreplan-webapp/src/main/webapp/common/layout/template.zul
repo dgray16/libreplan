@@ -54,18 +54,18 @@
 
                 <n:table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <n:tr>
-                        <n:td valign="center" class="logo-area">
+                        <n:td class="logo-area">
                             <n:a href="${contextPath}/">
                                 <n:img src="${templateCtrl.companyLogoURL}" if="${templateCtrl.companyLogoURL!=''}" />
                                 <n:img src="${contextPath}/common/img/logo.png" if="${templateCtrl.companyLogoURL==''}" />
-                            </n:a></n:td>
+                            </n:a>
+                        </n:td>
+
                         <n:td valign="top">
                             <n:table width="100%"  border="0" cellspacing="0" cellpadding="0">
                                 <n:tr>
                                     <n:td>
-
                                         <customMenu top_id="customMenu" title="${i18n:_('Main menu')}"/>
-
                                     </n:td>
                                 </n:tr>
                             </n:table></n:td>
@@ -115,7 +115,8 @@
             <borderlayout width="auto" height="100%">
                 <west sclass="perspectives-column" width="90px" >
                     <vbox vflex="1" >
-                        <hbox id="perspectiveButtonsInsertionPoint" sclass="toolbar-box global-commands" height="30px" width="90px">
+                        <hbox id="perspectiveButtonsInsertionPoint" sclass="toolbar-box global-commands"
+                              height="30px" width="90px">
                             <button id="createOrderButton" image="/common/img/ico_add.png" sclass="planner-icon"
                                     tooltiptext="${i18n:_('Create New Project')}" />
                         </hbox>
@@ -130,40 +131,67 @@
         <south border="none" if="${templateCtrl.userAdmin}">
             <n:table width="100%">
                 <n:tr class="footer">
-                    <n:td  valign="center">
+                    <n:td valign="center">
                         <n:div if="${project:passwd_control()}" id="warningDefaultPasswdadmin"
                                class="footer-messages-area"
                                style="display:${templateCtrl.defaultPasswdAdminVisible}">
                             <div>
-                                <n:span>${i18n:_("The admin's account password remains the default one. This is insecure")}.</n:span>
-                                <n:a class="command" href="${contextPath}/users/users.zul#edit%3D${idAdminUser}">[${i18n:_('Change the password')}]</n:a>
+                                <n:span>
+                                    ${i18n:_("The admin's account password remains the default one. This is insecure")}.
+                                </n:span>
+
+                                <n:a class="command" href="${contextPath}/users/users.zul#edit%3D${idAdminUser}">
+                                    [${i18n:_('Change the password')}]
+                                </n:a>
                             </div>
                         </n:div>
+
                         <n:div if="${project:passwd_control()}" id="warningDefaultPasswdOthers"
                                class="footer-messages-area"
                                style="display:${templateCtrl.defaultPasswdVisible}">
                             <div>
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idWsreader}"
                                      id="warningDefaultPasswdWsreader"
-                                     style="display:${templateCtrl.defaultPasswdWsreaderVisible}">[wsreader]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdWsreaderVisible}">
+                                    [wsreader]
+                                </n:a>
+
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idWswriter}"
                                      id="warningDefaultPasswdWswriter"
-                                     style="display:${templateCtrl.defaultPasswdWswriterVisible}">[wswriter]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdWswriterVisible}">
+                                    [wswriter]
+                                </n:a>
+
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idWssubcontracting}"
                                      id="warningDefaultPasswdWssubcontracting"
-                                     style="display:${templateCtrl.defaultPasswdWssubcontractingVisible}">[wssubcontracting]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdWssubcontractingVisible}">
+                                    [wssubcontracting]
+                                </n:a>
+
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idManager}"
                                      id="warningDefaultPasswdManager"
-                                     style="display:${templateCtrl.defaultPasswdManagerVisible}">[manager]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdManagerVisible}">
+                                    [manager]
+                                </n:a>
+
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idHresources}"
                                      id="warningDefaultPasswdHresources"
-                                     style="display:${templateCtrl.defaultPasswdHresourcesVisible}">[hresources]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdHresourcesVisible}">
+                                    [hresources]
+                                </n:a>
+
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idOutsourcing}"
                                      id="warningDefaultPasswdOutsourcing"
-                                     style="display:${templateCtrl.defaultPasswdOutsourcingVisible}">[outsourcing]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdOutsourcingVisible}">
+                                    [outsourcing]
+                                </n:a>
+
                                 <n:a href="${contextPath}/users/users.zul#edit%3D${idReports}"
                                      id="warningDefaultPasswdReports"
-                                     style="display:${templateCtrl.defaultPasswdReportsVisible}">[reports]</n:a>
+                                     style="display:${templateCtrl.defaultPasswdReportsVisible}">
+                                    [reports]
+                                </n:a>
+
                                 <n:span class="footer-messages-area">
                                     ${i18n:_('default password was not changed')}.
                                 </n:span>
@@ -174,7 +202,11 @@
                             <div>
                                 <n:span>
                                     ${templateCtrl.versionMessage}
-                                    <n:strong><n:a href="http://www.libreplan.com/download/" target="_blank">http://www.libreplan.com/download/</n:a></n:strong>
+                                    <n:strong>
+                                        <n:a href="http://www.libreplan.com/download/" target="_blank">
+                                            http://www.libreplan.com/download/
+                                        </n:a>
+                                    </n:strong>
                                 </n:span>
                             </div>
                         </n:div>

@@ -52,8 +52,7 @@
         <panel title="${i18n:_('Select queue')}" border="normal" width="278px" sclass="queue-element-information">
             <panelchildren>
 
-                <listbox id="listAssignableQueues" style="margin: 5px 5px -5px 5px;"
-                    mold="select" width="245px"/>
+                <listbox id="listAssignableQueues" style="margin: 5px 5px -5px 5px;" mold="select" width="245px"/>
 
                 <separator />
 
@@ -62,9 +61,20 @@
                         <column width="95px"/>
                     </columns>
                     <rows>
-                        <row><label value="Current queue" /><label value="@{manualAllocationController.currentQueue}" /></row>
-                        <row><label value="Start date" /><label value="@{manualAllocationController.currentStart}" /></row>
-                        <row><label value="End date" /><label value="@{manualAllocationController.currentEnd}" /></row>
+                        <row>
+                            <label value="Current queue" />
+                            <label value="@{manualAllocationController.currentQueue}" />
+                        </row>
+
+                        <row>
+                            <label value="Start date" />
+                            <label value="@{manualAllocationController.currentStart}" />
+                        </row>
+
+                        <row>
+                            <label value="End date" />
+                            <label value="@{manualAllocationController.currentEnd}" />
+                        </row>
                     </rows>
                 </grid>
             </panelchildren>
@@ -109,9 +119,9 @@
         <panel title="${i18n:_('Select gap')}" border="normal" sclass="queue-element-information">
             <panelchildren>
                 <listbox id="listCandidateGaps" sclass="queue-element-information"
-                        itemRenderer="@{manualAllocationController.candidateGapRenderer}"
-                        multiple="false"
-                        onSelect="manualAllocationController.setStartAllocationDate(event)">
+                         itemRenderer="@{manualAllocationController.candidateGapRenderer}"
+                         multiple="false"
+                         onSelect="manualAllocationController.setStartAllocationDate(event)">
                      <listhead>
                          <listheader label="${i18n:_('Start')}" />
                          <listheader label="${i18n:_('End')}" />
@@ -127,8 +137,9 @@
     <!-- Controls -->
     <hbox>
         <button id="ok" label="${i18n:_('Accept')}" sclass="add-button"
-            onClick="manualAllocationController.accept(event)" />
+                onClick="manualAllocationController.accept(event)" />
+
         <button id="cancel" label="${i18n:_('Cancel')}" sclass="add-button"
-            onClick="manualAllocationController.cancel()" />
+                onClick="manualAllocationController.cancel()" />
     </hbox>
 </window>

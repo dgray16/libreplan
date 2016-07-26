@@ -364,17 +364,17 @@ h4.message_WARNING {
 }
 
 /* ------ Overridden norrmoz.css.dsp styles ------ */
-.z-label,.z-radio-cnt,.z-checkbox-cnt,.z-slider-pp,input.button,input.file,.z-loading,.z-errbox,
-div.z-tree-footer-cnt, div.z-tree-cell-cnt, div.z-tree-col-cnt, .z-listbox,
-div.z-footer-cnt, div.z-row-content, div.z-group-cnt, div.z-group-foot-cnt,
-div.z-column-content, div.z-list-footer-cnt, div.z-list-cell-cnt, .z-bandbox, .z-bandbox-input {
+.z-label,.z-radio-content,.z-checkbox-content,.z-slider-pp,input.button,input.file,.z-loading,.z-errbox,
+div.z-tree-footer-content, div.z-tree-cell-content, div.z-tree-col-content, .z-listbox,
+div.z-footer-content, div.z-row-content, div.z-group-content, div.z-group-foot-content,
+div.z-column-content, div.z-listfooter-content, div.z-listcell-content, .z-bandbox, .z-bandbox-input {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
     font-size: 11px;
     font-weight: normal;
 }
 
-.z-textbox-disabled, .z-decimalbox-disd, .z-intbox-disd, .z-longbox-disd, .z-doublebox-disd,
-.z-textbox-disabled *, .z-decimalbox-disd *, .z-intbox-disd *, .z-longbox-disd *, .z-doublebox-disd * {
+.z-textbox-disabled, .z-decimalbox-disabled, .z-intbox-disabled, .z-longbox-disabled, .z-doublebox-disabled,
+.z-textbox-disabled *, .z-decimalbox-disabled *, .z-intbox-disabled *, .z-longbox-disabled *, .z-doublebox-disabled * {
     color:#333333 !important;
 }
 
@@ -386,7 +386,7 @@ div.z-row-content {
     word-wrap: normal;
 }
 
-.z-word-wrap .z-auxheader-cnt {
+.z-word-wrap .z-auxheader-content {
     word-wrap: normal;
 }
 
@@ -458,7 +458,7 @@ Else we will use header with blue image. (.z-window-header)
     font-size: 18px;
 }
 
-.z-tabs-scroll .z-tabs-cnt {
+.z-tabs-scroll .z-tabs-content {
     background: #FAFDFE none repeat scroll 0 0;
     border-bottom: 1px solid #7EAAC6;
     padding-bottom: 0;
@@ -483,18 +483,18 @@ tr.z-treerow td.z-treerow-focus {
     background-image: none;
 }
 
-div.z-footer-cnt,div.z-row-content,div.z-group-cnt,div.z-group-foot-cnt,div.z-column-content,div.z-tree-col-cnt {
+div.z-footer-content,div.z-row-content,div.z-group-content,div.z-group-foot-content,div.z-column-content,div.z-tree-col-content {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
     font-size: 11px;
     font-weight: bold;
 }
 
-.z-word-wrap div.z-tree-cell-cnt,.z-word-wrap div.z-tree-footer-cnt,
-.z-word-wrap div.z-tree-col-cnt {
+.z-word-wrap div.z-tree-cell-content,.z-word-wrap div.z-tree-footer-content,
+.z-word-wrap div.z-tree-col-content {
     word-wrap: normal;
 }
 
-.z-tabs .z-tabs-cnt {
+.z-tabs .z-tabs-content {
     background: none;
     border-bottom: 0;
     border-bottom: 1px solid #7EAAC6;
@@ -621,8 +621,8 @@ div.z-grid {
     display:none;
 }
 
-.orderTree div.z-tree-cell-cnt {
-    padding:0;
+.orderTree div.z-tree-cell-content {
+    padding: 0;
 }
 
 .orderTree td {
@@ -1213,7 +1213,6 @@ span.z-dottree-line {
 }
 
 .main-area > .z-center-body:first-child {
-    /*    height: auto !important; */
     width: auto !important;
 }
 
@@ -1302,9 +1301,9 @@ tr.z-treerow-over input {
 }
 
 .z-tab-accordion-hm, .z-tab-accordion-hr, .z-tab-accordion-hl {
-    -moz-background-clip:border;
-    -moz-background-inline-policy:continuous;
-    -moz-background-origin:padding;
+    -moz-background-clip: border;
+    -moz-background-inline-policy: continuous;
+    -moz-background-origin: padding;
     background: transparent url(../img/borderlayout-hm.png) repeat-x scroll 0 0;
 }
 
@@ -1313,7 +1312,7 @@ tr.z-treerow-over input {
     min-height:14px;
 }
 
-.allocation-criterion-selector .z-treecell-cnt {
+.allocation-criterion-selector .z-treecell-content {
     line-height: inherit;
 }
 
@@ -1342,7 +1341,7 @@ tr.z-treerow-over input {
     background-color: transparent;
 }
 
-.submenu .z-menu-popup-cnt .z-menu-item-over .z-menu-item-img {
+.submenu .z-menu-popup-content .z-menu-item-over .z-menu-item-img {
     background-image: url(../img/ico_submenu.png);
 }
 
@@ -1604,7 +1603,7 @@ tr.z-tree-row-seld .z-row-content {
 }
 
 .earned-parameter-column .z-label,
-.earned-parameter-column .z-checkbox-cnt {
+.earned-parameter-column .z-checkbox-content {
     font-size: 10px;
 }
 .earned-parameter-column {
@@ -1875,7 +1874,7 @@ td.z-calendar-selected {
     font-weight: normal;
 }
 
-.assignedresources .z-auxheader-cnt  {
+.assignedresources .z-auxheader-content  {
     font-weight: bold;
 }
 
@@ -1969,6 +1968,7 @@ select {
 
 .logo-area {
     width: 1px;
+    vertical-align: top;
 }
 
 .z-borderlayout {
@@ -2256,4 +2256,12 @@ textarea {
     padding-right: 0;
     padding-left: 0;
     margin-left: 2px;
+}
+
+.timetrackergap .z-column-content {
+    top: -7px;
+}
+
+.timetrackergap .z-grid {
+    height: 16px;
 }

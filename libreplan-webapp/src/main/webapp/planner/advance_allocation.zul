@@ -64,6 +64,7 @@
             </listbox>
 
             <separator/>
+
             <label>${i18n:_('Pagination')}:</label>
 
             <button tooltiptext="Page down" image="/common/img/ico_left.png" id="paginationDownButton"
@@ -102,10 +103,12 @@
             <center sclass="taskspanel">
                 <borderlayout>
                     <north border="0">
-                        <div sclass="timetrackergap" id="insertionPointTimetracker"/></north>
+                        <div sclass="timetrackergap" id="insertionPointTimetracker"/>
+                    </north>
+
                     <center  id="insertionPointRightPanel"
-                             style="overflow-y:auto;overflow-x:auto;" border="0"
-                             sclass="advanced-assignment-area rightpanellayout taskspanel-gap" />
+                             style="overflow-y:auto; overflow-x:auto;" border="0"
+                             sclass="advanced-assignment-area rightpanel-layout taskspanel-gap" />
                 </borderlayout>
             </center>
         </borderlayout>

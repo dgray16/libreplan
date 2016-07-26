@@ -26,6 +26,8 @@ import org.joda.time.LocalDate;
 import org.zkoss.ganttz.i18n.I18nHelper;
 
 /**
+ * Describes levels of zooming (time-zooming) on Gantt panel.
+ *
  * @author Francisco Javier Moran Rúa
  */
 public enum ZoomLevel {

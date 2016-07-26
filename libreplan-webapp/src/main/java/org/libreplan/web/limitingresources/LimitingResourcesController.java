@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -74,7 +75,9 @@ import org.zkoss.zul.Window;
 import org.zkoss.zul.Rows;
 
 /**
- * Controller for limiting resources view
+ * Controller for limiting resources view.
+ * Queue-based Resources Planning page.
+ *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  */
 @Component
@@ -105,10 +108,9 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     private Window editTaskWindow;
 
     private final LimitingResourceQueueElementsRenderer limitingResourceQueueElementsRenderer =
-        new LimitingResourceQueueElementsRenderer();
+                new LimitingResourceQueueElementsRenderer();
 
-    public LimitingResourcesController() {
-    }
+    public LimitingResourcesController() {}
 
     public void add(IToolbarCommand... commands) {
         Validate.noNullElements(commands);
@@ -131,8 +133,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
 
             private void reloadInTransaction() {
                 // FIXME: Temporary fix, it seems the page was already rendered,
-                // so
-                // clear it all as it's going to be rendered again
+                // so clear it all as it's going to be rendered again
                 self.getChildren().clear();
 
                 limitingResourceQueueModel.initGlobalView();
@@ -156,12 +157,13 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     }
 
     private void initGridUnassignedLimitingResourceQueueElements() {
-        gridUnassignedLimitingResourceQueueElements = (Grid) limitingResourcesPanel
-                .getFellowIfAny("gridUnassignedLimitingResourceQueueElements");
-        gridUnassignedLimitingResourceQueueElements
-                .setModel(new SimpleListModel<>(getUnassignedLimitingResourceQueueElements()));
-        gridUnassignedLimitingResourceQueueElements
-                .setRowRenderer(getLimitingResourceQueueElementsRenderer());
+        gridUnassignedLimitingResourceQueueElements =
+                (Grid) limitingResourcesPanel.getFellowIfAny("gridUnassignedLimitingResourceQueueElements");
+
+        gridUnassignedLimitingResourceQueueElements.setModel(
+                new SimpleListModel<>(getUnassignedLimitingResourceQueueElements()));
+
+        gridUnassignedLimitingResourceQueueElements.setRowRenderer(getLimitingResourceQueueElementsRenderer());
         getEarlierStartingDateColumn().sort(true, true);
     }
 
@@ -193,7 +195,8 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     }
 
     private TimeTracker buildTimeTracker() {
-        return timeTracker = new TimeTracker(limitingResourceQueueModel.getViewInterval(),
+        return timeTracker = new TimeTracker(
+                limitingResourceQueueModel.getViewInterval(),
                 ZoomLevel.DETAIL_THREE,
                 SeveralModificators.create(),
                 SeveralModificators.create(BankHolidaysMarker.create(getDefaultCalendar())),
@@ -213,26 +216,24 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
      *
      * It's necessary to convert elements to a DTO that encapsulates properties
      * such as task name or order name, since the only way of sorting by these
-     * fields is by having properties getTaskName or getOrderName on the
-     * elements returned
+     * fields is by having properties getTaskName or getOrderName on the elements returned
      *
      * @return
      */
     public List<LimitingResourceQueueElementDTO> getUnassignedLimitingResourceQueueElements() {
-        List<LimitingResourceQueueElementDTO> result = new ArrayList<>();
-        for (LimitingResourceQueueElement each : limitingResourceQueueModel
-                .getUnassignedLimitingResourceQueueElements()) {
-            result.add(toLimitingResourceQueueElementDTO(each));
-        }
-
-        return result;
+        return limitingResourceQueueModel
+                .getUnassignedLimitingResourceQueueElements()
+                .stream()
+                .map(this::toLimitingResourceQueueElementDTO)
+                .collect(Collectors.toList());
     }
 
     private LimitingResourceQueueElementDTO toLimitingResourceQueueElementDTO(LimitingResourceQueueElement element) {
         final Task task = element.getResourceAllocation().getTask();
         final Order order = limitingResourceQueueModel.getOrderByTask(task);
 
-        return new LimitingResourceQueueElementDTO(element,
+        return new LimitingResourceQueueElementDTO(
+                element,
                 order.getName(),
                 task.getName(),
                 element.getEarliestStartDateBecauseOfGantt());
@@ -243,10 +244,9 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
             final Resource resource = ((SpecificResourceAllocation) resourceAllocation).getResource();
 
             return (resource != null) ? resource.getName() : "";
-        } else if ( resourceAllocation instanceof GenericResourceAllocation ) {
-            GenericResourceAllocation genericAllocation = (GenericResourceAllocation) resourceAllocation;
 
-            return Criterion.getCaptionFor(genericAllocation);
+        } else if ( resourceAllocation instanceof GenericResourceAllocation ) {
+            return Criterion.getCaptionFor((GenericResourceAllocation) resourceAllocation);
         }
 
         return StringUtils.EMPTY;
@@ -275,17 +275,17 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         private String resourceOrCriteria;
 
         public LimitingResourceQueueElementDTO(LimitingResourceQueueElement element,
-                                        String orderName,
-                                        String taskName,
-                                        Date date) {
-
+                                               String orderName,
+                                               String taskName,
+                                               Date date) {
             this.original = element;
             this.orderName = orderName;
             this.taskName = taskName;
             this.date = Util.formatDate(date);
             this.hoursToAllocate = element.getIntentedTotalHours();
-            this.resourceOrCriteria = LimitingResourcesController
-                    .getResourceOrCriteria(element.getResourceAllocation());
+
+            this.resourceOrCriteria =
+                    LimitingResourcesController.getResourceOrCriteria(element.getResourceAllocation());
         }
 
         public LimitingResourceQueueElement getOriginal() {
@@ -333,7 +333,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         try {
             Task task = oldElement.getTask();
 
-            EditTaskController editTaskController = getEditController(editTaskWindow);
+            EditTaskController editTaskController = getEditController();
             editTaskController.showEditFormResourceAllocationFromLimitingResources(task);
 
             // New resource allocation or resource allocation modified ?
@@ -344,8 +344,9 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
 
                 // Replace old limiting resource with new one
                 LimitingResourceQueue oldQueue = oldElement.getLimitingResourceQueue();
-                List<LimitingResourceQueueElement> modified = limitingResourceQueueModel
-                        .replaceLimitingResourceQueueElement(oldElement, newElement);
+
+                List<LimitingResourceQueueElement> modified =
+                        limitingResourceQueueModel.replaceLimitingResourceQueueElement(oldElement, newElement);
 
                 // Refresh modified queues
                 Set<LimitingResourceQueue> toRefreshQueues = new HashSet<>();
@@ -366,30 +367,30 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     }
 
     /**
-     * Copies earliestStartDateBecauseOfGantt and dependencies from source to dest
+     * Copies earliestStartDateBecauseOfGantt and dependencies from source to destination.
      *
      * @param source
-     * @param dest
+     * @param destination
      * @return
      */
     private LimitingResourceQueueElement copyFrom(LimitingResourceQueueElement source,
-                                                  LimitingResourceQueueElement dest) {
+                                                  LimitingResourceQueueElement destination) {
 
-        dest.setEarlierStartDateBecauseOfGantt(source.getEarliestStartDateBecauseOfGantt());
+        destination.setEarlierStartDateBecauseOfGantt(source.getEarliestStartDateBecauseOfGantt());
 
         for (LimitingResourceQueueDependency each : source.getDependenciesAsOrigin()) {
-            each.setOrigin(dest);
-            dest.add(each);
+            each.setOrigin(destination);
+            destination.add(each);
         }
         for (LimitingResourceQueueDependency each : source.getDependenciesAsDestiny()) {
-            each.setDestiny(dest);
-            dest.add(each);
+            each.setDestiny(destination);
+            destination.add(each);
         }
 
-        return dest;
+        return destination;
     }
 
-    private EditTaskController getEditController(Window window) {
+    private EditTaskController getEditController() {
         return (EditTaskController) editTaskWindow.getAttribute("editController", true);
     }
 
@@ -405,7 +406,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
 
             row.setValue(o);
 
-            row.appendChild(automaticQueueing(element));
+            row.appendChild(automaticQueueing());
             row.appendChild(label(element.getOrderName()));
             row.appendChild(label(element.getTaskName()));
             row.appendChild(label(element.getResourceOrCriteria()));
@@ -459,8 +460,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
             result.setSclass("icono");
             result.setTooltiptext(_("Remove queue-based resource element"));
 
-            result.addEventListener(Events.ON_CLICK,
-                    event -> removeUnassignedLimitingResourceQueueElement(element));
+            result.addEventListener(Events.ON_CLICK, event -> removeUnassignedLimitingResourceQueueElement(element));
 
             return result;
         }
@@ -476,6 +476,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
             result.setLabel(_("Automatic"));
             result.setClass("add-button");
             result.setTooltiptext(_("Assign element to queue automatically"));
+            result.setStyle("margin-right: 5px");
 
             result.addEventListener(Events.ON_CLICK, event -> assignLimitingResourceQueueElement(element));
 
@@ -483,12 +484,13 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         }
 
         private void assignLimitingResourceQueueElement(LimitingResourceQueueElementDTO dto) {
-            List<LimitingResourceQueueElement> inserted = limitingResourceQueueModel
-                    .assignLimitingResourceQueueElement(dto.getOriginal());
+            List<LimitingResourceQueueElement> inserted =
+                    limitingResourceQueueModel.assignLimitingResourceQueueElement(dto.getOriginal());
 
             if ( inserted.isEmpty() ) {
-                showErrorMessage(_("Cannot allocate selected element. There is not any queue "
-                        + "that matches resource allocation criteria at any interval of time"));
+                showErrorMessage(
+                        _("Cannot allocate selected element. There is not any queue " +
+                                "that matches resource allocation criteria at any interval of time"));
                 return;
             }
 
@@ -496,9 +498,10 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
             reloadUnassignedLimitingResourceQueueElements();
         }
 
-        private Checkbox automaticQueueing(final LimitingResourceQueueElementDTO element) {
+        private Checkbox automaticQueueing() {
             Checkbox result = new Checkbox();
             result.setTooltiptext(_("Select for automatic queuing"));
+            result.setStyle("margin-left: 2px");
 
             return result;
         }
@@ -523,6 +526,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
 
     public boolean moveTask(LimitingResourceQueueElement element) {
         showManualAllocationWindow(element);
+
         return getManualAllocationWindowStatus() == Messagebox.OK;
     }
 
@@ -532,12 +536,13 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
 
     public int getManualAllocationWindowStatus() {
         Integer status = getManualAllocationController().getStatus();
+
         return (status != null) ? status : -1;
     }
 
     public void reloadUnassignedLimitingResourceQueueElements() {
-        gridUnassignedLimitingResourceQueueElements
-                .setModel(new SimpleListModel<>(getUnassignedLimitingResourceQueueElements()));
+        gridUnassignedLimitingResourceQueueElements.setModel(
+                new SimpleListModel<>(getUnassignedLimitingResourceQueueElements()));
     }
 
     public void selectedAllUnassignedQueueElements() {
@@ -563,14 +568,16 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         List<LimitingResourceQueueElement> elements = getAllSelectedQueueElements();
 
         if ( !elements.isEmpty() ) {
+
             Set<LimitingResourceQueueElement> inserted =
                     limitingResourceQueueModel.assignLimitingResourceQueueElements(elements);
 
             clearSelectAllCheckbox();
 
             if ( inserted.isEmpty() ) {
-                showErrorMessage(_("Cannot allocate selected element. There is not any queue "
-                        + "that matches resource allocation criteria at any interval of time"));
+
+                showErrorMessage(_("Cannot allocate selected element. There is not any queue " +
+                        "that matches resource allocation criteria at any interval of time"));
                 return;
             }
 
@@ -591,6 +598,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
         for (Object each : rows.getChildren()) {
             final Row row = (Row) each;
             Checkbox cbAutoQueueing = getAutoQueueing(row);
+
             if ( cbAutoQueueing.isChecked() ) {
                 LimitingResourceQueueElementDTO dto = row.getValue();
                 result.add(dto.getOriginal());
@@ -603,5 +611,4 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     private void showErrorMessage(String error) {
         Messagebox.show(error, _("Error"), Messagebox.OK, Messagebox.ERROR);
     }
-
 }

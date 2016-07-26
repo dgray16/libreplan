@@ -39,25 +39,22 @@ import org.libreplan.web.common.entrypoints.EntryPoints;
 public interface IGlobalViewEntryPoints {
 
     @EntryPoint("company_scheduling")
-    public void goToCompanyScheduling();
+    void goToCompanyScheduling();
 
     @EntryPoint("company_load")
-    public void goToCompanyLoad();
+    void goToCompanyLoad();
 
     @EntryPoint("limiting_resources")
-    public void goToLimitingResources();
-
-/*    @EntryPoint("logs")
-    public void goToLogs();*/
+    void goToLimitingResources();
 
     @EntryPoint("orders_list")
-    public void goToOrdersList();
+    void goToOrdersList();
 
     @EntryPoint("order")
-    public void goToOrder(Order order);
+    void goToOrder(Order order);
 
     @EntryPoint({ "order", "orderElement" })
-    public void goToOrderElementDetails(Order order, OrderElement orderElement);
+    void goToOrderElementDetails(Order order, OrderElement orderElement);
 
     @EntryPoint("limiting_resources")
     void goToCompanyLimitingResources();

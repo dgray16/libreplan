@@ -22,9 +22,9 @@
 <zk>
     <zscript>
         <![CDATA[
-        top = self;
+            top = self;
         ]]>
     </zscript>
 
-    <tree id="loadsTree" sclass="limitingresourcesleftpane" fixedLayout="true"/>
+    <tree id="loadsTree" sclass="limitingresources-left-pane" fixedLayout="true"/>
 </zk>
