@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.calendars.entities.BaseCalendar;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.orders.entities.OrderElement;
@@ -55,8 +54,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;

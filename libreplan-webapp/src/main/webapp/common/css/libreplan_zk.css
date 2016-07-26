@@ -830,7 +830,7 @@ div.z-listbox-pgi-b {
 .orderTree .not-scheduled button.z-button,
 .orderTree .partially-scheduled button.z-button,
 .orderTree .completely-scheduled button.z-button {
-    margin: -12px -6px -20px -14px;
+    margin: -12px -6px -20px 0;
 }
 
 .orderTree .not-scheduled span.scheduling-state,
@@ -2250,4 +2250,10 @@ textarea {
 
 .margin-border {
     margin: 5px;
+}
+
+.orderTree button.icono {
+    padding-right: 0;
+    padding-left: 0;
+    margin-left: 2px;
 }

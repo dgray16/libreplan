@@ -155,21 +155,21 @@ public abstract class EntitiesTree<T extends ITreeNode<T>> {
         }
     }
 
-    private ITreeParentNode<T> turnIntoContainerIfNeeded(
-            ITreeNode<T> selectedForTurningIntoContainer) {
+    private ITreeParentNode<T> turnIntoContainerIfNeeded(ITreeNode<T> selectedForTurningIntoContainer) {
         if (selectedForTurningIntoContainer instanceof ITreeParentNode) {
             return (ITreeParentNode<T>) selectedForTurningIntoContainer;
         }
+
         ITreeParentNode<T> parentContainer = getParent(selectedForTurningIntoContainer);
-        ITreeParentNode<T> asContainer = selectedForTurningIntoContainer
-                .toContainer();
-        parentContainer.replace(selectedForTurningIntoContainer.getThis(),
-                asContainer.getThis());
+        ITreeParentNode<T> asContainer = selectedForTurningIntoContainer.toContainer();
+        parentContainer.replace(selectedForTurningIntoContainer.getThis(), asContainer.getThis());
+
         if (!selectedForTurningIntoContainer.isEmptyLeaf()) {
             asContainer.add(selectedForTurningIntoContainer.getThis());
         }
-        tree.replace(selectedForTurningIntoContainer.getThis(),
-                asContainer.getThis(), childrenExtractor());
+
+        tree.replace(selectedForTurningIntoContainer.getThis(), asContainer.getThis(), childrenExtractor());
+
         return asContainer;
     }
 

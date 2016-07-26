@@ -702,13 +702,14 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
                 @Override
                 public void onEvent(Event event) {
+
                     item.setSelected(true);
                     Util.reloadBindings(item.getParent());
                 }
             });
         }
 
-        protected void addDateCell(final DynamicDatebox dinamicDatebox) {
+        protected void addDateCell(String cssClass, final DynamicDatebox dinamicDatebox) {
 
             Component cell =
                     Executions.getCurrent().createComponents("/common/components/dynamicDatebox.zul", null, null);
@@ -717,7 +718,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            addCell(cell);
+            addCell(cssClass, cell);
             registerListeners(dinamicDatebox.getDateTextBox());
         }
 
@@ -872,7 +873,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             if (readOnly) {
                 decimalboxBudget.setDisabled(true);
             }
-            addCell(decimalboxBudget);
+            addCell("budget-cell", decimalboxBudget);
         }
 
         private Decimalbox buildBudgetDecimalboxFor(final T element) {
@@ -1009,7 +1010,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 intboxHours.setDisabled(true);
             }
 
-            Treecell cellHours = addCell(intboxHours);
+            Treecell cellHours = addCell("hours-cell", intboxHours);
             setReadOnlyHoursCell(currentElement, intboxHours, cellHours);
         }
 
