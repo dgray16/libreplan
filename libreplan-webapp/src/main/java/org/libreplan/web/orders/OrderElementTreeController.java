@@ -495,7 +495,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
             if ( readOnly ) {
                 dinamicDatebox.setDisabled(true);
             }
-            addDateCell(dinamicDatebox);
+            addDateCell("init-date-cell", dinamicDatebox);
             putInitDateDynamicDatebox(currentOrderElement, dinamicDatebox);
         }
 
@@ -510,7 +510,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
                 dinamicDatebox.setDisabled(true);
             }
 
-            addDateCell(dinamicDatebox);
+            addDateCell("end-date-cell", dinamicDatebox);
             putEndDateDynamicDatebox(currentOrderElement, dinamicDatebox);
         }
 

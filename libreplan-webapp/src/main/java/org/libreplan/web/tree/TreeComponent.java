@@ -78,6 +78,28 @@ public abstract class TreeComponent extends HtmlMacroComponent {
             return cssClass.equals("name") ? "1" : "min";
         }
 
+        public String getWidth(){
+            if (cssClass.equals("scheduling_state")) {
+                return "135px";
+            } else if (cssClass.equals("code")) {
+                return "106px";
+            } else if (cssClass.equals("name")) {
+                return "1150px";
+            } else if (cssClass.equals("hours")) {
+                return "50px";
+            } else if (cssClass.equals("budget")) {
+                return "50px";
+            } else if (cssClass.equals("estimated_init")) {
+                return "100px";
+            } else if (cssClass.equals("estimated_end")) {
+                return "100px";
+            } else if (cssClass.equals("operations") ){
+                return "50px";
+            }
+
+            return "";
+        }
+
         public abstract <T extends ITreeNode<T>> void doCell(TreeController<T>.Renderer renderer,
                                                              Treeitem item,
                                                              T currentElement);
