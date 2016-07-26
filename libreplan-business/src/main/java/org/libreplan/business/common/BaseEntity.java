@@ -124,8 +124,9 @@ public abstract class BaseEntity implements INewObject {
 
     /**
      * Once the has been really saved in DB (not a readonly transaction), it
-     * could be necessary to unmark the object as newObject. This is the case if
-     * you must use the same instance after the transaction. <br />
+     * could be necessary to unmark the object as newObject.
+     * This is the case if you must use the same instance after the transaction.
+     * <br />
      */
     public void dontPoseAsTransientObjectAnymore() {
         setNewObject(false);

@@ -24,7 +24,6 @@ import static org.libreplan.web.I18nHelper._;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -80,6 +79,8 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
 
     private static Log LOG = LogFactory.getLog(SubcontractedTasksModel.class);
 
+    private String CONNECTION_PROBLEM = "Problems connecting with subcontractor web service";
+
     @Autowired
     private ISubcontractedTaskDataDAO subcontractedTaskDataDAO;
 
@@ -112,37 +113,33 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
         subcontractedTaskData.getExternalCompany().getName();
     }
 
-    private List<SubcontractedTaskData> sortByState(List<SubcontractedTaskData> tasks){
-        Collections.sort(tasks, new Comparator<SubcontractedTaskData>(){
-
-            @Override
-            public int compare(SubcontractedTaskData arg0, SubcontractedTaskData arg1) {
-                if( (arg0 == null) || (arg0.getState() == null) ){
-                    return -1;
-                }
-
-                if( (arg1 == null) || (arg1.getState() == null) ){
-                    return 1;
-                }
-
-                if( arg0.getState().equals(arg1.getState()) ){
-                    return 0;
-                }
-
-                if ( arg0.getState().equals(SubcontractState.PENDING_INITIAL_SEND) ) {
-                    return 1;
-                }
-
-                if ( arg1.getState().equals(SubcontractState.PENDING_INITIAL_SEND) ) {
-                    return -1;
-                }
-
-                if( arg0.getState().equals(SubcontractState.PENDING_UPDATE_DELIVERING_DATE) ) {
-                    return 1;
-                }
-
+    private List<SubcontractedTaskData> sortByState(List<SubcontractedTaskData> tasks) {
+        Collections.sort(tasks, (arg0, arg1) -> {
+            if ( (arg0 == null) || (arg0.getState() == null) ) {
                 return -1;
             }
+
+            if ( (arg1 == null) || (arg1.getState() == null) ) {
+                return 1;
+            }
+
+            if ( arg0.getState().equals(arg1.getState()) ) {
+                return 0;
+            }
+
+            if ( arg0.getState().equals(SubcontractState.PENDING_INITIAL_SEND) ) {
+                return 1;
+            }
+
+            if ( arg1.getState().equals(SubcontractState.PENDING_INITIAL_SEND) ) {
+                return -1;
+            }
+
+            if( arg0.getState().equals(SubcontractState.PENDING_UPDATE_DELIVERING_DATE) ) {
+                return 1;
+            }
+
+            return -1;
         });
 
         return tasks;
@@ -189,7 +186,7 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
             subcontractedTaskData.setSubcontractCommunicationDate(today);
         }
 
-        //update the first required deliver date
+        // Update the first required deliver date
         subcontractedTaskData.updateFirstRequiredDeliverDate(today);
         subcontractedTaskData.setSubcontractCommunicationDate(today);
         subcontractedTaskData.setState(SubcontractState.SUCCESS_SENT);
@@ -201,13 +198,13 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
 
         if ( subcontractedTaskData.getState() != null ) {
 
-            if ( (currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
-                    (currentState.equals(SubcontractState.FAILED_SENT))) ) {
+            if ( currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
+                    currentState.equals(SubcontractState.FAILED_SENT) ) {
 
                 makeSubcontractRequestRequest_InitialSent(subcontractedTaskData);
 
-            } else if ( (currentState.equals(SubcontractState.PENDING_UPDATE_DELIVERING_DATE) ||
-                    currentState.equals(SubcontractState.FAILED_UPDATE)) ) {
+            } else if ( currentState.equals(SubcontractState.PENDING_UPDATE_DELIVERING_DATE) ||
+                    currentState.equals(SubcontractState.FAILED_UPDATE) ) {
 
                 makeSubcontractRequestRequest_UpdateDeliverDate(subcontractedTaskData);
             }
@@ -238,19 +235,20 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
                     instanceConstraintViolationsListDTO.instanceConstraintViolationsList;
 
             if ( (instanceConstraintViolationsList != null) && (!instanceConstraintViolationsList.isEmpty()) ) {
-                String message = "";
+
+                StringBuilder stringBuilder = new StringBuilder();
 
                 for (ConstraintViolationDTO current : instanceConstraintViolationsList.get(0).constraintViolations) {
-                    message += current.toString() + "\n";
+                    stringBuilder.append(current.toString()).append("\n");
                 }
 
-                throw new UnrecoverableErrorServiceException(message);
+                throw new UnrecoverableErrorServiceException(stringBuilder.toString());
             }
 
         } catch (WebApplicationException e) {
-            LOG.error("Problems connecting with subcontractor web service", e);
+            LOG.error(CONNECTION_PROBLEM, e);
 
-            String message = _("Problems connecting with subcontractor web service");
+            String message = _(CONNECTION_PROBLEM);
             if ( e.getMessage() != null ) {
                 message += ". " + _("Error: {0}", e.getMessage());
             }
@@ -283,19 +281,19 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
                     instanceConstraintViolationsListDTO.instanceConstraintViolationsList;
 
             if ( (instanceConstraintViolationsList != null) && (!instanceConstraintViolationsList.isEmpty()) ) {
-                String message = "";
+                StringBuilder stringBuilder = new StringBuilder();
 
                 for (ConstraintViolationDTO current :  instanceConstraintViolationsList.get(0).constraintViolations) {
-                    message += current.toString() + "\n";
+                    stringBuilder.append(current.toString()).append("\n");
                 }
 
-                throw new UnrecoverableErrorServiceException(message);
+                throw new UnrecoverableErrorServiceException(stringBuilder.toString());
             }
 
         } catch (WebApplicationException e) {
-            LOG.error("Problems connecting with subcontractor web service", e);
+            LOG.error(CONNECTION_PROBLEM, e);
 
-            String message = _("Problems connecting with subcontractor web service");
+            String message = _(CONNECTION_PROBLEM);
             if ( e.getMessage() != null ) {
                 message += ". " + _("Error: {0}", e.getMessage());
             }
@@ -353,8 +351,8 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
     public String exportXML(SubcontractedTaskData subcontractedTaskData) {
         SubcontractState currentState = subcontractedTaskData.getState();
 
-        if ( (currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
-                (currentState.equals(SubcontractState.FAILED_SENT))) ) {
+        if ( currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
+                currentState.equals(SubcontractState.FAILED_SENT) ) {
 
             return exportXML_CreateSubcontractor(subcontractedTaskData);
         } else {

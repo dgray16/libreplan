@@ -32,7 +32,6 @@ import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.planner.tabs.IGlobalViewEntryPoints;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
@@ -63,6 +62,9 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     private SubcontractorCommunicationRenderer subcontractorCommunicationRenderer =
             new SubcontractorCommunicationRenderer();
 
+    @Resource
+    private IGlobalViewEntryPoints globalView;
+
     protected IMessagesForUser messagesForUser;
 
     private Component messagesContainer;
@@ -71,17 +73,12 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
 
     private Grid listingValues;
 
-    private Label labelValue;
-
     private Popup pp;
 
-    public SubcontractorCommunicationCRUDController(){
+    public SubcontractorCommunicationCRUDController() {
         subcontractorCommunicationModel =
                 (ISubcontractorCommunicationModel) SpringUtil.getBean("subcontractorCommunicationModel");
     }
-
-    @Resource
-    private IGlobalViewEntryPoints globalView;
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -91,12 +88,12 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     }
 
     public void goToEdit(SubcontractorCommunication subcontractorCommunication) {
-        if(subcontractorCommunication != null){
+        if (subcontractorCommunication != null) {
             TaskElement task = subcontractorCommunication.getSubcontractedTaskData().getTask();
             OrderElement orderElement = task.getOrderElement();
             Order order = subcontractorCommunicationModel.getOrder(orderElement);
 
-            if(subcontractorCommunication.getCommunicationType().equals(CommunicationType.PROGRESS_UPDATE)){
+            if (subcontractorCommunication.getCommunicationType().equals(CommunicationType.PROGRESS_UPDATE)) {
                 globalView.goToAdvanceTask(order,task);
             } else {
                 globalView.goToOrderDetails(order);
@@ -118,7 +115,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     }
 
     private void refreshSubcontractorCommunicationsList() {
-        // update the subcontractor communication list
+        // Update the subcontractor communication list
         listing.setModel(new SimpleListModel<>(getSubcontractorCommunications()));
         listing.invalidate();
     }
@@ -129,13 +126,11 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
 
     public List<SubcontractorCommunication> getSubcontractorCommunications() {
         FilterCommunicationEnum currentFilter = subcontractorCommunicationModel.getCurrentFilter();
-        switch(currentFilter){
-            case ALL:
-                return subcontractorCommunicationModel.getSubcontractorAllCommunications();
-
+        switch(currentFilter) {
             case NOT_REVIEWED:
                 return subcontractorCommunicationModel.getSubcontractorCommunicationWithoutReviewed();
 
+            case ALL:
             default:
                 return subcontractorCommunicationModel.getSubcontractorAllCommunications();
         }
@@ -153,7 +148,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
             row.setValue(subcontractorCommunication);
 
             final boolean reviewed = subcontractorCommunication.getReviewed();
-            if(!reviewed){
+            if (!reviewed) {
                 row.setSclass("communication-not-reviewed");
             }
 
@@ -189,19 +184,20 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
 
         private void appendLabelWithTooltip(final Row row,
                                             final SubcontractorCommunication subcontractorCommunication) {
+
             String lastValue = getLastValue(subcontractorCommunication);
             final Label compLabel = new Label(lastValue);
 
-            if (subcontractorCommunication.getCommunicationType().equals(
-                    CommunicationType.PROGRESS_UPDATE)) {
-            compLabel.setTooltip(pp);
-            compLabel.addEventListener(Events.ON_MOUSE_OVER,
-                    arg0 -> {
-                        List<SubcontractorCommunicationValue> model = subcontractorCommunication
-                                .getSubcontractorCommunicationValues();
-                        listingValues.setModel(new SimpleListModel<>(model));
-                        listingValues.invalidate();
-                    });
+            if (subcontractorCommunication.getCommunicationType().equals(CommunicationType.PROGRESS_UPDATE)) {
+                compLabel.setTooltip(pp);
+                compLabel.addEventListener(Events.ON_MOUSE_OVER, arg0 -> {
+
+                    List<SubcontractorCommunicationValue> model =
+                            subcontractorCommunication.getSubcontractorCommunicationValues();
+
+                    listingValues.setModel(new SimpleListModel<>(model));
+                    listingValues.invalidate();
+                });
             }
             row.appendChild(compLabel);
         }
@@ -210,12 +206,11 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
             final Checkbox checkBoxReviewed = new Checkbox();
             checkBoxReviewed.setChecked(subcontractorCommunication.getReviewed());
 
-            checkBoxReviewed.addEventListener(Events.ON_CHECK,
-                    arg0 -> {
-                        subcontractorCommunication.setReviewed(checkBoxReviewed.isChecked());
-                        save(subcontractorCommunication);
-                        updateRowClass(row, checkBoxReviewed.isChecked());
-                    });
+            checkBoxReviewed.addEventListener(Events.ON_CHECK, arg0 -> {
+                subcontractorCommunication.setReviewed(checkBoxReviewed.isChecked());
+                save(subcontractorCommunication);
+                updateRowClass(row, checkBoxReviewed.isChecked());
+            });
 
             row.appendChild(checkBoxReviewed);
         }
@@ -223,7 +218,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
         private void updateRowClass(final Row row, Boolean reviewed){
             row.setSclass("");
 
-            if(!reviewed){
+            if (!reviewed) {
                 row.setSclass("communication-not-reviewed");
             }
         }
@@ -242,9 +237,8 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     /**
      * Apply filter to subcontractors communications
      *
-     * @param event
      */
-    public void onApplyFilter(Event event) {
+    public void onApplyFilter() {
         refreshSubcontractorCommunicationsList();
     }
 }

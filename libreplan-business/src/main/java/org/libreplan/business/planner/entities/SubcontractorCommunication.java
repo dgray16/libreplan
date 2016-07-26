@@ -26,7 +26,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import org.libreplan.business.common.BaseEntity;
 import org.libreplan.business.externalcompanies.entities.CommunicationType;
-import org.libreplan.business.qualityforms.entities.QualityFormItem;
 
 /**
  *  Entity {@link SubcontractorCommunication}.
@@ -43,12 +42,10 @@ public class SubcontractorCommunication extends BaseEntity {
 
     private Boolean reviewed = false;
 
-    private List<SubcontractorCommunicationValue> subcontractorCommunicationValues = new ArrayList<SubcontractorCommunicationValue>();
+    private List<SubcontractorCommunicationValue> subcontractorCommunicationValues = new ArrayList<>();
 
     // Default constructor, needed by Hibernate
-    protected SubcontractorCommunication() {
-
-    }
+    protected SubcontractorCommunication() {}
 
     private SubcontractorCommunication ( SubcontractedTaskData subcontractedTaskData, CommunicationType communicationType, Date communicationDate, Boolean reviewed){
         this.setSubcontractedTaskData(subcontractedTaskData);
@@ -59,10 +56,12 @@ public class SubcontractorCommunication extends BaseEntity {
 
     public static SubcontractorCommunication create(
             SubcontractedTaskData subcontractedTaskData,
-            CommunicationType communicationType, Date communicationDate,
+            CommunicationType communicationType,
+            Date communicationDate,
             Boolean reviewed) {
-        return create(new SubcontractorCommunication(subcontractedTaskData,
-                communicationType, communicationDate, reviewed));
+
+        return create(
+                new SubcontractorCommunication(subcontractedTaskData, communicationType, communicationDate, reviewed));
     }
 
     public static SubcontractorCommunication create() {
@@ -104,6 +103,7 @@ public class SubcontractorCommunication extends BaseEntity {
 
     public void setSubcontractorCommunicationValues(
             List<SubcontractorCommunicationValue> subcontractorCommunicationValues) {
+
         this.subcontractorCommunicationValues = subcontractorCommunicationValues;
     }
 
@@ -112,14 +112,14 @@ public class SubcontractorCommunication extends BaseEntity {
     }
 
     public SubcontractorCommunicationValue getLastSubcontractorCommunicationValues(){
-        if (subcontractorCommunicationValues.isEmpty()){
-            return null;
-        }
-        return subcontractorCommunicationValues.get(subcontractorCommunicationValues.size()-1);
+        return subcontractorCommunicationValues.isEmpty()
+                ? null
+                : subcontractorCommunicationValues.get(subcontractorCommunicationValues.size() - 1);
     }
 
     public Date getLastSubcontractorCommunicationValueDate(){
         SubcontractorCommunicationValue value = getLastSubcontractorCommunicationValues();
+        
         return (value == null) ? null : value.getDate();
     }
 }

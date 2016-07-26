@@ -479,7 +479,8 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
         if ( SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_RECEIVED_FROM_SUBCONTRACTORS) ) {
             communicationsItems.add(subItem(
                     _("Received From Subcontractors"),
-                    "/subcontract/subcontractorCommunications.zul", ""));
+                    "/subcontract/subcontractorCommunications.zul",
+                    ""));
         }
 
         if ( SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_SEND_TO_CUSTOMERS) ) {
