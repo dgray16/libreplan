@@ -106,9 +106,9 @@
                         <div sclass="timetrackergap" id="insertionPointTimetracker"/>
                     </north>
 
-                    <center  id="insertionPointRightPanel"
-                             style="overflow-y:auto; overflow-x:auto;" border="0"
-                             sclass="advanced-assignment-area rightpanel-layout taskspanel-gap" />
+                    <center id="insertionPointRightPanel"
+                            style="overflow-y:auto; overflow-x:auto;" border="0"
+                            sclass="advanced-assignment-area rightpanel-layout taskspanel-gap" />
                 </borderlayout>
             </center>
         </borderlayout>
