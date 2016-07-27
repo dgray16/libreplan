@@ -106,6 +106,10 @@ public class OrderTemplatesModel implements IOrderTemplatesModel {
 
     private LabelsOnConversation labelsOnConversation;
 
+    private QualityFormsOnConversation qualityFormsOnConversation;
+
+    private OrderElementsOnConversation orderElementsOnConversation;
+
     private LabelsOnConversation getLabelsOnConversation() {
         if (labelsOnConversation == null) {
             labelsOnConversation = new LabelsOnConversation(labelDAO);
@@ -114,8 +118,6 @@ public class OrderTemplatesModel implements IOrderTemplatesModel {
         return labelsOnConversation;
     }
 
-    private QualityFormsOnConversation qualityFormsOnConversation;
-
     private QualityFormsOnConversation getQualityFormsOnConversation() {
         if (qualityFormsOnConversation == null) {
             qualityFormsOnConversation = new QualityFormsOnConversation(qualityFormDAO);
@@ -123,8 +125,6 @@ public class OrderTemplatesModel implements IOrderTemplatesModel {
 
         return qualityFormsOnConversation;
     }
-
-    private OrderElementsOnConversation orderElementsOnConversation;
 
     public OrderElementsOnConversation getOrderElementsOnConversation() {
         if (orderElementsOnConversation == null) {

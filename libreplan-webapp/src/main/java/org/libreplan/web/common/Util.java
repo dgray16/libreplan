@@ -77,6 +77,7 @@ import org.zkoss.zul.Column;
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class Util {
 
@@ -88,6 +89,12 @@ public class Util {
     private static final String[] DECIMAL_FORMAT_SPECIAL_CHARS = { "0", ",", ".", "\u2030", "%", "#", ";", "-" };
 
     private static final String RELOADED_COMPONENTS_ATTR = Util.class.getName() + ":" + "reloaded";
+
+    private static final ThreadLocal<Boolean> ignoreCreateBindings = new ThreadLocal<Boolean>() {
+        protected Boolean initialValue() {
+            return false;
+        }
+    };
 
     private Util() {}
 
@@ -149,8 +156,10 @@ public class Util {
 
     private static Set<Component> getReloadedComponents(Component component) {
         Execution execution = component.getDesktop().getExecution();
+
         @SuppressWarnings("unchecked")
         Set<Component> result = (Set<Component>) execution.getAttribute(RELOADED_COMPONENTS_ATTR);
+
         if (result == null) {
             result = new HashSet<>();
             execution.setAttribute(RELOADED_COMPONENTS_ATTR, result);
@@ -199,12 +208,6 @@ public class Util {
         return (DataBinder) component.getAttribute("binder", true);
     }
 
-    private static final ThreadLocal<Boolean> ignoreCreateBindings = new ThreadLocal<Boolean>() {
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-
     public static void executeIgnoringCreationOfBindings(Runnable action) {
         try {
             ignoreCreateBindings.set(true);
@@ -222,7 +225,15 @@ public class Util {
         // TODO resolve deprecated
         AnnotateDataBinder binder = new AnnotateDataBinder(result, true);
 
-        result.setAttribute("binder", binder, true);
+        /*
+         * Before it was:
+         * setAttribute("binder", binder, true)
+         * And it is not correct. Because API changed ( even more before it was setVariable("binder", binder, true) ).
+         * Boolean value for setAttribute() means recursive actions, but in setVariable() it was not so.
+         * And after, it still was calling method setAttribute() with (attr1, attr2, !booleanValue).
+         */
+        result.setAttribute("binder", binder, false);
+
         markAsNotReloadedForThisRequest(result);
     }
 
@@ -333,6 +344,7 @@ public class Util {
                                 final Setter<Comboitem> setter) {
 
         comboBox.setSelectedItem(getter.get());
+
         comboBox.addEventListener("onSelect",  event -> {
             setter.set(comboBox.getSelectedItem());
             comboBox.setSelectedItem(getter.get());
@@ -373,6 +385,7 @@ public class Util {
      */
     public static Intbox bind(final Intbox intBox, final Getter<Integer> getter, final Setter<Integer> setter) {
         intBox.setValue(getter.get());
+
         intBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue().trim();
@@ -420,6 +433,7 @@ public class Util {
      */
     public static Datebox bind(final Datebox dateBox, final Getter<Date> getter, final Setter<Date> setter) {
         dateBox.setValue(getter.get());
+
         dateBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(dateBox.getValue());
             dateBox.setValue(getter.get());
@@ -460,6 +474,7 @@ public class Util {
      */
     public static Timebox bind(final Timebox timeBox, final Getter<Date> getter, final Setter<Date> setter) {
         timeBox.setValue(getter.get());
+
         timeBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(timeBox.getValue());
             timeBox.setValue(getter.get());
@@ -503,6 +518,7 @@ public class Util {
                                   final Setter<BigDecimal> setter) {
 
         decimalBox.setValue(getter.get());
+
         decimalBox.addEventListener(Events.ON_CHANGE, event -> {
             setter.set(decimalBox.getValue());
             decimalBox.setValue(getter.get());
@@ -542,6 +558,7 @@ public class Util {
      */
     public static Checkbox bind(final Checkbox checkBox, final Getter<Boolean> getter, final Setter<Boolean> setter) {
         checkBox.setChecked(getter.get());
+
         checkBox.addEventListener(Events.ON_CHECK, event -> {
             setter.set(checkBox.isChecked());
             checkBox.setChecked(getter.get());
@@ -581,6 +598,7 @@ public class Util {
      */
     public static Radio bind(final Radio radio, final Getter<Boolean> getter, final Setter<Boolean> setter) {
         radio.setSelected(getter.get());
+
         radio.addEventListener(Events.ON_CHECK, event -> {
             setter.set(radio.isSelected());
             radio.setChecked(getter.get());
@@ -621,6 +639,7 @@ public class Util {
      */
     public static Bandbox bind(final Bandbox bandBox, final Getter<String> getter, final Setter<String> setter) {
         bandBox.setValue(getter.get());
+
         bandBox.addEventListener(Events.ON_CHANGE, event -> {
             InputEvent newInput = (InputEvent) event;
             String value = newInput.getValue();
@@ -747,11 +766,11 @@ public class Util {
      * decimal part and concatenating the currency symbol from {@link Configuration} object.
      */
     public static String addCurrencySymbol(BigDecimal value) {
-        value = (value == null ? BigDecimal.ZERO : value);
+        BigDecimal valueToReturn = value == null ? BigDecimal.ZERO : value;
         DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
         decimalFormat.applyPattern(getMoneyFormat());
 
-        return decimalFormat.format(value);
+        return decimalFormat.format(valueToReturn);
     }
 
     /**
@@ -770,11 +789,13 @@ public class Util {
      * format that appear in the <code>currencySymbol</code>.
      */
     private static String escapeDecimalFormatSpecialChars(String currencySymbol) {
+        String stringToReturn = currencySymbol;
+
         for (String specialChar : DECIMAL_FORMAT_SPECIAL_CHARS) {
-            currencySymbol = currencySymbol.replace(specialChar, "'" + specialChar + "'");
+            stringToReturn = stringToReturn.replace(specialChar, "'" + specialChar + "'");
         }
 
-        return currencySymbol;
+        return stringToReturn;
     }
 
     /**
@@ -827,8 +848,7 @@ public class Util {
      */
     public static boolean contains(List<? extends BaseEntity> list, BaseEntity entity) {
         for (BaseEntity each : list) {
-            if (each.getId() != null && entity.getId() != null
-                    && each.getId().equals(entity.getId())) {
+            if (each.getId() != null && entity.getId() != null && each.getId().equals(entity.getId())) {
                 return true;
             }
         }
@@ -861,10 +881,6 @@ public class Util {
      * Format specific <code>date</code> using the {@link DateFormat#DEFAULT} format and showing both date and time.
      */
     public static String formatDateTime(Date dateTime) {
-        if (dateTime == null) {
-            return "";
-        }
-
         return dateTime == null
                 ? ""
                 : DateFormat

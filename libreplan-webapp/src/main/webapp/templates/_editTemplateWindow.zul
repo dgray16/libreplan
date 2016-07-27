@@ -40,9 +40,10 @@
     macroURI="/templates/_assignedQualityForms.zul" ?>
 
 <window id="editTemplateWindow" title="${i18n:_('Edit task')}"
-    width="950px" left="50px" top="50px"
-    closable="true" onClose="self.visible = false; event.stopPropagation()"
-    visible="false" >
+        width="950px" left="50px" top="50px"
+        closable="true"
+        onClose="self.visible = false; event.stopPropagation()"
+        visible="false" >
 
 <tabbox height="620px" id="tabboxOrderElement">
     <tabs>
@@ -52,19 +53,24 @@
         <tab label="${i18n:_('Materials')}" />
         <tab label="${i18n:_('Quality Forms')}" />
     </tabs>
+
     <tabpanels>
         <tabpanel>
             <advancesAssignment id="advancesAssignment" />
         </tabpanel>
+
            <tabpanel>
                 <listOrderElementLabels id="listOrderElementLabels"/>
             </tabpanel>
+
               <tabpanel>
                  <listOrderElementCriterionRequirements id="listOrderElementCriterionRequirements"/>
              </tabpanel>
+
              <tabpanel>
                  <listOrderElementMaterials id="listOrderElementMaterials"/>
              </tabpanel>
+
              <tabpanel>
                  <assignedQualityForms id="assignedQualityForms"/>
              </tabpanel>

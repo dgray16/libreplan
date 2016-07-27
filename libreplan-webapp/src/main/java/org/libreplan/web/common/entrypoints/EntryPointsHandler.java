@@ -45,8 +45,6 @@ import org.libreplan.web.common.converters.IConverterFactory;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.BookmarkEvent;
 
-import org.zkoss.zk.ui.event.EventListener;
-
 /**
  * Handler for EntryPoints. In other way it is also wrapper for URL redirecting.
  * <br />
@@ -168,6 +166,7 @@ public class EntryPointsHandler<T> {
 
             return;
         }
+
         String fragment = buildFragment(methodName, values);
 
         if (linkCapturer.get() != null) {
@@ -217,11 +216,7 @@ public class EntryPointsHandler<T> {
     }
 
     private String stripPound(String fragment) {
-        if (fragment.startsWith("#")) {
-            return fragment.substring(1);
-        }
-
-        return fragment;
+        return fragment.startsWith("#") ? fragment.substring(1) : fragment;
     }
 
     private void sendRedirect(String fragment) {
@@ -337,7 +332,7 @@ public class EntryPointsHandler<T> {
     }
 
     public <S extends T> void registerBookmarkListener(final S controller, Page page) {
-        page.addEventListener("onBookmarkChange", (EventListener) event -> {
+        page.addEventListener("onBookmarkChange", event -> {
             BookmarkEvent bookmarkEvent = (BookmarkEvent) event;
             String bookmark = bookmarkEvent.getBookmark();
             applyIfMatches(controller, bookmark);
@@ -345,11 +340,7 @@ public class EntryPointsHandler<T> {
     }
 
     private String insertSemicolonIfNeeded(String uri) {
-        if (!uri.startsWith(";")) {
-            return ";" + uri;
-        }
-
-        return uri;
+        return !uri.startsWith(";") ? ";" + uri : uri;
     }
 
     private Object[] retrieveArguments(Map<String, String> matrixParams,

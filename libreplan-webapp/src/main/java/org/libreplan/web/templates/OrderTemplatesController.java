@@ -74,8 +74,7 @@ import org.zkoss.zul.Window;
  */
 @org.springframework.stereotype.Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class OrderTemplatesController extends GenericForwardComposer
-                                      implements IOrderTemplatesControllerEntryPoints {
+public class OrderTemplatesController extends GenericForwardComposer implements IOrderTemplatesControllerEntryPoints {
 
     private IOrderTemplatesModel model;
 
@@ -93,15 +92,15 @@ public class OrderTemplatesController extends GenericForwardComposer
 
     private TreeComponent treeComponent;
 
+    private EditTemplateWindowController editTemplateController;
+
     @Resource
     private IGlobalViewEntryPoints globalView;
 
     @Autowired
     private IURLHandlerRegistry handlerRegistry;
 
-    private EditTemplateWindowController editTemplateController;
-
-    public OrderTemplatesController(){
+    public OrderTemplatesController() {
         model = (IOrderTemplatesModel) SpringUtil.getBean("orderTemplatesModel");
     }
 
@@ -244,21 +243,21 @@ public class OrderTemplatesController extends GenericForwardComposer
     }
 
     private boolean isAllValid() {
-        // validate template name
+        // Validate template name
         ConstraintChecker.isValid(editWindow);
         name = (Textbox) editWindow.getFellowIfAny("name");
 
         if ((name != null) && (!name.isValid())) {
             selectTab("tabGeneralData");
             showInvalidWorkReportTypeName();
+
             return false;
         }
 
         if (model.getTemplate().isOrderTemplate()) {
             OrderTemplate orderTemplate = (OrderTemplate) model.getTemplate();
             if (orderTemplate.getCalendar() == null) {
-                throw new WrongValueException(editWindow.getFellow("calendar"),
-                        _("calendar not specified"));
+                throw new WrongValueException(editWindow.getFellow("calendar"), _("calendar not specified"));
             }
         }
 
@@ -289,6 +288,7 @@ public class OrderTemplatesController extends GenericForwardComposer
 
         final EntryPointsHandler<IOrderTemplatesControllerEntryPoints> handler =
                 handlerRegistry.getRedirectorFor(IOrderTemplatesControllerEntryPoints.class);
+
         handler.register(this, page);
 
         setBreadcrumbs(comp);
@@ -330,7 +330,7 @@ public class OrderTemplatesController extends GenericForwardComposer
 
     private void bindTemplatesTreeWithModel() {
         if (treeComponent == null) {
-            // if the tree is not initialized yet no bind has to be done
+            // If the tree is not initialized yet no bind has to be done
             return;
         }
 
@@ -342,11 +342,8 @@ public class OrderTemplatesController extends GenericForwardComposer
     }
 
     private void controlSelectionWithOnClick(final Tree tree) {
-        tree.addEventListener(Events.ON_SELECT, event -> {
-            //undo the work done by this event
-            //to be able to control it from the ON_CLICK event
-            tree.clearSelection();
-        });
+        // Undo the work done by this event to be able to control it from the ON_CLICK event
+        tree.addEventListener(Events.ON_SELECT, event -> tree.clearSelection());
     }
 
     private void setTreeRenderer(TreeComponent orderElementsTree) {
@@ -365,11 +362,13 @@ public class OrderTemplatesController extends GenericForwardComposer
     }
 
     /**
-     * Pop up confirm remove dialog
-     * @param OrderTemplate
+     * Pop up confirm remove dialog.
+     *
+     * @param {@link OrderElementTemplate}
      */
     public void confirmDelete(OrderElementTemplate template) {
-        if (Messagebox.show(_("Delete template. Are you sure?"),
+        if (Messagebox.show(
+                _("Delete template. Are you sure?"),
                 _("Confirm"),
                 Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
 
@@ -381,10 +380,9 @@ public class OrderTemplatesController extends GenericForwardComposer
                     Util.reloadBindings(gridOrderTemplates);
                 }
             } else {
-                messagesForUser
-                        .showMessage(
-                                Level.ERROR,
-                                _("Template cannot be removed because it has applications"));
+                messagesForUser.showMessage(
+                        Level.ERROR,
+                        _("Template cannot be removed because it has applications"));
             }
         }
 
@@ -408,25 +406,13 @@ public class OrderTemplatesController extends GenericForwardComposer
     }
 
     public BaseCalendar getCalendar() {
-        if (isOrderTemplate()) {
-            return ((OrderTemplate) model.getTemplate()).getCalendar();
-        }
-        return null;
+        return isOrderTemplate() ? ((OrderTemplate) model.getTemplate()).getCalendar() : null;
     }
 
     public void setCalendar(BaseCalendar calendar) {
         if (isOrderTemplate()) {
             ((OrderTemplate) model.getTemplate()).setCalendar(calendar);
         }
-    }
-
-    public String getTest(){
-        if(model.getTemplate() != null) {
-            return model.getTemplate().getName();
-
-        }
-
-        return "YE is test";
     }
 
 }
