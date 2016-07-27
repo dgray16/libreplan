@@ -36,6 +36,7 @@ public enum Type {
             return false;
         }
     },
+
     FROM_TODAY {
 
         @Override
@@ -48,6 +49,7 @@ public enum Type {
             return false;
         }
     },
+
     FROM_CHOSEN {
 
         @Override
@@ -62,13 +64,14 @@ public enum Type {
     };
 
     public static Type fromRadio(Radio selectedItem) {
-        return Type.valueOf((String) selectedItem.getValue());
+        return Type.valueOf(selectedItem.getValue());
     }
 
     public Radio createRadio() {
         Radio result = new Radio();
         result.setLabel(getName());
         result.setValue(this.toString());
+
         return result;
     }
 
