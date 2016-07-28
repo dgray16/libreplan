@@ -289,9 +289,9 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 } else {
                     // Select the parent row to add new children ASAP
                     /**
-                     * Unnecessary to call methods, because org.zkoss.zul.Tree API was changed
-                     * tree.setSelectedItem(getRenderer().getTreeitemForNode(node));
-                     */
+                      Unnecessary to call methods, because org.zkoss.zul.Tree API was changed */
+                      tree.setSelectedItem(getRenderer().getTreeitemForNode(newNode.getParent().getThis()));
+
                 }
             } else {
                 getModel().addElement(name.getValue(), hours.getValue());

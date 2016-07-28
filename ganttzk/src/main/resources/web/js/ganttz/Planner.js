@@ -79,4 +79,4 @@ ganttz.Planner = zk.$extends(
     setInstance : function(instance) {
         this._instance = instance;
     }
-})
+});

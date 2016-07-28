@@ -46,6 +46,7 @@ ganttz.GanttPanel = zk.$extends(
             this.setYMouse(arrPos[1]);
         },
         _listenToScroll : function() {
+            console.log("I AM HERE 1 !!");
             this._timetrackergap.css("left","-" + this._rightpannellayout.scrollLeft() + "px");
             this._taskdetails.css("top", "-" + this._rightpannellayout.scrollTop() + "px");
             this._plannergraph.scrollLeft( this._rightpannellayout.scrollLeft() );

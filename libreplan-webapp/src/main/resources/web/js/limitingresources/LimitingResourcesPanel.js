@@ -42,8 +42,9 @@ limitingresources.LimitingResourcesPanel = zk.$extends(
             this._leftpanel = jq('.leftpanelgap .z-tree-body');
         },
         _listenToScroll : function() {
+            console.log("I AM HERE!");
             this._timetrackergap.css('left', '-' + this._rightpanellayout.scrollLeft() + 'px');
             this._leftpanel.css('top', '-' + this._rightpanellayout.scrollTop() + 'px');
             this._resourcesload.scrollLeft(this._rightpanellayout.scrollLeft());
         }
-    })
+    });

@@ -206,6 +206,7 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
     @Override
     protected void reloadTreeUIAfterChanges() {
         tree.setModel(getFilteredTreeModel());
+        tree.onInitRender();
         tree.invalidate();
     }
 

@@ -276,7 +276,7 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
             @Override
             protected void scrollHorizontalPercentage(int daysDisplacement) {
                 response(
-                        "", new AuInvoke(queueListComponent, "scroll_horizontal", Integer.toString(daysDisplacement )));
+                        "scroll_horizontal", new AuInvoke(queueListComponent, "scroll_horizontal", Integer.toString(daysDisplacement)));
 
                 moveCurrentPositionScroll();
             }

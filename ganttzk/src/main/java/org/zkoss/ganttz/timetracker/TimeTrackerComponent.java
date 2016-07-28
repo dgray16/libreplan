@@ -48,7 +48,7 @@ public abstract class TimeTrackerComponent extends HtmlMacroComponent {
 
     private int scrollLeft;
 
-    protected TimeTrackerComponent(TimeTracker timeTracker) {
+    public TimeTrackerComponent(TimeTracker timeTracker) {
         this(timeTracker, "~./ganttz/zul/timetracker/timetrackersecondlevel.zul", "timetracker");
     }
 

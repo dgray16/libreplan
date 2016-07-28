@@ -88,7 +88,7 @@ public class GanttPanel extends XulElement implements AfterCompose {
 
                 response(
                         "scroll_horizontal",
-                        new AuInvoke(GanttPanel.this, "scroll_horizontal", "" + daysDisplacement));
+                        new AuInvoke(GanttPanel.this, "scroll_horizontal", Integer.toString(daysDisplacement)));
 
                 moveCurrentPositionScroll();
             }
@@ -103,7 +103,9 @@ public class GanttPanel extends XulElement implements AfterCompose {
                 int diffDays = getTimeTrackerComponent().getDiffDays(previousStart);
                 double pixelPerDay = getTimeTrackerComponent().getPixelPerDay();
 
-                response("move_scroll", new AuInvoke(GanttPanel.this, "move_scroll", "" + diffDays, "" + pixelPerDay));
+                response("move_scroll", new AuInvoke(GanttPanel.this, "move_scroll",
+                        Integer.toString(diffDays),
+                        Double.toString(pixelPerDay)));
             }
 
             protected void updateCurrentDayScroll() {
@@ -111,7 +113,7 @@ public class GanttPanel extends XulElement implements AfterCompose {
 
                 response(
                         "update_day_scroll",
-                        new AuInvoke(GanttPanel.this, "update_day_scroll", "" + previousPixelPerDay));
+                        new AuInvoke(GanttPanel.this, "update_day_scroll", Double.toString(previousPixelPerDay)));
 
             }
 
