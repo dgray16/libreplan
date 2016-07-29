@@ -44,8 +44,7 @@ import org.zkoss.zul.event.TreeDataEvent;
  */
 public class MutableTreeModelTest {
 
-    private static class Prueba {
-    }
+    private static class Prueba {}
 
     @Test
     public void aMutableTreeModelIsAZkTreeModel() {
@@ -311,13 +310,7 @@ public class MutableTreeModelTest {
     }
 
     private IChildrenExtractor<Prueba> childrenFor(final Prueba parent, final Prueba... children) {
-        return p -> {
-            if ( parent == p ) {
-                return Arrays.asList(children);
-            } else {
-                return Collections.emptyList();
-            }
-        };
+        return p -> parent == p ? Arrays.asList(children) : Collections.emptyList();
     }
 
     @Test

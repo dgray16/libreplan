@@ -116,9 +116,12 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
 
         private void until(LinkedList<Integer> result, Node<T> parent) {
             if ( !parent.equals(this) ) {
+
                 if ( isRoot() ) {
+
                     /* Final reached, but parent not found */
                     result.clear();
+
                 } else {
                     result.add(0, this.parentNode.getIndexOf(this));
                     this.parentNode.until(result, parent);
@@ -178,12 +181,9 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     }
 
     private Node<T> find(Object domainObject) {
-        for(Map.Entry<T, Node<T>> item : nodesByDomainObject.entrySet()){
-            if (item.getKey() != null) {
-
-                if (item.getKey().equals(domainObject)) {
-                    return item.getValue();
-                }
+        for (Map.Entry<T, Node<T>> item : nodesByDomainObject.entrySet()) {
+            if ( item.getKey() != null && item.getKey().equals(domainObject) ) {
+                return item.getValue();
             }
         }
 
@@ -212,9 +212,25 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         this.root = root;
     }
 
+    /**
+     * Is some cases it was returning new int[0], but should return new path instead.
+     * Reason of that: API changes. Before it was looking for child index manually.
+     * Now it is not looking at all.
+     * So I decided to return value by our own
+     * {@link MutableTreeModel#shouldILookForLastValue(Object, Node), {@link #shouldILookForParentValue(Object, Node)}}
+     * Not to use {@link AbstractTreeModel#getIndexOfChild(Object parent, Object child)}.
+     */
     public int[] getPath(Object parent, Object last) {
         Node<T> parentNode = find(parent);
         Node<T> lastNode = find(last);
+
+        if ( shouldILookForParentValue(parent, parentNode) ) {
+            parentNode = find( ((Node) parent).value );
+        }
+
+        if ( shouldILookForLastValue(last, lastNode) ) {
+            lastNode = find( ((Node) last).value );
+        }
 
         if ( parentNode == null || lastNode == null)  {
             return new int[0];
@@ -222,6 +238,19 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         List<Integer> path = lastNode.until(parentNode);
 
         return asIntArray(path);
+    }
+
+    private boolean shouldILookForParentValue(Object parent, Node<T> parentNode) {
+        return parent != null &&
+                parentNode == null &&
+                parent.getClass().toString().contains("Node") &&
+                ((Node) parent).value != null;
+    }
+    private boolean shouldILookForLastValue(Object last, Node<T> lastNode) {
+        return last != null &&
+                lastNode == null &&
+                last.getClass().toString().contains("Node") &&
+                ((Node) last).value != null;
     }
 
     @Override
@@ -271,6 +300,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
     @Override
     public T getChild(int[] path){
         T node = getRoot();
+
         for (int item : path) {
             if (item < 0 || item > _childCount(node))
                 return null;
@@ -285,6 +315,12 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         return isLeaf(parent) ? 0 : getChildCount(parent);
     }
 
+    /**
+     * Previously index was correct,
+     * because ZK API was calling {@link AbstractTreeModel#getIndexOfChild(Object, Object)} method.
+     * Now it is not calling that method and sometimes index could be incorrect.
+     * So I decided to make --index if it will throw exception.
+     */
     @Override
     public T getChild(Object parent, int index) {
         Node<T> node;
@@ -295,7 +331,17 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
             node = find(parent);
         }
 
-        return unwrap(node.children.get(index));
+        T nodeToReturn = null;
+
+        try {
+            nodeToReturn = unwrap(node.children.get(index));
+        } catch (IndexOutOfBoundsException e) {
+            if ( index - 1 >= 0 ) {
+                nodeToReturn = unwrap(node.children.get(index - 1));
+            } else throw new IndexOutOfBoundsException("Something wrong with indexes");
+        }
+
+        return nodeToReturn;
     }
 
     @Override
@@ -339,7 +385,7 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
         int indexFrom = position == null ? parent.children.size() : position;
         int indexTo = indexFrom + children.size() - 1;
         addWithoutSendingEvents(parent, position, children, extractor);
-        fireEvent(TreeDataEvent.INTERVAL_ADDED, getPath(parent),indexFrom, indexTo);
+        fireEvent(TreeDataEvent.INTERVAL_ADDED, getPath(parent), indexFrom, indexTo);
     }
 
     private void addWithoutSendingEvents(Node<T> parent,

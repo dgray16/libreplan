@@ -104,6 +104,20 @@ public class OrderTemplatesController extends GenericForwardComposer implements 
         model = (IOrderTemplatesModel) SpringUtil.getBean("orderTemplatesModel");
     }
 
+    @Override
+    public void doAfterCompose(Component comp) throws Exception {
+        super.doAfterCompose(comp);
+        messagesForUser = new MessagesForUser(messagesContainer);
+        getVisibility().showOnly(listWindow);
+
+        final EntryPointsHandler<IOrderTemplatesControllerEntryPoints> handler =
+                handlerRegistry.getRedirectorFor(IOrderTemplatesControllerEntryPoints.class);
+
+        handler.register(this, page);
+
+        setBreadcrumbs(comp);
+    }
+
     public List<OrderElementTemplate> getTemplates() {
         return model.getRootTemplates();
     }
@@ -278,20 +292,6 @@ public class OrderTemplatesController extends GenericForwardComposer implements 
         } catch (IllegalArgumentException e) {
             throw new WrongValueException(name, _(e.getMessage()));
         }
-    }
-
-    @Override
-    public void doAfterCompose(Component comp) throws Exception {
-        super.doAfterCompose(comp);
-        messagesForUser = new MessagesForUser(messagesContainer);
-        getVisibility().showOnly(listWindow);
-
-        final EntryPointsHandler<IOrderTemplatesControllerEntryPoints> handler =
-                handlerRegistry.getRedirectorFor(IOrderTemplatesControllerEntryPoints.class);
-
-        handler.register(this, page);
-
-        setBreadcrumbs(comp);
     }
 
     private void setBreadcrumbs(Component comp) {
