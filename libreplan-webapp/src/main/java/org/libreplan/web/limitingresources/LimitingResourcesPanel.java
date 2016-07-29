@@ -271,39 +271,6 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
         return getFellow("toolbar");
     }
 
-    private TimeTrackerComponent timeTrackerForLimitingResourcesPanel(TimeTracker timeTracker) {
-        return new TimeTrackerComponent(timeTracker) {
-            @Override
-            protected void scrollHorizontalPercentage(int daysDisplacement) {
-                response(
-                        "scroll_horizontal", new AuInvoke(queueListComponent, "scroll_horizontal", Integer.toString(daysDisplacement)));
-
-                moveCurrentPositionScroll();
-            }
-
-            @Override
-            protected void moveCurrentPositionScroll() {
-                // Get the previous data
-                LocalDate previousStart = getPreviousStart();
-
-                // Get the current data
-                int diffDays = getTimeTrackerComponent().getDiffDays(previousStart);
-                double pixelPerDay = getTimeTrackerComponent().getPixelPerDay();
-
-                response("move_scroll", new AuInvoke(
-                        queueListComponent, "move_scroll", Integer.toString(diffDays), Double.toString(pixelPerDay)));
-            }
-
-            @Override
-            protected void updateCurrentDayScroll() {
-                double previousPixelPerDay = getTimeTracker().getMapper().getPixelsPerDay().doubleValue();
-
-                response("update_day_scroll", new AuInvoke(
-                        queueListComponent, "update_day_scroll", Double.toString(previousPixelPerDay)));
-            }
-        };
-    }
-
     @Override
     public void afterCompose() {
 

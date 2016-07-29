@@ -36,13 +36,12 @@ limitingresources.LimitingResourcesPanel = zk.$extends(
             zAu.send(new zk.Event(this, 'onZoomLevelChange', {zoomindex : zoomindex, scrollLeft : scrollLeft}));
         },
         _initializeProperties : function() {
-            this._rightpanellayout = jq('.rightpanellayout div:first');
+            this._rightpanellayout = jq('.rightpanel-layout div:first');
             this._timetrackergap = jq('.timetrackergap');
             this._resourcesload = jq('.resourcesloadgraph div:first');
             this._leftpanel = jq('.leftpanelgap .z-tree-body');
         },
         _listenToScroll : function() {
-            console.log("I AM HERE!");
             this._timetrackergap.css('left', '-' + this._rightpanellayout.scrollLeft() + 'px');
             this._leftpanel.css('top', '-' + this._rightpanellayout.scrollTop() + 'px');
             this._resourcesload.scrollLeft(this._rightpanellayout.scrollLeft());
