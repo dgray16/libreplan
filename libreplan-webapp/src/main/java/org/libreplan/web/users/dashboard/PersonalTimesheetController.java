@@ -182,6 +182,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         private void renderOrderElementRow(Row row, OrderElement orderElement) {
             /* Flattening of orderElement row by height */
             row.setHeight("27px");
+
             row.setClass("row-timetracking");
 
             Util.appendLabel(row, personalTimesheetModel.getOrder(orderElement).getName());
@@ -273,7 +274,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
                         return effortDurationToString(effortDuration);
                     },
-                    (value) -> {
+                    value -> {
                         EffortDuration effortDuration = effortDurationFromString(value);
 
                         if ( effortDuration == null ) {
@@ -292,7 +293,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
             Checkbox finishedCheckbox = Util.bind(
                     new Checkbox(),
                     () -> personalTimesheetModel.isFinished(orderElement, textboxDate),
-                    (value) -> {
+                    value -> {
                         personalTimesheetModel.setFinished(orderElement, textboxDate, value);
                         markAsModified(textbox);
                     });
@@ -308,7 +309,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         }
 
         private boolean addOnOkEventToClosePopup(Component component) {
-            return component.addEventListener(Events.ON_OK, (EventListener) event -> closePersonalTimesheetPopup());
+            return component.addEventListener(Events.ON_OK, event -> closePersonalTimesheetPopup());
         }
 
         private void markAsModified(final Textbox textbox) {
@@ -852,8 +853,8 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         }
 
         String decimalSeparator = Character.toString(
-                (((DecimalFormat) DecimalFormat.getInstance(Locales.getCurrent()))
-                .getDecimalFormatSymbols().getDecimalSeparator()));
+                ((DecimalFormat) DecimalFormat.getInstance(Locales.getCurrent()))
+                .getDecimalFormatSymbols().getDecimalSeparator());
 
         if ( effort.contains(decimalSeparator) || effort.contains(".") ) {
             try {
