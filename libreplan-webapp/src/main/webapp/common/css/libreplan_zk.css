@@ -895,7 +895,8 @@ span.z-dottree-line {
 }
 
 .z-menu-selected > .z-menu-content > .z-menu-text,
-.current-section  > .z-menu-content > .z-menu-text {
+.current-section  > .z-menu-content > .z-menu-text,
+.z-menu-content:hover > .z-menu-text {
     color: #FFFFFF;
 }
 

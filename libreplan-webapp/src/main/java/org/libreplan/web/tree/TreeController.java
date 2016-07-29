@@ -286,13 +286,14 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 if (node.isLeaf() && !node.isEmptyLeaf()) {
                     // Then a new container will be created
                     nameTextbox = getRenderer().getNameTextbox(node);
-                } else {
+                }
+               /** } else {
                     // Select the parent row to add new children ASAP
-                    /**
-                      Unnecessary to call methods, because org.zkoss.zul.Tree API was changed */
+                    **
+                      Unnecessary to call methods, because org.zkoss.zul.Tree API was changed
                       tree.setSelectedItem(getRenderer().getTreeitemForNode(newNode.getParent().getThis()));
 
-                }
+                } */
             } else {
                 getModel().addElement(name.getValue(), hours.getValue());
 
