@@ -56,11 +56,11 @@ public class LogsController extends GenericForwardComposer {
         comp.setAttribute("logsController", this, true);
         logWindow = (Window) comp.getFellowIfAny("logWindow");
         Util.createBindingsFor(logWindow);
+        setupIssueLogController();
         setupRiskLogController();
     }
 
     public void setupIssueLogController() {
-        //TODO Check this. Doesn't work apply in zul file
         issueLogWindow = (Window) self.getFellowIfAny("issueLogWindow");
 
         if ( issueLogController == null ) {

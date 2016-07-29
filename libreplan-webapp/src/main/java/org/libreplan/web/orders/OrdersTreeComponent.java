@@ -67,9 +67,11 @@ public class OrdersTreeComponent extends TreeComponent {
 
     public List<Column> getColumns() {
         List<Column> columns = new ArrayList<>();
+
         columns.add(schedulingStateColumn);
         columns.add(codeColumn);
         columns.add(nameAndDescriptionColumn);
+
         columns.add(new OrdersTreeColumn(_("Hours"), "hours",
                 _("Total task hours")) {
 
@@ -79,6 +81,7 @@ public class OrdersTreeComponent extends TreeComponent {
             }
 
         });
+
         columns.add(new OrdersTreeColumn(_("Budget"), "budget",
                 _("Total task budget")) {
 
@@ -112,8 +115,8 @@ public class OrdersTreeComponent extends TreeComponent {
             }
 
         });
-        columns
-                .add(new OrdersTreeColumn(
+
+        columns.add(new OrdersTreeColumn(
                         _("Deadline"),
                         "estimated_end",
                         _("Estimated end date for the task (press enter in textbox to open calendar popup or type in date directly)")) {
@@ -123,7 +126,9 @@ public class OrdersTreeComponent extends TreeComponent {
                 treeRenderer.addEndDateCell(currentElement);
             }
         });
+
         columns.add(operationsColumn);
+
         return columns;
     }
 

@@ -87,13 +87,12 @@
         </hbox>
 
         </vbox>
-        <vbox hflex="1" sclass="vBox3">
-            <tree id="tree" width="auto" multiple="false" droppable="true"
+        <vbox width="100%" sclass="vBox3">
+            <tree id="tree" hflex="1" multiple="false" droppable="true"
                   onDrop="treeController.move(self, event.dragged)"
                   onSelect="treeController.updateControlButtons()"
                   mold="paging" pageSize="25"
-                  sclass="orderTree"
-                  zclass="z-dottree">
+                  sclass="orderTree">
                 <treecols sizable="true">
                     <treecol label="${each.label}" sclass="${each.cssClass}" tooltiptext="${each.tooltip}"
                              forEach="${treeComponent.columns}" hflex="${each.hflex}" />
@@ -101,14 +100,4 @@
             </tree>
         </vbox>
     </vbox>
-
-    <script>
-        zk.afterMount( function(){
-            $(".reloadTree").mouseup( function(){
-                var treeCol = $(".code");
-                treeCol.css("width", "100%");
-                console.log( treeCol.css("width") );
-            })
-        });
-    </script>
 </zk>
