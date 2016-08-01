@@ -402,8 +402,6 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         getRenderer().refreshBudgetValueForNodes(parentNodes);
     }
 
-
-
     public boolean isItemSelected() {
         return tree.getSelectedItem() != null;
     }
