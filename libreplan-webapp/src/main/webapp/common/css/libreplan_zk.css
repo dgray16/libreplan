@@ -121,14 +121,6 @@ body .advanced-allocation-layout .icono .z-button-cm {
     padding: 2px;
 }
 
-.toolbar-box .clicked .z-button-cm,
-.toolbar-box .z-button-cm:active {
-    background-color: #E6F2F9; /* blue (active background)*/
-    border-top: 1px solid #006699;
-    border-left: 1px solid #006699;
-    padding: 2px;
-}
-
 .sub_menu .z-button-cm {
     background-color: transparent !important;
     border: 0;
@@ -1641,9 +1633,9 @@ tr.z-tree-row-seld .z-row-content {
 }
 
 .progress-types.z-combobox .z-combobox-button {
-    /*background-image: url(../img/small-combo-arrow.png);*/
     background: transparent;
     border: 0;
+    box-shadow: none;
 }
 
 .advanced-allocation-layout .second_level_ td {
@@ -2264,4 +2256,19 @@ textarea {
 
 .timetrackergap .z-grid {
     height: 16px;
+}
+
+
+/* For correct display button icon when it clicked and unclicked */
+.planner-command:focus {
+    background-image: none;
+    box-shadow: none;
+}
+
+.planner-command.clicked.z-button,
+.planner-command.clicked.z-button:focus {
+    background-color: #E6F2F9; /* blue (active background)*/
+    border-top: 1px solid #006699;
+    border-left: 1px solid #006699;
+    padding: 2px;
 }

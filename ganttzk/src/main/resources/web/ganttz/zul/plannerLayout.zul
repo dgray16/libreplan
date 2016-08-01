@@ -45,6 +45,7 @@
 
                 <button id="btnPrint" onClick="planner.print()"
                         image="/common/img/ico_print.png"
+                        style="background: none; box-shadow: none;"
                         tooltiptext="${ganttzk_i18n:_('Print')}" />
                 <separator/>
 
@@ -82,7 +83,7 @@
                 <hbox class="show-advances" align="center">
                     <button id="showAdvances" onClick="planner.showAdvances();"
                             image="/common/img/ico_progress.png"
-                            style="width:46px"
+                            style="width:46px; margin-right: -5px;"
                             tooltiptext="${ganttzk_i18n:_('Show/Hide progress')}"
                             sclass="planner-command" />
 
@@ -112,7 +113,7 @@
         <center border="0">
             <borderlayout sclass="plannerlayout_center" height="100%">
                 <west id="taskdetailsContainer"
-                      vflex="min" collapsible="true" splittable="true" width="375px"
+                      vflex="0" collapsible="true" splittable="true" width="375px"
                       sclass="taskdetailsContainer">
 
                     <div sclass="leftpanelgap" id="insertionPointLeftPanel"/>
