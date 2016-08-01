@@ -41,6 +41,14 @@ public abstract class TreeComponent extends HtmlMacroComponent {
 
     private static final String CONTROLLER_NAME = "treeController";
 
+    private void doAfterComposeOnController(Composer controller) {
+        try {
+            controller.doAfterCompose(this);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public abstract static class Column {
 
         private String label;
@@ -100,12 +108,8 @@ public abstract class TreeComponent extends HtmlMacroComponent {
             return "";
         }
 
-        public abstract <T extends ITreeNode<T>> void doCell(TreeController<T>.Renderer renderer,
-                                                             Treeitem item,
-                                                             T currentElement);
-
-
-
+        public abstract <T extends ITreeNode<T>> void doCell(
+                TreeController<T>.Renderer renderer, Treeitem item, T currentElement);
     }
 
     protected final Column codeColumn = new Column(_("Code"), "code") {
@@ -124,6 +128,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
         public <T extends ITreeNode<T>> void doCell(
                 TreeController<T>.Renderer renderer,
                 Treeitem item, T currentElement) {
+
             renderer.addDescriptionCell(currentElement);
         }
     };
@@ -133,6 +138,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
         public <T extends ITreeNode<T>> void doCell(
                 TreeController<T>.Renderer renderer,
                 Treeitem item, T currentElement) {
+
             renderer.addOperationsCell(item, currentElement);
         }
     };
@@ -146,6 +152,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
         public <T extends ITreeNode<T>> void doCell(
                 TreeController<T>.Renderer renderer,
                 Treeitem item, T currentElement) {
+
             renderer.addSchedulingStateCell(currentElement);
         }
 
@@ -166,14 +173,6 @@ public abstract class TreeComponent extends HtmlMacroComponent {
 
     public TreeController<?> getController() {
         return (TreeController<?>) getAttribute(CONTROLLER_NAME, true);
-    }
-
-    private void doAfterComposeOnController(Composer controller) {
-        try {
-            controller.doAfterCompose(this);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public String getAddElementLabel() {

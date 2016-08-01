@@ -9,10 +9,8 @@
         <param name="max_lo">100</param>
       </generator>
     </id>
-    <!--
-            IMPORTANT: type="long" must be specified (otherwise,
-            Hibernate infers type="integer".
-        -->
+
+    <!-- IMPORTANT: type="long" must be specified (otherwise, Hibernate infers type="integer" -->
     <version name="version" access="property" type="long" />
 
     <property name="code" access="property" not-null="true" unique="true"/>

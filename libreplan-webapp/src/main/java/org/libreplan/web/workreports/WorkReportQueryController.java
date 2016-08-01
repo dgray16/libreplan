@@ -293,11 +293,10 @@ public class WorkReportQueryController extends GenericForwardComposer {
 
     private TypeOfWorkHours getSelectedHoursType() {
         Comboitem itemSelected = filterHoursType.getSelectedItem();
-        if ((itemSelected != null) && ((itemSelected.getValue()) != null)) {
-            return (TypeOfWorkHours) itemSelected.getValue();
-        }
 
-        return null;
+        return (itemSelected != null) && ((itemSelected.getValue()) != null)
+                ? (TypeOfWorkHours) itemSelected.getValue()
+                : null;
     }
 
     /**
@@ -323,13 +322,17 @@ public class WorkReportQueryController extends GenericForwardComposer {
         }
     }
 
+    /* Should be public! */
     public void goToEditFormQuery(WorkReportLine line) {
         WorkReport workReport = line.getWorkReport();
+
         if (SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_TIMESHEETS)) {
             workReportCRUD.goToEditForm(workReport);
-        } else if (SecurityUtils.isUserInRole(UserRole.ROLE_BOUND_USER)
-                && workReportModel.isPersonalTimesheet(workReport)
-                && belongsToCurrentUser(line)) {
+
+        } else if (SecurityUtils.isUserInRole(UserRole.ROLE_BOUND_USER) &&
+                workReportModel.isPersonalTimesheet(workReport) &&
+                belongsToCurrentUser(line)) {
+
             personalTimesheetController.goToCreateOrEditForm(line.getLocalDate());
         } else {
             messagesForUser.showMessage(Level.WARNING, _("You do not have permissions to edit this timesheet"));
@@ -339,6 +342,7 @@ public class WorkReportQueryController extends GenericForwardComposer {
     private boolean belongsToCurrentUser(WorkReportLine line) {
         User user = UserUtil.getUserFromSession();
         assert user != null;
+
         return line.getResource().getId().equals(user.getWorker().getId());
     }
 

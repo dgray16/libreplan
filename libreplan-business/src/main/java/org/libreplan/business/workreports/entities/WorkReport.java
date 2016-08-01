@@ -76,9 +76,7 @@ public class WorkReport extends IntegrationEntity implements IWorkReportsElement
     /**
      * Constructor for hibernate. Do not use!
      */
-    public WorkReport() {
-
-    }
+    public WorkReport() {}
 
     private WorkReport(WorkReportType workReportType) {
         this.setWorkReportType(workReportType);

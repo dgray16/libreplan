@@ -56,7 +56,6 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.DropEvent;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.KeyEvent;
@@ -125,11 +124,22 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     @Wire
     protected TreeComponent orderElementTreeComponent;
 
-    public abstract Renderer getRenderer();
-
     protected TreeController(Class<T> type) {
         this.type = type;
     }
+
+    @Override
+    public void doAfterCompose(Component comp) throws Exception {
+        super.doAfterCompose(comp);
+
+        if (this.orderElementTreeComponent == null) {
+            this.orderElementTreeComponent = (TemplatesTreeComponent) comp;
+        }
+
+        messagesForUser = new MessagesForUser(messagesContainer);
+    }
+
+    public abstract Renderer getRenderer();
 
     public void indent() {
         if (tree.getSelectedCount() == 1) {
@@ -279,8 +289,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 getRenderer().refreshHoursValueForThisNodeAndParents(newNode);
                 getRenderer().refreshBudgetValueForThisNodeAndParents(newNode);
 
-                // Moved here in order to have items already renderer in order
-                // to select the proper element to focus
+                // Moved here in order to have items already renderer in order to select the proper element to focus
                 reloadTreeUIAfterChanges();
 
                 if (node.isLeaf() && !node.isEmptyLeaf()) {
@@ -288,10 +297,11 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     nameTextbox = getRenderer().getNameTextbox(node);
                 } else {
                     // Select the parent row to add new children ASAP
-                    /**
-                      Unnecessary to call methods, because org.zkoss.zul.Tree API was changed */
-                      tree.setSelectedItem(getRenderer().getTreeitemForNode(newNode.getParent().getThis()));
 
+                    /*
+                     * Unnecessary to call methods, because org.zkoss.zul.Tree API was changed
+                     * tree.setSelectedItem(getRenderer().getTreeitemForNode(node));
+                     */
                 }
             } else {
                 getModel().addElement(name.getValue(), hours.getValue());
@@ -392,16 +402,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         getRenderer().refreshBudgetValueForNodes(parentNodes);
     }
 
-    @Override
-    public void doAfterCompose(Component comp) throws Exception {
-        super.doAfterCompose(comp);
 
-        if (this.orderElementTreeComponent == null) {
-            this.orderElementTreeComponent = (TemplatesTreeComponent) comp;
-        }
-
-        messagesForUser = new MessagesForUser(messagesContainer);
-    }
 
     public boolean isItemSelected() {
         return tree.getSelectedItem() != null;
@@ -441,7 +442,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     protected boolean isLastItem(T element) {
         List children = element.getParent().getChildren();
 
-        return (children.get(children.size() - 1).equals(element));
+        return children.get(children.size() - 1).equals(element);
     }
 
     private enum Navigation {
@@ -464,14 +465,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             void register(final InputElement inputElement) {
                 inputElement.setCtrlKeys("#up#down");
                 registerNavigableElement(inputElement);
-                inputElement.addEventListener("onCtrlKey", new EventListener() {
-                    private Treerow treerow = getCurrentTreeRow();
-
-                    @Override
-                    public void onEvent(Event event) {
-                        Navigation navigation = Navigation.getIntentFrom((KeyEvent) event);
-                        moveFocusTo(inputElement, navigation, treerow);
-                    }
+                inputElement.addEventListener("onCtrlKey", event -> {
+                    Treerow treerow = getCurrentTreeRow();
+                    Navigation navigation = Navigation.getIntentFrom((KeyEvent) event);
+                    moveFocusTo(inputElement, navigation, treerow);
                 });
             }
 
@@ -525,7 +522,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                             }
                         }
                         break;
+
                     default:
+                        /* There is no other way to move */
+                        break;
                 }
             }
 
@@ -615,6 +615,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
                         return;
                     }
+
                     Treerow downTreerow = ((Treeitem) treechildren.getChildren().get(0)).getTreerow();
 
                     if (!downTreerow.isVisible()) {
@@ -697,15 +698,10 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         }
 
         protected void registerFocusEvent(final InputElement inputElement) {
-            inputElement.addEventListener(Events.ON_FOCUS, new EventListener() {
-                private Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
-
-                @Override
-                public void onEvent(Event event) {
-
-                    item.setSelected(true);
-                    Util.reloadBindings(item.getParent());
-                }
+            inputElement.addEventListener(Events.ON_FOCUS, event -> {
+                Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
+                item.setSelected(true);
+                Util.reloadBindings(item.getParent());
             });
         }
 
@@ -735,6 +731,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
             for (Component component : components) {
                 cell.appendChild(component);
+
                 if (component instanceof InputElement) {
                     registerListeners((InputElement) component);
                 }
@@ -781,6 +778,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
         private Treerow getTreeRowWithoutChildrenFor(final Treeitem item, T element) {
             Treerow result = createOrRetrieveFor(item);
+
             // Attach treecells to treerow
             if (element.isUpdatedFromTimesheets()) {
                 result.setDraggable("false");
@@ -834,19 +832,13 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                     schedulingStateToggler);
 
             cell.addEventListener("onDoubleClick", event -> {
-
                 markModifiedTreeitem((Treerow) cell.getParent());
                 onDoubleClickForSchedulingStateCell(currentElement);
             });
 
-            cell.addEventListener(Events.ON_CLICK, new EventListener() {
-
-                private Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
-
-                @Override
-                public void onEvent(Event event) {
-                    item.getTree().toggleItemSelection(item);
-                }
+            cell.addEventListener(Events.ON_CLICK, event -> {
+                Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
+                item.getTree().toggleItemSelection(item);
             });
 
             schedulingState.addTypeChangeListener(
@@ -873,6 +865,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             if (readOnly) {
                 decimalboxBudget.setDisabled(true);
             }
+
             addCell("budget-cell", decimalboxBudget);
         }
 
@@ -900,11 +893,14 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 public void set(BigDecimal value) {
                     getBudgetHandler().setBudgetHours(element, value);
                     List<T> parentNodes = getModel().getParents(element);
+
                     // Remove the last element because it's an Order node, not an OrderElement
                     parentNodes.remove(parentNodes.size() - 1);
+
                     for (T node : parentNodes) {
                         DecimalboxDirectValue decimalbox = (DecimalboxDirectValue) budgetDecimalboxByElement.get(node);
                         BigDecimal budget = getBudgetHandler().getBudgetFor(node);
+
                         if (isInCurrentPage(decimalbox)) {
                             decimalbox.setValue(budget);
                         } else {
@@ -981,6 +977,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         public void refreshBudgetValueForNodes(List<T> nodes) {
             for (T node : nodes) {
                 Decimalbox decimalbox = budgetDecimalboxByElement.get(node);
+
                 // For the Order node there is no associated decimalbox
                 if (decimalbox != null) {
                     BigDecimal currentBudget = getBudgetHandler().getBudgetFor(node);
@@ -1049,6 +1046,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 public void set(Integer value) {
                     getHoursGroupHandler().setWorkHours(element, value);
                     List<T> parentNodes = getModel().getParents(element);
+
                     // Remove the last element because it's an Order node, not an OrderElement
                     parentNodes.remove(parentNodes.size() - 1);
 
@@ -1097,6 +1095,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         public void refreshHoursValueForNodes(List<T> nodes) {
             for (T node : nodes) {
                 Intbox intbox = hoursIntBoxByElement.get(node);
+
                 // For the Order node there is no associated intbox
                 if (intbox != null) {
                     Integer currentHours = getHoursGroupHandler().getWorkHoursFor(node);
@@ -1174,9 +1173,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         }
 
         @Override
-        public void doCatch(Throwable ex) {
-
-        }
+        public void doCatch(Throwable ex) {}
 
         @Override
         public void doFinally() {
@@ -1184,9 +1181,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         }
 
         @Override
-        public void doTry() {
-
-        }
+        public void doTry() {}
 
     }
 
@@ -1274,6 +1269,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
 
     public void markModifiedTreeitem(Treerow item) {
         Treecell tc = (Treecell) item.getFirstChild();
+
         // Check if marked label has been previously added
         if (!(tc.getLastChild() instanceof org.zkoss.zul.Label)) {
             org.zkoss.zul.Label modifiedMark = new org.zkoss.zul.Label("*");

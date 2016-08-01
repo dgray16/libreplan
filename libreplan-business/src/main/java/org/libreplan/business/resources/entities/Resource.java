@@ -71,6 +71,7 @@ import org.libreplan.business.workingday.IntraDayDate.PartialDay;
 
 /**
  * This class acts as the base class for all resources.
+ *
  * @author Fernando Bellas Permuy <fbellas@udc.es>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Jacobo Aragunde Perez <jaragunde@igalia.com>

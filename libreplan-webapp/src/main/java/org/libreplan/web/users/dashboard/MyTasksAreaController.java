@@ -41,7 +41,7 @@ import java.util.List;
 import static org.libreplan.web.I18nHelper._;
 
 /**
- * Controller for "My tasks" area in the user dashboard window
+ * Controller for "My tasks" area in the user dashboard window.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  */
@@ -57,9 +57,9 @@ public class MyTasksAreaController extends GenericForwardComposer {
 
         @Override
         public void render(Row row, Object data, int i) throws Exception {
-            // MvanMiddelkoop feb 2015 - changed columns: added total budgeted
-            // hours for resource, added Notes, removed Code (not of any use,
-            // technical code)
+            // MvanMiddelkoop feb 2015 - changed columns:
+            // added total budgeted hours for resource, added Notes, removed Code
+            // (not of any use, technical code)
 
             Task task = (Task) data;
             row.setValue(task);
@@ -73,10 +73,7 @@ public class MyTasksAreaController extends GenericForwardComposer {
             Util.appendLabel(row, task.getStartAsLocalDate().toString());
             Util.appendLabel(row, task.getEndAsLocalDate().toString());
 
-            Util.appendLabel(
-                    row,
-                    _("{0} h", task.getSumOfAssignedEffort()
-                    .toHoursAsDecimalWithScale(0).toString()));
+            Util.appendLabel(row, _("{0} h", task.getSumOfAssignedEffort().toHoursAsDecimalWithScale(0).toString()));
             Util.appendLabel(row, _("{0} h", orderElement.getEffortAsString()));
             Util.appendLabel(row, getProgress(orderElement));
             appendTimeTrackingButton(row, task);
@@ -84,17 +81,16 @@ public class MyTasksAreaController extends GenericForwardComposer {
 
         private String getProgress(OrderElement orderElement) {
 
-            AdvanceMeasurement lastAdvanceMeasurement = orderElement
-                    .getLastAdvanceMeasurement();
-            if (lastAdvanceMeasurement != null) {
-                return MessageFormat.format("[{0} %] ({1})",
-                        lastAdvanceMeasurement.getValue(),
-                        lastAdvanceMeasurement.getDate());
-            }
-            return "";
+            AdvanceMeasurement lastAdvanceMeasurement = orderElement.getLastAdvanceMeasurement();
+
+            return lastAdvanceMeasurement != null
+                    ? MessageFormat.format(
+                            "[{0} %] ({1})", lastAdvanceMeasurement.getValue(), lastAdvanceMeasurement.getDate())
+                    : "";
         }
 
         private void appendTimeTrackingButton(Row row, final Task task) {
+
             EventListener trackTimeButtonListener = new EventListener() {
                 @Override
                 public void onEvent(Event event) throws Exception {

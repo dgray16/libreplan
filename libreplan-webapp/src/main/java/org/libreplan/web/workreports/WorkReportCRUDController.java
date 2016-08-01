@@ -58,7 +58,6 @@ import org.libreplan.web.common.components.Autocomplete;
 import org.libreplan.web.common.components.NewDataSortableColumn;
 import org.libreplan.web.common.components.NewDataSortableGrid;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
-import org.libreplan.web.common.entrypoints.EntryPointsHandler;
 import org.libreplan.web.common.entrypoints.IURLHandlerRegistry;
 import org.libreplan.web.users.dashboard.IPersonalTimesheetController;
 import org.zkoss.ganttz.IPredicate;
@@ -198,10 +197,7 @@ public class WorkReportCRUDController
         }
         initializeHoursType();
 
-        final EntryPointsHandler<IWorkReportCRUDControllerEntryPoints> handler =
-                URLHandlerRegistry.getRedirectorFor(IWorkReportCRUDControllerEntryPoints.class);
-
-        handler.register(this, page);
+        URLHandlerRegistry.getRedirectorFor(IWorkReportCRUDControllerEntryPoints.class).register(this, page);
     }
 
     private void showMessageIfPersonalTimesheetWasSaved() {
