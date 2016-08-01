@@ -24,7 +24,6 @@ package org.zkoss.ganttz;
 import org.apache.commons.lang3.StringUtils;
 import org.zkoss.ganttz.extensions.ICommand;
 import org.zkoss.ganttz.extensions.IContext;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Button;
 
@@ -65,7 +64,7 @@ class CommandContextualized<T> {
         if ( command.isDisabled() ) {
             result.setDisabled(true);
         } else {
-            result.addEventListener(Events.ON_CLICK, (EventListener) event -> doAction());
+            result.addEventListener(Events.ON_CLICK, event -> doAction());
         }
 
         button = result;

@@ -260,6 +260,7 @@ public class ReassignCommand implements IReassignCommand {
         for (Task each : forReassignment) {
             result.add(WithAssociatedEntity.create(mapper, each));
         }
+
         return result;
     }
 

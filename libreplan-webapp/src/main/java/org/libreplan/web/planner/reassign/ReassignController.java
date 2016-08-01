@@ -96,11 +96,13 @@ public class ReassignController extends GenericForwardComposer {
     }
 
     private ICellForDetailItemRenderer<Integer, Type> reassigningTypesRenderer() {
-        return (column, type) -> {
-            Radio radio = type.createRadio();
-            radio.setChecked(currentType == type);
-
-            return radio;
+        return new ICellForDetailItemRenderer<Integer, Type>() {
+            @Override
+            public org.zkoss.zk.ui.Component cellFor(Integer column, Type type) {
+                Radio radio = type.createRadio();
+                radio.setChecked(currentType == type);
+                return radio;
+            }
         };
     }
 
