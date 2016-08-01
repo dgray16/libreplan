@@ -33,7 +33,7 @@ import org.libreplan.business.users.entities.User;
 import org.libreplan.web.common.IIntegrationEntityModel;
 
 /**
- * Contract for {@link ExpenseSheet}
+ * Contract for {@link ExpenseSheet}.
  *
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
@@ -72,7 +72,8 @@ public interface IExpenseSheetModel extends IIntegrationEntityModel {
     void generateExpenseSheetLineCodesIfIsNecessary();
 
     /**
-     * Returns the {@link Resource} associated to the <b>personal</b> {@link ExpenseSheet}.<br />
+     * Returns the {@link Resource} associated to the <b>personal</b> {@link ExpenseSheet}.
+     * <br />
      *
      * In <b>personal</b> {@link ExpenseSheet ExpenseSheets} all {@link ExpenseSheetLine} has the same {@link Resource}.
      * <br />

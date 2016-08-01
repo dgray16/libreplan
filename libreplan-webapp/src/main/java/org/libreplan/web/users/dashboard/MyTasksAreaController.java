@@ -30,6 +30,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
@@ -44,13 +45,13 @@ import static org.libreplan.web.I18nHelper._;
  * Controller for "My tasks" area in the user dashboard window.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 @SuppressWarnings("serial")
 public class MyTasksAreaController extends GenericForwardComposer {
 
     private IMyTasksAreaModel myTasksAreaModel;
 
-    @Resource
     private IPersonalTimesheetController personalTimesheetController;
 
     private RowRenderer tasksRenderer = new RowRenderer() {
@@ -148,6 +149,19 @@ public class MyTasksAreaController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         comp.setAttribute("controller", this);
+        injectObjects();
+    }
+
+    private void injectObjects() {
+        if ( personalTimesheetController == null ) {
+
+            personalTimesheetController =
+                    (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
+        }
+
+        if ( myTasksAreaModel == null ) {
+            myTasksAreaModel = (IMyTasksAreaModel) SpringUtil.getBean("myTasksAreaModel");
+        }
     }
 
     public List<Task> getTasks() {

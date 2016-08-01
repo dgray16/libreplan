@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +92,8 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
     private IURLHandlerRegistry URLHandlerRegistry;
 
+    private IPersonalTimesheetController personalTimesheetController;
+
     private Grid timesheet;
 
     private Columns columns;
@@ -128,9 +129,6 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
     private Div personalTimesheetPopupEffort;
 
     private Div personalTimesheetPopupFinished;
-
-    @Resource
-    private IPersonalTimesheetController personalTimesheetController;
 
     private RowRenderer rowRenderer = new RowRenderer() {
 
@@ -567,6 +565,12 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
         if ( URLHandlerRegistry == null )
             URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+
+        if ( personalTimesheetController == null ) {
+
+            personalTimesheetController =
+                    (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
+        }
     }
 
     private void adjustFrozenWidth() {
