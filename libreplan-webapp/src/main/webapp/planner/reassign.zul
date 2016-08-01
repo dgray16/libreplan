@@ -46,8 +46,8 @@
         </groupbox>
 
         <hbox>
-            <button label="${i18n:_('Accept')}" onClick="controllerForReassigning.confirm()" />
-            <button label="${i18n:_('Cancel')}" onClick="controllerForReassigning.cancel()" />
+            <button label="${i18n:_('Accept')}" onClick="controllerForReassigning.confirm()" sclass="add-button" />
+            <button label="${i18n:_('Cancel')}" onClick="controllerForReassigning.cancel()" sclass="add-button" />
         </hbox>
 
     </window>
