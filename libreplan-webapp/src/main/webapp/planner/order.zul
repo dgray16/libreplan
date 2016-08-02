@@ -39,7 +39,7 @@
         ]]>
     </zscript>
     <div height="100%">
-        <div apply="${switcher}" sclass="parentProjectScheduling" height="100%">
+        <div apply="${switcher}" sclass="parentProjectScheduling scroll-collapse" height="100%">
 
             <planner id="planner" apply="${planningController}" sclass="projectScheduling"
                      style="display: block; height: 100%;">

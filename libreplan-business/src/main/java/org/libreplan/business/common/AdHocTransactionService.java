@@ -33,13 +33,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdHocTransactionService implements IAdHocTransactionService {
 
     private static <T> T proxy(IAdHocTransactionService transactionService,
-            boolean readOnly,
-            Class<T> interfaceClass,
-            T interfaceObject) {
+                               boolean readOnly,
+                               Class<T> interfaceClass,
+                               T interfaceObject) {
+
         Class<?>[] interfaces = { interfaceClass };
-        return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass
-                .getClassLoader(), interfaces, createHandler(interfaceObject,
-                transactionService, readOnly)));
+
+        return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
+                interfaces,
+                createHandler(interfaceObject, transactionService, readOnly)));
     }
 
     /**
@@ -64,22 +66,22 @@ public class AdHocTransactionService implements IAdHocTransactionService {
      * @return
      */
     public static <T> T proxy(IAdHocTransactionService transactionService,
-            Class<T> interfaceClass, T interfaceObject) {
+                              Class<T> interfaceClass,
+                              T interfaceObject) {
+
         return proxy(transactionService, false, interfaceClass, interfaceObject);
     }
 
     private static InvocationHandler createHandler(final Object originalObject,
-            final IAdHocTransactionService transactionService,
-            final boolean readOnly) {
+                                                   final IAdHocTransactionService transactionService,
+                                                   final boolean readOnly) {
         return new InvocationHandler() {
             @Override
-            public Object invoke(final Object proxy, final Method method,
-                    final Object[] args) throws Throwable {
+            public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 IOnTransaction<Object> onTransaction = createOnTransaction(originalObject, method, args);
                 try {
                     if (readOnly) {
-                        return transactionService
-                                .runOnReadOnlyTransaction(onTransaction);
+                        return transactionService.runOnReadOnlyTransaction(onTransaction);
                     } else {
                         return transactionService.runOnTransaction(onTransaction);
                     }
@@ -90,9 +92,9 @@ public class AdHocTransactionService implements IAdHocTransactionService {
         };
     }
 
-    private static IOnTransaction<Object> createOnTransaction(
-            final Object originalObject, final Method method,
-            final Object[] args) {
+    private static IOnTransaction<Object> createOnTransaction(final Object originalObject,
+                                                              final Method method,
+                                                              final Object[] args) {
         return new IOnTransaction<Object>() {
 
             @Override

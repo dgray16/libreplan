@@ -46,14 +46,13 @@ ganttz.GanttPanel = zk.$extends(
             this.setYMouse(arrPos[1]);
         },
         _listenToScroll : function() {
-            console.log("I AM HERE 1 !!");
             this._timetrackergap.css("left","-" + this._rightpannellayout.scrollLeft() + "px");
             this._taskdetails.css("top", "-" + this._rightpannellayout.scrollTop() + "px");
             this._plannergraph.scrollLeft( this._rightpannellayout.scrollLeft() );
             this.timeplotContainerRescroll();
         },
         /*
-         * The canvas is inserted in the DOM after this component so it's not available right now.
+         * The canvas is inserted in the DOM after this component, so it's not available right now.
          * It is queried instead.
          * Using throttle to not re-query it constantly
          */

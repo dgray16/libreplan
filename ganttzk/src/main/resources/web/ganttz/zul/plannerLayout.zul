@@ -134,8 +134,9 @@
             </borderlayout>
         </center>
 
-        <south collapsible="true" title="${ganttzk_i18n:_('Graphics')}" sclass="scheduling-graphics"
-               id="graphics" onOpen="planner.changeChartVisibility(event.open);" height="200px">
+        <south height="200px" collapsible="true" title="${ganttzk_i18n:_('Graphics')}"
+               sclass="scheduling-graphics" id="graphics"
+               onOpen="planner.changeChartVisibility(event.open);" >
 
             <div id="insertionPointChart"/>
         </south>

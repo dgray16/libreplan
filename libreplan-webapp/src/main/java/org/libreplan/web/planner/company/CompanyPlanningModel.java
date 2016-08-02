@@ -140,8 +140,6 @@ public class CompanyPlanningModel implements ICompanyPlanningModel {
 
     private MultipleTabsPlannerController tabs;
 
-    private List<IChartVisibilityChangedListener> keepAliveChartVisibilityListeners = new ArrayList<>();
-
     @Autowired
     private IConfigurationDAO configurationDAO;
 
@@ -228,7 +226,28 @@ public class CompanyPlanningModel implements ICompanyPlanningModel {
 
         setupZoomLevelListener(planner);
 
-        if(expandPlanningViewChart) {
+        /* Load data in chart in background */
+        setupChartAndItsContent(planner, chartComponent);
+
+        if (!expandPlanningViewChart) {
+            //if the chart is not expanded, we load the data later with a listener
+            (planner.getFellow("graphics")).addEventListener("onOpen",
+                    new EventListener() {
+                        @Override
+                        public void onEvent(Event event) {
+                            transactionService.runOnReadOnlyTransaction((IOnTransaction<Void>) () -> {
+                                setupChartAndItsContent(planner, chartComponent);
+
+                                return null;
+                            });
+                            //data is loaded only once, then we remove the listener
+                            event.getTarget().removeEventListener("onOpen", this);
+                        }
+                    });
+        }
+
+        //TODO This lines code use when we want load data later
+       /* if(expandPlanningViewChart) {
             //if the chart is expanded, we load the data now
             setupChartAndItsContent(planner, chartComponent);
         }
@@ -247,7 +266,7 @@ public class CompanyPlanningModel implements ICompanyPlanningModel {
                         event.getTarget().removeEventListener("onOpen", this);
                     }
                 });
-        }
+        }*/
     }
 
     private ZoomLevel getZoomLevel(PlannerConfiguration<TaskElement> configuration) {
@@ -283,14 +302,13 @@ public class CompanyPlanningModel implements ICompanyPlanningModel {
 
         setupChart(chartLoadTimeplot, new CompanyLoadChartFiller(), planner);
 
-        chartComponent.getTabs().getLastChild().addEventListener(Events.ON_SELECT,
-                event -> {
-                    createOnDemandEarnedValueTimePlot(chartComponent, planner);
-                    event.getTarget().removeEventListener(Events.ON_SELECT, (EventListener<? extends Event>) this);
-                }
-        );
-
-
+        chartComponent.getTabs().getLastChild().addEventListener(Events.ON_SELECT, new EventListener() {
+            @Override
+            public void onEvent(Event event) throws Exception {
+                createOnDemandEarnedValueTimePlot(chartComponent, planner);
+                event.getTarget().removeEventListener(Events.ON_SELECT, this);
+            }
+        });
     }
 
     private void createOnDemandEarnedValueTimePlot(final Tabbox chartComponent, final Planner planner){
@@ -606,28 +624,26 @@ public class CompanyPlanningModel implements ICompanyPlanningModel {
         Chart loadChart = new Chart(chartComponent, loadChartFiller, timeTracker);
         loadChart.setZoomLevel(planner.getZoomLevel());
 
-        if (planner.isVisibleChart()) {
+        /* Load data in chart in background */
+        loadChart.fillChart();
+
+        //TODO This lines code use when the chart is not expanded, we load the data later
+       /* if (planner.isVisibleChart()) {
             loadChart.fillChart();
-        }
+        }*/
 
         timeTracker.addZoomListener(fillOnZoomChange(planner, loadChart));
-        planner.addChartVisibilityListener(fillOnChartVisibilityChange(loadChart));
 
         return loadChart;
     }
 
-    private IChartVisibilityChangedListener fillOnChartVisibilityChange(final Chart loadChart) {
-        IChartVisibilityChangedListener chartVisibilityChangedListener =
-                visible -> transactionService.runOnReadOnlyTransaction((IOnTransaction<Void>) () -> {
-                    if (visible) {
-                        loadChart.fillChart();
-                    }
-
-                    return null;
-                });
-        keepAliveChartVisibilityListeners.add(chartVisibilityChangedListener);
-        return chartVisibilityChangedListener;
-    }
+    /* Here was function which answered for loadChart later, that is when chart is visible then chart loaded data!
+    *  And this function used in CompanyPlanningModel#setupChart(Timeplot, ICharFiller, Planner) like
+    *  planner.addChartVisibilityListener(fillOnChartVisibilityChange(loadChart));
+    *
+    *  You can see that in git history!
+    *
+    *  Nowadays we load data in chart in background, so this method we don't need! */
 
     private IZoomLevelChangedListener fillOnZoomChange(final Planner planner, final Chart loadChart) {
 

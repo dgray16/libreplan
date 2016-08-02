@@ -32,11 +32,12 @@ import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
 public class Chart {
 
     private final Timeplot timeplot;
+
     private final IChartFiller filler;
+
     private final TimeTracker timeTracker;
 
-    public Chart(Timeplot timeplot, IChartFiller filler,
-            TimeTracker timeTracker) {
+    public Chart(Timeplot timeplot, IChartFiller filler, TimeTracker timeTracker) {
         Validate.notNull(filler);
         Validate.notNull(timeTracker);
         Validate.notNull(timeplot);

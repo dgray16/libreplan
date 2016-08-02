@@ -89,7 +89,7 @@
                 <center sclass="taskspanel">
                     <borderlayout>
                         <north border="0">
-                            <div sclass="timetrackergap" height="60px" id="insertionPointTimetracker"/>
+                            <div sclass="timetrackergap" height="30px" id="insertionPointTimetracker"/>
                         </north>
 
                         <center autoscroll="true" border="0" sclass="rightpanel-layout">
@@ -100,6 +100,7 @@
                 </center>
             </borderlayout>
         </center>
+
         <south height="200px" collapsible="true" title="${ganttzk_i18n:_('Graphics')}"
                sclass="scheduling-graphics" id="graphics"
                onOpen="resourcesLoadPanel.changeChartVisibility(event.open);">
