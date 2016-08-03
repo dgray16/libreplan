@@ -63,6 +63,7 @@
                     <columns>
                         <column width="200px"/>
                         <column width="150px"/>
+                        <column hflex="1"/>
                     </columns>
                     <rows>
                         <row>
@@ -82,6 +83,7 @@
                         <column width="200px" />
                         <column width="220px"/>
                         <column width="200px"/>
+                        <column hflex="1"/>
                     </columns>
                     <rows>
                         <row spans="1,3">
@@ -94,7 +96,7 @@
                             <intbox id="ibIterations"
                                 width="200px"
                                 constraint="no empty:${i18n:_('cannot be empty')}" />
-                            <button id="btnRunMonteCarlo" label="${i18n:_('Go!')}" />
+                            <button id="btnRunMonteCarlo" label="${i18n:_('Go!')}" sclass="add-button"/>
                             <progressmeter id="progressMonteCarloCalculation" value="0" />
                         </row>
                     </rows>

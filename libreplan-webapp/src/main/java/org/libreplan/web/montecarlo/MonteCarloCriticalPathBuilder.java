@@ -62,8 +62,7 @@ public class MonteCarloCriticalPathBuilder {
         this.tasksInCriticalPath = tasksInCriticalPath;
     }
 
-    public static MonteCarloCriticalPathBuilder create(
-            List<Task> tasksInCriticalPath) {
+    public static MonteCarloCriticalPathBuilder create(List<Task> tasksInCriticalPath) {
         return new MonteCarloCriticalPathBuilder(tasksInCriticalPath);
     }
 
@@ -79,34 +78,40 @@ public class MonteCarloCriticalPathBuilder {
      * @return
      */
     public List<List<Task>> buildAllPossibleCriticalPaths() {
-        List<List<Task>> result = new ArrayList<List<Task>>();
+        List<List<Task>> result = new ArrayList<>();
+
         if (tasksInCriticalPath.size() == 1) {
             result.add(tasksInCriticalPath);
             return result;
         }
-        List<List<Task>> allPaths = new ArrayList<List<Task>>();
+
+        List<List<Task>> allPaths = new ArrayList<>();
+
         for (Task each : getStartingTasks(tasksInCriticalPath)) {
             allPaths.addAll(allPossiblePaths(each));
         }
+
         for (List<Task> path : allPaths) {
             if (isCriticalPath(path)) {
                 result.add(path);
             }
         }
+
         return result;
     }
 
     private Collection<List<Task>> allPossiblePaths(Task task) {
-        Collection<List<Task>> result = new ArrayList<List<Task>>();
+        Collection<List<Task>> result = new ArrayList<>();
         List<Task> path = Collections.singletonList(task);
         allPossiblePaths(path, result);
+
         return result;
     }
 
-    private void allPossiblePaths(List<Task> path,
-            Collection<List<Task>> allPaths) {
+    private void allPossiblePaths(List<Task> path, Collection<List<Task>> allPaths) {
         TaskElement lastTask = getLastTask(path);
         List<Task> destinations = getDestinations(lastTask);
+
         if (!destinations.isEmpty()) {
             for (Task each : destinations) {
                 allPossiblePaths(newPath(path, each), allPaths);
@@ -121,21 +126,22 @@ public class MonteCarloCriticalPathBuilder {
     }
 
     private List<Task> newPath(List<Task> path, Task task) {
-        List<Task> result = new ArrayList<Task>();
+        List<Task> result = new ArrayList<>();
         result.addAll(path);
         result.add(task);
+
         return result;
     }
 
     private List<Task> getDestinations(TaskElement task) {
-        Set<Task> result = new HashSet<Task>();
+        Set<Task> result = new HashSet<>();
         Set<Dependency> dependencies = getOutgoingDependencies(task);
         TaskGroup parent = task.getParent();
-        if (parent != null) {
-            if (parent.getEndDate().equals(task.getEndDate())) {
-                result.addAll(getDestinations((task.getParent())));
-            }
+
+        if (parent != null && isEndDateEquals(parent, task)) {
+            result.addAll(getDestinations(task.getParent()));
         }
+
         for (Dependency each : dependencies) {
             TaskElement destination = each.getDestination();
             if (isTask(destination)) {
@@ -145,11 +151,17 @@ public class MonteCarloCriticalPathBuilder {
                 result.addAll(taskGroupChildren((TaskGroup) destination));
             }
         }
-        return new ArrayList<Task>(result);
+
+        return new ArrayList<>(result);
+    }
+
+    private static boolean isEndDateEquals(TaskGroup parent, TaskElement task){
+        return parent.getEndDate().equals(task.getEndDate());
     }
 
     private Set<Task> taskGroupChildren(TaskGroup taskGroup) {
-        Set<Task> result = new HashSet<Task>();
+        Set<Task> result = new HashSet<>();
+
         for (TaskElement child : taskGroup.getChildren()) {
             if (isTask(child) && isStartingTask((Task) child)) {
                 result.add((Task) child);
@@ -158,6 +170,7 @@ public class MonteCarloCriticalPathBuilder {
                 result.addAll(taskGroupChildren((TaskGroup) child));
             }
         }
+
         return result;
     }
 
@@ -171,12 +184,12 @@ public class MonteCarloCriticalPathBuilder {
      */
     private boolean isStartingTask(Task task) {
         Set<Dependency> dependencies = getIncomingDependencies(task);
-        return dependencies.isEmpty()
-                && !parents(origins(dependencies)).contains(task.getParent());
+
+        return dependencies.isEmpty() && !parents(origins(dependencies)).contains(task.getParent());
     }
 
     private List<TaskGroup> parents(List<TaskElement> taskElements) {
-        List<TaskGroup> result = new ArrayList<TaskGroup>();
+        List<TaskGroup> result = new ArrayList<>();
         for (TaskElement each: taskElements) {
             result.add(each.getParent());
         }
@@ -184,23 +197,23 @@ public class MonteCarloCriticalPathBuilder {
     }
 
     private List<TaskElement> origins(Set<Dependency> dependencies) {
-        List<TaskElement> result = new ArrayList<TaskElement>();
+        List<TaskElement> result = new ArrayList<>();
+
         for (Dependency each: dependencies) {
             result.add(each.getOrigin());
         }
+
         return result;
     }
 
     @SuppressWarnings("unchecked")
     private Set<Dependency> getIncomingDependencies(TaskElement taskElement) {
-        return taskElement != null ? taskElement
-                .getDependenciesWithThisDestination() : Collections.EMPTY_SET;
+        return (taskElement != null) ? taskElement.getDependenciesWithThisDestination() : Collections.emptySet();
     }
 
     @SuppressWarnings("unchecked")
     private Set<Dependency> getOutgoingDependencies(TaskElement taskElement) {
-        return (taskElement != null) ? taskElement
-                .getDependenciesWithThisOrigin() : Collections.EMPTY_SET;
+        return (taskElement != null) ? taskElement.getDependenciesWithThisOrigin() : Collections.emptySet();
     }
 
     private boolean isTaskGroup(TaskElement taskElement) {
@@ -212,21 +225,25 @@ public class MonteCarloCriticalPathBuilder {
     }
 
     private List<Task> getStartingTasks(List<Task> tasks) {
-        List<Task> result = new ArrayList<Task>();
+        List<Task> result = new ArrayList<>();
+
         for (Task each : tasks) {
             if (isStartingTask(each) && noneParentHasIncomingDependencies(each)) {
                 result.add(each);
             }
         }
+
         return result;
     }
 
     private boolean noneParentHasIncomingDependencies(Task each) {
         TaskGroup parent = each.getParent();
+
         while (parent != null && getIncomingDependencies(parent).isEmpty()) {
             parent = parent.getParent();
         }
-        return (parent == null);
+
+        return parent == null;
     }
 
     private boolean isCriticalPath(List<Task> path) {
@@ -235,6 +252,7 @@ public class MonteCarloCriticalPathBuilder {
                 return false;
             }
         }
+
         return true;
     }
 

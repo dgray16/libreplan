@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.joda.time.LocalDate;
 import org.libreplan.web.common.Util;
-import org.libreplan.web.montecarlo.MonteCarloGraphController.IOnClose;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -72,9 +71,9 @@ public class MonteCarloController extends GenericForwardComposer {
     @Autowired
     private IMonteCarloModel monteCarloModel;
 
-    private final Integer DEFAULT_ITERATIONS = 10000;
+    private static final Integer DEFAULT_ITERATIONS = 10000;
 
-    private final Integer MAX_NUMBER_ITERATIONS = 100000;
+    private static final Integer MAX_NUMBER_ITERATIONS = 100000;
 
     private final RowRenderer gridCriticalPathTasksRender = new CriticalPathTasksRender();
 
@@ -101,40 +100,27 @@ public class MonteCarloController extends GenericForwardComposer {
         super.doAfterCompose(comp);
 
         ibIterations.setValue(DEFAULT_ITERATIONS);
-        lbCriticalPaths.addEventListener(Events.ON_SELECT, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                reloadGridCritialPathTasks();
-            }
-
-        });
+        lbCriticalPaths.addEventListener(Events.ON_SELECT, event -> reloadGridCritialPathTasks());
 
         btnRunMonteCarlo.addEventListener(Events.ON_CLICK, new EventListener() {
 
             @Override
             public void onEvent(Event event) {
                 validateRowsPercentages();
-                IBackGroundOperation<IDesktopUpdate> operation = new IBackGroundOperation<IDesktopUpdate>() {
-
-                     @Override
-                    public void doOperation(
-                            IDesktopUpdatesEmitter<IDesktopUpdate> desktopUpdateEmitter) {
-                        executeMontecarlo(desktopUpdateEmitter);
-                     }
-                };
+                IBackGroundOperation<IDesktopUpdate> operation = this::executeMontecarlo;
                 LongOperationFeedback.progressive(self.getDesktop(), operation);
             }
 
-            private void executeMontecarlo(
-                    IDesktopUpdatesEmitter<IDesktopUpdate> updatesEmitter) {
+            private void executeMontecarlo(IDesktopUpdatesEmitter<IDesktopUpdate> updatesEmitter) {
                 try {
                     updatesEmitter.doUpdate(disableButton(true));
                     int iterations = getIterations();
+
                     final Map<LocalDate, BigDecimal> monteCarloData = monteCarloModel
                             .calculateMonteCarlo(getSelectedCriticalPath(),
                                     iterations,
                                     percentageCompletedNotifier(updatesEmitter));
+
                     updatesEmitter.doUpdate(showCalculatedData(monteCarloData));
                 } finally {
                     updatesEmitter.doUpdate(disableButton(false));
@@ -142,23 +128,19 @@ public class MonteCarloController extends GenericForwardComposer {
             }
 
             private IDesktopUpdate disableButton(final boolean disable) {
-                return new IDesktopUpdate() {
-
-                    @Override
-                    public void doUpdate() {
-                        btnRunMonteCarlo.setDisabled(disable);
-                    }
-                };
+                return () -> btnRunMonteCarlo.setDisabled(disable);
             }
 
             private int getIterations() {
                 int iterations = ibIterations.getValue() != null ? ibIterations.getValue().intValue() : 0;
+
                 if ( iterations == 0 ) {
                     throw new WrongValueException(ibIterations, _("cannot be empty"));
                 }
+
                 if ( iterations < 0 || iterations > MAX_NUMBER_ITERATIONS ) {
                     throw new WrongValueException(ibIterations, _("Number of iterations should be between 1 and {0}",
-                                    MAX_NUMBER_ITERATIONS));
+                            MAX_NUMBER_ITERATIONS));
                 }
 
                 return iterations;
@@ -205,24 +187,13 @@ public class MonteCarloController extends GenericForwardComposer {
                     }
 
                     private IDesktopUpdate showCompletedPercentage(final Integer value) {
-                        return new IDesktopUpdate() {
-                            @Override
-                            public void doUpdate() {
-                                progressMonteCarloCalculation.setValue(value);
-                            }
-                        };
+                        return () -> progressMonteCarloCalculation.setValue(value);
                     }
                 };
             }
 
             private IDesktopUpdate showCalculatedData(final Map<LocalDate, BigDecimal> monteCarloData) {
-                return new IDesktopUpdate() {
-
-                    @Override
-                    public void doUpdate() {
-                        showMonteCarloGraph(monteCarloData);
-                    }
-                };
+                return () -> showMonteCarloGraph(monteCarloData);
             }
 
             private void showMonteCarloGraph(Map<LocalDate, BigDecimal> data) {
@@ -231,7 +202,7 @@ public class MonteCarloController extends GenericForwardComposer {
             }
 
             private Window createMonteCarloGraphWindow(Map<LocalDate, BigDecimal> data) {
-                HashMap<String, Object> args = new HashMap<String, Object>();
+                HashMap<String, Object> args = new HashMap<>();
                 args.put("monteCarloGraphController", new MonteCarloGraphController());
                 Window result = (Window) Executions.createComponents("/planner/montecarlo_function.zul", self, args);
                 MonteCarloGraphController controller =
@@ -240,14 +211,10 @@ public class MonteCarloController extends GenericForwardComposer {
                 final String orderName = monteCarloModel.getOrderName();
                 final boolean groupByWeeks = cbGroupByWeeks.isChecked();
 
-                controller.generateMonteCarloGraph(orderName, data,
-                        groupByWeeks, new IOnClose() {
-
-                            @Override
-                            public void montecarloGraphClosed() {
-                                progressMonteCarloCalculation.setValue(0);
-                            }
-                        });
+                controller.generateMonteCarloGraph(orderName,
+                        data,
+                        groupByWeeks,
+                        () -> progressMonteCarloCalculation.setValue(0));
 
                 return result;
             }
@@ -257,6 +224,7 @@ public class MonteCarloController extends GenericForwardComposer {
 
     private void feedCriticalPathsList() {
         lbCriticalPaths.setModel(new SimpleListModel<>(monteCarloModel.getCriticalPathNames()));
+
         if ( !lbCriticalPaths.getChildren().isEmpty() ) {
             lbCriticalPaths.setSelectedIndex(0);
         }
@@ -264,16 +232,18 @@ public class MonteCarloController extends GenericForwardComposer {
 
     private void reloadGridCritialPathTasks() {
         List<MonteCarloTask> selectedCriticalPath = getSelectedCriticalPath();
+
         if ( selectedCriticalPath != null ) {
             gridCriticalPathTasks.setModel(new SimpleListModel<>(selectedCriticalPath));
         }
+
         if ( gridCriticalPathTasks.getRowRenderer() == null ) {
             gridCriticalPathTasks.setRowRenderer(gridCriticalPathTasksRender);
             gridCriticalPathTasks.renderAll();
         }
     }
 
-    private List<MonteCarloTask> getSelectedCriticalPath() {
+    public List<MonteCarloTask> getSelectedCriticalPath() {
         Listitem selectedItem = lbCriticalPaths.getSelectedItem();
         String selectedPath = selectedItem != null ? selectedItem.getLabel() : null;
 
@@ -282,6 +252,7 @@ public class MonteCarloController extends GenericForwardComposer {
 
     public void setCriticalPath(List<org.libreplan.business.planner.entities.TaskElement> criticalPath) {
         monteCarloModel.setCriticalPath(criticalPath);
+
         if ( lbCriticalPaths != null ) {
             feedCriticalPathsList();
             reloadGridCritialPathTasks();
@@ -320,119 +291,54 @@ public class MonteCarloController extends GenericForwardComposer {
 
         private Decimalbox pessimisticDuration(final MonteCarloTask task) {
             Decimalbox result = new Decimalbox();
-            Util.bind(result, new Util.Getter<BigDecimal>() {
+            Util.bind(result,
+                    task::getPessimisticDuration,
+                    task::setPessimisticDuration);
 
-                @Override
-                public BigDecimal get() {
-                    return task.getPessimisticDuration();
-                }
-
-            }, new Util.Setter<BigDecimal>() {
-
-                @Override
-                public void set(BigDecimal value) {
-                    task.setPessimisticDuration(value);
-                }
-            });
             return result;
         }
 
         private Intbox pessimisticDurationPercentage(final MonteCarloTask task) {
             Intbox result = new Intbox();
-            Util.bind(result, new Util.Getter<Integer>() {
-
-                @Override
-                public Integer get() {
-                    return task.getPessimisticDurationPercentage();
-                }
-
-            }, new Util.Setter<Integer>() {
-
-                @Override
-                public void set(Integer value) {
-                    task.setPessimisticDurationPercentage(value);
-                }
-            });
+            Util.bind(result,
+                    task::getPessimisticDurationPercentage,
+                    task::setPessimisticDurationPercentage);
 
             return result;
         }
 
         private Decimalbox normalDuration(final MonteCarloTask task) {
             Decimalbox result = new Decimalbox();
-            Util.bind(result, new Util.Getter<BigDecimal>() {
-
-                @Override
-                public BigDecimal get() {
-                    return task.getNormalDuration();
-                }
-
-            }, new Util.Setter<BigDecimal>() {
-
-                @Override
-                public void set(BigDecimal value) {
-                    task.setNormalDuration(value);
-                }
-            });
+            Util.bind(result,
+                    task::getNormalDuration,
+                    task::setNormalDuration);
 
             return result;
         }
 
         private Intbox normalDurationPercentage(final MonteCarloTask task) {
             Intbox result = new Intbox();
-            Util.bind(result, new Util.Getter<Integer>() {
-
-                @Override
-                public Integer get() {
-                    return task.getNormalDurationPercentage();
-                }
-
-            }, new Util.Setter<Integer>() {
-
-                @Override
-                public void set(Integer value) {
-                    task.setNormalDurationPercentage(value);
-                }
-            });
+            Util.bind(result,
+                    task::getNormalDurationPercentage,
+                    task::setNormalDurationPercentage);
 
             return result;
         }
 
         private Decimalbox optimisticDuration(final MonteCarloTask task) {
             Decimalbox result = new Decimalbox();
-            Util.bind(result, new Util.Getter<BigDecimal>() {
-
-                @Override
-                public BigDecimal get() {
-                    return task.getOptimisticDuration();
-                }
-
-            }, new Util.Setter<BigDecimal>() {
-
-                @Override
-                public void set(BigDecimal value) {
-                    task.setOptimisticDuration(value);
-                }
-            });
+            Util.bind(result,
+                    task::getOptimisticDuration,
+                    task::setOptimisticDuration);
 
             return result;
         }
 
         private Intbox optimisticDurationPercentage(final MonteCarloTask task) {
             Intbox result = new Intbox();
-            Util.bind(result, new Util.Getter<Integer>() {
-
-                @Override
-                public Integer get() {
-                    return task.getOptimisticDurationPercentage();
-                }
-
-            }, new Util.Setter<Integer>() {
-
-                @Override
-                public void set(Integer value) {
-                    task.setOptimisticDurationPercentage(value);
-                }
-            });
+            Util.bind(result,
+                    task::getOptimisticDurationPercentage,
+                    task::setOptimisticDurationPercentage);
 
             return result;
         }

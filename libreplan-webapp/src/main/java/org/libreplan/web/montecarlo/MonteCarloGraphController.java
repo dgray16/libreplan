@@ -50,7 +50,7 @@ import org.zkoss.zul.SimpleCategoryModel;
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-class MonteCarloGraphController extends GenericForwardComposer {
+public class MonteCarloGraphController extends GenericForwardComposer {
 
     private Chart monteCarloChart;
 
@@ -64,7 +64,7 @@ class MonteCarloGraphController extends GenericForwardComposer {
 
     private Map<LocalDate, BigDecimal> monteCarloValues;
 
-    MonteCarloGraphController() {
+    public MonteCarloGraphController() {
 
     }
 
@@ -73,15 +73,18 @@ class MonteCarloGraphController extends GenericForwardComposer {
         self.setAttribute("monteCarloGraphController", this, true);
     }
 
-    interface IOnClose {
+    public interface IOnClose {
 
         void montecarloGraphClosed();
     }
 
     private IOnClose onClose = null;
 
-    void generateMonteCarloGraph(String orderName,
-                                 Map<LocalDate, BigDecimal> data, boolean byWeek, IOnClose onClose) {
+    public void generateMonteCarloGraph(String orderName,
+                                        Map<LocalDate, BigDecimal> data,
+                                        boolean byWeek,
+                                        IOnClose onClose) {
+
         this.onClose = onClose;
 
         CategoryModel xymodel;
@@ -167,7 +170,7 @@ class MonteCarloGraphController extends GenericForwardComposer {
     }
 
     private Map<String, BigDecimal> groupByWeek(Map<LocalDate, BigDecimal> data) {
-        Map<String, BigDecimal> result = new HashMap<String, BigDecimal>();
+        Map<String, BigDecimal> result = new HashMap<>();
 
         // Group values of each date by week
         for (LocalDate date: data.keySet()) {
@@ -195,10 +198,9 @@ class MonteCarloGraphController extends GenericForwardComposer {
     }
 
     public void showProbabilityDensity(Datebox startDatebox, Datebox endDatebox) {
-        LocalDate start, end;
+        LocalDate start = (startDatebox.getValue() != null) ? new LocalDate(startDatebox.getValue()) : getFirstDate();
+        LocalDate end = (endDatebox.getValue() != null) ? new LocalDate(endDatebox.getValue()) : getLastDate();
 
-        start = (startDatebox.getValue() != null) ? new LocalDate(startDatebox.getValue()) : getFirstDate();
-        end = (endDatebox.getValue() != null) ? new LocalDate(endDatebox.getValue()) : getLastDate();
         BigDecimal probabilityDensity = calculateProbabilityDensity(start, end);
         dbIntervalProbability.setValue(probabilityDensity);
     }
