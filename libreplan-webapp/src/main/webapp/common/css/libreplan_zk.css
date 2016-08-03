@@ -2290,21 +2290,37 @@ textarea {
     margin: 0 0 5px 5px;
 }
 
+.hbox-margin {
+    margin: 5px 0 0 5px;
+}
+
 /* This style for buttons when you want to delete something */
-.z-messagebox-button {
+.z-messagebox-button,
+.z-messagebox-btn {
     background-color: #E4F3D9;
     background-image: none !important;
 }
 
-.z-messagebox-button:hover {
+.z-messagebox-button:hover,
+.z-messagebox-btn:hover {
     background: #C3EAAF none;
 }
 
-.z-messagebox-button:focus {
+.z-messagebox-button:focus,
+.z-messagebox-btn:focus {
     background: #C3EAAF none;
 }
 
-.z-messagebox-button:disabled {
+.z-messagebox-button:disabled,
+.z-messagebox-btn:disabled {
     background: none;
     background-color: #C3EAAF !important;
+}
+
+.label-middle td tr td {
+    vertical-align: middle;
+}
+
+.label-middle td tr td > span{
+    font-size: 12px;
 }

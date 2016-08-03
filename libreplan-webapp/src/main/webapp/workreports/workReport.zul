@@ -245,8 +245,9 @@
                                                 onClick="controller.addWorkReportLine()" />
                                     </hbox>
 
-                                   <newdatasortablegrid id="listWorkReportLines" fixedLayout="false"
-                                                        rowRenderer="@{controller.renderer}" sclass="listWorkReportLines"/>
+                                   <newdatasortablegrid id="listWorkReportLines" fixedLayout="true"
+                                                        rowRenderer="@{controller.renderer}"
+                                                        sclass="listWorkReportLines report-margin"/>
                                 </groupbox>
                         </vbox>
                     </tabpanel>

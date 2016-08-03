@@ -130,7 +130,7 @@
 
             <groupbox closable="false">
                 <caption label="${i18n:_('Expense lines')}" />
-                <hbox>
+                <hbox sclass="label-middle">
                     <label value="${i18n:_('Task')}"/>
                     <bandboxSearch id="bandboxTasks"
                                    widthBandbox="285px"
