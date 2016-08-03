@@ -35,7 +35,6 @@ import org.libreplan.business.common.entities.ConnectorException;
 import org.libreplan.business.common.entities.JobClassNameEnum;
 import org.libreplan.business.common.entities.JobSchedulerConfiguration;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
-import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.importers.SynchronizationInfo;
 import org.quartz.CronExpression;
 import org.zkoss.zk.ui.Component;
@@ -262,6 +261,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     private static Button createManualButton(EventListener eventListener) {
         Button button = new Button(_("Manual"));
         button.setTooltiptext(_("Manual"));
+        button.setSclass("add-button");
         button.addEventListener(Events.ON_CLICK, eventListener);
 
         return button;
@@ -368,7 +368,6 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     @Override
     protected void initCreate() {
         jobSchedulerModel.initCreate();
-
     }
 
     @Override
@@ -377,7 +376,7 @@ public class JobSchedulerController extends BaseCRUDController<JobSchedulerConfi
     }
 
     @Override
-    protected void save() throws ValidationException {
+    protected void save() {
         jobSchedulerModel.confirmSave();
         if ( jobSchedulerModel.scheduleOrUnscheduleJob() ) {
             messagesForUser.showMessage(Level.INFO, _("Job is scheduled/unscheduled"));

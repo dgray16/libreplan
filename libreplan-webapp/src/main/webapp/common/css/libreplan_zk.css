@@ -2289,3 +2289,22 @@ textarea {
 .grid-margin {
     margin: 0 0 5px 5px;
 }
+
+/* This style for buttons when you want to delete something */
+.z-messagebox-button {
+    background-color: #E4F3D9;
+    background-image: none !important;
+}
+
+.z-messagebox-button:hover {
+    background: #C3EAAF none;
+}
+
+.z-messagebox-button:focus {
+    background: #C3EAAF none;
+}
+
+.z-messagebox-button:disabled {
+    background: none;
+    background-color: #C3EAAF !important;
+}

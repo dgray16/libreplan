@@ -31,14 +31,13 @@ package org.libreplan.business.common.exceptions;
 @SuppressWarnings("serial")
 public abstract class InstanceException extends Exception {
 
-    private Object key;
-    private String className;
+    private final Object key;
 
-    protected InstanceException(String specificMessage, Object key,
-        String className) {
+    private final String className;
 
-        super(specificMessage + " (key = '" + key + "' - className = '" +
-            className + "')");
+    protected InstanceException(String specificMessage, Object key, String className) {
+
+        super(specificMessage + " (key = '" + key + "' - className = '" + className + "')");
         this.key = key;
         this.className = className;
 
