@@ -182,7 +182,7 @@
         <label id="jobGroup" value="@{jobSchedulerController.jobGroup}"/>
         <label id="jobName" value="@{jobSchedulerController.jobName}"/>
 
-        <grid id="cronExpressionGrid">
+        <grid id="cronExpressionGrid" style="margin: 5px 0 5px 0;">
             <columns>
                 <column label="${i18n:_('Seconds')}" width="75px;"/>
                 <column label="${i18n:_('Minutes')}" width="75px;"/>
@@ -207,7 +207,7 @@
 
          </grid>
 
-        <button onClick="controller.updateCronExpression();" label="${i18n:_('OK')}" />
-        <button onClick="controller.cancelPopup();" label="${i18n:_('Cancel')}" />
+        <button onClick="controller.updateCronExpression();" label="${i18n:_('OK')}" sclass="add-button" />
+        <button onClick="controller.cancelPopup();" label="${i18n:_('Cancel')}" sclass="add-button"/>
     </popup>
 </window>
