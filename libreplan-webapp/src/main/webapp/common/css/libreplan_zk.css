@@ -2277,3 +2277,15 @@ textarea {
 .scroll-collapse {
     width: 99%;
 }
+
+.report-margin {
+    margin: 10px 0 10px 0;
+}
+
+.bandbox-margin {
+    margin-left: 5px;
+}
+
+.grid-margin {
+    margin: 0 0 5px 5px;
+}

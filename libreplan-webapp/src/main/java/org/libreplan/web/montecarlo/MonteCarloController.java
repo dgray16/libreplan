@@ -58,6 +58,7 @@ import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Window;
+import org.zkoss.zul.Constraint;
 
 /**
  * Controller for MonteCarlo graphic generation
@@ -259,6 +260,19 @@ public class MonteCarloController extends GenericForwardComposer {
         }
 
         btnRunMonteCarlo.setDisabled(monteCarloModel.getCriticalPathNames().isEmpty());
+    }
+
+    public Constraint getCheckConstraintIterationNumber() {
+        return (comp, value) -> {
+                Integer iterationNumber = value != null ? (Integer) value : -1;
+
+                if (iterationNumber == -1) {
+                    throw new WrongValueException(comp, _("cannot be empty"));
+                } else if (iterationNumber < 1 || iterationNumber > 100_000) {
+                    throw new WrongValueException(comp, _("Number of iterations should be between 1 and {0}",
+                            MAX_NUMBER_ITERATIONS));
+                }
+        };
     }
 
     private static class CriticalPathTasksRender implements RowRenderer {
