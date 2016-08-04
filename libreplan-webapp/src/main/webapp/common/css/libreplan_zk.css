@@ -324,12 +324,6 @@ div.z-errbox {
     border-radius: 10px;
 }
 
-.advanced-allocation-layout .message_WARNING {
-    padding: 3px 20px 3px 20px;
-    margin: 0;
-    width: auto;
-}
-
 h4.message_WARNING {
     border-radius: 10px;
     padding: 10px 5px;
