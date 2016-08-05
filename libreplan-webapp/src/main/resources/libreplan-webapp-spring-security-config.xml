@@ -138,8 +138,8 @@
             See: http://static.springsource.org/spring-security/site/docs/2.0.x/reference/ns-config.html#ns-auto-config -->
         <anonymous />
         <form-login login-page="/common/layout/login.zul"
-            default-target-url="/common/index.zul"
-            authentication-failure-url="/common/layout/login.zul?login_error=true" />
+                    default-target-url="/common/index.zul"
+                    authentication-failure-url="/common/layout/login.zul?login_error=true" />
         <http-basic />
         <logout />
         <remember-me />
