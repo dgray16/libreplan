@@ -25,7 +25,9 @@
             <vbox id="messagesContainerAdvances" />
             <vbox align="left" width="100%">
                 <hbox>
-                    <button label="${i18n:_('Add new progress assignment')}" sclass="add-button"
+                    <button label="${i18n:_('Add new progress assignment')}"
+                            sclass="add-button"
+                            style="margin-bottom:5px;"
                             onClick="manageOrderElementAdvancesController.goToCreateLineAdvanceAssignment();">
                     </button>
                 </hbox>
@@ -42,7 +44,7 @@
                          <listheader label="${i18n:_('Type')}" tooltiptext="${i18n:_('Progress unit type')}" />
 
                          <listheader label="${i18n:_('Max value')}" tooltiptext="${i18n:_('Maximum allowed value')}"
-                                     width="100px" align="center"/>
+                                     width="105px" align="center"/>
 
                          <listheader label="${i18n:_('Current value')}" width="100px" align="center"/>
 
@@ -78,7 +80,7 @@
                                 <listheader label="${i18n:_('Value')}" width="100px" align="center"/>
                                 <listheader label="${i18n:_('Percentage')}" width="90px" align="center"/>
                                 <listheader label="${i18n:_('Date')}" width="120px" align="center"/>
-                                <listheader label="${i18n:_('Operations')}" width="90px" align="center"/>
+                                <listheader label="${i18n:_('Operations')}" width="98px" align="center"/>
                             </listhead>
                     </listbox>
                 </hbox>

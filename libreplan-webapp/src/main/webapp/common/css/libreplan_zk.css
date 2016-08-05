@@ -2318,3 +2318,7 @@ textarea {
 .label-middle td tr td > span{
     font-size: 12px;
 }
+
+.decimal-max-value {
+    width: 85px;
+}

@@ -54,7 +54,7 @@ public class NewDataSortableColumn extends Column implements AfterCompose {
     private static class NewObjectDecoratorComparator implements Comparator<Object> {
         private Comparator<Object> decoratedComparator;
 
-        NewObjectDecoratorComparator(Comparator<Object> c) {
+        public NewObjectDecoratorComparator(Comparator<Object> c) {
             Validate.notNull(c);
             this.decoratedComparator = c;
         }
