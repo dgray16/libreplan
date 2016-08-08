@@ -35,9 +35,9 @@ import org.zkoss.zul.DefaultTreeNode;
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  */
-class ScenariosTreeModel extends DefaultTreeModel {
+public class ScenariosTreeModel extends DefaultTreeModel {
 
-    ScenariosTreeModel(ScenarioTreeRoot root) {
+    public ScenariosTreeModel(ScenarioTreeRoot root) {
         super(createRootNodeAndDescendants(root, root.getRootScenarios(), root.getDerivedScenarios()));
     }
 
@@ -45,8 +45,8 @@ class ScenariosTreeModel extends DefaultTreeModel {
                                                                         List<Scenario> rootScenarios,
                                                                         List<Scenario> derivedScenarios) {
 
-        return new DefaultTreeNode<>(root, asNodes(fillHashParentChildren(
-                rootScenarios, derivedScenarios), rootScenarios));
+        return new DefaultTreeNode<>(root,
+                asNodes(fillHashParentChildren(rootScenarios, derivedScenarios), rootScenarios));
     }
 
     private static ArrayList<DefaultTreeNode<Object>> asNodes(Map<Scenario, List<Scenario>> childrenMap,
@@ -74,7 +74,7 @@ class ScenariosTreeModel extends DefaultTreeModel {
 
         Map<Scenario, List<Scenario>> result = new HashMap<>();
         for (Scenario root : rootScenarios) {
-            result.put(root, new ArrayList<Scenario>());
+            result.put(root, new ArrayList<>());
         }
 
         for (Scenario derived : derivedScenarios) {
