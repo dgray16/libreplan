@@ -40,7 +40,7 @@
             selectedItem="@{controller.currentFilterItem}"
             itemRenderer="org.libreplan.web.common.EnumsListitemRenderer">
         </listbox>
-        <button label="${i18n:_('Refresh')}" style="margin-top: -4px" sclass="add-button"
+        <button label="${i18n:_('Refresh')}" sclass="add-button"
                         onClick="controller.onApplyFilter(event)"/>
     </div>
 	<separator bar="false" spacing="20px" orient="horizontal"/>

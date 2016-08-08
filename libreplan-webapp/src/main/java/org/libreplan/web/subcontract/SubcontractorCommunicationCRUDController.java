@@ -19,7 +19,6 @@
 
 package org.libreplan.web.subcontract;
 
-import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.externalcompanies.entities.CommunicationType;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.business.orders.entities.OrderElement;
@@ -120,7 +119,7 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
         listing.invalidate();
     }
 
-    protected void save(SubcontractorCommunication subcontractorCommunication) throws ValidationException {
+    protected void save(SubcontractorCommunication subcontractorCommunication) {
         subcontractorCommunicationModel.confirmSave(subcontractorCommunication);
     }
 

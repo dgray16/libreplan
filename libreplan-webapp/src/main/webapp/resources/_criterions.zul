@@ -22,7 +22,7 @@
 <div id="criterionsContainer">
 
         <hbox width="100%" style="margin:5px">
-            <hbox align="pack">
+            <hbox align="pack" sclass="label-middle">
                 <separator bar="false" spacing="20px" orient="vertical"/>
 
                 <label value="${i18n:_('New criterion')}" />

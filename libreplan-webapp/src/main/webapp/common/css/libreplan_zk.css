@@ -437,7 +437,7 @@ Else we will use header with blue image. (.z-window-header)
     padding-bottom: 10px;
     font-weight: normal;
     padding-left: 22px;
-    background: #FFFFFF url(../img/header_bullet.gif) no-repeat 0 7px;
+    background: #FFFFFF url(../img/header_bullet.gif) no-repeat 0 8px;
 }
 
 .caption-title .z-caption-content {
@@ -2316,7 +2316,7 @@ textarea {
     vertical-align: middle;
 }
 
-.label-middle td tr td > span{
+.label-middle td tr td > span {
     font-size: 12px;
 }
 
