@@ -464,7 +464,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         super.doAfterCompose(comp);
 
         workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
-        dbPasswordEncoderService = (IDBPasswordEncoderService) SpringUtil.getBean("DBPasswordEncoderService");
+        dbPasswordEncoderService = (IDBPasswordEncoderService) SpringUtil.getBean("dbPasswordEncoderService");
         limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
         resourceDAO = (IResourceDAO) SpringUtil.getBean("resourceDAO");
         URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
