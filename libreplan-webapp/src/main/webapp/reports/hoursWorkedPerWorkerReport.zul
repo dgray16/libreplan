@@ -40,9 +40,9 @@
             border="normal" >
 
          <!-- Select dates -->
-         <panel title="${i18n:_('Dates')}" border="normal" style="overflow:auto">
+         <panel title="${i18n:_('Dates')}" border="normal" style="overflow:auto" sclass="report-margin">
              <panelchildren>
-                 <grid width="700px">
+                 <grid width="700px" sclass="margin-border">
                      <columns>
                          <column width="200px" />
                          <column />
@@ -62,15 +62,16 @@
          </panel>
 
           <!-- Select workers -->
-        <panel title="${i18n:_('Filter by workers')}"
-               border="normal"
-               style="overflow:auto">
+        <panel title="${i18n:_('Filter by workers')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
                 <vbox>
+
                 <separator spacing="5px"/>
+
                 <hbox>
-                    <autocomplete id="filterResource" buttonVisible="true"  width="400px" finder="ResourceFinder"/>
-                    <button label="${i18n:_('Add')}" style="margin-top: -4px" sclass="add-button"
+                    <autocomplete id="filterResource" buttonVisible="true"  width="400px"
+                                  finder="ResourceFinder" sclass="bandbox-margin"/>
+                    <button label="${i18n:_('Add')}" sclass="add-button"
                             onClick="controller.onAddResource()"/>
                 </hbox>
                 <separator spacing="10px"/>
@@ -78,7 +79,8 @@
                          width="710px"
                          multiple="true"
                          model="@{controller.resources}"
-                         itemRenderer="@{controller.renderer}">
+                         itemRenderer="@{controller.renderer}"
+                         sclass="margin-border">
                     <listhead>
                         <listheader label="${i18n:_('Type')}" align="center" width="50px"/>
                         <listheader label="${i18n:_('Queue-based')}" align="center" width="62px"/>
@@ -92,8 +94,7 @@
         </panel>
 
         <!-- Assign label -->
-        <panel title="${i18n:_('Filter by labels')}" border="normal"
-            style="overflow:auto">
+        <panel title="${i18n:_('Filter by labels')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
                 <vbox>
                     <separator spacing="5px"/>
@@ -101,10 +102,10 @@
                         <bandboxSearch id="bdLabels" finder="LabelBandboxFinder"
                                        model="@{controller.allLabels}"
                                        widthListbox="380px"
-                                       widthBandbox="350px"/>
+                                       widthBandbox="350px"
+                                       sclass="bandbox-margin"/>
                         <button label="${i18n:_('Add')}" sclass="add-button"
-                                onClick="controller.onSelectLabel()"
-                                style="margin-top: -4px" />
+                                onClick="controller.onSelectLabel()"/>
                     </hbox>
                     <hbox>
                         <radiogroup>
@@ -115,11 +116,14 @@
                             <radio id="filterByAny" label="${i18n:_('Any')}" checked="true" />
                         </radiogroup>
                     </hbox>
+
                 <separator spacing="10px"/>
+
                 <listbox id="lbLabels"
                          width="700px"
                          multiple="true"
-                         model="@{controller.selectedLabels}">
+                         model="@{controller.selectedLabels}"
+                         sclass="margin-border">
                     <listhead>
                         <listheader label="${i18n:_('Type')}" align="center" />
                         <listheader label="${i18n:_('Name')}" align="center" />
@@ -142,8 +146,7 @@
         </panel>
 
         <!-- Assign Criterion -->
-        <panel title="${i18n:_('Filter by criteria')}" border="normal"
-            style="overflow:auto">
+        <panel title="${i18n:_('Filter by criteria')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
                 <vbox>
                     <separator spacing="5px"/>
@@ -151,17 +154,18 @@
                         <bandboxSearch id="bdCriterions" finder="CriterionBandboxFinder"
                                        model="@{controller.allCriterions}"
                                        widthListbox="380px"
-                                       widthBandbox="350px" />
+                                       widthBandbox="350px"
+                                       sclass="bandbox-margin" />
                         <button label="${i18n:_('Add')}" sclass="add-button"
-                                onClick="controller.onSelectCriterion()"
-                                style="margin-top: -4px" />
+                                onClick="controller.onSelectCriterion()"/>
                     </hbox>
                 </vbox>
                 <separator spacing="10px"/>
                 <listbox id="lbCriterions"
                          width="700px"
                          multiple="true"
-                         model="@{controller.selectedCriterions}">
+                         model="@{controller.selectedCriterions}"
+                         sclass="margin-border">
                     <listhead>
                         <listheader label="${i18n:_('Type')}" align="center" />
                         <listheader label="${i18n:_('Name')}" align="center" />
@@ -185,9 +189,9 @@
         <separator spacing="10px" orient="horizontal" />
 
         <!-- Select output format -->
-        <panel title="${i18n:_('Format')}" border="normal" style="overflow:auto">
+        <panel title="${i18n:_('Format')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
-                <grid width="700px">
+                <grid width="700px" sclass="margin-border">
                     <columns>
                         <column width="200px" />
                         <column />

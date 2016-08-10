@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zul.Image;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Radio;
 
 /**
@@ -30,6 +32,8 @@ import org.zkoss.zul.Radio;
  * @author Alba Carro Pérez <alba.carro@gmail.com>
  */
 public class ProjectImportController extends GenericForwardComposer {
+
+    public static final String BREADCRUMBS_SEPARATOR = "/common/img/migas_separacion.gif";
 
     /**
      * OrderImporter service.
@@ -55,8 +59,22 @@ public class ProjectImportController extends GenericForwardComposer {
         super.doAfterCompose(comp);
         comp.setAttribute("projectImportController", this);
         messages = new MessagesForUser(messagesContainer);
+        setBreadCrumbs(comp);
     }
 
+
+    private void setBreadCrumbs(Component comp) {
+        Component breadCrumbs = comp.getPage().getFellow("breadcrumbs");
+
+        if (breadCrumbs.getChildren() != null) {
+            breadCrumbs.getChildren().clear();
+        }
+
+        breadCrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
+        breadCrumbs.appendChild(new Label(_("Planning")));
+        breadCrumbs.appendChild(new Image(BREADCRUMBS_SEPARATOR));
+        breadCrumbs.appendChild(new Label(_("Import project")));
+    }
     /**
      * Method called when the onUpload event happens.
      *
@@ -73,8 +91,7 @@ public class ProjectImportController extends GenericForwardComposer {
 
                 try {
                     importCalendar(media.getStreamData(), file);
-                    messages.showMessage(Level.INFO, _(file
-                            + ": Calendar import successfully!"));
+                    messages.showMessage(Level.INFO, _(file + ": Calendar import successfully!"));
                 } catch (InstanceNotFoundException e) {
                     messages.showMessage(Level.ERROR, _("Instance not found."));
                 } catch (ValidationException e) {
@@ -84,15 +101,13 @@ public class ProjectImportController extends GenericForwardComposer {
             } else if (importTasks.isChecked()) {
                 importProject(media.getStreamData(), file);
 
-                messages.showMessage(Level.INFO, _(file
-                        + ": Task import successfully!"));
+                messages.showMessage(Level.INFO, _(file + ": Task import successfully!"));
 
             } else if (importAll.isChecked()) {
 
                 try {
                     importAll(media.getStreamData(), file);
-                    messages.showMessage(Level.INFO, _(file
-                            + ": Import successfully!"));
+                    messages.showMessage(Level.INFO, _(file + ": Import successfully!"));
                 } catch (InstanceNotFoundException e) {
                     messages.showMessage(Level.ERROR, _("Instance not found."));
                 } catch (ValidationException e) {
@@ -100,13 +115,11 @@ public class ProjectImportController extends GenericForwardComposer {
                 }
 
             } else {
-                messages.showMessage(Level.WARNING,
-                        _("Select one of the options."));
+                messages.showMessage(Level.WARNING, _("Select one of the options."));
             }
 
         } else {
-            messages.showMessage(Level.ERROR,
-                    _("The only current supported formats are mpp and planner."));
+            messages.showMessage(Level.ERROR, _("The only current supported formats are mpp and planner."));
         }
 
     }
@@ -120,20 +133,17 @@ public class ProjectImportController extends GenericForwardComposer {
      *            Name of the file that we want to import.
      */
     @Transactional
-    private void importAll(InputStream streamData, String file) throws InstanceNotFoundException, ValidationException {
+    private void importAll(InputStream streamData, String file) throws InstanceNotFoundException {
 
-        List<CalendarDTO> calendarDTOs = calendarImporterMPXJ.getCalendarDTOs(
-                streamData, file);
+        List<CalendarDTO> calendarDTOs = calendarImporterMPXJ.getCalendarDTOs(streamData, file);
 
-        List<BaseCalendar> baseCalendars = calendarImporterMPXJ
-                .getBaseCalendars(calendarDTOs);
+        List<BaseCalendar> baseCalendars = calendarImporterMPXJ.getBaseCalendars(calendarDTOs);
 
         calendarImporterMPXJ.storeBaseCalendars(baseCalendars);
 
         OrderDTO importData = calendarImporterMPXJ.getOrderDTO(file);
 
-        Order order = orderImporterMPXJ.convertImportDataToOrder(importData,
-                true);
+        Order order = orderImporterMPXJ.convertImportDataToOrder(importData, true);
 
         TaskGroup taskGroup = orderImporterMPXJ.createTask(importData, true);
 
@@ -152,13 +162,11 @@ public class ProjectImportController extends GenericForwardComposer {
      *            Name of the file that we want to import.
      */
     @Transactional
-    private void importCalendar(InputStream streamData, String file) throws InstanceNotFoundException, ValidationException {
+    private void importCalendar(InputStream streamData, String file) throws InstanceNotFoundException {
 
-        List<CalendarDTO> calendarDTOs = calendarImporterMPXJ.getCalendarDTOs(
-                streamData, file);
+        List<CalendarDTO> calendarDTOs = calendarImporterMPXJ.getCalendarDTOs(streamData, file);
 
-        List<BaseCalendar> baseCalendars = calendarImporterMPXJ
-                .getBaseCalendars(calendarDTOs);
+        List<BaseCalendar> baseCalendars = calendarImporterMPXJ.getBaseCalendars(calendarDTOs);
 
         calendarImporterMPXJ.storeBaseCalendars(baseCalendars);
 
@@ -196,11 +204,7 @@ public class ProjectImportController extends GenericForwardComposer {
      */
     private boolean checkFileFormat(String file) {
 
-        if (file.matches("(?i).*mpp") | file.matches("(?i).*planner")) {
-            return true;
-        }
-
-        return false;
+        return file.matches("(?i).*mpp") | file.matches("(?i).*planner");
     }
 
 }

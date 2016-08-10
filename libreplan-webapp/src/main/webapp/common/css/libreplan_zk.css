@@ -2323,3 +2323,11 @@ textarea {
 .decimal-max-value {
     width: 85px;
 }
+
+.hidden-south-collapsed {
+    display: none !important;
+}
+
+.display-south-collapsed {
+    display: block;
+}
