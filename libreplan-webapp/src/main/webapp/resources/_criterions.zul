@@ -35,7 +35,7 @@
             <div align="right" style="padding-top: 4px;">
                 <label sclass="subtitulo" value="${i18n:_('Show only current satisfied criteria')}" />
 
-                <checkbox id="criterionFilterCheckbox" onCheck="assignedCriterionsController.reload();" />
+                <checkbox id="criterionFilterCheckbox" onCheck="assignedCriterionsController.reload();" sclass="checkbox-margin" />
             </div>
         </hbox>
 

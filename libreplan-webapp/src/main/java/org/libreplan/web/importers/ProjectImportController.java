@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Image;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Radio;
@@ -58,8 +59,16 @@ public class ProjectImportController extends GenericForwardComposer {
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         comp.setAttribute("projectImportController", this);
+
+        injectsObjects();
+
         messages = new MessagesForUser(messagesContainer);
         setBreadCrumbs(comp);
+    }
+
+    private void injectsObjects() {
+        calendarImporterMPXJ = (ICalendarImporter) SpringUtil.getBean("calendarImporterMPXJ");
+        orderImporterMPXJ = (IOrderImporter) SpringUtil.getBean("orderImporterMPXJ");
     }
 
 
