@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.zkoss.ganttz.IChartVisibilityChangedListener;
 import org.zkoss.ganttz.data.resourceload.LoadTimeLine;
+import org.zkoss.ganttz.i18n.I18nHelper;
 import org.zkoss.ganttz.timetracker.TimeTracker;
 import org.zkoss.ganttz.timetracker.TimeTrackerComponent;
 import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
@@ -317,7 +318,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         return new TimeTrackerComponent(timeTracker) {
             @Override
             protected void scrollHorizontalPercentage(int daysDisplacement) {
-                response("", new AuInvoke(resourceLoadList, "scroll_horizontal", daysDisplacement + ""));
+                response("", new AuInvoke(resourceLoadList, "scroll_horizontal", Integer.toString(daysDisplacement)));
                 moveCurrentPositionScroll();
             }
 
@@ -330,7 +331,9 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
                 int diffDays = getTimeTrackerComponent().getDiffDays(previousStart);
                 double pixelPerDay = getTimeTrackerComponent().getPixelPerDay();
 
-                response("move_scroll", new AuInvoke(resourceLoadList, "move_scroll", "" + diffDays, "" + pixelPerDay));
+                response("move_scroll", new AuInvoke(resourceLoadList, "move_scroll",
+                        Integer.toString(diffDays),
+                        Double.toString(pixelPerDay)));
             }
 
             protected void updateCurrentDayScroll() {
@@ -338,7 +341,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
                 response(
                         "update_day_scroll",
-                        new AuInvoke(resourceLoadList, "update_day_scroll", "" + previousPixelPerDay));
+                        new AuInvoke(resourceLoadList, "update_day_scroll", Double.toString(previousPixelPerDay)));
 
             }
         };
@@ -383,7 +386,12 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         getFellow("insertionPointChart").appendChild(loadChart);
 
         this.visibleChart = expandResourceLoadViewCharts;
+        this.visibleChart = expandResourceLoadViewCharts;
         ((South) getFellow("graphics")).setOpen(this.visibleChart);
+
+        if (!visibleChart) {
+            ((South) getFellow("graphics")).setTitle(I18nHelper._("Graphics are disabled"));
+        }
         savePreviousData();
     }
 
@@ -550,6 +558,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         nameFilterListener.addListener(iFilterChangedListener);
     }
 
+    /* It should be public! */
     public void changeChartVisibility(boolean visible) {
         visibleChart = visible;
 

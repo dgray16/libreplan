@@ -46,6 +46,7 @@ import org.zkoss.ganttz.data.Task;
 import org.zkoss.ganttz.extensions.ICommand;
 import org.zkoss.ganttz.extensions.ICommandOnTask;
 import org.zkoss.ganttz.extensions.IContext;
+import org.zkoss.ganttz.i18n.I18nHelper;
 import org.zkoss.ganttz.timetracker.TimeTracker;
 import org.zkoss.ganttz.timetracker.TimeTrackerComponent;
 import org.zkoss.ganttz.timetracker.TimeTrackerComponentWithoutColumns;
@@ -55,7 +56,6 @@ import org.zkoss.ganttz.util.LongOperationFeedback;
 import org.zkoss.ganttz.util.LongOperationFeedback.ILongOperation;
 import org.zkoss.ganttz.util.ProfilingLogFactory;
 import org.zkoss.ganttz.util.WeakReferencedListeners;
-import org.zkoss.ganttz.util.WeakReferencedListeners.IListenerNotification;
 import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.au.AuService;
 import org.zkoss.zk.mesg.MZk;
@@ -80,6 +80,94 @@ public class Planner extends HtmlMacroComponent  {
     private static int PIXELS_PER_TASK_LEVEL = 21;
 
     private static int PIXELS_PER_CHARACTER = 5;
+
+    private GanttZKDiagramGraph diagramGraph;
+
+    private LeftPane leftPane;
+
+    private GanttPanel ganttPanel;
+
+    private List<? extends CommandContextualized<?>> contextualizedGlobalCommands;
+
+    private CommandContextualized<?> goingDownInLastArrowCommand;
+
+    private List<? extends CommandOnTaskContextualized<?>> commandsOnTasksContextualized;
+
+    private CommandOnTaskContextualized<?> doubleClickCommand;
+
+    private FunctionalityExposedForExtensions<?> context;
+
+    private transient IDisabilityConfiguration disabilityConfiguration;
+
+    private boolean isShowingCriticalPath = false;
+
+    private boolean isShowingAdvances = false;
+
+    private boolean isShowingLabels = false;
+
+    private boolean isShowingReportedHours = false;
+
+    private boolean isShowingMoneyCostBar = false;
+
+    private boolean isShowingResources = false;
+
+    private boolean isExpandAll = false;
+
+    private boolean isFlattenTree = false;
+
+    private ZoomLevel zoomLevel = null;
+
+    private Listbox listZoomLevels = null;
+
+    private WeakReferencedListeners<IChartVisibilityChangedListener> chartVisibilityListeners = WeakReferencedListeners
+            .create();
+
+    private boolean containersExpandedByDefault = false;
+
+    private boolean shownAdvanceByDefault = false;
+
+    private boolean shownReportedHoursByDefault = false;
+
+    private boolean shownMoneyCostBarByDefault = false;
+
+    private FilterAndParentExpandedPredicates predicate;
+
+    private boolean visibleChart;
+
+    private IGraphChangeListener showCriticalPathOnChange = new IGraphChangeListener() {
+
+        @Override
+        public void execute() {
+            context.showCriticalPath();
+        }
+    };
+
+    private IGraphChangeListener showAdvanceOnChange = new IGraphChangeListener() {
+
+        @Override
+        public void execute() {
+            context.showAdvances();
+        }
+    };
+
+    private IGraphChangeListener showReportedHoursOnChange = new IGraphChangeListener() {
+
+        @Override
+        public void execute() {
+            context.showReportedHours();
+        }
+    };
+
+    private IGraphChangeListener showMoneyCostBarOnChange = new IGraphChangeListener() {
+
+        @Override
+        public void execute() {
+            context.showMoneyCostBar();
+        }
+    };
+
+    public Planner() {
+    }
 
     public static boolean guessContainersExpandedByDefaultGivenPrintParameters(Map<String, String> printParameters) {
         return guessContainersExpandedByDefault(convertToURLParameters(printParameters));
@@ -129,50 +217,6 @@ public class Planner extends HtmlMacroComponent  {
         }
 
         return result;
-    }
-
-    private GanttZKDiagramGraph diagramGraph;
-
-    private LeftPane leftPane;
-
-    private GanttPanel ganttPanel;
-
-    private List<? extends CommandContextualized<?>> contextualizedGlobalCommands;
-
-    private CommandContextualized<?> goingDownInLastArrowCommand;
-
-    private List<? extends CommandOnTaskContextualized<?>> commandsOnTasksContextualized;
-
-    private CommandOnTaskContextualized<?> doubleClickCommand;
-
-    private FunctionalityExposedForExtensions<?> context;
-
-    private transient IDisabilityConfiguration disabilityConfiguration;
-
-    private boolean isShowingCriticalPath = false;
-
-    private boolean isShowingAdvances = false;
-
-    private boolean isShowingLabels = false;
-
-    private boolean isShowingReportedHours = false;
-
-    private boolean isShowingMoneyCostBar = false;
-
-    private boolean isShowingResources = false;
-
-    private boolean isExpandAll = false;
-
-    private boolean isFlattenTree = false;
-
-    private ZoomLevel zoomLevel = null;
-
-    private Listbox listZoomLevels = null;
-
-    private WeakReferencedListeners<IChartVisibilityChangedListener> chartVisibilityListeners = WeakReferencedListeners
-            .create();
-
-    public Planner() {
     }
 
     TaskList getTaskList() {
@@ -394,6 +438,10 @@ public class Planner extends HtmlMacroComponent  {
         this.visibleChart = configuration.isExpandPlanningViewCharts();
         ((South) getFellow("graphics")).setOpen(this.visibleChart);
 
+        if (!visibleChart) {
+            ((South) getFellow("graphics")).setTitle(I18nHelper._("Graphics are disabled"));
+        }
+
         PROFILING_LOG
                 .debug("it took doing the setup of components and adding them: "
                         + (System.currentTimeMillis() - timeSetupingAndAddingComponents) + " ms");
@@ -560,50 +608,6 @@ public class Planner extends HtmlMacroComponent  {
         return ganttPanel.getTimeTracker();
     }
 
-    private IGraphChangeListener showCriticalPathOnChange = new IGraphChangeListener() {
-
-        @Override
-        public void execute() {
-            context.showCriticalPath();
-        }
-    };
-
-    private IGraphChangeListener showAdvanceOnChange = new IGraphChangeListener() {
-
-        @Override
-        public void execute() {
-            context.showAdvances();
-        }
-    };
-
-    private IGraphChangeListener showReportedHoursOnChange = new IGraphChangeListener() {
-
-        @Override
-        public void execute() {
-            context.showReportedHours();
-        }
-    };
-
-    private IGraphChangeListener showMoneyCostBarOnChange = new IGraphChangeListener() {
-
-        @Override
-        public void execute() {
-            context.showMoneyCostBar();
-        }
-    };
-
-    private boolean containersExpandedByDefault = false;
-
-    private boolean shownAdvanceByDefault = false;
-
-    private boolean shownReportedHoursByDefault = false;
-
-    private boolean shownMoneyCostBarByDefault = false;
-
-    private FilterAndParentExpandedPredicates predicate;
-
-    private boolean visibleChart;
-
     public void showCriticalPath() {
         Button showCriticalPathButton = (Button) getFellow("showCriticalPath");
         if ( disabilityConfiguration.isCriticalPathEnabled() ) {
@@ -750,7 +754,7 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public boolean showAdvancesRightNow() {
-        return (areShownAdvancesByDefault() || isShowingAdvances);
+        return areShownAdvancesByDefault() || isShowingAdvances;
     }
 
     public void setAreShownAdvancesByDefault(boolean shownAdvanceByDefault) {
@@ -767,7 +771,7 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public boolean showReportedHoursRightNow() {
-        return (areShownReportedHoursByDefault() || isShowingReportedHours);
+        return areShownReportedHoursByDefault() || isShowingReportedHours;
     }
 
     public void setAreShownMoneyCostBarByDefault(boolean shownMoneyCostBarByDefault) {
@@ -779,7 +783,7 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public boolean showMoneyCostBarRightNow() {
-        return (areShownMoneyCostBarByDefault() || isShowingMoneyCostBar);
+        return areShownMoneyCostBarByDefault() || isShowingMoneyCostBar;
     }
 
     public void expandAll() {
@@ -813,7 +817,7 @@ public class Planner extends HtmlMacroComponent  {
         listZoomLevels.invalidate();
     }
 
-    public IContext<?> getContext() {
+    public IContext getContext() {
         return context;
     }
 
@@ -906,6 +910,7 @@ public class Planner extends HtmlMacroComponent  {
         return null;
     }
 
+    @Override
     public String getWidgetClass(){
         return getDefinition().getDefaultWidgetClass(this);
     }
@@ -918,7 +923,7 @@ public class Planner extends HtmlMacroComponent  {
         TaskList taskList = getTaskList();
         if ( taskList != null ) {
             taskList.updateCompletion(progressType);
-            // FIXME Bug #1270
+
             for (TaskComponent each : taskList.getTaskComponents()) {
                 each.invalidate();
             }
