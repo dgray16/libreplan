@@ -332,17 +332,23 @@ Ubuntu/Debian
 
   In Ubuntu Lucid 10.04 remove ``libqtwebkit-dev`` package.
 
-* Download source code::
-
-    $ svn co https://cutycapt.svn.sourceforge.net/svnroot/cutycapt cutycapt
-
-* Compile::
-
-    $ cd CutyCapt
-    $ qmake CutyCapt.pro
-    $ make
-
 * Install::
+
+    # apt-get install cutycapt
+
+If it doesn't work. Try to do it:
+
+  * Download source code::
+
+      $ svn co https://cutycapt.svn.sourceforge.net/svnroot/cutycapt cutycapt
+
+  * Compile::
+
+      $ cd CutyCapt
+      $ qmake CutyCapt.pro
+      $ make
+
+  * Install::
 
     # cp CutyCapt /user/bin/cutycapt
 
