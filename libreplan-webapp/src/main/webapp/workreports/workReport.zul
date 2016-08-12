@@ -225,7 +225,8 @@
                         </grid>
 
                         <grid id="headingFieldsAndLabels" mold="paging" pageSize="4"
-                              fixedLayout="true" style="border-top:0;"
+                              fixedLayout="true"
+                              style="border-top:0;"
                               model="@{controller.fieldsAndLabelsHeading}"
                               rowRenderer= "@{controller.orderedFieldsAndLabelsRowRenderer}">
                             <columns>
@@ -245,7 +246,8 @@
                                                 onClick="controller.addWorkReportLine()" />
                                     </hbox>
 
-                                   <newdatasortablegrid id="listWorkReportLines" fixedLayout="true"
+                                   <newdatasortablegrid id="listWorkReportLines"
+                                                        fixedLayout="false"
                                                         rowRenderer="@{controller.renderer}"
                                                         sclass="listWorkReportLines report-margin"/>
                                 </groupbox>

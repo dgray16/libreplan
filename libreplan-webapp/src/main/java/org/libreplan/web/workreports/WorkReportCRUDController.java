@@ -97,6 +97,7 @@ import org.zkoss.zul.Window;
  * @author Diego Pino García <dpino@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Vova Perebykivskyi <vova@libreplan-enterpsire.com>
+ * @author Bogdan Bodnarjuk <bogdan@libreplan-enterpsire.com>
  */
 public class WorkReportCRUDController
         extends GenericForwardComposer<Component>
@@ -159,7 +160,6 @@ public class WorkReportCRUDController
 
     private Datebox filterFinishDate;
 
-    @javax.annotation.Resource
     private IPersonalTimesheetController personalTimesheetController;
 
     private Popup personalTimesheetsPopup;
@@ -173,13 +173,6 @@ public class WorkReportCRUDController
     private static final String ASCENDING = "ascending";
 
     public WorkReportCRUDController() {
-        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
-        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
-
-        workReportTypeCRUD = (IWorkReportTypeCRUDControllerEntryPoints)
-                SpringUtil.getBean("workReportTypeCRUDControllerEntryPoints");
-
-        personalTimesheetController = (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
     }
 
     @Override
@@ -188,6 +181,8 @@ public class WorkReportCRUDController
         listWorkReportLines = (NewDataSortableGrid) createWindow.getFellowIfAny("listWorkReportLines");
         messagesForUser = new MessagesForUser(messagesContainer);
         showMessageIfPersonalTimesheetWasSaved();
+
+        injectsObjects();
 
         comp.setAttribute("controller", this);
         goToList();
@@ -198,6 +193,16 @@ public class WorkReportCRUDController
         initializeHoursType();
 
         URLHandlerRegistry.getRedirectorFor(IWorkReportCRUDControllerEntryPoints.class).register(this, page);
+    }
+
+    private void injectsObjects() {
+        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+
+        workReportTypeCRUD = (IWorkReportTypeCRUDControllerEntryPoints)
+                SpringUtil.getBean("workReportTypeCRUD");
+
+        personalTimesheetController = (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
     }
 
     private void showMessageIfPersonalTimesheetWasSaved() {
@@ -434,7 +439,8 @@ public class WorkReportCRUDController
                 showInvalidMessage(null, message);
             }
 
-            if ( EffortDuration.zero().compareTo(EffortDuration.parseFromFormattedString(effort.getValue())) <= 0 ) {
+            if ( effort != null &&
+                    EffortDuration.zero().compareTo(EffortDuration.parseFromFormattedString(effort.getValue())) <= 0 ) {
                 String message = _("Effort must be greater than zero");
                 showInvalidMessage(effort, message);
             }
@@ -530,6 +536,7 @@ public class WorkReportCRUDController
         }
     }
 
+
     /**
      * Locates {@link Autocomplete} type of work hours in {@link Row}.
      *
@@ -545,7 +552,6 @@ public class WorkReportCRUDController
             return null;
         }
     }
-
 
     /**
      * Locates {@link Checkbox} finished in {@link Row}.
@@ -794,6 +800,7 @@ public class WorkReportCRUDController
                 NewDataSortableColumn columnDate = new NewDataSortableColumn();
                 columnDate.setLabel(_("Date"));
                 columnDate.setSclass("date-column");
+                columnDate.setHflex("1");
                 Util.setSort(columnDate, "auto=(date)");
                 columnDate.setSortDirection(ASCENDING);
 
@@ -804,6 +811,7 @@ public class WorkReportCRUDController
             if ( !getWorkReport().getWorkReportType().getResourceIsSharedInLines() ) {
                 NewDataSortableColumn columnResource = new NewDataSortableColumn();
                 columnResource.setLabel(_("Resource"));
+                columnResource.setHflex("1");
                 columnResource.setSclass("resource-column");
                 columns.appendChild(columnResource);
             }
@@ -812,7 +820,7 @@ public class WorkReportCRUDController
                 NewDataSortableColumn columnCode = new NewDataSortableColumn();
                 columnCode.setLabel(_("Task"));
                 columnCode.setSclass("order-code-column");
-                columnCode.setHflex("min");
+                columnCode.setHflex("1");
                 columns.appendChild(columnCode);
             }
 
@@ -845,6 +853,7 @@ public class WorkReportCRUDController
                 NewDataSortableColumn columnHourStart = new NewDataSortableColumn();
                 columnHourStart.setLabel(_("Start hour"));
                 columnHourStart.setSclass("column-hour-start");
+                columnHourStart.setHflex("min");
                 columns.appendChild(columnHourStart);
                 NewDataSortableColumn columnHourFinish = new NewDataSortableColumn();
                 columnHourFinish.setLabel(_("Finish Hour"));
@@ -869,11 +878,13 @@ public class WorkReportCRUDController
         columns.appendChild(columnFinsihed);
         columnCode.setLabel(_("Code"));
         columnCode.setSclass("code-column");
+        columnCode.setHflex("1");
         columns.appendChild(columnCode);
         NewDataSortableColumn columnOperations = new NewDataSortableColumn();
         columnOperations.setLabel(_("Op."));
         columnOperations.setSclass("operations-column");
         columnOperations.setTooltiptext(_("Operations"));
+        columnOperations.setHflex("min");
         columns.appendChild(columnOperations);
 
         columns.setParent(grid);
@@ -905,195 +916,9 @@ public class WorkReportCRUDController
         return workReportModel.getWorkReportLines();
     }
 
-    private void appendDateInLines(final Row row) {
-        final Datebox date = new Datebox();
-        final WorkReportLine line = row.getValue();
-
-        Util.bind(
-                date,
-                () -> {
-                    if (line != null) {
-                        return line.getDate();
-                    }
-                    return null;
-                },
-                value -> {
-                    if (line != null) {
-                        line.setDate(value);
-                    }
-                });
-
-        row.appendChild(date);
-    }
-
-    /**
-     * Append a Autocomplete @{link Resource} to row.
-     *
-     * @param row
-     */
-    private void appendResourceInLines(final Row row) {
-        final Autocomplete autocomplete = new Autocomplete();
-        autocomplete.setWidth("200px");
-        autocomplete.setAutodrop(true);
-        autocomplete.applyProperties();
-        autocomplete.setFinder("ResourceFinder");
-
-        // Getter, show worker selected
-        if ( getResource(row) != null ) {
-            autocomplete.setSelectedItem(getResource(row));
-        }
-
-        autocomplete.addEventListener("onChange", event -> changeResourceInLines(autocomplete, row));
-
-        row.appendChild(autocomplete);
-    }
-
-    private void changeResourceInLines(final Autocomplete autocomplete, Row row) {
-        final WorkReportLine workReportLine = row.getValue();
-        final Comboitem comboitem = autocomplete.getSelectedItem();
-        if ( (comboitem == null) || (comboitem.getValue() == null)) {
-            workReportLine.setResource(null);
-            throw new WrongValueException(autocomplete, _("Please, select an item"));
-        } else {
-            workReportLine.setResource(comboitem.getValue());
-        }
-    }
-
-    private Resource getResource(Row listitem) {
-        WorkReportLine workReportLine = listitem.getValue();
-
-        return workReportLine.getResource();
-    }
-
-    /**
-     * Append a Textbox @{link Order} to row.
-     *
-     * @param row
-     */
-    private void appendOrderElementInLines(Row row) {
-        final WorkReportLine workReportLine = row.getValue();
-
-        final BandboxSearch bandboxSearch = BandboxSearch.create("OrderElementBandboxFinder", getOrderElements());
-
-        bandboxSearch.setSelectedElement(workReportLine.getOrderElement());
-        bandboxSearch.setSclass("bandbox-workreport-task");
-        bandboxSearch.setListboxWidth("750px");
-
-        bandboxSearch.setListboxEventListener(
-                Events.ON_SELECT,
-                event -> {
-                    Listitem selectedItem = bandboxSearch.getSelectedItem();
-                    setOrderElementInWRL(selectedItem, workReportLine);
-                });
-
-        bandboxSearch.setListboxEventListener(
-                Events.ON_OK,
-                event -> {
-                    Listitem selectedItem = bandboxSearch.getSelectedItem();
-                    setOrderElementInWRL(selectedItem, workReportLine);
-                    bandboxSearch.close();
-                });
-
-        row.appendChild(bandboxSearch);
-    }
-
-    private void setOrderElementInWRL(Listitem selectedItem, WorkReportLine line) {
-        OrderElement orderElement = selectedItem.getValue();
-        line.setOrderElement(orderElement);
-    }
-
-    private void appendFieldsAndLabelsInLines(final Row row) {
-        final WorkReportLine line = row.getValue();
-        for(Object fieldOrLabel : getFieldsAndLabelsLine(line)) {
-            if ( fieldOrLabel instanceof DescriptionValue ) {
-                appendNewTextbox(row, (DescriptionValue) fieldOrLabel);
-            } else if ( fieldOrLabel instanceof Label ) {
-                appendAutocompleteLabelsByTypeInLine(row, ((Label) fieldOrLabel));
-            }
-        }
-    }
-
-    private void appendAutocompleteLabelsByTypeInLine(Row row, final Label currentLabel) {
-        final LabelType labelType = currentLabel.getType();
-        final WorkReportLine line = row.getValue();
-        final Autocomplete comboLabels = createAutocompleteLabels(labelType, currentLabel);
-        comboLabels.setParent(row);
-
-        comboLabels.addEventListener(Events.ON_CHANGE, event -> {
-            if (comboLabels.getSelectedItem() != null) {
-                Label newLabel = comboLabels.getSelectedItem().getValue();
-                workReportModel.changeLabelInWorkReportLine(currentLabel, newLabel, line);
-            }
-
-            reloadWorkReportLines();
-        });
-    }
-
-    private void appendHoursStartAndFinish(final Row row) {
-        final WorkReportLine line = row.getValue();
-
-        final Timebox timeStart = getNewTimebox();
-        final Timebox timeFinish = getNewTimebox();
-
-        row.appendChild(timeStart);
-        row.appendChild(timeFinish);
-
-        Util.bind(
-                timeStart,
-                () -> {
-                    if ( (line != null) && (line.getClockStart() != null) ) {
-                        return line.getClockStart().toDateTimeToday().toDate();
-                    }
-
-                    return null;
-                },
-                value -> {
-                    if ( line != null ) {
-                        checkCannotBeHigher(timeStart, timeFinish);
-                        setClock(line, timeStart, timeFinish);
-                        updateEffort(row);
-                    }
-                });
-
-        Util.bind(
-                timeFinish,
-                () -> {
-                    if ( (line != null) && (line.getClockStart() != null) ) {
-                        return line.getClockFinish().toDateTimeToday().toDate();
-                    }
-
-                    return null;
-                },
-                value -> {
-                    if ( line != null ) {
-                        checkCannotBeHigher(timeStart, timeFinish);
-                        setClock(line, timeStart, timeFinish);
-                        updateEffort(row);
-                    }
-                });
-    }
-
     protected void setClock(WorkReportLine line, Timebox timeStart, Timebox timeFinish) {
         line.setClockStart(timeStart.getValue());
         line.setClockFinish(timeFinish.getValue());
-    }
-
-    private Timebox getNewTimebox() {
-        final Timebox timeStart = new Timebox();
-        timeStart.setWidth("60px");
-        timeStart.setFormat("short");
-        timeStart.setButtonVisible(true);
-
-        return timeStart;
-    }
-
-    private void updateEffort(final Row row) {
-        WorkReportLine line = row.getValue();
-        Textbox effort = getEffort(row);
-        if ( effort != null && line.getEffort() != null ) {
-            effort.setValue(line.getEffort().toFormattedString());
-            effort.invalidate();
-        }
     }
 
     public void checkCannotBeHigher(Timebox starting, Timebox ending) {
@@ -1106,127 +931,6 @@ public class WorkReportCRUDController
         if ( endingDate == null || startingDate == null || startingDate.compareTo(endingDate) > 0 ) {
             throw new WrongValueException(starting, _("Cannot be higher than finish hour"));
         }
-    }
-
-    /**
-     * Append a {@link Textbox} effort to {@link Row}.
-     *
-     * @param row
-     */
-    private void appendEffortDuration(Row row) {
-        WorkReportLine workReportLine = row.getValue();
-        Textbox effort = new Textbox();
-
-        effort.setConstraint((comp, value) -> {
-            if ( !Pattern.matches("(\\d+)(\\s*:\\s*\\d+\\s*)*", (String) value))
-                throw new WrongValueException(comp, _("Please, enter a valid effort"));
-        });
-
-        bindEffort(effort, workReportLine);
-
-        if ( getWorkReportType().getHoursManagement().equals(HoursManagementEnum.HOURS_CALCULATED_BY_CLOCK) ) {
-            effort.setDisabled(true);
-        }
-        row.appendChild(effort);
-    }
-
-    /**
-     * Append Selectbox of @{link TypeOfWorkHours} to row.
-     *
-     * @param row
-     */
-    private void appendHoursType(final Row row) {
-        final WorkReportLine workReportLine = row.getValue();
-        final Listbox lbHoursType = new Listbox();
-        lbHoursType.setMold("select");
-        lbHoursType.setModel(allHoursType);
-        lbHoursType.renderAll();
-        lbHoursType.applyProperties();
-
-        if ( lbHoursType.getItems().isEmpty() ) {
-            row.appendChild(lbHoursType);
-
-            return;
-        }
-
-        // First time is rendered, select first item
-        TypeOfWorkHours type = workReportLine.getTypeOfWorkHours();
-        if ( workReportLine.isNewObject() && type == null)  {
-            Listitem item = lbHoursType.getItemAtIndex(0);
-            item.setSelected(true);
-            setHoursType(workReportLine, item);
-        } else {
-            // If workReportLine has a type, select item with that type
-            Listitem item = ComponentsFinder.findItemByValue(lbHoursType, type);
-            if ( item != null ) {
-                lbHoursType.selectItem(item);
-            }
-        }
-
-        lbHoursType.addEventListener(Events.ON_SELECT, event -> {
-            Listitem item = lbHoursType.getSelectedItem();
-            if ( item != null ) {
-                setHoursType(row.getValue(), item);
-            }
-        });
-
-        row.appendChild(lbHoursType);
-    }
-
-    private void setHoursType(WorkReportLine workReportLine, Listitem item) {
-        TypeOfWorkHours value = item != null ? (TypeOfWorkHours) item.getValue() : null;
-        workReportLine.setTypeOfWorkHours(value);
-        if (value == null && item != null) {
-            throw new WrongValueException(item.getParent(), _("Please, select an item"));
-        }
-    }
-
-    private void appendCode(final Row row) {
-        final WorkReportLine line = row.getValue();
-        final Textbox code = new Textbox();
-        code.setDisabled(getWorkReport().isCodeAutogenerated());
-        code.applyProperties();
-
-         if ( line.getCode() != null ) {
-             code.setValue(line.getCode());
-         }
-
-        code.addEventListener("onChange", event -> {
-            final WorkReportLine line1 = row.getValue();
-            line1.setCode(code.getValue());
-        });
-        row.appendChild(code);
-    }
-
-    private void appendFinished(final Row row) {
-        final WorkReportLine line = row.getValue();
-
-        Checkbox finished = Util.bind(
-                new Checkbox(),
-                () -> line.isFinished(),
-                value -> line.setFinished(BooleanUtils.isTrue(value))
-        );
-
-        if ( !line.isFinished() && workReportModel.isFinished(line.getOrderElement()) ) {
-            finished.setDisabled(true);
-        }
-
-        row.appendChild(finished);
-    }
-
-    /**
-     * Append a delete {@link Button} to {@link Row}.
-     *
-     * @param row
-     */
-    private void appendDeleteButton(final Row row) {
-        Button delete = new Button("", "/common/img/ico_borrar1.png");
-        delete.setHoverImage("/common/img/ico_borrar.png");
-        delete.setSclass("icono");
-        delete.setTooltiptext(_("Delete"));
-        delete.addEventListener(Events.ON_CLICK, event -> confirmRemove(row.getValue()));
-
-        row.appendChild(delete);
     }
 
     public void confirmRemove(WorkReportLine workReportLine) {
@@ -1249,21 +953,6 @@ public class WorkReportCRUDController
 
         return resource.getShortDescription() + " - " + orderElement.getCode();
     }
-
-    /**
-     * Binds Textbox effort to a {@link WorkReportLine} numHours.
-     *
-     * @param box
-     * @param workReportLine
-     */
-    private void bindEffort(final Textbox box, final WorkReportLine workReportLine) {
-        Util.bind(
-                box,
-                () -> workReportLine.getEffort() != null ?
-                        workReportLine.getEffort().toFormattedString() : EffortDuration.zero().toFormattedString(),
-                value -> workReportLine.setEffort(EffortDuration.parseFromFormattedString(value))
-        );
-     }
 
     public WorkReportListRenderer getRenderer() {
         return workReportListRenderer;
@@ -1309,8 +998,330 @@ public class WorkReportCRUDController
             appendCode(row);
             appendDeleteButton(row);
         }
-    }
 
+        private void setOrderElementInWRL(Listitem selectedItem, WorkReportLine line) {
+            OrderElement orderElement = selectedItem.getValue();
+            line.setOrderElement(orderElement);
+        }
+
+        private void appendFinished(final Row row) {
+            final WorkReportLine line = row.getValue();
+
+            Checkbox finished = Util.bind(
+                    new Checkbox(),
+                    () -> line.isFinished(),
+                    value -> line.setFinished(BooleanUtils.isTrue(value))
+            );
+
+            if ( !line.isFinished() && workReportModel.isFinished(line.getOrderElement()) ) {
+                finished.setDisabled(true);
+            }
+
+            row.appendChild(finished);
+        }
+
+        private void appendAutocompleteLabelsByTypeInLine(Row row, final Label currentLabel) {
+            final LabelType labelType = currentLabel.getType();
+            final WorkReportLine line = row.getValue();
+            final Autocomplete comboLabels = createAutocompleteLabels(labelType, currentLabel);
+            comboLabels.setParent(row);
+
+            comboLabels.addEventListener(Events.ON_CHANGE, event -> {
+                if (comboLabels.getSelectedItem() != null) {
+                    Label newLabel = comboLabels.getSelectedItem().getValue();
+                    workReportModel.changeLabelInWorkReportLine(currentLabel, newLabel, line);
+                }
+
+                reloadWorkReportLines();
+            });
+        }
+
+        private void appendDateInLines(final Row row) {
+            final Datebox date = new Datebox();
+            final WorkReportLine line = row.getValue();
+
+            Util.bind(
+                    date,
+                    () -> {
+                        if (line != null) {
+                            return line.getDate();
+                        }
+                        return null;
+                    },
+                    value -> {
+                        if (line != null) {
+                            line.setDate(value);
+                        }
+                    });
+
+            row.appendChild(date);
+        }
+
+        /**
+         * Append a Autocomplete @{link Resource} to row.
+         *
+         * @param row
+         */
+        private void appendResourceInLines(final Row row) {
+            final Autocomplete autocomplete = new Autocomplete();
+            autocomplete.setWidth("200px");
+            autocomplete.setAutodrop(true);
+            autocomplete.applyProperties();
+            autocomplete.setFinder("ResourceFinder");
+
+            // Getter, show worker selected
+            if ( getResource(row) != null ) {
+                autocomplete.setSelectedItem(getResource(row));
+            }
+
+            autocomplete.addEventListener("onChange", event -> changeResourceInLines(autocomplete, row));
+
+            row.appendChild(autocomplete);
+        }
+
+        private void setHoursType(WorkReportLine workReportLine, Listitem item) {
+            TypeOfWorkHours value = item != null ? (TypeOfWorkHours) item.getValue() : null;
+            workReportLine.setTypeOfWorkHours(value);
+            if (value == null && item != null) {
+                throw new WrongValueException(item.getParent(), _("Please, select an item"));
+            }
+        }
+
+        /**
+         * Append a {@link Textbox} effort to {@link Row}.
+         *
+         * @param row
+         */
+        private void appendEffortDuration(Row row) {
+            WorkReportLine workReportLine = row.getValue();
+            Textbox effort = new Textbox();
+
+            effort.setConstraint((comp, value) -> {
+                if ( !Pattern.matches("(\\d+)(\\s*:\\s*\\d+\\s*)*", (String) value))
+                    throw new WrongValueException(comp, _("Please, enter a valid effort"));
+            });
+
+            bindEffort(effort, workReportLine);
+
+            if ( getWorkReportType().getHoursManagement().equals(HoursManagementEnum.HOURS_CALCULATED_BY_CLOCK) ) {
+                effort.setDisabled(true);
+            }
+            row.appendChild(effort);
+        }
+
+        private void appendFieldsAndLabelsInLines(final Row row) {
+            final WorkReportLine line = row.getValue();
+            for(Object fieldOrLabel : getFieldsAndLabelsLine(line)) {
+                if ( fieldOrLabel instanceof DescriptionValue ) {
+                    appendNewTextbox(row, (DescriptionValue) fieldOrLabel);
+                } else if ( fieldOrLabel instanceof Label ) {
+                    appendAutocompleteLabelsByTypeInLine(row, (Label) fieldOrLabel);
+                }
+            }
+        }
+
+        /**
+         * Append Selectbox of @{link TypeOfWorkHours} to row.
+         *
+         * @param row
+         */
+        private void appendHoursType(final Row row) {
+            final WorkReportLine workReportLine = row.getValue();
+            final Listbox lbHoursType = new Listbox();
+            lbHoursType.setMold("select");
+            lbHoursType.setModel(allHoursType);
+            lbHoursType.renderAll();
+            lbHoursType.applyProperties();
+
+            if ( lbHoursType.getItems().isEmpty() ) {
+                row.appendChild(lbHoursType);
+
+                return;
+            }
+
+            // First time is rendered, select first item
+            TypeOfWorkHours type = workReportLine.getTypeOfWorkHours();
+            if ( workReportLine.isNewObject() && type == null)  {
+                Listitem item = lbHoursType.getItemAtIndex(0);
+                item.setSelected(true);
+                setHoursType(workReportLine, item);
+            } else {
+                // If workReportLine has a type, select item with that type
+                Listitem item = ComponentsFinder.findItemByValue(lbHoursType, type);
+                if ( item != null ) {
+                    lbHoursType.selectItem(item);
+                }
+            }
+
+            lbHoursType.addEventListener(Events.ON_SELECT, event -> {
+                Listitem item = lbHoursType.getSelectedItem();
+                if ( item != null ) {
+                    setHoursType(row.getValue(), item);
+                }
+            });
+
+            row.appendChild(lbHoursType);
+        }
+
+        /**
+         * Append a delete {@link Button} to {@link Row}.
+         *
+         * @param row
+         */
+        private void appendDeleteButton(final Row row) {
+            Button delete = new Button("", "/common/img/ico_borrar1.png");
+            delete.setHoverImage("/common/img/ico_borrar.png");
+            delete.setSclass("icono");
+            delete.setTooltiptext(_("Delete"));
+            delete.addEventListener(Events.ON_CLICK, event -> confirmRemove(row.getValue()));
+
+            row.appendChild(delete);
+        }
+
+        /**
+         * Binds Textbox effort to a {@link WorkReportLine} numHours.
+         *
+         * @param box
+         * @param workReportLine
+         */
+        private void bindEffort(final Textbox box, final WorkReportLine workReportLine) {
+            Util.bind(
+                    box,
+                    () -> workReportLine.getEffort() != null ?
+                            workReportLine.getEffort().toFormattedString() : EffortDuration.zero().toFormattedString(),
+                    value -> workReportLine.setEffort(EffortDuration.parseFromFormattedString(value))
+            );
+        }
+
+        private void appendCode(final Row row) {
+            final WorkReportLine line = row.getValue();
+            final Textbox code = new Textbox();
+            code.setDisabled(getWorkReport().isCodeAutogenerated());
+            code.applyProperties();
+
+            if ( line.getCode() != null ) {
+                code.setValue(line.getCode());
+            }
+
+            code.addEventListener("onChange", event -> {
+                final WorkReportLine line1 = row.getValue();
+                line1.setCode(code.getValue());
+            });
+            row.appendChild(code);
+        }
+
+        private Timebox getNewTimebox() {
+            final Timebox timeStart = new Timebox();
+            timeStart.setWidth("60px");
+            timeStart.setFormat("short");
+            timeStart.setButtonVisible(true);
+
+            return timeStart;
+        }
+
+        private void updateEffort(final Row row) {
+            WorkReportLine line = row.getValue();
+            Textbox effort = getEffort(row);
+            if ( effort != null && line.getEffort() != null ) {
+                effort.setValue(line.getEffort().toFormattedString());
+                effort.invalidate();
+            }
+        }
+
+        private void appendHoursStartAndFinish(final Row row) {
+            final WorkReportLine line = row.getValue();
+
+            final Timebox timeStart = getNewTimebox();
+            final Timebox timeFinish = getNewTimebox();
+
+            row.appendChild(timeStart);
+            row.appendChild(timeFinish);
+
+            Util.bind(
+                    timeStart,
+                    () -> {
+                        if ( (line != null) && (line.getClockStart() != null) ) {
+                            return line.getClockStart().toDateTimeToday().toDate();
+                        }
+
+                        return null;
+                    },
+                    value -> {
+                        if ( line != null ) {
+                            checkCannotBeHigher(timeStart, timeFinish);
+                            setClock(line, timeStart, timeFinish);
+                            updateEffort(row);
+                        }
+                    });
+
+            Util.bind(
+                    timeFinish,
+                    () -> {
+                        if ( (line != null) && (line.getClockStart() != null) ) {
+                            return line.getClockFinish().toDateTimeToday().toDate();
+                        }
+
+                        return null;
+                    },
+                    value -> {
+                        if ( line != null ) {
+                            checkCannotBeHigher(timeStart, timeFinish);
+                            setClock(line, timeStart, timeFinish);
+                            updateEffort(row);
+                        }
+                    });
+        }
+
+        /**
+         * Append a Textbox @{link Order} to row.
+         *
+         * @param row
+         */
+        private void appendOrderElementInLines(Row row) {
+            final WorkReportLine workReportLine = row.getValue();
+
+            final BandboxSearch bandboxSearch = BandboxSearch.create("OrderElementBandboxFinder", getOrderElements());
+
+            bandboxSearch.setSelectedElement(workReportLine.getOrderElement());
+            bandboxSearch.setSclass("bandbox-workreport-task");
+            bandboxSearch.setListboxWidth("750px");
+
+            bandboxSearch.setListboxEventListener(
+                    Events.ON_SELECT,
+                    event -> {
+                        Listitem selectedItem = bandboxSearch.getSelectedItem();
+                        setOrderElementInWRL(selectedItem, workReportLine);
+                    });
+
+            bandboxSearch.setListboxEventListener(
+                    Events.ON_OK,
+                    event -> {
+                        Listitem selectedItem = bandboxSearch.getSelectedItem();
+                        setOrderElementInWRL(selectedItem, workReportLine);
+                        bandboxSearch.close();
+                    });
+
+            row.appendChild(bandboxSearch);
+        }
+
+        private Resource getResource(Row listitem) {
+            WorkReportLine workReportLine = listitem.getValue();
+
+            return workReportLine.getResource();
+        }
+
+        private void changeResourceInLines(final Autocomplete autocomplete, Row row) {
+            final WorkReportLine workReportLine = row.getValue();
+            final Comboitem comboitem = autocomplete.getSelectedItem();
+            if ( (comboitem == null) || (comboitem.getValue() == null)) {
+                workReportLine.setResource(null);
+                throw new WrongValueException(autocomplete, _("Please, select an item"));
+            } else {
+                workReportLine.setResource(comboitem.getValue());
+            }
+        }
+
+    }
     public OrderedFieldsAndLabelsRowRenderer getOrderedFieldsAndLabelsRowRenderer() {
         return orderedFieldsAndLabelsRowRenderer;
     }
@@ -1329,12 +1340,26 @@ public class WorkReportCRUDController
                 appendAutocompleteLabelsByType(row, (Label) o);
             }
         }
-    }
 
-    private void appendNewLabel(Row row, String label) {
-        org.zkoss.zul.Label labelName = new org.zkoss.zul.Label();
-        labelName.setParent(row);
-        labelName.setValue(label);
+        private void appendNewLabel(Row row, String label) {
+            org.zkoss.zul.Label labelName = new org.zkoss.zul.Label();
+            labelName.setParent(row);
+            labelName.setValue(label);
+        }
+
+        private void appendAutocompleteLabelsByType(Row row, final Label currentLabel) {
+            final LabelType labelType = currentLabel.getType();
+            final Autocomplete comboLabels = createAutocompleteLabels(labelType, currentLabel);
+            comboLabels.setParent(row);
+
+            comboLabels.addEventListener(Events.ON_CHANGE, event -> {
+                if ( comboLabels.getSelectedItem() != null ) {
+                    Label newLabel = comboLabels.getSelectedItem().getValue();
+                    workReportModel.changeLabelInWorkReport(currentLabel, newLabel);
+                }
+                Util.reloadBindings(headingFieldsAndLabels);
+            });
+        }
     }
 
     private void appendNewTextbox(Row row, final DescriptionValue descriptionValue) {
@@ -1346,26 +1371,8 @@ public class WorkReportCRUDController
 
         Util.bind(
                 textbox,
-                () -> descriptionValue != null ? descriptionValue.getValue() : "",
-                value -> {
-                    if ( descriptionValue != null ) {
-                        descriptionValue.setValue(value);
-                    }
-                });
-    }
-
-    private void appendAutocompleteLabelsByType(Row row, final Label currentLabel) {
-        final LabelType labelType = currentLabel.getType();
-        final Autocomplete comboLabels = createAutocompleteLabels(labelType, currentLabel);
-        comboLabels.setParent(row);
-
-        comboLabels.addEventListener(Events.ON_CHANGE, event -> {
-            if ( comboLabels.getSelectedItem() != null ) {
-                Label newLabel = comboLabels.getSelectedItem().getValue();
-                workReportModel.changeLabelInWorkReport(currentLabel, newLabel);
-            }
-            Util.reloadBindings(headingFieldsAndLabels);
-        });
+                descriptionValue::getValue,
+                descriptionValue::setValue);
     }
 
     private Autocomplete createAutocompleteLabels(LabelType labelType,Label selectedLabel) {
@@ -1420,6 +1427,7 @@ public class WorkReportCRUDController
         listWorkReportLines.setModel(new SimpleListModel<>(getWorkReportLines().toArray()));
     }
 
+    /* It should be public! */
     public void sortWorkReports() {
         Column columnDateStart = (Column) listWindow.getFellow("columnDateStart");
         if ( columnDateStart != null ) {
@@ -1433,6 +1441,7 @@ public class WorkReportCRUDController
         }
     }
 
+    /* It should be public! */
     public List<WorkReportType> getFilterWorkReportTypes() {
         List<WorkReportType> result = workReportModel.getWorkReportTypes();
 
@@ -1506,7 +1515,7 @@ public class WorkReportCRUDController
         Listitem itemSelected = listType.getSelectedItem();
 
         if ( (itemSelected != null) &&
-                (!java.util.Objects.equals((itemSelected.getValue()), getDefaultWorkReportType())) ) {
+                (!java.util.Objects.equals(itemSelected.getValue(), getDefaultWorkReportType())) ) {
             return (WorkReportType) itemSelected.getValue();
         }
 
@@ -1533,7 +1542,7 @@ public class WorkReportCRUDController
      * Executed on pressing New work report button Creates a new work report for a type,
      * and added it to the work report list.
      */
-
+    /* It should be public! */
     public void onCreateNewWorkReport() {
         Listitem selectedItem = listTypeToAssign.getSelectedItem();
         if ( selectedItem == null ) {
@@ -1550,6 +1559,7 @@ public class WorkReportCRUDController
         cameBackList = true;
     }
 
+    /* It should be public! */
     public WorkReportType getFirstType() {
         return firstType;
     }
@@ -1558,6 +1568,7 @@ public class WorkReportCRUDController
         this.firstType = firstType;
     }
 
+    /* It should be public! */
     public void newWorkReportWithSameType() {
         if ( save() ) {
             goToCreateForm(workReportModel.getWorkReportType());
@@ -1579,10 +1590,12 @@ public class WorkReportCRUDController
         reloadWorkReportLines();
     }
 
+    /* It should be public! */
     public List<Worker> getBoundWorkers() {
         return workReportModel.getBoundWorkers();
     }
 
+    /* It should be public! */
     public void createOrEditPersonalTimesheet() {
         Date date = personalTimesheetsDatebox.getValue();
         if ( date == null ) {
