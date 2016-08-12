@@ -146,7 +146,7 @@
                         </row>
                     </rows>
                 </grid>
-                <button onClick="controller.createOrEditPersonalTimesheet();"
+                <button onClick="controller.createOrEditPersonalTimesheet();" sclass="add-button"
                         label="${i18n:_('Go to personal timesheet')}" />
             </popup>
         </window>
