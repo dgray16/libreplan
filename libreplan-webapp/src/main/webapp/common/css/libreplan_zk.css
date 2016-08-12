@@ -1328,8 +1328,16 @@ tr.z-treerow-over input {
     background-color: transparent;
 }
 
-.submenu .z-menu-popup-content .z-menu-item-over .z-menu-item-img {
+.submenu .z-menupopup-content .z-menuitem-content:hover .z-menuitem-image {
     background-image: url(../img/ico_submenu.png);
+}
+
+.z-menupopup .z-menu-image, .z-menupopup .z-menuitem-image {
+    min-width: 14px;
+    max-width: 14px;
+    min-height: 16px;
+    margin-right: 11px;
+    margin-left: 3px;
 }
 
 .advanced-allocation-layout .global-action.z-button {
