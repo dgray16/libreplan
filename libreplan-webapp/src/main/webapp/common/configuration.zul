@@ -269,7 +269,7 @@
                         <panelchildren id="panelEntitySequence">
                             <vbox>
 
-                                <hbox pack="center">
+                                <hbox pack="center" style="margin-top: 10px;">
                                     <label value="${i18n:_('Select entity')}" />
                                     <combobox id="entityCombo"
                                               model="@{configurationController.entityNames}">
