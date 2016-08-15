@@ -2116,7 +2116,12 @@ select {
 }
 
 .z-row:hover:nth-child(even)>.z-row-inner, .z-row:hover>.z-cell {
-    background: #F7F7F7;
+    background:#F0FBFF;
+}
+
+.z-row:hover:nth-child(odd)>.z-row-inner .z-row-content,
+.z-row:hover:nth-child(even)>.z-row-inner .z-row-content {
+    color: #00547a;
 }
 
 .z-window {
@@ -2337,4 +2342,31 @@ textarea {
 
 .checkbox-margin > input {
     margin-bottom: -2px;
+}
+
+/* It needs for nice view timetracker in sapphire theme, because native background is looked very awful */
+.z-grid-header.timetracker-secondlevel {
+    background: #ffffff !important;
+}
+
+.z-treerow:hover > .z-treecell,
+.z-listitem:hover > .z-listcell {
+    background: #Dae7f6;
+}
+
+.z-treerow:hover > .z-treecell > .z-treecell-content,
+.z-listitem:hover > .z-listcell > .z-listcell-content,
+.z-treerow.z-treerow-selected > .z-treecell > .z-treecell-content,
+.z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell > .z-treecell-content,
+.z-listitem.z-listitem-selected > .z-listcell > .z-listcell-content,
+.z-listitem.z-listitem-selected.z-listitem-focus > .z-listcell > .z-listcell-content {
+    color: #00547a;
+}
+
+.z-comboitem-selected {
+    background: #548da7;
+}
+
+.z-comboitem-selected .z-comboitem-text {
+    text-shadow: none;
 }

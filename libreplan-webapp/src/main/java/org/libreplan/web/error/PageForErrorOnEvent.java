@@ -62,7 +62,7 @@ public class PageForErrorOnEvent extends GenericForwardComposer {
         String errorMessage = (String) Executions.getCurrent().getAttribute("javax.servlet.error.message");
         Integer code = (Integer) Executions.getCurrent().getAttribute("javax.servlet.error.status_code");
 
-        if (urlPath.contains("help")) {
+        if (urlPath != null && urlPath.contains("help")) {
             isHelpLink = true;
         }
 

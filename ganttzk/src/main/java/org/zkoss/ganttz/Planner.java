@@ -444,7 +444,7 @@ public class Planner extends HtmlMacroComponent  {
         ((South) getFellow("graphics")).setOpen(this.visibleChart);
 
         if (!visibleChart) {
-            ((South) getFellow("graphics")).setTitle(I18nHelper._("Graphics are disabled"));
+            ((South) getFellow("graphics")).setTitle(_("Graphics are disabled"));
         }
 
         PROFILING_LOG.debug("it took doing the setup of components and adding them: "
