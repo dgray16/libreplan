@@ -134,7 +134,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         return save();
     }
 
-    private void validate() throws IllegalSyntaxException {
+    private void validate() {
         if ( !validateDataForm() )
             throw new IllegalSyntaxException(_("values are not valid, the values must not be null"));
 
@@ -196,7 +196,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
 
     private void increaseScreenHeight() {
         if ( (tabboxOrderElement != null) && (tabboxOrderElement.getHeight() == null ||
-                !tabboxOrderElement.getHeight().equals("680px")) ) {
+                !"680px".equals(tabboxOrderElement.getHeight())) ) {
 
             tabboxOrderElement.setHeight("680px");
             tabboxOrderElement.invalidate();
@@ -267,6 +267,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         }
     }
 
+    /* It should be public! */
     public void goToCreateLineAdvanceAssignment() {
         findErrorsInMeasurements();
         boolean fineResult = manageOrderElementAdvancesModel.addNewLineAdvanceAssignment();
@@ -323,6 +324,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
             showErrorMessage(_("Progress Measurement cannot be deleted. Progress Measurement already consolidated"));
     }
 
+    /* It should be public! */
     public String getInfoAdvance() {
         String infoAdvanceAssignment = manageOrderElementAdvancesModel.getInfoAdvanceAssignment();
 
@@ -335,6 +337,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
        return manageOrderElementAdvancesModel.isReadOnlyAdvanceMeasurements();
     }
 
+    /* It should be public! */
     public AdvanceTypeListRenderer getAdvancesRenderer() {
         return advanceTypeListRenderer;
     }
@@ -383,344 +386,383 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
             appendChartCheckbox(listitem);
             appendOperations(listitem, readOnlyAdvance);
         }
-    }
 
-    private void appendComboboxAdvanceType(final Listitem listItem) {
-        final DirectAdvanceAssignment advance = listItem.getValue();
-        final Combobox comboAdvanceTypes = new Combobox();
-        final List<AdvanceType> listAdvanceType = manageOrderElementAdvancesModel.getPossibleAdvanceTypes(advance);
+        private void appendDecimalBoxMaxValue(final Listitem listItem, boolean isQualityFormOrReadOnly) {
+            final AdvanceAssignment advanceAssignment = listItem.getValue();
+            final Decimalbox maxValue = new Decimalbox();
+            maxValue.setScale(2);
+            maxValue.setSclass("decimal-max-value");
 
-        for(AdvanceType advanceType : listAdvanceType){
+            final DirectAdvanceAssignment directAdvanceAssignment;
 
-            if ( !advanceType.getUnitName().equals(PredefinedAdvancedTypes.CHILDREN.getTypeName()) &&
-                    !advanceType.isQualityForm() &&
-                    !advanceType.isReadOnly() ) {
+            boolean isAdvanceAssignmentEquals = advanceAssignment.getAdvanceType() != null &&
+                    advanceAssignment.getAdvanceType().getPercentage();
 
-                Comboitem comboItem = new Comboitem();
-                comboItem.setValue(advanceType);
-                comboItem.setLabel(advanceType.getUnitName());
-                comboItem.setParent(comboAdvanceTypes);
+            if ( (advanceAssignment instanceof IndirectAdvanceAssignment) ||
+                    isQualityFormOrReadOnly || isAdvanceAssignmentEquals ||
+                    manageOrderElementAdvancesModel.hasConsolidatedAdvances(advanceAssignment) ) {
 
-                if ( (advance.getAdvanceType() != null) &&
-                        (advance.getAdvanceType().getId().equals(advanceType.getId())) )
-
-                    comboAdvanceTypes.setSelectedItem(comboItem);
-
+                maxValue.setDisabled(true);
             }
+
+            if ( advanceAssignment instanceof IndirectAdvanceAssignment ) {
+
+                directAdvanceAssignment = manageOrderElementAdvancesModel
+                        .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
+            } else {
+                directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
+            }
+
+            Util.bind(
+                    maxValue,
+                    () -> directAdvanceAssignment.getMaxValue(),
+                    value -> {
+                        if (!manageOrderElementAdvancesModel.hasConsolidatedAdvances(advanceAssignment))
+                            directAdvanceAssignment.setMaxValue(value);
+                    });
+
+            maxValue.addEventListener(Events.ON_CHANGE, (EventListener) event -> {
+                if (manageOrderElementAdvancesModel.hasConsolidatedAdvances(advanceAssignment))
+                    throw new WrongValueException(
+                            maxValue,
+                            _("Progress Assignment cannot be deleted or changed. " +
+                                    "Progress Assignment contains Progress Consolidations values"));
+                else {
+                    setPercentage();
+                    reloadAdvances();
+                }
+            });
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(maxValue);
+            listItem.appendChild(listCell);
+            maxValue.setConstraint(checkMaxValue());
         }
 
-        comboAdvanceTypes.addEventListener(Events.ON_SELECT, (EventListener) event -> {
-            setMaxValue(listItem, comboAdvanceTypes);
-            cleanFields(advance);
-            setPercentage();
-            reloadAdvances();
-        });
+        private void appendComboboxAdvanceType(final Listitem listItem) {
+            final DirectAdvanceAssignment advance = listItem.getValue();
+            final Combobox comboAdvanceTypes = new Combobox();
+            final List<AdvanceType> listAdvanceType = manageOrderElementAdvancesModel.getPossibleAdvanceTypes(advance);
 
-        Util.bind(
-                comboAdvanceTypes,
-                () -> comboAdvanceTypes.getSelectedItem(),
-                comboItem -> {
-                    if ( ((comboItem!=null)) &&
-                            (comboItem.getValue() != null) &&
-                            (comboItem.getValue() instanceof AdvanceType) ) {
+            for(AdvanceType advanceType : listAdvanceType){
 
-                        AdvanceType advanceType = comboItem.getValue();
-                        advance.setAdvanceType(advanceType);
-                        advance.setMaxValue(manageOrderElementAdvancesModel.getMaxValue(advanceType));
+                if ( !advanceType.getUnitName().equals(PredefinedAdvancedTypes.CHILDREN.getTypeName()) &&
+                        !advanceType.isQualityForm() &&
+                        !advanceType.isReadOnly() ) {
+
+                    Comboitem comboItem = new Comboitem();
+                    comboItem.setValue(advanceType);
+                    comboItem.setLabel(advanceType.getUnitName());
+                    comboItem.setParent(comboAdvanceTypes);
+
+                    if ( (advance.getAdvanceType() != null) &&
+                            (advance.getAdvanceType().getId().equals(advanceType.getId())) ) {
+
+                        comboAdvanceTypes.setSelectedItem(comboItem);
                     }
-                });
+                }
+            }
 
-        Listcell listCell = new Listcell();
-        listCell.appendChild(comboAdvanceTypes);
-        listItem.appendChild(listCell);
-    }
-
-
-
-    private void appendLabelAdvanceType(final Listitem listItem){
-        final AdvanceAssignment advance = listItem.getValue();
-        Label unitName = new Label(advance.getAdvanceType().getUnitName());
-        Listcell listCell = new Listcell();
-        listCell.appendChild(unitName);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendDecimalBoxMaxValue(final Listitem listItem, boolean isQualityFormOrReadOnly) {
-        final AdvanceAssignment advanceAssignment = listItem.getValue();
-        final Decimalbox maxValue = new Decimalbox();
-        maxValue.setScale(2);
-
-        final DirectAdvanceAssignment directAdvanceAssignment;
-
-        if ( (advanceAssignment instanceof IndirectAdvanceAssignment) ||
-                isQualityFormOrReadOnly ||
-                (advanceAssignment.getAdvanceType() != null &&
-                advanceAssignment.getAdvanceType().getPercentage()) ||
-                manageOrderElementAdvancesModel.hasConsolidatedAdvances(advanceAssignment) )
-
-            maxValue.setDisabled(true);
-
-
-        if ( advanceAssignment instanceof IndirectAdvanceAssignment )
-
-            directAdvanceAssignment = manageOrderElementAdvancesModel
-                    .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
-         else
-            directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
-
-
-        Util.bind(
-                maxValue,
-                () -> directAdvanceAssignment.getMaxValue(),
-                value -> {
-                    if (!manageOrderElementAdvancesModel.hasConsolidatedAdvances(advanceAssignment))
-                        directAdvanceAssignment.setMaxValue(value);
-                });
-
-        maxValue.addEventListener(Events.ON_CHANGE, (EventListener) event -> {
-            if (manageOrderElementAdvancesModel.hasConsolidatedAdvances(advanceAssignment))
-                throw new WrongValueException(
-                        maxValue,
-                        _("Progress Assignment cannot be deleted or changed. " +
-                                "Progress Assignment contains Progress Consolidations values"));
-            else {
+            comboAdvanceTypes.addEventListener(Events.ON_SELECT, (EventListener) event -> {
+                setMaxValue(listItem, comboAdvanceTypes);
+                cleanFields(advance);
                 setPercentage();
                 reloadAdvances();
-            }
-        });
+            });
 
-        Listcell listCell = new Listcell();
-        listCell.appendChild(maxValue);
-        listItem.appendChild(listCell);
-        maxValue.setConstraint(checkMaxValue());
-    }
-
-    private void appendDecimalBoxValue(final Listitem listItem){
-        final AdvanceAssignment advanceAssignment = listItem.getValue();
-        Decimalbox value = new Decimalbox();
-        value.setScale(2);
-        value.setDisabled(true);
-
-        DirectAdvanceAssignment directAdvanceAssignment;
-
-        if (advanceAssignment instanceof IndirectAdvanceAssignment )
-            directAdvanceAssignment = manageOrderElementAdvancesModel
-                    .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
-        else
-            directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
-
-
-        final AdvanceMeasurement advanceMeasurement =
-                this.manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
-
-        if ( advanceMeasurement != null ) {
-            Util.bind(value, () -> advanceMeasurement.getValue());
-        }
-
-        Listcell listCell = new Listcell();
-        listCell.appendChild(value);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendLabelPercentage(final Listitem listItem){
-        final AdvanceAssignment advanceAssignment = listItem.getValue();
-        Label percentage = new Label();
-
-        DirectAdvanceAssignment directAdvanceAssignment;
-
-        if ( advanceAssignment instanceof IndirectAdvanceAssignment )
-
-            directAdvanceAssignment = manageOrderElementAdvancesModel
-                    .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
-        else
-            directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
-
-
-        final AdvanceMeasurement advanceMeasurement =
-                this.manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
-
-        if ( advanceMeasurement != null )
-            percentage
-                    .setValue(this.manageOrderElementAdvancesModel
-                    .getPercentageAdvanceMeasurement(advanceMeasurement)
-                    .toString()
-                    + " %");
-
-        Listcell listCell = new Listcell();
-        listCell.appendChild(percentage);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendDateBoxDate(final Listitem listItem){
-        final AdvanceAssignment advanceAssignment = listItem.getValue();
-        Datebox date = new Datebox();
-        date.setDisabled(true);
-
-        DirectAdvanceAssignment directAdvanceAssignment;
-
-        if ( advanceAssignment instanceof IndirectAdvanceAssignment )
-            directAdvanceAssignment = manageOrderElementAdvancesModel
-                    .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
-        else
-            directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
-
-
-        final AdvanceMeasurement advanceMeasurement =
-                this.manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
-
-        if ( advanceMeasurement != null ) {
             Util.bind(
-                    date,
-                    () -> advanceMeasurement.getDate() == null
-                            ? null
-                            : advanceMeasurement.getDate().toDateTimeAtStartOfDay().toDate()
-            );
+                    comboAdvanceTypes,
+                    () -> comboAdvanceTypes.getSelectedItem(),
+                    comboItem -> {
+                        if ( (comboItem!=null) &&
+                                (comboItem.getValue() != null) &&
+                                (comboItem.getValue() instanceof AdvanceType) ) {
+
+                            AdvanceType advanceType = comboItem.getValue();
+                            advance.setAdvanceType(advanceType);
+                            advance.setMaxValue(manageOrderElementAdvancesModel.getMaxValue(advanceType));
+                        }
+                    });
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(comboAdvanceTypes);
+            listItem.appendChild(listCell);
         }
 
-        Listcell listCell = new Listcell();
-        listCell.appendChild(date);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendRadioSpread(final Listitem listItem){
-        final AdvanceAssignment advanceAssignment = listItem.getValue();
-
-        final Radio reportGlobalAdvance = Util.bind(
-                new Radio(),
-                () -> advanceAssignment.getReportGlobalAdvance(),
-                value -> {
-                    advanceAssignment.setReportGlobalAdvance(value);
-                    setReportGlobalAdvance(listItem);
-                });
-
-        Listcell listCell = new Listcell();
-        listCell.appendChild(reportGlobalAdvance);
-        listItem.appendChild(listCell);
-
-        if ( ((AdvanceAssignment) listItem.getValue()).getReportGlobalAdvance() ) {
-            reportGlobalAdvance.getRadiogroup().setSelectedItem(reportGlobalAdvance);
-            reportGlobalAdvance.getRadiogroup().invalidate();
-        }
-    }
-
-    private void appendCalculatedCheckbox(final Listitem listItem){
-        final AdvanceAssignment advance = listItem.getValue();
-        Checkbox calculated = new Checkbox();
-        boolean isCalculated = advance instanceof IndirectAdvanceAssignment;
-        calculated.setChecked(isCalculated);
-        calculated.setDisabled(true);
-
-        Listcell listCell = new Listcell();
-        listCell.appendChild(calculated);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendChartCheckbox(final Listitem listItem) {
-        final AdvanceAssignment advance = listItem.getValue();
-        final Checkbox chartCheckbox = new Checkbox();
-
-        chartCheckbox.setChecked(selectedAdvances.contains(advance));
-
-        chartCheckbox.addEventListener(Events.ON_CHECK,(EventListener) event -> {
-            if ( chartCheckbox.isChecked() )
-                selectedAdvances.add(advance);
-            else
-                selectedAdvances.remove(advance);
-
-            reloadAdvances();
-        });
-
-        Listcell listCell = new Listcell();
-        listCell.appendChild(chartCheckbox);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendOperations(final Listitem listItem, Boolean readOnly) {
-        Hbox hbox = new Hbox();
-        appendAddMeasurement(hbox, listItem, readOnly);
-        appendRemoveButton(hbox, listItem, readOnly);
-
-        Listcell listCell = new Listcell();
-        listCell.appendChild(hbox);
-        listItem.appendChild(listCell);
-    }
-
-    private void appendAddMeasurement(final Hbox hbox, final Listitem listItem, Boolean readOnly) {
-        final AdvanceAssignment advance = listItem.getValue();
-        final Button addMeasurementButton = createAddMeasurementButton();
-
-        addMeasurementButton.addEventListener(Events.ON_CLICK, (EventListener) event -> {
-            if ( !listItem.equals(editAdvances.getSelectedItem()) )
-                selectAdvanceLine(listItem);
-
-            goToCreateLineAdvanceMeasurement();
-        });
-
-        if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isQualityForm()) ) {
-            addMeasurementButton.setDisabled(true);
-            addMeasurementButton.setTooltiptext(_("Progress that are reported by quality forms can not be modified"));
-
-        } else if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isReadOnly()) ) {
-            addMeasurementButton.setDisabled(true);
-            addMeasurementButton.setTooltiptext(_("This progress type cannot be modified"));
-
-        } else if ( advance instanceof IndirectAdvanceAssignment ) {
-            addMeasurementButton.setDisabled(true);
-            addMeasurementButton.setTooltiptext(_("Calculated progress can not be modified"));
-
-        } else if ( readOnly ) {
-            addMeasurementButton.setDisabled(true);
-            addMeasurementButton.setTooltiptext(_("Subcontractor values are read only " +
-                    "because they were reported by the subcontractor company."));
+        private void appendLabelAdvanceType(final Listitem listItem){
+            final AdvanceAssignment advance = listItem.getValue();
+            Label unitName = new Label(advance.getAdvanceType().getUnitName());
+            Listcell listCell = new Listcell();
+            listCell.appendChild(unitName);
+            listItem.appendChild(listCell);
         }
 
-        hbox.appendChild(addMeasurementButton);
+        private void appendDecimalBoxValue(final Listitem listItem){
+            final AdvanceAssignment advanceAssignment = listItem.getValue();
+            Decimalbox value = new Decimalbox();
+            value.setScale(2);
+            value.setDisabled(true);
 
-    }
+            DirectAdvanceAssignment directAdvanceAssignment;
 
-    private void appendRemoveButton(final Hbox hbox, final Listitem listItem, Boolean readOnly) {
-        final AdvanceAssignment advance = listItem.getValue();
-        final Button removeButton = createRemoveButton();
+            if (advanceAssignment instanceof IndirectAdvanceAssignment ) {
+                directAdvanceAssignment = manageOrderElementAdvancesModel
+                        .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
+            } else {
+                directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
+            }
 
-        removeButton.addEventListener(Events.ON_CLICK, event -> goToRemoveLineAdvanceAssignment(listItem));
+            final AdvanceMeasurement advanceMeasurement =
+                    manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
 
-        if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isQualityForm()) ) {
-            removeButton.setDisabled(true);
-            removeButton.setTooltiptext(_("Progress that are reported by quality forms cannot be modified"));
+            if ( advanceMeasurement != null ) {
+                Util.bind(value, () -> advanceMeasurement.getValue());
+            }
 
-        } else if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isReadOnly()) ) {
-            removeButton.setDisabled(true);
-            removeButton.setTooltiptext(_("This progress type cannot be modified"));
-
-        } else if ( advance instanceof IndirectAdvanceAssignment ) {
-            removeButton.setDisabled(true);
-            removeButton.setTooltiptext(_("Calculated progress cannot be removed"));
-
-        } else if ( manageOrderElementAdvancesModel.hasConsolidatedAdvances(advance) ) {
-            removeButton.setDisabled(true);
-            removeButton.setTooltiptext(_("Consolidated progress cannot be removed"));
-
-        } else if ( readOnly ) {
-            removeButton.setDisabled(true);
-            removeButton.setTooltiptext(_("Subcontractor values are read only " +
-                    "because they were reported by the subcontractor company"));
-
-        } else if ( manageOrderElementAdvancesModel.hasReportedProgress(advance) ) {
-            removeButton.setDisabled(true);
-            removeButton.setTooltiptext(_("Advance assignment cannot be removed as " +
-                    "it has advance measures that have already been reported to the customer"));
+            Listcell listCell = new Listcell();
+            listCell.appendChild(value);
+            listItem.appendChild(listCell);
         }
 
-        hbox.appendChild(removeButton);
+
+        private void appendLabelPercentage(final Listitem listItem){
+            final AdvanceAssignment advanceAssignment = listItem.getValue();
+            Label percentage = new Label();
+
+            DirectAdvanceAssignment directAdvanceAssignment;
+
+            if ( advanceAssignment instanceof IndirectAdvanceAssignment ) {
+
+                directAdvanceAssignment = manageOrderElementAdvancesModel
+                        .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
+            } else {
+                directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
+            }
+
+            final AdvanceMeasurement advanceMeasurement =
+                    manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
+
+            if ( advanceMeasurement != null ) {
+                percentage
+                        .setValue(manageOrderElementAdvancesModel
+                                .getPercentageAdvanceMeasurement(advanceMeasurement)
+                                .toString()
+                                + " %");
+            }
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(percentage);
+            listItem.appendChild(listCell);
+        }
+
+        private void appendDateBoxDate(final Listitem listItem){
+            final AdvanceAssignment advanceAssignment = listItem.getValue();
+            Datebox date = new Datebox();
+            date.setDisabled(true);
+
+            DirectAdvanceAssignment directAdvanceAssignment;
+
+            if ( advanceAssignment instanceof IndirectAdvanceAssignment ) {
+                directAdvanceAssignment = manageOrderElementAdvancesModel
+                        .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
+            } else {
+                directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
+            }
+
+            final AdvanceMeasurement advanceMeasurement =
+                    manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
+
+            if ( advanceMeasurement != null ) {
+                Util.bind(
+                        date,
+                        () -> advanceMeasurement.getDate() == null
+                                ? null
+                                : advanceMeasurement.getDate().toDateTimeAtStartOfDay().toDate()
+                );
+            }
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(date);
+            listItem.appendChild(listCell);
+        }
+
+        private void appendRadioSpread(final Listitem listItem){
+            final AdvanceAssignment advanceAssignment = listItem.getValue();
+
+            final Radio reportGlobalAdvance = Util.bind(
+                    new Radio(),
+                    () -> advanceAssignment.getReportGlobalAdvance(),
+                    value -> {
+                        advanceAssignment.setReportGlobalAdvance(value);
+                        setReportGlobalAdvance(listItem);
+                    });
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(reportGlobalAdvance);
+            listItem.appendChild(listCell);
+
+            if ( ((AdvanceAssignment) listItem.getValue()).getReportGlobalAdvance() ) {
+                reportGlobalAdvance.getRadiogroup().setSelectedItem(reportGlobalAdvance);
+                reportGlobalAdvance.getRadiogroup().invalidate();
+            }
+        }
+
+        private void appendCalculatedCheckbox(final Listitem listItem){
+            final AdvanceAssignment advance = listItem.getValue();
+            Checkbox calculated = new Checkbox();
+            boolean isCalculated = advance instanceof IndirectAdvanceAssignment;
+            calculated.setChecked(isCalculated);
+            calculated.setDisabled(true);
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(calculated);
+            listItem.appendChild(listCell);
+        }
+
+        private void appendChartCheckbox(final Listitem listItem) {
+            final AdvanceAssignment advance = listItem.getValue();
+            final Checkbox chartCheckbox = new Checkbox();
+
+            chartCheckbox.setChecked(selectedAdvances.contains(advance));
+
+            chartCheckbox.addEventListener(Events.ON_CHECK,(EventListener) event -> {
+                if ( chartCheckbox.isChecked() )
+                    selectedAdvances.add(advance);
+                else
+                    selectedAdvances.remove(advance);
+
+                reloadAdvances();
+            });
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(chartCheckbox);
+            listItem.appendChild(listCell);
+        }
+
+        private void appendOperations(final Listitem listItem, Boolean readOnly) {
+            Hbox hbox = new Hbox();
+            appendAddMeasurement(hbox, listItem, readOnly);
+            appendRemoveButton(hbox, listItem, readOnly);
+
+            Listcell listCell = new Listcell();
+            listCell.appendChild(hbox);
+            listItem.appendChild(listCell);
+        }
+
+        private void appendAddMeasurement(final Hbox hbox, final Listitem listItem, Boolean readOnly) {
+            final AdvanceAssignment advance = listItem.getValue();
+            final Button addMeasurementButton = createAddMeasurementButton();
+
+            addMeasurementButton.addEventListener(Events.ON_CLICK, (EventListener) event -> {
+                if ( !listItem.equals(editAdvances.getSelectedItem()) )
+                    selectAdvanceLine(listItem);
+
+                goToCreateLineAdvanceMeasurement();
+            });
+
+            if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isQualityForm()) ) {
+                addMeasurementButton.setDisabled(true);
+                addMeasurementButton.setTooltiptext(_("Progress that are reported by quality forms can not be modified"));
+
+            } else if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isReadOnly()) ) {
+                addMeasurementButton.setDisabled(true);
+                addMeasurementButton.setTooltiptext(_("This progress type cannot be modified"));
+
+            } else if ( advance instanceof IndirectAdvanceAssignment ) {
+                addMeasurementButton.setDisabled(true);
+                addMeasurementButton.setTooltiptext(_("Calculated progress can not be modified"));
+
+            } else if ( readOnly ) {
+                addMeasurementButton.setDisabled(true);
+                addMeasurementButton.setTooltiptext(_("Subcontractor values are read only " +
+                        "because they were reported by the subcontractor company."));
+            }
+
+            hbox.appendChild(addMeasurementButton);
+
+        }
+
+        private void appendRemoveButton(final Hbox hbox, final Listitem listItem, Boolean readOnly) {
+            final AdvanceAssignment advance = listItem.getValue();
+            final Button removeButton = createRemoveButton();
+
+            removeButton.addEventListener(Events.ON_CLICK, event -> goToRemoveLineAdvanceAssignment(listItem));
+
+            if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isQualityForm()) ) {
+                removeButton.setDisabled(true);
+                removeButton.setTooltiptext(_("Progress that are reported by quality forms cannot be modified"));
+
+            } else if ( (advance.getAdvanceType() != null) && (advance.getAdvanceType().isReadOnly()) ) {
+                removeButton.setDisabled(true);
+                removeButton.setTooltiptext(_("This progress type cannot be modified"));
+
+            } else if ( advance instanceof IndirectAdvanceAssignment ) {
+                removeButton.setDisabled(true);
+                removeButton.setTooltiptext(_("Calculated progress cannot be removed"));
+
+            } else if ( manageOrderElementAdvancesModel.hasConsolidatedAdvances(advance) ) {
+                removeButton.setDisabled(true);
+                removeButton.setTooltiptext(_("Consolidated progress cannot be removed"));
+
+            } else if ( readOnly ) {
+                removeButton.setDisabled(true);
+                removeButton.setTooltiptext(_("Subcontractor values are read only " +
+                        "because they were reported by the subcontractor company"));
+
+            } else if ( manageOrderElementAdvancesModel.hasReportedProgress(advance) ) {
+                removeButton.setDisabled(true);
+                removeButton.setTooltiptext(_("Advance assignment cannot be removed as " +
+                        "it has advance measures that have already been reported to the customer"));
+            }
+
+            hbox.appendChild(removeButton);
+        }
+
+        private void setReportGlobalAdvance(final Listitem item) {
+            boolean spread = true;
+
+            if ( manageOrderElementAdvancesModel.hasAnyConsolidatedAdvanceCurrentOrderElement() ) {
+                showErrorMessage(_("Spread progress cannot be changed " +
+                        "if there is a consolidation in any progress assignment from root task"));
+                spread = false;
+            } else if ( !radioSpreadIsConsolidated() )
+                for (AdvanceAssignment advance : getAdvanceAssignments()) {
+                    advance.setReportGlobalAdvance(false);
+                }
+            else {
+                spread = false;
+            }
+
+
+            ((AdvanceAssignment) item.getValue()).setReportGlobalAdvance(spread);
+            Util.reloadBindings(editAdvances);
+            setSelectedAdvanceLine();
+        }
+
+        private boolean radioSpreadIsConsolidated() {
+            for (AdvanceAssignment advance : getAdvanceAssignments())
+
+                if ( (advance.getReportGlobalAdvance()) &&
+                        (manageOrderElementAdvancesModel.hasConsolidatedAdvances(advance)) ) {
+
+                    showErrorMessage(_("Spread progress cannot be changed " +
+                            "if there is a consolidation in any progress assignment"));
+
+                    return true;
+                }
+
+            return false;
+        }
+
     }
 
     private void setMaxValue(final Listitem item,Combobox comboAdvanceTypes) {
         Listcell listCell = (Listcell)item.getChildren().get(1);
-        Decimalbox miBox = ((Decimalbox) listCell.getFirstChild());
+        Decimalbox miBox = (Decimalbox) listCell.getFirstChild();
         Comboitem selectedItem = comboAdvanceTypes.getSelectedItem();
 
         if ( selectedItem != null ) {
-            AdvanceType advanceType = (selectedItem.getValue());
+            AdvanceType advanceType = selectedItem.getValue();
 
             if ( advanceType != null ) {
                 DirectAdvanceAssignment advance = item.getValue();
@@ -735,8 +777,8 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         return (comp, value) -> {
             Listitem item = (Listitem) comp.getParent().getParent();
             DirectAdvanceAssignment advance = item.getValue();
-            if ( !manageOrderElementAdvancesModel.hasConsolidatedAdvances(advance) )
-                if ( value == null || (BigDecimal.ZERO.compareTo((BigDecimal) value) >= 0) ) {
+            if ( !manageOrderElementAdvancesModel.hasConsolidatedAdvances(advance) &&
+                (value == null || (BigDecimal.ZERO.compareTo((BigDecimal) value) >= 0)) ){
                     ((Decimalbox) comp).setValue(advance.getAdvanceType().getDefaultMaxValue());(comp).invalidate();
 
                     throw new WrongValueException(comp, _("The max value must be greater than 0"));
@@ -802,6 +844,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         }
     }
 
+
     public void setCurrentDate() {
         this.manageOrderElementAdvancesModel.sortListAdvanceMeasurement();
         Util.reloadBindings(editAdvancesMeasurement);
@@ -812,77 +855,13 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         Util.reloadBindings(chart);
     }
 
-    private void setCurrentDateWithoutParameters() {
-         if ( this.indexSelectedItem >= 0 ) {
-            Listitem selectedItem = editAdvances.getItemAtIndex(indexSelectedItem);
-            AdvanceAssignment advanceAssignment = selectedItem.getValue();
-
-            DirectAdvanceAssignment directAdvanceAssignment;
-            if ( advanceAssignment instanceof IndirectAdvanceAssignment )
-
-                directAdvanceAssignment = manageOrderElementAdvancesModel
-                        .calculateFakeDirectAdvanceAssignment((IndirectAdvanceAssignment) advanceAssignment);
-            else
-                directAdvanceAssignment = (DirectAdvanceAssignment) advanceAssignment;
-
-             final AdvanceMeasurement greatAdvanceMeasurement =
-                     this.manageOrderElementAdvancesModel.getLastAdvanceMeasurement(directAdvanceAssignment);
-
-             if ( greatAdvanceMeasurement != null ) {
-                 Listcell date = (Listcell) selectedItem.getChildren().get(4);
-                 LocalDate newDate = greatAdvanceMeasurement.getDate();
-
-                 if ( newDate != null )
-                     ((Datebox) date.getFirstChild()).setValue(newDate.toDateTimeAtStartOfDay().toDate());
-                 else
-                    ((Datebox) date.getFirstChild()).setValue(null);
-
-             }
-        }
-    }
 
     private void cleanFields(DirectAdvanceAssignment advance) {
         this.manageOrderElementAdvancesModel.cleanAdvance(advance);
     }
 
-    private void setReportGlobalAdvance(final Listitem item) {
-        boolean spread = true;
-
-        if ( manageOrderElementAdvancesModel.hasAnyConsolidatedAdvanceCurrentOrderElement() ) {
-            showErrorMessage(_("Spread progress cannot be changed " +
-                    "if there is a consolidation in any progress assignment from root task"));
-            spread = false;
-        } else
-            if ( !radioSpreadIsConsolidated() )
-                for (AdvanceAssignment advance : this.getAdvanceAssignments())
-                    advance.setReportGlobalAdvance(false);
-            else
-                spread = false;
-
-
-
-        ((AdvanceAssignment) item.getValue()).setReportGlobalAdvance(spread);
-        Util.reloadBindings(editAdvances);
-        setSelectedAdvanceLine();
-    }
-
-    private boolean radioSpreadIsConsolidated() {
-        for (AdvanceAssignment advance : getAdvanceAssignments())
-
-            if ( (advance.getReportGlobalAdvance()) &&
-                    (manageOrderElementAdvancesModel.hasConsolidatedAdvances(advance)) ) {
-
-                showErrorMessage(_("Spread progress cannot be changed " +
-                        "if there is a consolidation in any progress assignment"));
-
-                return true;
-            }
-
-        return false;
-    }
-
     private boolean validateDataForm(){
-        return ((validateListAdvanceAssignment()) &&(validateListAdvanceMeasurement()));
+        return (validateListAdvanceAssignment()) &&(validateListAdvanceMeasurement());
     }
 
     private boolean validateListAdvanceAssignment(){
@@ -929,10 +908,11 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
                     // Validate the date of the advance measurement
                     Datebox dateBox = getDateboxBy(listItem);
 
-                    if ( advance.getDate() == null )
+                    if ( advance.getDate() == null ) {
                         validateMeasurementDate(dateBox, null);
-                    else
+                    } else {
                         validateMeasurementDate(dateBox, advance.getDate().toDateTimeAtStartOfDay().toDate());
+                    }
                 }
             }
 
@@ -986,9 +966,10 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
                     return true;
         }
 
-        return (!existItems);
+        return !existItems;
     }
 
+    /* It should be public! */
     public AdvanceMeasurementRenderer getAdvanceMeasurementRenderer() {
         return advanceMeasurementRenderer;
     }
@@ -1030,7 +1011,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
 
             Util.bind(
                     decimalbox,
-                    () ->  advanceMeasurement.getValue(),
+                    advanceMeasurement::getValue,
                     value -> {
                         if (manageOrderElementAdvancesModel.canRemoveOrChange(advanceMeasurement)) {
                             advanceMeasurement.setValue(value);
@@ -1095,16 +1076,6 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
                     });
         }
 
-        private AdvanceMeasurement getAdvanceMeasurementByComponent(Component comp) {
-            try {
-                Listitem item = (Listitem) comp.getParent().getParent();
-
-                return (AdvanceMeasurement) item.getValue();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
         private void appendRemoveButton(final Listitem listItem) {
 
             final AdvanceMeasurement measure = listItem.getValue();
@@ -1147,19 +1118,35 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
             listCell.appendChild(removeButton);
             listItem.appendChild(listCell);
         }
+
+        private int calculateScale(AdvanceMeasurement advanceMeasurement) {
+            return advanceMeasurement
+                    .getAdvanceAssignment()
+                    .getAdvanceType()
+                    .getUnitPrecision()
+                    .stripTrailingZeros()
+                    .scale();
+        }
+
+        private void showMessagesConsolidation(LocalDate date) {
+            String message = _("Progress measurement cannot be canged to {0}, because it is consolidated", date);
+            showErrorMessage(message);
+        }
+
     }
 
+    private Button createAddMeasurementButton() {
+        Button addButton = new Button();
+        addButton.setLabel(_("Add measure"));
+        addButton.setClass("add-button");
+        addButton.setTooltiptext(_("Add new progress measurement"));
+
+        return addButton;
+    }
+
+    /* It should be public! */
     public XYModel getChartData() {
         return this.manageOrderElementAdvancesModel.getChartData(selectedAdvances);
-    }
-
-    private int calculateScale(AdvanceMeasurement advanceMeasurement) {
-        return advanceMeasurement
-                .getAdvanceAssignment()
-                .getAdvanceType()
-                .getUnitPrecision()
-                .stripTrailingZeros()
-                .scale();
     }
 
     private Button createRemoveButton() {
@@ -1170,15 +1157,6 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         removeButton.setTooltiptext(_("Delete"));
 
         return removeButton;
-    }
-
-    private Button createAddMeasurementButton() {
-        Button addButton = new Button();
-        addButton.setLabel(_("Add measure"));
-        addButton.setClass("add-button");
-        addButton.setTooltiptext(_("Add new progress measurement"));
-
-        return addButton;
     }
 
     public void refreshChangesFromOrderElement() {
@@ -1200,11 +1178,6 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
 
     private void showMessageDeleteSpread() {
         String message = _("Spread progress cannot be removed. Please select another progress as spread.");
-        showErrorMessage(message);
-    }
-
-    private void showMessagesConsolidation(LocalDate date) {
-        String message = _("Progress measurement cannot be canged to {0}, because it is consolidated", date);
         showErrorMessage(message);
     }
 
@@ -1247,12 +1220,12 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
             LocalDate consolidatedUntil = manageOrderElementAdvancesModel
                     .getLastConsolidatedMeasurementDate(measurement.getAdvanceAssignment());
 
-            if ( consolidatedUntil != null )
-                if ( consolidatedUntil.compareTo(measurement.getDate()) >= 0 )
-                    return _("Date is not valid, it must be later than the last progress consolidation");
-
-            if ( manageOrderElementAdvancesModel.isAlreadyReportedProgressWith(value) )
+            if ( consolidatedUntil != null  && consolidatedUntil.compareTo(measurement.getDate()) >= 0 ) {
+                return _("Date is not valid, it must be later than the last progress consolidation");
+            }
+            if ( manageOrderElementAdvancesModel.isAlreadyReportedProgressWith(value) ) {
                 return _("Date is not valid, it must be later than the last progress reported to the customer");
+            }
         }
 
         return null;
@@ -1299,13 +1272,15 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         }
     }
 
+
+    /* It should be public! */
     public void onPagingMeasurement() {
         validateListAdvanceMeasurement();
     }
 
-    public void validateMeasurementDate(Component comp, Date value) throws WrongValueException {
+    public void validateMeasurementDate(Component comp, Date value) {
         AdvanceMeasurement advanceMeasurement = getAdvanceMeasurementByComponent(comp);
-        if ( (manageOrderElementAdvancesModel.canRemoveOrChange(advanceMeasurement)) ) {
+        if (manageOrderElementAdvancesModel.canRemoveOrChange(advanceMeasurement)) {
 
             if ( value == null && advanceMeasurement != null ) {
                 advanceMeasurement.setDate(null);
@@ -1328,7 +1303,7 @@ public class ManageOrderElementAdvancesController extends GenericForwardComposer
         }
     }
 
-    public void validateMeasurementValue(Component comp, Object value) throws WrongValueException {
+    public void validateMeasurementValue(Component comp, Object value) {
         AdvanceMeasurement advanceMeasurement = getAdvanceMeasurementByComponent(comp);
         if ( (advanceMeasurement != null) && (manageOrderElementAdvancesModel.canRemoveOrChange(advanceMeasurement)) ) {
 

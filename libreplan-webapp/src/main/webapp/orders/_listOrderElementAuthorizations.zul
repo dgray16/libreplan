@@ -23,9 +23,9 @@
     apply="org.libreplan.web.users.OrderAuthorizationController" width="100%">
 
     <!-- Profiles -->
-    <panel title="${i18n:_('Profiles authorization')}" border="normal">
+    <panel title="${i18n:_('Profiles authorization')}" border="normal" sclass="report-margin">
         <panelchildren>
-            <hbox align="center">
+            <hbox align="center" sclass="margin-border">
                 <autocomplete id="profileAutocomplete" constraint=""
                     autodrop="true" finder="ProfileFinder" />
                 <checkbox id="profileReadAuthCheckbox" label="${i18n:_('Read')}" />
@@ -48,9 +48,9 @@
     </panel>
 
     <!-- Users -->
-    <panel title="${i18n:_('Users authorization')}" border="normal">
+    <panel title="${i18n:_('Users authorization')}" border="normal" sclass="report-margin">
         <panelchildren>
-            <hbox align="center">
+            <hbox align="center" sclass="margin-border">
                 <autocomplete id="usersAutocomplete" constraint=""
                     autodrop="true" finder="UserFinder" />
                 <checkbox id="userReadAuthCheckbox" label="${i18n:_('Read')}" />

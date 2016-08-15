@@ -24,7 +24,6 @@ package org.libreplan.web.planner.company;
 import java.util.Collection;
 import java.util.Date;
 
-import org.joda.time.LocalDate;
 import org.libreplan.business.common.entities.ProgressType;
 import org.libreplan.business.planner.entities.TaskElement;
 import org.libreplan.business.users.entities.User;
@@ -40,12 +39,12 @@ import org.zkoss.ganttz.extensions.ICommandOnTask;
  */
 public interface ICompanyPlanningModel {
 
-    public void setConfigurationToPlanner(Planner planner,
+    void setConfigurationToPlanner(Planner planner,
             Collection<ICommandOnTask<TaskElement>> additional,
             ICommandOnTask<TaskElement> doubleClickCommand,
             TaskGroupPredicate predicate);
 
-    public void setTabsController(MultipleTabsPlannerController tabsController);
+    void setTabsController(MultipleTabsPlannerController tabsController);
 
     Date getFilterStartDate();
 
@@ -53,7 +52,7 @@ public interface ICompanyPlanningModel {
 
     ProgressType getProgressTypeFromConfiguration();
 
-    public TaskGroupPredicate getDefaultPredicate(Boolean includeOrderElements);
+    TaskGroupPredicate getDefaultPredicate(Boolean includeOrderElements);
 
     User getUser();
 }

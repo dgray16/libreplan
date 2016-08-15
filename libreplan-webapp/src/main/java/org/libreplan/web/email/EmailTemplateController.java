@@ -30,9 +30,6 @@ import org.libreplan.web.common.IMessagesForUser;
 import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.security.SecurityUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zk.ui.Component;
 
@@ -44,9 +41,6 @@ import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Textbox;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;

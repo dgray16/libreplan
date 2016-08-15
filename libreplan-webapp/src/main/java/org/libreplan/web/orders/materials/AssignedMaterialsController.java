@@ -323,7 +323,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         }
     }
 
-    private MaterialCategoryWithUnitsAndPriceRenderer getMaterialCategoryWithUnitsAndPriceRenderer() {
+    public MaterialCategoryWithUnitsAndPriceRenderer getMaterialCategoryWithUnitsAndPriceRenderer() {
         return new MaterialCategoryWithUnitsAndPriceRenderer();
     }
 
@@ -467,7 +467,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         dbUnits.setValue(getUnits(materialAssignment));
         try {
             dialogSplitAssignment.doModal();
-            //TODO Check this ?
+
             Messagebox.Button status = dialogSplitAssignment.getResult();
 
             if ( Messagebox.Button.OK == status ) {
@@ -558,12 +558,12 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
                 }
             }
         }
-    }
 
-    private boolean isCurrentUnitType(Material material, UnitType unitType) {
-        return material != null &&
-                material.getUnitType() != null &&
-                unitType.getId().equals(material.getUnitType().getId());
+        private boolean isCurrentUnitType(Material material, UnitType unitType) {
+            return material != null &&
+                    material.getUnitType() != null &&
+                    unitType.getId().equals(material.getUnitType().getId());
+        }
     }
 
     public String getCurrencySymbol() {

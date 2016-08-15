@@ -174,8 +174,8 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
         reloadDayInformation();
     }
 
-    private void assignEditionController() {
-        editionController = new BaseCalendarEditionController(
+    private BaseCalendarEditionController createInstanceForController(){
+        return new BaseCalendarEditionController(
                 baseCalendarModel,
                 editWindow,
                 createNewVersion,
@@ -202,6 +202,10 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             }
 
         };
+    }
+
+    private void assignEditionController() {
+        editionController = createInstanceForController();
 
         try {
             editionController.doAfterCompose(editWindow);
@@ -211,32 +215,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
     }
 
     private void assignCreateController() {
-        createController = new BaseCalendarEditionController(
-                baseCalendarModel,
-                editWindow,
-                createNewVersion,
-                messagesForUser) {
-
-            @Override
-            public void goToList() {
-                BaseCalendarCRUDController.this.goToList();
-            }
-            @Override
-            public void cancel() {
-                BaseCalendarCRUDController.this.cancel();
-            }
-
-            @Override
-            public void save() {
-                BaseCalendarCRUDController.this.save();
-            }
-
-            @Override
-            public void saveAndContinue() {
-                BaseCalendarCRUDController.this.saveAndContinue();
-            }
-
-        };
+        createController = createInstanceForController();
 
         try {
             createController.doAfterCompose(editWindow);
@@ -382,59 +361,60 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
             item.setOpen(true);
         }
 
-    }
+        private void confirmRemove(BaseCalendar calendar) {
 
-    private void confirmRemove(BaseCalendar calendar) {
+            // Has parent?
+            if (hasParent(calendar)) {
+                messagesForUser.showMessage(
+                        Level.ERROR, _("Calendar cannot be removed as it has other derived calendars from it"));
+                return;
+            }
 
-        // Has parent?
-        if (hasParent(calendar)) {
-            messagesForUser.showMessage(
-                    Level.ERROR, _("Calendar cannot be removed as it has other derived calendars from it"));
-            return;
+            // Is default calendar?
+            if (isDefault(calendar)) {
+                messagesForUser.showMessage(
+                        Level.ERROR,
+                        _("Default calendar cannot be removed. "
+                                + "Please, change the default calendar in the Main Settings window before."));
+                return;
+            }
+            removeCalendar(calendar);
         }
 
-        // Is default calendar?
-        if (isDefault(calendar)) {
-            messagesForUser.showMessage(
-                    Level.ERROR,
-                    _("Default calendar cannot be removed. "
-                            + "Please, change the default calendar in the Main Settings window before."));
-            return;
-        }
-        removeCalendar(calendar);
-    }
+        private void removeCalendar(BaseCalendar calendar) {
+            if (!isReferencedByOtherEntities(calendar)) {
+                int result = showConfirmDeleteCalendar(calendar);
 
-    private void removeCalendar(BaseCalendar calendar) {
-        if (!isReferencedByOtherEntities(calendar)) {
-            int result = showConfirmDeleteCalendar(calendar);
-            if (result == Messagebox.OK) {
-                final String calendarName = calendar.getName();
-                baseCalendarModel.confirmRemove(calendar);
-                messagesForUser.showMessage(Level.INFO, _("Removed calendar \"{0}\"", calendarName));
-                Util.reloadBindings(listWindow);
+                if (result == Messagebox.OK) {
+                    final String calendarName = calendar.getName();
+                    baseCalendarModel.confirmRemove(calendar);
+                    messagesForUser.showMessage(Level.INFO, _("Removed calendar \"{0}\"", calendarName));
+                    Util.reloadBindings(listWindow);
+                }
             }
         }
-    }
 
-    private int showConfirmDeleteCalendar(BaseCalendar calendar) {
-        return Messagebox.show(
-                _("Confirm deleting {0}. Are you sure?", calendar.getName()),
-                _("Delete"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
-    }
-
-    private boolean isReferencedByOtherEntities(BaseCalendar calendar) {
-        try {
-            baseCalendarModel.checkIsReferencedByOtherEntities(calendar);
-            return false;
-        } catch (ValidationException e) {
-            showCannotDeleteCalendarDialog(e.getInvalidValue().getMessage());
+        private int showConfirmDeleteCalendar(BaseCalendar calendar) {
+            return Messagebox.show(
+                    _("Confirm deleting {0}. Are you sure?", calendar.getName()),
+                    _("Delete"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
         }
 
-        return true;
-    }
+        private boolean isReferencedByOtherEntities(BaseCalendar calendar) {
+            try {
+                baseCalendarModel.checkIsReferencedByOtherEntities(calendar);
+                return false;
+            } catch (ValidationException e) {
+                showCannotDeleteCalendarDialog(e.getInvalidValue().getMessage());
+            }
 
-    private void showCannotDeleteCalendarDialog(String message) {
-        Messagebox.show(_(message), _("Warning"), Messagebox.OK, Messagebox.EXCLAMATION);
+            return true;
+        }
+
+        private void showCannotDeleteCalendarDialog(String message) {
+            Messagebox.show(_(message), _("Warning"), Messagebox.OK, Messagebox.EXCLAMATION);
+        }
+
     }
 
     public boolean isDefault(BaseCalendar calendar) {
@@ -471,7 +451,6 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
                         title = _("Create {0}: {1}", entityType, humanId);
                     }
                     break;
-
                 case EDIT:
                     title = _("Edit {0}: {1}", entityType, humanId);
                     break;
@@ -479,6 +458,7 @@ public class BaseCalendarCRUDController extends GenericForwardComposer {
                 default:
                     throw new IllegalStateException("You should be in creation or edition mode to use this method");
                 }
+
             ((Caption) editWindow.getFellow("caption")).setLabel(title);
         }
     }

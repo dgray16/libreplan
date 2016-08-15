@@ -70,6 +70,7 @@ public class NewDataSortableGrid extends Grid implements AfterCompose {
         return lastSortedColumnAscending;
     }
 
+    @Override
     public void afterCompose() {
         // We post the ON_SORT event to order the grid. It is needed
         // to use an event because at this point the columns

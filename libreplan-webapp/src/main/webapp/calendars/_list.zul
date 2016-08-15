@@ -22,7 +22,6 @@
 <window id="${arg.top_id}" title="${i18n:_('Calendars List')}">
     <tree id="tree" model="@{calendarController.baseCalendarsTreeModel}"
           treeitemRenderer="@{calendarController.baseCalendarsTreeitemRenderer}"
-          zclass="z-dottree"
           nonselectableTags="*">
 
         <treecols sizable="true">

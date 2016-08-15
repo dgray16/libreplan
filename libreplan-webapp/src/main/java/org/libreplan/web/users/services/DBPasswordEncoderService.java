@@ -25,7 +25,6 @@ import java.util.Collections;
 
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -67,8 +66,7 @@ public class DBPasswordEncoderService implements IDBPasswordEncoderService {
          * "ReflectionSaltSource". Note that "SystemWideSaltSource" ignores
          * the "user" passed as a parameter to "saltSource.getSalt".
          */
-        UserDetails userDetails = new User(loginName, clearPassword, true,
-                true, true, true, Collections.<GrantedAuthority>emptyList());
+        UserDetails userDetails = new User(loginName, clearPassword, true, true, true, true, Collections.emptyList());
 
         Object salt = null;
 

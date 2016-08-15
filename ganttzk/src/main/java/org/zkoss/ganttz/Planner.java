@@ -24,14 +24,14 @@ package org.zkoss.ganttz;
 import static org.zkoss.ganttz.i18n.I18nHelper._;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Collections;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.zkoss.ganttz.adapters.IDisabilityConfiguration;
@@ -443,8 +443,11 @@ public class Planner extends HtmlMacroComponent  {
         this.visibleChart = configuration.isExpandPlanningViewCharts();
         ((South) getFellow("graphics")).setOpen(this.visibleChart);
 
-        PROFILING_LOG.debug(
-                "it took doing the setup of components and adding them: "
+        if (!visibleChart) {
+            ((South) getFellow("graphics")).setTitle(I18nHelper._("Graphics are disabled"));
+        }
+
+        PROFILING_LOG.debug("it took doing the setup of components and adding them: "
                         + (System.currentTimeMillis() - timeSetupingAndAddingComponents) + " ms");
 
         setAuService(new AuService() {
@@ -490,7 +493,6 @@ public class Planner extends HtmlMacroComponent  {
 
     private <T> List<CommandOnTaskContextualized<T>> contextualize(FunctionalityExposedForExtensions<T> context,
                                                                    List<ICommandOnTask<T>> commands) {
-
         List<CommandOnTaskContextualized<T>> result = new ArrayList<>();
         for (ICommandOnTask<T> c : commands) {
             result.add(contextualize(context, c));
@@ -752,7 +754,7 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public boolean showAdvancesRightNow() {
-        return (areShownAdvancesByDefault() || isShowingAdvances);
+        return areShownAdvancesByDefault() || isShowingAdvances;
     }
 
     public void setAreShownAdvancesByDefault(boolean shownAdvanceByDefault) {
@@ -769,7 +771,7 @@ public class Planner extends HtmlMacroComponent  {
     }
 
     public boolean showReportedHoursRightNow() {
-        return (areShownReportedHoursByDefault() || isShowingReportedHours);
+        return areShownReportedHoursByDefault() || isShowingReportedHours;
     }
 
     public void setAreShownMoneyCostBarByDefault(boolean shownMoneyCostBarByDefault) {
@@ -815,7 +817,7 @@ public class Planner extends HtmlMacroComponent  {
         listZoomLevels.invalidate();
     }
 
-    public IContext<?> getContext() {
+    public IContext getContext() {
         return context;
     }
 
@@ -908,6 +910,7 @@ public class Planner extends HtmlMacroComponent  {
         return null;
     }
 
+    @Override
     public String getWidgetClass(){
         return getDefinition().getDefaultWidgetClass(this);
     }

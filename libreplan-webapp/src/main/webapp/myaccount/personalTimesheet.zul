@@ -173,7 +173,8 @@
                     </row>
                 </rows>
             </grid>
-            <button onClick="controller.closePersonalTimesheetPopup();" label="${i18n:_('Ok')}" />
+            <button onClick="controller.closePersonalTimesheetPopup();" label="${i18n:_('Ok')}"
+                    style="margin-top: 5px" sclass="add-button" />
         </popup>
 
     </window>

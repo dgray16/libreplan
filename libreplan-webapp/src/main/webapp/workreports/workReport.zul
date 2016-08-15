@@ -58,7 +58,7 @@
                   <datebox id="filterFinishDate" constraint = "@{controller.checkConstraintFinishDate}"/>
 
                   <button label="${i18n:_('Filter')}" style="margin-top: -4px"
-                          onClick="controller.onApplyFilter(event)" sclass="add-button"/>
+                          onClick="controller.onApplyFilter()" sclass="add-button"/>
                 </hbox>
 
                 </vbox>
@@ -146,7 +146,7 @@
                         </row>
                     </rows>
                 </grid>
-                <button onClick="controller.createOrEditPersonalTimesheet();"
+                <button onClick="controller.createOrEditPersonalTimesheet();" sclass="add-button"
                         label="${i18n:_('Go to personal timesheet')}" />
             </popup>
         </window>
@@ -225,7 +225,8 @@
                         </grid>
 
                         <grid id="headingFieldsAndLabels" mold="paging" pageSize="4"
-                              fixedLayout="true" style="border-top:0;"
+                              fixedLayout="true"
+                              style="border-top:0;"
                               model="@{controller.fieldsAndLabelsHeading}"
                               rowRenderer= "@{controller.orderedFieldsAndLabelsRowRenderer}">
                             <columns>
@@ -245,7 +246,8 @@
                                                 onClick="controller.addWorkReportLine()" />
                                     </hbox>
 
-                                   <newdatasortablegrid id="listWorkReportLines" fixedLayout="true"
+                                   <newdatasortablegrid id="listWorkReportLines"
+                                                        fixedLayout="false"
                                                         rowRenderer="@{controller.renderer}"
                                                         sclass="listWorkReportLines report-margin"/>
                                 </groupbox>

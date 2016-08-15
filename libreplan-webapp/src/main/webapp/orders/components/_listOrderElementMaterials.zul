@@ -68,8 +68,7 @@
                                     onClick="materialsAccordion.setSelectedIndex(1);" />
 
                             <!-- Materials -->
-                            <vbox id="assignmentsBox" width="100%">
-                            </vbox>
+                            <vbox id="assignmentsBox" width="100%"/>
                         </groupbox>
 
                     </vbox>

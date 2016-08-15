@@ -44,7 +44,7 @@
                style="overflow:auto"
                sclass="report-margin">
             <panelchildren>
-                <grid width="700px">
+                <grid width="700px" sclass="margin-border">
                     <columns>
                         <column width="200px" />
                         <column />
@@ -148,7 +148,7 @@
         <!-- Select output format -->
         <panel title="${i18n:_('Format')}" border="normal" style="overflow:auto">
             <panelchildren>
-                <grid width="700px">
+                <grid width="700px" sclass="margin-border">
                     <columns>
                         <column width="200px" />
                         <column />

@@ -161,7 +161,6 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
                 case EXTRA:
                     renderExtraRow(row);
-
                     // This is the last row so we can load the info in the summary
                     updateSummary();
                     break;
@@ -279,8 +278,8 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
                             throw new WrongValueException(
                                     personalTimesheetPopupEffort, _("Invalid Effort Duration"));
                         }
-                        // TODO invesigate textbox.getValue() - this is old value. Before Bogdan made new Object()
-                        Events.sendEvent(new InputEvent(Events.ON_CHANGE, textbox, value, new Object()));
+
+                        Events.sendEvent(new InputEvent(Events.ON_CHANGE, textbox, value, textbox.getValue()));
                     });
 
             addOnOkEventToClosePopup(effortTextbox);
@@ -931,12 +930,16 @@ class PersonalTimesheetRow {
         OTHER,
         CAPACITY,
         TOTAL,
-        EXTRA
+        EXTRA;
     }
 
     private PersonalTimesheetRowType type;
 
     private OrderElement orderElemement;
+
+    private PersonalTimesheetRow(PersonalTimesheetRowType type) {
+        this.type = type;
+    }
 
     public static PersonalTimesheetRow createOrderElementRow(OrderElement orderElemement) {
         PersonalTimesheetRow row = new PersonalTimesheetRow(PersonalTimesheetRowType.ORDER_ELEMENT);
@@ -969,10 +972,6 @@ class PersonalTimesheetRow {
         }
 
         return result;
-    }
-
-    private PersonalTimesheetRow(PersonalTimesheetRowType type) {
-        this.type = type;
     }
 
     public PersonalTimesheetRowType getType() {

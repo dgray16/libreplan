@@ -35,15 +35,14 @@
 <zk>
 
     <window self="@{define(content)}"
-        apply="org.libreplan.web.reports.SchedulingProgressPerOrderController"
-        title="${i18n:_('Work And Progress Per Project')}"
-        border="normal" >
+            apply="org.libreplan.web.reports.SchedulingProgressPerOrderController"
+            title="${i18n:_('Work And Progress Per Project')}"
+            border="normal" >
 
         <!-- Select dates -->
-        <panel title="${i18n:_('Date')}" border="normal"
-                style="overflow:auto">
+        <panel title="${i18n:_('Date')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
-                 <grid width="600px">
+                 <grid width="600px" sclass="margin-border">
                      <columns>
                          <column width="200px" />
                          <column />
@@ -52,12 +51,12 @@
                          <row>
                              <label value="${i18n:_('Starting date')}:" />
                              <datebox id="startingDate"
-                                     onChange="controller.checkCannotBeHigher(startingDate, endingDate)"/>
+                                      onChange="controller.checkCannotBeHigher(startingDate, endingDate)"/>
                          </row>
                          <row>
                              <label value="${i18n:_('Ending date')}:" />
                              <datebox id="endingDate"
-                                     onChange="controller.checkCannotBeHigher(startingDate, endingDate)"/>
+                                      onChange="controller.checkCannotBeHigher(startingDate, endingDate)"/>
                          </row>
                          <row>
                              <label value="${i18n:_('Reference date')}:" />
@@ -69,10 +68,9 @@
         </panel>
 
         <!-- Advance type -->
-        <panel title="${i18n:_('Progress type')}" border="normal"
-            style="overflow:auto">
+        <panel title="${i18n:_('Progress type')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
-                <grid width="600px">
+                <grid width="600px" sclass="margin-border">
                     <columns>
                         <column width="200px" />
                         <column />
@@ -81,9 +79,9 @@
                         <row>
                             <label value="${i18n:_('Progress type')}:" />
                             <listbox id="lbAdvanceType"
-                                    model="@{controller.advanceTypeDTOs}"
-                                    mold="select"
-                                    multiple="false" >
+                                     model="@{controller.advanceTypeDTOs}"
+                                     mold="select"
+                                     multiple="false" >
                                 <listitem self="@{each='advanceTypeDTO'}" value="@{advanceTypeDTO}">
                                     <listcell label="@{advanceTypeDTO.name}" />
                                 </listitem>
@@ -95,24 +93,26 @@
         </panel>
 
         <!-- Select orders -->
-        <panel title="${i18n:_('Filter by projects')}"
-            border="normal"
-            style="overflow:auto">
+        <panel title="${i18n:_('Filter by projects')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
                  <vbox>
                     <separator spacing="5px"/>
                     <hbox>
-                        <bandboxSearch id="bdOrders" finder="OrderBandboxFinder" model="@{controller.allOrders}"
-                            widthListbox="680px" widthBandbox="480px"/>
+                        <bandboxSearch id="bdOrders" finder="OrderBandboxFinder"
+                                       model="@{controller.allOrders}"
+                                       widthListbox="680px"
+                                       widthBandbox="480px"
+                                       sclass="bandbox-margin"/>
                         <button label="${i18n:_('Add')}" sclass="add-button"
-                            onClick="controller.onSelectOrder()" style="margin-top: -4px" />
+                                onClick="controller.onSelectOrder()" />
                     </hbox>
                  </vbox>
                 <separator spacing="10px"/>
                  <listbox id="lbOrders"
-                        width="700px"
-                        multiple="true"
-                        model="@{controller.selectedOrders}">
+                          width="700px"
+                          multiple="true"
+                          model="@{controller.selectedOrders}"
+                          sclass="margin-border">
                     <listhead>
                         <listheader label="${i18n:_('Name')}" align="center" sort="auto(name)" />
                         <listheader label="${i18n:_('Code')}" sort="auto(code)" align="center" />
@@ -136,10 +136,9 @@
         </panel>
 
         <!-- Select output format -->
-        <panel title="${i18n:_('Format')}" border="normal"
-            style="overflow:auto">
+        <panel title="${i18n:_('Format')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
-                <grid width="600px">
+                <grid width="600px" sclass="margin-border">
                     <columns>
                         <column width="200px" />
                         <column />
@@ -159,8 +158,7 @@
 
         <hbox style="display: none" id="URItext">
             <label value="${i18n:_('Click on this')}" />
-            <a id="URIlink" sclass="z-label" zclass="z-label"
-                    label="${i18n:_('direct link')}" />
+            <a id="URIlink" sclass="z-label" zclass="z-label" label="${i18n:_('direct link')}" />
             <label value="${i18n:_('if the report is not opened automatically')}" />
         </hbox>
         <separator spacing="10px" orient="horizontal" />

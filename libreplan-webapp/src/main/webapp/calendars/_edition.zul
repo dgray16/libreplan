@@ -104,7 +104,7 @@
                             </attribute>
                         </calendar>
 
-                        <grid width="235px" sclass="day-details">
+                        <grid width="255px" sclass="day-details">
                             <auxhead>
                                 <auxheader colspan="2" label="${i18n:_('Day properties')}" />
                             </auxhead>

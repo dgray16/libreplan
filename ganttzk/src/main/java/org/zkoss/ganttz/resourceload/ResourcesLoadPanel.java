@@ -379,7 +379,13 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         getFellow("insertionPointChart").appendChild(loadChart);
 
         this.visibleChart = expandResourceLoadViewCharts;
+        this.visibleChart = expandResourceLoadViewCharts;
         ((South) getFellow("graphics")).setOpen(this.visibleChart);
+
+        if (!visibleChart) {
+            ((South) getFellow("graphics")).setTitle(_("Graphics are disabled"));
+        }
+
         savePreviousData();
     }
 
@@ -540,6 +546,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         nameFilterListener.addListener(iFilterChangedListener);
     }
 
+    /* It should be public! */
     public void changeChartVisibility(boolean visible) {
         visibleChart = visible;
         chartVisibilityListeners.fireEvent(listener -> listener.chartVisibilityChanged(visibleChart));

@@ -72,16 +72,15 @@ public class SettingsController extends GenericForwardComposer {
         settingsModel = (ISettingsModel) SpringUtil.getBean("settingsModel");
     }
 
-    private static ListitemRenderer languagesRenderer = new ListitemRenderer() {
-        @Override
-        public void render(Listitem item, Object data, int i) throws Exception {
-            Language language = (Language) data;
-            String displayName = language.getDisplayName();
-            if (language.equals(Language.BROWSER_LANGUAGE)) {
-                displayName = _(language.getDisplayName());
-            }
-            item.setLabel(displayName);
+    private static ListitemRenderer languagesRenderer = (item, data, i) -> {
+        Language language = (Language) data;
+        String displayName = language.getDisplayName();
+
+        if (language.equals(Language.BROWSER_LANGUAGE)) {
+            displayName = _(language.getDisplayName());
         }
+
+        item.setLabel(displayName);
     };
 
     @Override
@@ -90,37 +89,30 @@ public class SettingsController extends GenericForwardComposer {
         comp.setAttribute("settingsController", this, true);
         messages = new MessagesForUser(messagesContainer);
         settingsModel.initEditLoggedUser();
+
         projectsFilterLabelBandboxSearch.setListboxEventListener(
-                Events.ON_SELECT, new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
-                        setProjectsFilterLabel((Label) selectedItem.getValue());
-                    }
+                Events.ON_SELECT, event -> {
+                    Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
+                    setProjectsFilterLabel(selectedItem.getValue());
                 });
+
         resourcesLoadFilterCriterionBandboxSearch.setListboxEventListener(
-                Events.ON_SELECT, new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
-                        setResourcesLoadFilterCriterion((Criterion) selectedItem.getValue());
-                    }
+                Events.ON_SELECT, event -> {
+                    Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
+                    setResourcesLoadFilterCriterion(selectedItem.getValue());
                 });
     }
 
     public List<Language> getLanguages() {
         List<Language> languages = Arrays.asList(Language.values());
-        Collections.sort(languages, new Comparator<Language>() {
-            @Override
-            public int compare(Language o1, Language o2) {
-                if (o1.equals(Language.BROWSER_LANGUAGE)) {
-                    return -1;
-                }
-                if (o2.equals(Language.BROWSER_LANGUAGE)) {
-                    return 1;
-                }
-                return o1.getDisplayName().compareTo(o2.getDisplayName());
+        Collections.sort(languages, (o1, o2) -> {
+            if (o1.equals(Language.BROWSER_LANGUAGE)) {
+                return -1;
             }
+            if (o2.equals(Language.BROWSER_LANGUAGE)) {
+                return 1;
+            }
+            return o1.getDisplayName().compareTo(o2.getDisplayName());
         });
 
         return languages;
@@ -167,6 +159,7 @@ public class SettingsController extends GenericForwardComposer {
     }
 
     public void setExpandCompanyPlanningViewCharts(boolean expandCompanyPlanningViewCharts) {
+        checkEmptyBandboxes();
         settingsModel.setExpandCompanyPlanningViewCharts(expandCompanyPlanningViewCharts);
 
     }
@@ -176,6 +169,7 @@ public class SettingsController extends GenericForwardComposer {
     }
 
     public void setExpandOrderPlanningViewCharts(boolean expandOrderPlanningViewCharts) {
+        checkEmptyBandboxes();
         settingsModel.setExpandOrderPlanningViewCharts(expandOrderPlanningViewCharts);
     }
 
@@ -184,6 +178,7 @@ public class SettingsController extends GenericForwardComposer {
     }
 
     public void setExpandResourceLoadViewCharts(boolean expandResourceLoadViewCharts) {
+        checkEmptyBandboxes();
         settingsModel.setExpandResourceLoadViewCharts(expandResourceLoadViewCharts);
     }
 

@@ -55,6 +55,20 @@ import org.zkoss.zul.Listbox;
 @SuppressWarnings("serial")
 public class BandboxSearch extends HtmlMacroComponent {
 
+    private Listbox listbox;
+
+    private Listhead listhead;
+
+    private Bandbox bandbox;
+
+    private IBandboxFinder finder;
+
+    private String widthBandbox;
+
+    private String widthListbox;
+
+    private List<? extends BaseEntity> model;
+
     public static BandboxSearch create(String finderClassName, List<? extends BaseEntity> model) {
         BandboxSearch bandboxSearch = new BandboxSearch();
         bandboxSearch.setFinder(finderClassName);
@@ -72,26 +86,12 @@ public class BandboxSearch extends HtmlMacroComponent {
         return bandboxSearch;
     }
 
-    private Listbox listbox;
-
-    private Listhead listhead;
-
-    private Bandbox bandbox;
-
-    private IBandboxFinder finder;
-
-    private String widthBandbox;
-
-    private String widthListbox;
-
-    private List<? extends BaseEntity> model;
-
     public void afterCompose() {
         super.afterCompose();
         listbox = (Listbox) getFellowIfAny("listbox");
 
         if ( model != null ) {
-            setModel(new SimpleListModel<Object>(model));
+            setModel(new SimpleListModel<>(model));
         } else {
             listbox.setModel(finder.getModel());
         }
@@ -103,33 +103,25 @@ public class BandboxSearch extends HtmlMacroComponent {
         /**
          * Search for matching elements while typing on bandbox
          */
-        bandbox.addEventListener("onChanging", new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                clearSelectedElement();
-                final String inputText = ((InputEvent) event).getValue();
-                listbox.setModel(getSubModel(inputText));
-                listbox.invalidate();
-            }
+        bandbox.addEventListener("onChanging", event -> {
+            clearSelectedElement();
+            final String inputText = ((InputEvent) event).getValue();
+            listbox.setModel(getSubModel(inputText));
+            listbox.invalidate();
         });
 
         bandbox.setCtrlKeys("#down");
-        bandbox.addEventListener(Events.ON_CTRL_KEY, new EventListener() {
+        bandbox.addEventListener(Events.ON_CTRL_KEY, event -> {
+            int selectedItemIndex = listbox.getSelectedIndex();
+            if ( selectedItemIndex != -1 ) {
+                listbox.getItemAtIndex(selectedItemIndex).setFocus(true);
+            } else {
+                List<Listitem> items = listbox.getItems();
 
-            @Override
-            public void onEvent(Event event) {
-                int selectedItemIndex = listbox.getSelectedIndex();
-                if ( selectedItemIndex != -1 ) {
-                    listbox.getItemAtIndex(selectedItemIndex).setFocus(true);
-                } else {
-                    List<Listitem> items = listbox.getItems();
-
-                    if ( !items.isEmpty() ) {
-                        listbox.setSelectedIndex(0);
-                        pickElementFromList();
-                        items.get(0).setFocus(true);
-                    }
+                if ( !items.isEmpty() ) {
+                    listbox.setSelectedIndex(0);
+                    pickElementFromList();
+                    items.get(0).setFocus(true);
                 }
             }
         });
@@ -137,29 +129,13 @@ public class BandboxSearch extends HtmlMacroComponent {
         /**
          * Pick element from list when selecting
          */
-        listbox.addEventListener(Events.ON_SELECT, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                pickElementFromList();
-            }
-        });
+        listbox.addEventListener(Events.ON_SELECT, event -> pickElementFromList());
 
         // Close bandbox for events onClick and onOK
-        listbox.addEventListener(Events.ON_CLICK, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                close();
-            }
-        });
-        listbox.addEventListener(Events.ON_OK, new EventListener() {
-
-            @Override
-            public void onEvent(Event event) {
-                pickElementFromList();
-                close();
-            }
+        listbox.addEventListener(Events.ON_CLICK, event -> close());
+        listbox.addEventListener(Events.ON_OK, event -> {
+            pickElementFromList();
+            close();
         });
 
         addHeaders();
@@ -186,7 +162,6 @@ public class BandboxSearch extends HtmlMacroComponent {
             bandbox.setValue("");
         }
 
-        // TODO resolve deprecated
         DataBinder binder = Util.getBinder(this);
 
         if (binder != null) {
@@ -257,7 +232,7 @@ public class BandboxSearch extends HtmlMacroComponent {
 
     public void setModel(List<? extends BaseEntity> model) {
         this.model = model;
-        setModel(new SimpleListModel<Object>(model));
+        setModel(new SimpleListModel<>(model));
     }
 
     private void setModel(ListModel<Object> model) {

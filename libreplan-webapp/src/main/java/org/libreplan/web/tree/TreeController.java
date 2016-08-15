@@ -56,6 +56,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.DropEvent;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.KeyEvent;
@@ -834,9 +835,14 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 onDoubleClickForSchedulingStateCell(currentElement);
             });
 
-            cell.addEventListener(Events.ON_CLICK, event -> {
-                Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
-                item.getTree().toggleItemSelection(item);
+            cell.addEventListener(Events.ON_CLICK, new EventListener() {
+
+                private Treeitem item = (Treeitem) getCurrentTreeRow().getParent();
+
+                @Override
+                public void onEvent(Event event) {
+                    item.getTree().toggleItemSelection(item);
+                }
             });
 
             schedulingState.addTypeChangeListener(

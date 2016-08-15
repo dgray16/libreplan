@@ -19,8 +19,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<vbox id="${arg.id}"
-    apply="org.libreplan.web.orders.AssignedTaskQualityFormsToOrderElementController" width="100%">
+<vbox id="${arg.id}" apply="org.libreplan.web.orders.AssignedTaskQualityFormsToOrderElementController" width="100%">
     <!-- Quality Forms-->
     <vbox width="100%">
         <vbox id="messagesContainerTaskQualityForms"/>
@@ -32,20 +31,24 @@
                     <hbox style="margin-left: 5px;">
                         <bandboxSearch id="bdQualityForms" finder="QualityFormBandboxFinder"
                             model="@{assignedTaskQualityFormsController.notAssignedQualityForms}" widthBandbox="200px"
-                                       widthListbox="600px" />
+                                       widthListbox="600px"/>
                         <button label="${i18n:_('Assign')}" sclass="add-button"
-                            onClick="assignedTaskQualityFormsController.onAssignTaskQualityForm()"
-                            />
+                            onClick="assignedTaskQualityFormsController.onAssignTaskQualityForm()"/>
                     </hbox>
                 </vbox>
+
                 <separator bar="false" spacing="40px" orient="vertical"/>
-                <grid id="assignedTaskQualityForms" height="300px" fixedLayout="true"
-                    rowRenderer = "@{assignedTaskQualityFormsController.taskQualityFormsRowRenderer}"
-                    model="@{assignedTaskQualityFormsController.taskQualityForms}"
-                    onInitRender ="assignedTaskQualityFormsController.sortTaskQualityForms();">
+
+                <grid id="assignedTaskQualityForms" height="300px"
+                      fixedLayout="true"
+                      rowRenderer = "@{assignedTaskQualityFormsController.taskQualityFormsRowRenderer}"
+                      model="@{assignedTaskQualityFormsController.taskQualityForms}"
+                      onInitRender ="assignedTaskQualityFormsController.sortTaskQualityForms();">
                     <columns>
                         <column width="25px"/>
-                        <column label="${i18n:_('Task quality form name')}" sort="auto(lower(qualityForm.name))" sortDirection="descending"/>
+                        <column label="${i18n:_('Task quality form name')}"
+                                sort="auto(lower(qualityForm.name))"
+                                sortDirection="descending"/>
                         <column label="${i18n:_('Type')}" />
                         <column label="${i18n:_('Report progress')}" />
                         <column label="${i18n:_('Operations')}" />
@@ -53,6 +56,7 @@
                 </grid>
 
                 <separator bar="false" spacing="40px" orient="vertical"/>
+
             </panelchildren>
         </panel>
     </vbox>
