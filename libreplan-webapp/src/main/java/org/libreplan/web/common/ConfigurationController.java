@@ -186,22 +186,14 @@ public class ConfigurationController extends GenericForwardComposer {
     private Textbox emailSenderTextbox;
 
     public ConfigurationController(){
-        configurationModel = (IConfigurationModel) SpringUtil.getBean("configurationModel");
-        configurationDAO = (IConfigurationDAO) SpringUtil.getBean("configurationDAO");
-        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
-        orderModel = (IOrderModel) SpringUtil.getBean("orderModel");
-        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
-        workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
-        machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
-        expenseSheetModel = (IExpenseSheetModel) SpringUtil.getBean("expenseSheetModel");
-        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
-        assignedQualityFormsModel =
-                (IAssignedTaskQualityFormsToOrderElementModel) SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
     }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        injectsObjects();
+
         comp.setAttribute("configurationController", this, true);
         configurationModel.init();
 
@@ -216,8 +208,22 @@ public class ConfigurationController extends GenericForwardComposer {
         loadRoleStrategyRows();
     }
 
+    private void injectsObjects() {
+        configurationModel = (IConfigurationModel) SpringUtil.getBean("configurationModel");
+        configurationDAO = (IConfigurationDAO) SpringUtil.getBean("configurationDAO");
+        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
+        orderModel = (IOrderModel) SpringUtil.getBean("orderModel");
+        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
+        workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
+        machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
+        expenseSheetModel = (IExpenseSheetModel) SpringUtil.getBean("expenseSheetModel");
+        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
+        assignedQualityFormsModel =
+                (IAssignedTaskQualityFormsToOrderElementModel) SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
+    }
+
     public void changeRoleStrategy() {
-        this.getLdapConfiguration().setLdapGroupStrategy(strategy.getSelectedItem().getValue().equals("group"));
+        this.getLdapConfiguration().setLdapGroupStrategy("group".equals(strategy.getSelectedItem().getValue()));
         loadRoleStrategyRows();
     }
 
@@ -279,7 +285,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
     public void save() throws InterruptedException {
 
-        if ( getSelectedConnector() != null && getSelectedConnector().getName().equals("E-mail") &&
+        if ( getSelectedConnector() != null && "E-mail".equals(getSelectedConnector().getName()) &&
                 !isEmailFieldsValid() ) {
             messages.showMessage(Level.ERROR, _("Check all fields"));
 
@@ -465,27 +471,35 @@ public class ConfigurationController extends GenericForwardComposer {
         Transport transport = null;
 
         try {
-            if ( protocolsCombobox.getSelectedItem().getLabel().equals("SMTP") ){
+            if ("SMTP".equals(protocolsCombobox.getSelectedItem().getLabel())){
                 props.setProperty("mail.smtp.port", port);
                 props.setProperty("mail.smtp.host", host);
                 Session session = Session.getInstance(props, null);
 
                 transport = session.getTransport("smtp");
-                if ( username.equals("") && password.equals("")) transport.connect();
+                if ("".equals(username) && "".equals(password)) {
+                    transport.connect();
+                }
             }
-            else if ( protocolsCombobox.getSelectedItem().getLabel().equals("STARTTLS") ) {
+            else if ("STARTTLS".equals(protocolsCombobox.getSelectedItem().getLabel())) {
                 props.setProperty("mail.smtps.port", port);
                 props.setProperty("mail.smtps.host", host);
                 Session session = Session.getInstance(props, null);
 
                 transport = session.getTransport("smtps");
-                if ( !username.equals("") && password != null ) transport.connect(host, username, password);
+                if ( !"".equals(username) && password != null ) {
+                    transport.connect(host, username, password);
+                }
             }
 
             messages.clearMessages();
             if (transport != null) {
-                if ( transport.isConnected() ) messages.showMessage(Level.INFO, _("Connection successful!"));
-                else if ( !transport.isConnected()) messages.showMessage(Level.WARNING, _("Connection unsuccessful") );
+                if ( transport.isConnected() ) {
+                    messages.showMessage(Level.INFO, _("Connection successful!"));
+                }
+                else if ( !transport.isConnected()) {
+                    messages.showMessage(Level.WARNING, _("Connection unsuccessful"));
+                }
             }
         }
         catch (AuthenticationFailedException e){
@@ -737,14 +751,11 @@ public class ConfigurationController extends GenericForwardComposer {
                 row.setClass("separator");
             }
         }
-    }
 
         private void appendActiveRadiobox(final Row row, final EntitySequence entitySequence) {
 
             final Radio radiobox = Util.bind(new Radio(),
-                    () -> {
-                        return entitySequence.isActive();
-                    }, value -> {
+                    entitySequence::isActive, value -> {
                         updateOtherSequences(entitySequence);
                         entitySequence.setActive(value);
                         Util.reloadBindings(entitySequencesGrid);
@@ -754,18 +765,11 @@ public class ConfigurationController extends GenericForwardComposer {
             row.appendChild(radiobox);
         }
 
-        private void updateOtherSequences(final EntitySequence activeSequence) {
-            for (EntitySequence sequence : getEntitySequences(activeSequence.getEntityName())) {
-                sequence.setActive(false);
-            }
-        }
 
         private void appendPrefixTextbox(Row row, final EntitySequence entitySequence) {
             final Textbox tempTextbox = new Textbox();
             tempTextbox.setWidth("200px");
-            Textbox textbox = Util.bind(tempTextbox, () -> {
-                return entitySequence.getPrefix();
-            }, value -> {
+            Textbox textbox = Util.bind(tempTextbox, entitySequence::getPrefix, value -> {
                 try {
                     entitySequence.setPrefix(value);
                 } catch (IllegalArgumentException e) {
@@ -783,8 +787,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
         private void appendNumberOfDigitsInbox(Row row, final EntitySequence entitySequence) {
             final Intbox tempIntbox = new Intbox();
-            Intbox intbox = Util.bind(tempIntbox, () -> {return entitySequence.getNumberOfDigits();
-            }, value -> {
+            Intbox intbox = Util.bind(tempIntbox, entitySequence::getNumberOfDigits, value -> {
                 try {
                     entitySequence.setNumberOfDigits(value);
                 } catch (IllegalArgumentException e) {
@@ -829,7 +832,13 @@ public class ConfigurationController extends GenericForwardComposer {
 
             row.appendChild(removeButton);
         }
+    }
 
+    private void updateOtherSequences(final EntitySequence activeSequence) {
+            for (EntitySequence sequence : getEntitySequences(activeSequence.getEntityName())) {
+                sequence.setActive(false);
+            }
+        }
 
     private Constraint checkConstraintFormatPrefix() {
         return (comp, value) -> {
@@ -887,7 +896,7 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     private boolean isLastOne(EntitySequence sequence) {
-        return (getEntitySequences(sequence.getEntityName()).size() == 1);
+        return getEntitySequences(sequence.getEntityName()).size() == 1;
     }
 
     private void showMessageNotDelete() {
@@ -959,19 +968,17 @@ public class ConfigurationController extends GenericForwardComposer {
 
             final Textbox tempTextbox = new Textbox();
             Textbox textbox = Util.bind(tempTextbox, () -> {
-                List<String> listRoles = configurationModel.
-                        getLdapConfiguration().getMapMatchingRoles().get(role.name());
+
+                List<String> listRoles =
+                        configurationModel.getLdapConfiguration().getMapMatchingRoles().get(role.name());
                 Collections.sort(listRoles);
                 return StringUtils.join(listRoles, ";");
             }, value -> {
                 // Created a set in order to avoid duplicates
-                Set<String> rolesLdap = new HashSet<String>(
-                        Arrays.asList(StringUtils.split(value,
-                                ";")));
-                configurationModel.getLdapConfiguration()
-                        .setConfigurationRolesLdap(role.name(),
-                                rolesLdap);
+                Set<String> rolesLdap = new HashSet<>(Arrays.asList(StringUtils.split(value, ";")));
+                configurationModel.getLdapConfiguration().setConfigurationRolesLdap(role.name(), rolesLdap);
             });
+
             textbox.setWidth("300px");
             row.appendChild(textbox);
         };
@@ -1136,8 +1143,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
                 Util.appendLabel(row, _(property.getKey()));
 
-                // FIXME this is not perfect solution
-                if ( property.getKey().equals("Protocol") ) {
+                if ("Protocol".equals(property.getKey())) {
                     appendValueCombobox(row, property);
                 } else {
                     appendValueTextbox(row, property);
@@ -1149,11 +1155,7 @@ public class ConfigurationController extends GenericForwardComposer {
                 textbox.setWidth("400px");
                 textbox.setConstraint(checkPropertyValue(property));
 
-                Util.bind(textbox, () -> {
-                    return property.getValue();
-                }, value -> {
-                    property.setValue(value);
-                });
+                Util.bind(textbox, property::getValue, property::setValue);
 
                 if ( property.getKey().equals(PredefinedConnectorProperties.PASSWORD) ||
                     property.getKey().equals(PredefinedConnectorProperties.EMAIL_PASSWORD) ) {
@@ -1190,7 +1192,7 @@ public class ConfigurationController extends GenericForwardComposer {
                     comboitem.setLabel(item);
                     comboitem.setParent(combobox);
 
-                    if ( (!property.getValue().equals("")) && (item.equals(property.getValue())) ){
+                    if ( (!"".equals(property.getValue())) && (item.equals(property.getValue())) ){
                         combobox.setSelectedItem(comboitem);
                     }
                 }
@@ -1202,9 +1204,7 @@ public class ConfigurationController extends GenericForwardComposer {
                             }
                         });
 
-                Util.bind(combobox, () -> {
-                    return combobox.getSelectedItem();
-                }, item -> {
+                Util.bind(combobox, combobox::getSelectedItem, item -> {
                     if ( (item != null) && (item.getValue() != null) && (item.getValue() instanceof String) ){
                         property.setValue(combobox.getSelectedItem().getValue().toString());
                     }
@@ -1222,7 +1222,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
                 return (comp, value) -> {
                     if ( key.equals(PredefinedConnectorProperties.ACTIVATED) ) {
-                        if ( !((String) value).equalsIgnoreCase("Y") && !((String) value).equalsIgnoreCase("N") ) {
+                        if ( !"Y".equalsIgnoreCase((String) value) && !"N".equalsIgnoreCase((String) value)) {
                             throw new WrongValueException(comp, _("Only {0} allowed", "Y/N"));
                         }
                     } else if ( key.equals(PredefinedConnectorProperties.SERVER_URL) ||
@@ -1249,6 +1249,7 @@ public class ConfigurationController extends GenericForwardComposer {
             private boolean isNumeric(String input) {
                 try {
                     Integer.parseInt(input);
+
                     return true;
                 } catch (NumberFormatException e) {
                     return false;
@@ -1260,16 +1261,19 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private boolean isEmailFieldsValid(){
         if ( protocolsCombobox != null && protocolsCombobox.getSelectedItem() != null ){
-            if ( protocolsCombobox.getSelectedItem().getLabel().equals("STARTTLS") &&
-                    emailUsernameTextbox.getValue() != null &&
+
+            boolean isNotNullValue =  emailUsernameTextbox.getValue() != null &&
                     emailPasswordTextbox.getValue() != null &&
                     emailUsernameTextbox.getValue().length() != 0 &&
-                    emailPasswordTextbox.getValue().length() != 0 &&
-                    emailSenderTextbox.getValue().matches("^\\S+@\\S+\\.\\S+$") )
+                    emailPasswordTextbox.getValue().length() != 0;
+
+            if ("STARTTLS".equals(protocolsCombobox.getSelectedItem().getLabel()) && isNotNullValue &&
+                    emailSenderTextbox.getValue().matches("^\\S+@\\S+\\.\\S+$"))
+
                 return true;
 
-            if ( protocolsCombobox != null && protocolsCombobox.getSelectedItem() != null ){
-                if ( protocolsCombobox.getSelectedItem().getLabel().equals("SMTP") )
+            if ( protocolsCombobox.getSelectedItem() != null  &&
+                    "SMTP".equals(protocolsCombobox.getSelectedItem().getLabel()) ) {
                     return true;
             }
         }

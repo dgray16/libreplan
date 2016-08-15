@@ -194,7 +194,6 @@ public class Util {
     public static void saveBindings(Component... toReload) {
         for (Component reload : toReload) {
 
-            // TODO resolve deprecated
             DataBinder binder = Util.getBinder(reload);
 
             if (binder != null) {
@@ -204,7 +203,7 @@ public class Util {
     }
 
     public static DataBinder getBinder(Component component) {
-        //TODO Check this. It was false at second param
+
         return (DataBinder) component.getAttribute("binder", true);
     }
 
@@ -222,7 +221,6 @@ public class Util {
             return;
         }
 
-        // TODO resolve deprecated
         AnnotateDataBinder binder = new AnnotateDataBinder(result, true);
 
         /*
@@ -244,6 +242,7 @@ public class Util {
      * @param <T>
      *           The type of the variable to be returned.
      */
+    @FunctionalInterface
     public interface Getter<T> {
         /**
          * Typical get method that returns a variable.
@@ -259,6 +258,7 @@ public class Util {
      * @param <T>
      *            The type of the variable to be set.
      */
+    @FunctionalInterface
     public interface Setter<T> {
         /**
          * Typical set method to store a variable.
