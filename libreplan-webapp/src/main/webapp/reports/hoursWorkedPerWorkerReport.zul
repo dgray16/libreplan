@@ -40,28 +40,31 @@
             border="normal" >
 
          <!-- Select dates -->
-         <panel title="${i18n:_('Dates')}" border="normal" style="overflow:auto" sclass="report-margin">
-             <panelchildren>
-                 <grid width="700px" sclass="margin-border">
-                     <columns>
-                         <column width="200px" />
-                         <column />
-                     </columns>
-                     <rows>
-                         <row>
-                             <label value="${i18n:_('Start date')}" />
-                             <datebox id="startingDate" />
-                         </row>
-                         <row>
-                             <label value="${i18n:_('End date')}" />
-                             <datebox id="endingDate" />
-                         </row>
-                     </rows>
-                 </grid>
-             </panelchildren>
-         </panel>
 
-          <!-- Select workers -->
+        <panel title="${i18n:_('Dates')}" border="normal" style="overflow:auto" sclass="report-margin">
+
+            <panelchildren>
+                <grid width="700px" sclass="margin-border">
+                    <columns>
+                        <column width="200px" />
+                        <column />
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="${i18n:_('Start date')}" />
+                            <datebox id="startingDate" />
+                        </row>
+                        <row>
+                            <label value="${i18n:_('End date')}" />
+                            <datebox id="endingDate" />
+                        </row>
+                    </rows>
+                </grid>
+            </panelchildren>
+
+        </panel>
+
+        <!-- Select workers -->
         <panel title="${i18n:_('Filter by workers')}" border="normal" style="overflow:auto" sclass="report-margin">
             <panelchildren>
                 <vbox>
@@ -74,19 +77,21 @@
                     <button label="${i18n:_('Add')}" sclass="add-button"
                             onClick="controller.onAddResource()"/>
                 </hbox>
+
                 <separator spacing="10px"/>
+
                 <listbox id="lbResources"
-                         width="710px"
+                         width="810px"
                          multiple="true"
                          model="@{controller.resources}"
                          itemRenderer="@{controller.renderer}"
                          sclass="margin-border">
                     <listhead>
-                        <listheader label="${i18n:_('Type')}" align="center" width="50px"/>
-                        <listheader label="${i18n:_('Queue-based')}" align="center" width="62px"/>
+                        <listheader label="${i18n:_('Type')}" align="center" width="110px"/>
+                        <listheader label="${i18n:_('Queue-based')}" align="center" width="100px"/>
                         <listheader label="${i18n:_('Name')}" sort="auto(name)" align="center" width="250px"/>
                         <listheader label="${i18n:_('Code')}" align="center" width="270px"/>
-                        <listheader label="${i18n:_('Operations')}" align="center" width="70px"/>
+                        <listheader label="${i18n:_('Operations')}" align="center" width="78px"/>
                     </listhead>
                 </listbox>
                 </vbox>
