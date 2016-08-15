@@ -40,6 +40,7 @@ import org.zkoss.zul.impl.XulElement;
 
 /**
  * Component to include a list of ResourceLoads inside the ResourcesLoadPanel.
+ *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
  */
 public class ResourceLoadList extends XulElement {
@@ -68,9 +69,12 @@ public class ResourceLoadList extends XulElement {
     }
 
     private IZoomLevelChangedListener adjustTimeTrackerSizeListener() {
-        return detailLevel -> {
-            response(null, new AuInvoke(ResourceLoadList.this, "adjustTimeTrackerSize"));
-            response(null, new AuInvoke(ResourceLoadList.this, "adjustResourceLoadRows"));
+        return new IZoomLevelChangedListener() {
+            @Override
+            public void zoomLevelChanged(ZoomLevel detailLevel) {
+                response(null, new AuInvoke(ResourceLoadList.this, "adjustTimeTrackerSize"));
+                response(null, new AuInvoke(ResourceLoadList.this, "adjustResourceLoadRows"));
+            }
         };
     }
 
@@ -92,9 +96,7 @@ public class ResourceLoadList extends XulElement {
     }
 
     private ResourceLoadComponent getComponentFor(LoadTimeLine l) {
-        ResourceLoadComponent resourceLoadComponent = fromTimeLineToComponent.get(l);
-
-        return resourceLoadComponent;
+        return fromTimeLineToComponent.get(l);
     }
 
     public void expand(LoadTimeLine line, List<LoadTimeLine> closed) {
@@ -116,11 +118,11 @@ public class ResourceLoadList extends XulElement {
     private List<LoadTimeLine> getChildrenReverseOrderFor(LoadTimeLine line) {
         List<LoadTimeLine> childrenOf = line.getAllChildren();
         Collections.reverse(childrenOf);
+
         return childrenOf;
     }
 
     public void addSeeScheduledOfListener(ISeeScheduledOfListener seeScheduledOfListener) {
-
         for (Entry<LoadTimeLine, ResourceLoadComponent> entry : fromTimeLineToComponent.entrySet()) {
             entry.getValue().addSeeScheduledOfListener(seeScheduledOfListener);
         }

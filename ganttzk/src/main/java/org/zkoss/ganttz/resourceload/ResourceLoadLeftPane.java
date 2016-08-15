@@ -24,20 +24,32 @@ package org.zkoss.ganttz.resourceload;
 import static org.zkoss.ganttz.i18n.I18nHelper._;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.zkoss.ganttz.data.resourceload.LoadTimeLine;
 import org.zkoss.ganttz.util.MutableTreeModel;
 import org.zkoss.ganttz.util.WeakReferencedListeners;
-import org.zkoss.ganttz.util.WeakReferencedListeners.IListenerNotification;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlMacroComponent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Treecell;
+import org.zkoss.zul.Treeitem;
+import org.zkoss.zul.TreeitemRenderer;
+import org.zkoss.zul.Treerow;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Tree;
+import org.zkoss.zul.Treechildren;
 
+/**
+ * Works with left pane of Resouce Load page. Also works with right pane ( a little bit ).
+ *
+ * @author ?
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
+ */
 public class ResourceLoadLeftPane extends HtmlMacroComponent {
 
     private MutableTreeModel<LoadTimeLine> modelForTree;
@@ -46,11 +58,24 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
 
     private WeakReferencedListeners<ISeeScheduledOfListener> scheduleListeners = WeakReferencedListeners.create();
 
+    /**
+     * {@link ResourceLoadLeftPane#onOpenEventQueue}, {@link OnOpenEvent} and proceedOnOpenEventQueue() method
+     * were created because of problem:
+     * after migration from ZK5 to ZK8 onOpen event had been calling before render().
+     * It produced a problem.
+     * On onOpen event we are calculating closes items to treeItem.
+     * render() was not called so, treeItem row had no value.
+     * It made calculatedClosedItems(treeItem).isEmpty() to return true, even if it is not!
+     *
+     * http://forum.zkoss.org/question/101294/event-before-render-treeitem/
+     */
+    private OnOpenEvent onOpenEventQueue = null;
+
+
     public ResourceLoadLeftPane(MutableTreeModel<LoadTimeLine> modelForTree, ResourceLoadList resourceLoadList) {
         this.resourceLoadList = resourceLoadList;
         this.modelForTree = modelForTree;
     }
-
 
     @Override
     public void afterCompose() {
@@ -63,7 +88,7 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
     private TreeitemRenderer getRendererForTree() {
         return new TreeitemRenderer() {
             @Override
-            public void render(Treeitem treeitem, Object o, int i) throws Exception {
+            public void render(Treeitem treeitem, Object o, int index) throws Exception {
                 LoadTimeLine line = (LoadTimeLine) o;
                 treeitem.setOpen(false);
                 treeitem.setValue(line);
@@ -82,6 +107,23 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 addExpandedListener(treeitem, line);
 
                 row.setSclass("resourceload-leftpanel-row");
+
+                if ( onOpenEventQueue != null ) {
+                    proceedOnOpenEventQueue();
+                }
+            }
+
+            /**
+             * After proceed of queue, clean object, to make it kind of "unique" or "one time only".
+             */
+            private void proceedOnOpenEventQueue() {
+                if ( onOpenEventQueue.event.isOpen() ) {
+                    List<LoadTimeLine> closed = calculatedClosedItems(onOpenEventQueue.treeitem);
+                    expand(onOpenEventQueue.line, closed);
+                } else {
+                    collapse(onOpenEventQueue.line);
+                }
+                onOpenEventQueue = null;
             }
 
             private void appendOperations(final Treecell cell, final LoadTimeLine line) {
@@ -96,6 +138,7 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 buttonPlan.setImage("/common/img/ico_planificador1.png");
                 buttonPlan.setHoverImage("/common/img/ico_planificador.png");
                 buttonPlan.setTooltiptext(_("See scheduling"));
+
                 buttonPlan.addEventListener("onClick", new EventListener() {
                     @Override
                     public void onEvent(Event event) {
@@ -107,28 +150,27 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
             }
 
             public void schedule(final LoadTimeLine taskLine) {
-
-                scheduleListeners
-                        .fireEvent(new IListenerNotification<ISeeScheduledOfListener>() {
+                scheduleListeners.fireEvent(
+                        new WeakReferencedListeners.IListenerNotification<ISeeScheduledOfListener>() {
                             @Override
-                            public void doNotify(
-                                    ISeeScheduledOfListener listener) {
+                            public void doNotify(ISeeScheduledOfListener listener) {
                                 listener.seeScheduleOf(taskLine);
                             }
                         });
             }
 
             private void addExpandedListener(final Treeitem item, final LoadTimeLine line) {
-                item.addEventListener("onOpen", new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        OpenEvent openEvent = (OpenEvent) event;
-                        if (openEvent.isOpen()) {
-                            List<LoadTimeLine> closed = calculatedClosedItems(item);
-                            expand(line, closed);
-                        } else {
-                            collapse(line);
-                        }
+                item.addEventListener("onOpen", event -> {
+                    OpenEvent openEvent = (OpenEvent) event;
+
+                    if ( openEvent.isOpen() &&
+                            !line.getChildren().isEmpty() &&
+                            calculatedClosedItems(item).isEmpty() ) {
+
+                        onOpenEventQueue = new OnOpenEvent(item, line, openEvent);
+
+                    } else {
+                        collapse(line);
                     }
                 });
             }
@@ -138,9 +180,7 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
             }
 
             private boolean isTopLevel(LoadTimeLine line) {
-                int[] path = modelForTree.getPath(modelForTree.getRoot(), line);
-
-                return path.length == 0;
+                return modelForTree.getPath(modelForTree.getRoot(), line).length == 0;
             }
         };
     }
@@ -225,15 +265,25 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
         return result;
     }
 
-    private static Popup createPopup(Div parent, String originalValue) {
-        Popup result = new Popup();
-        result.appendChild(new Label(originalValue));
-        parent.appendChild(result);
-
-        return result;
-    }
-
     public void addSeeScheduledOfListener(ISeeScheduledOfListener seeScheduledOfListener) {
         scheduleListeners.addListener(seeScheduledOfListener);
+    }
+
+    /**
+     * Info about onOpenEvent.
+     */
+    private class OnOpenEvent {
+
+        private LoadTimeLine line;
+
+        private Treeitem treeitem;
+
+        private OpenEvent event;
+
+        OnOpenEvent(Treeitem treeitem, LoadTimeLine line, OpenEvent event) {
+            this.line = line;
+            this.treeitem = treeitem;
+            this.event = event;
+        }
     }
 }

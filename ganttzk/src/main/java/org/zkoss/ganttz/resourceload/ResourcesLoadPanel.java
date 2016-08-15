@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.zkoss.ganttz.IChartVisibilityChangedListener;
 import org.zkoss.ganttz.data.resourceload.LoadTimeLine;
-import org.zkoss.ganttz.i18n.I18nHelper;
 import org.zkoss.ganttz.timetracker.TimeTracker;
 import org.zkoss.ganttz.timetracker.TimeTrackerComponent;
 import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
@@ -83,8 +82,6 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     private WeakReferencedListeners<IFilterChangedListener> zoomListeners = WeakReferencedListeners.create();
 
-    private Listbox listZoomLevels;
-
     private final String FILTER_RESOURCES = _("Resources");
 
     private final String FILTER_CRITERIA = _("Generic allocation criteria");
@@ -104,14 +101,14 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     private final PaginationType paginationType;
 
     private WeakReferencedListeners<IPaginationFilterChangedListener> nameFilterListener =
-            WeakReferencedListeners.create();
+                WeakReferencedListeners.create();
 
     private Component loadChart;
 
     private boolean visibleChart = true;
 
     private WeakReferencedListeners<IChartVisibilityChangedListener> chartVisibilityListeners =
-            WeakReferencedListeners.create();
+                WeakReferencedListeners.create();
 
     private final boolean expandResourceLoadViewCharts;
 
@@ -147,9 +144,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     public ListModel<String> getFilters() {
-        String[] filters = new String[] { FILTER_RESOURCES, FILTER_CRITERIA };
-
-        return new SimpleListModel<>(filters);
+        return new SimpleListModel<>(new String[] { FILTER_RESOURCES, FILTER_CRITERIA });
     }
 
     public void setFilter(String filterby) {
@@ -286,7 +281,6 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     private Component getToolbar() {
-
         return getFellow("toolbar");
     }
 
@@ -324,16 +318,15 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
             @Override
             protected void moveCurrentPositionScroll() {
-                // get the previous data.
+                // Get the previous data
                 LocalDate previousStart = getPreviousStart();
 
-                // get the current data
+                // Get the current data
                 int diffDays = getTimeTrackerComponent().getDiffDays(previousStart);
                 double pixelPerDay = getTimeTrackerComponent().getPixelPerDay();
 
-                response("move_scroll", new AuInvoke(resourceLoadList, "move_scroll",
-                        Integer.toString(diffDays),
-                        Double.toString(pixelPerDay)));
+                response("move_scroll", new AuInvoke(
+                        resourceLoadList, "move_scroll", Integer.toString(diffDays), Double.toString(pixelPerDay)));
             }
 
             protected void updateCurrentDayScroll() {
@@ -372,7 +365,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
         timeTrackerHeader.afterCompose();
         timeTrackerComponent.afterCompose();
-        listZoomLevels = (Listbox) getFellow("listZoomLevels");
+        Listbox listZoomLevels = (Listbox) getFellow("listZoomLevels");
         listZoomLevels.setSelectedIndex(timeTracker.getDetailLevel().ordinal());
 
         if ( paginationType == PaginationType.INTERNAL_PAGINATION && refreshNameFilter ) {
@@ -390,8 +383,9 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         ((South) getFellow("graphics")).setOpen(this.visibleChart);
 
         if (!visibleChart) {
-            ((South) getFellow("graphics")).setTitle(I18nHelper._("Graphics are disabled"));
+            ((South) getFellow("graphics")).setTitle(_("Graphics are disabled"));
         }
+
         savePreviousData();
     }
 
@@ -420,18 +414,14 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     private TimeTrackerComponent createTimeTrackerHeader() {
         return new TimeTrackerComponent(timeTracker) {
-
-         @Override
-         protected void scrollHorizontalPercentage(int pixelsDisplacement) {
-         }
+            @Override
+            protected void scrollHorizontalPercentage(int pixelsDisplacement) {}
 
             @Override
-            protected void moveCurrentPositionScroll() {
-            }
+            protected void moveCurrentPositionScroll() {}
 
             @Override
-            protected void updateCurrentDayScroll() {
-            }
+            protected void updateCurrentDayScroll() {}
         };
     }
 
@@ -480,16 +470,14 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     /**
-     * Returns only the LoadTimeLine objects that have to be show
-     * according to the name filter.
-     * @return
+     * @return only the LoadTimeLine objects that have to be show according to the name filter.
      */
     private List<LoadTimeLine> getGroupsToShow() {
         if ( paginationType != PaginationType.INTERNAL_PAGINATION || filterByNamePosition == -1 ) {
             return groups;
         }
 
-        boolean condition = (filterByNamePosition + numberOfGroupsByName < groups.size());
+        boolean condition = filterByNamePosition + numberOfGroupsByName < groups.size();
         int endPosition = condition ? filterByNamePosition + numberOfGroupsByName : groups.size();
 
         return groups.subList(filterByNamePosition, endPosition);
@@ -526,7 +514,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
             public void doAction() {
                 if ( paginationType == PaginationType.INTERNAL_PAGINATION ) {
 
-                    //if the pagination is internal, we are in charge of repainting the graph
+                    // If the pagination is internal, we are in charge of repainting the graph
                     treeModel = createModelForTree();
 
                     timeTrackerComponent = timeTrackerForResourcesLoadPanel(timeTracker);
@@ -547,7 +535,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     public void setInternalPaginationDisabled(boolean disabled) {
-        Combobox combo = ((Combobox) getFellow("filterByNameCombo"));
+        Combobox combo = (Combobox) getFellow("filterByNameCombo");
         if ( combo != null && combo.isDisabled() != disabled ) {
             filterByNamePosition = disabled? -1 : (Integer) combo.getSelectedItem().getValue();
             combo.setDisabled(disabled);
@@ -561,7 +549,6 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     /* It should be public! */
     public void changeChartVisibility(boolean visible) {
         visibleChart = visible;
-
         chartVisibilityListeners.fireEvent(listener -> listener.chartVisibilityChanged(visibleChart));
     }
 
@@ -582,11 +569,9 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     public Combobox getPaginationFilterCombobox() {
-        if ( paginationType == PaginationType.EXTERNAL_PAGINATION ) {
-            return (Combobox) getFellow("filterByNameCombo");
-        }
-
-        return null;
+        return paginationType == PaginationType.EXTERNAL_PAGINATION
+                ? (Combobox) getFellow("filterByNameCombo")
+                : null;
     }
 
     public enum PaginationType {
@@ -594,14 +579,16 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
          * Sets the widget to take care of the pagination of all the LoadTimeLine objects received.
          */
         INTERNAL_PAGINATION,
+
         /**
          * The widget will only show the combo box but its content has to be configured externally.
-         * The pagination has to be managed externally too: the widget will show all the LoadTimeLine
-         * objects received.
+         * The pagination has to be managed externally too: the widget will show all the LoadTimeLine objects received.
          */
         EXTERNAL_PAGINATION,
+
         /**
-         * Disables pagination. Shows all the LoadTimeLine objects received.
+         * Disables pagination.
+         * Shows all the LoadTimeLine objects received.
          */
         NONE
     }

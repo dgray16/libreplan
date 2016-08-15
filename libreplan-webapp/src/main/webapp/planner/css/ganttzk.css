@@ -612,6 +612,19 @@ tr.z-vbox-separator {
    border-left: 0;
 }
 
+.row_resourceload {
+    height: 10px;
+    border: 1px;
+    width: 100%;
+    margin-bottom: 8px;
+    margin-top: 10px;
+    border-bottom: 1px dotted #CCCCCC;
+}
+
+.z-resourceloadlist {
+    margin-top: -10px;
+}
+
 .z-resourceloadcomponent {
     height: 7px;
     border: 1px;
@@ -643,7 +656,7 @@ tr.z-vbox-separator {
 
 .resourceloadleftpane {
     border: 1px;
-    margin-top: 0px;
+    margin-top: 0;
     min-width: 125px;
 }
 
@@ -657,19 +670,19 @@ tr.z-vbox-separator {
 }
 
 .resourceloadleftpane .icono {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    border: 0px;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 0;
 }
 
 .resourceloadleftpane .icono img {
-    height: 17px;
+    height: 16px;
 }
 
 /* -- Upper task pannel is hidden --*/
 .taskspanel-gap #timetracker {
-    border-top: 0px;
-    margin: 0px;
+    border-top: 0;
+    margin: 0;
 }
 
 .resources-load .taskspanel-gap #timetracker table {
@@ -678,9 +691,9 @@ tr.z-vbox-separator {
 
 .resources-load .taskspanel-gap #timetracker th {
     display: none;
-    border: 0px;
-    margin: 0px;
-    padding: 0px;
+    border: 0;
+    margin: 0;
+    padding: 0;
 }
 
 #ganttpanel #timetracker th {
@@ -700,7 +713,7 @@ tr.z-vbox-separator {
 }
 
 .resourceloadleftpane div.z-tree-body td.z-tree-cell {
-    padding: 0px;
+    padding: 0;
 }
 
 .resourceloadleftpanetitle {
@@ -721,11 +734,7 @@ tr.z-vbox-separator {
 
 .leftpanelgap .resourceloadleftpane {
     background: none;
-    border: 0px;
-}
-
-.resourceloadlist {
-    margin-top: 13px;
+    border: 0;
 }
 
 .resourceload-resource div {
@@ -736,6 +745,12 @@ tr.z-vbox-separator {
 .resourceload-global-generic div {
     border: solid 1px;
     cursor: default;
+}
+
+.row_resourceload.resourceload-global-generic,
+.row_resourceload.resourceload-resource {
+    margin-bottom: 12px;
+    margin-top: 12px;
 }
 
 .z-queuecomponent.resourceload-global-generic,
@@ -1093,34 +1108,32 @@ height: 100%
 }
 
 .advanced-assignment-details .z-grid-header table {
-    height:30px;
+    height: 30px;
 }
 
 /* Advanced assignment */
-
 .advanced-allocation-layout #timeTracker .z-vbox table {
-    height:15px;
+    height: 15px;
 }
 .advanced-allocation-layout #timeTracker .z-vbox .z-grid-body {
-    display:none;
+    display: none;
 }
 
 .advanced-assignment-details .z-grid-body {
-    position:relative;
+    position: relative;
     margin-top: 31px;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .advanced-assignment-details .z-grid-header {
-    z-index:2;
-    position:absolute;
-    overflow:hidden;
+    z-index: 2;
+    position: absolute;
+    overflow: hidden;
 }
 
 /* Workaround for extra column when configuring functions */
-
 .advanced-assignment-details td + td + td + td {
-    display:none;
+    display: none;
 }
 
 .advanced-allocation-layout .taskspanel-gap td.z-row-inner {
@@ -1131,7 +1144,6 @@ height: 100%
 
 .deadline {
     position:absolute;
-    /* border-right: solid 2px red; */
     margin-top: -5px;
     float:left;
     left:-100px; /* Hide when it has't been set */
@@ -1142,7 +1154,6 @@ height: 100%
 
 .consolidatedline {
     position:absolute;
-    /* border-right: solid 2px red; */
     margin-top: -5px;
     float:left;
     left:-100px; /* Hide when it has't been set */
@@ -1273,7 +1284,6 @@ body .perspectives-column {
     width: 100% !important;
     left: 0 !important;
     top: 0 !important;
-/*    height: 345px !important;*/
     overflow: hidden;
 }
 
@@ -1311,16 +1321,14 @@ div.z-grid-header .second_level_ tr {
 
 #ganttpanel .mid,
 #listlimitingdependencies .start, #listlimitingdependencies .end {
-    background-image:
-        url("../../zkau/web/ganttz/img/solid-black-ver.png");
-        background-repeat:repeat-y;
+    background-image: url("../../zkau/web/ganttz/img/solid-black-ver.png");
+    background-repeat: repeat-y;
 }
 
 .arrow {
     height: 10px;
     width: 10px;
-    background-image:
-        url("../../zkau/web/ganttz/img/solid-black-arrows.png");
+    background-image: url("../../zkau/web/ganttz/img/solid-black-arrows.png");
     background-repeat: no-repeat;
     padding: 3px 4px 4px 4px;
 }

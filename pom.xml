@@ -127,7 +127,7 @@
                 <dataSource.url>jdbc:postgresql://192.168.99.100:5432/libreplan${libreplan.mode}</dataSource.url>
                 <testDataSource.url>${dataSource.url}test</testDataSource.url>
                 <!-- Hibernate properties -->
-                <hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</hibernate.dialect>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <databasetable.prefix>public.</databasetable.prefix>
             </properties>
         </profile>

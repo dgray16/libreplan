@@ -39,27 +39,29 @@ public class AdHocTransactionService implements IAdHocTransactionService {
 
         Class<?>[] interfaces = { interfaceClass };
 
-        return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
+        return interfaceClass.cast(Proxy.newProxyInstance(
+                interfaceClass.getClassLoader(),
                 interfaces,
                 createHandler(interfaceObject, transactionService, readOnly)));
     }
 
     /**
-     * Returns a new object implementing the same interface but with its calls
-     * wrapped on read only transactions
+     * Returns a new object implementing the same interface but with its calls wrapped on read only transactions.
+     *
      * @param transactionService
      * @param interfaceClass
      * @param interfaceObject
-     * @return
+     * @return <T> T
      */
     public static <T> T readOnlyProxy(IAdHocTransactionService transactionService,
-            Class<T> interfaceClass, T interfaceObject) {
+                                      Class<T> interfaceClass,
+                                      T interfaceObject) {
+
         return proxy(transactionService, true, interfaceClass, interfaceObject);
     }
 
     /**
-     * Returns a new object implementing the same interface but with its calls
-     * wrapped on transactions
+     * Returns a new object implementing the same interface but with its calls wrapped on transactions.
      * @param transactionService
      * @param interfaceClass
      * @param interfaceObject
@@ -96,7 +98,6 @@ public class AdHocTransactionService implements IAdHocTransactionService {
                                                               final Method method,
                                                               final Object[] args) {
         return new IOnTransaction<Object>() {
-
             @Override
             public Object execute() {
                 try {
