@@ -83,32 +83,33 @@
         <!-- Select date -->
         <panel title="${i18n:_('Allocation configuration')}" border="normal" sclass="queue-element-information">
             <panelchildren>
-                <vbox>
+                <vbox sclass="padding-bottom-queue">
                     <radiogroup id="radioAllocationDate"
-                        orient="vertical"
-                        onCheck="manualAllocationController.selectRadioAllocationDate(event)">
-
+                                orient="vertical"
+                                onCheck="manualAllocationController.selectRadioAllocationDate(event)">
                         <grid id="calculationTypesGrid" sclass="current-queue-information">
                             <columns>
                                 <column width="270px"/>
                                 </columns>
                              <rows>
 
-                        <row><radio id="earliestDate" label="${i18n:_('Earliest date')}" selected="true" /></row>
-                        <row><radio id="latestDate" label="${i18n:_('Latest date')}" /></row>
-                        <row><hbox><radio id="selectStartDate" label="${i18n:_('Select start date')}" />
-                    <datebox id="startAllocationDate"
-                        onFocus="manualAllocationController.highlightCalendar(event)" /></hbox>
-                        </row>
-
+                                 <row><radio id="earliestDate" label="${i18n:_('Earliest date')}" selected="true" /></row>
+                                 <row><radio id="latestDate" label="${i18n:_('Latest date')}" /></row>
+                                 <row>
+                                     <hbox>
+                                         <radio id="selectStartDate" label="${i18n:_('Select start date')}" />
+                                         <datebox id="startAllocationDate"
+                                                  onFocus="manualAllocationController.highlightCalendar(event)" />
+                                     </hbox>
+                                 </row>
                              </rows>
                         </grid>
 
                     </radiogroup>
 
-                    <checkbox id="cbAllocationType" style="margin: -5px 5px 5px  5px;"
-                        label="${i18n:_('Appropriative allocation')}"
-                        onCheck="manualAllocationController.onCheckAllocationType(event)" />
+                    <checkbox id="cbAllocationType" style="margin: -5px 5px 10px 5px;"
+                              label="${i18n:_('Appropriative allocation')}"
+                              onCheck="manualAllocationController.onCheckAllocationType(event)" />
                 </vbox>
             </panelchildren>
         </panel>

@@ -74,8 +74,7 @@ table {
 body .z-window-embedded .icono .z-button-cm,
 body .z-window-modal .icono .z-button-cm,
 body .advanced-allocation-layout .icono .z-button-cm {
-    color: #007bbe;
-    background: transparent none;
+    color: #007bbe;`
     border: 0 solid #007bbe;
     padding: 0;
 }
@@ -263,12 +262,9 @@ body .advanced-allocation-layout .icono .z-button-cm {
     background: none;
 }
 
-.z-window-header {
+.z-window.z-window-noborder.z-window-embedded {
     background: none;
-
     padding-left: 6px;
-    color: white;
-    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
     border-radius: 5px 5px 0 0;
 }
 
@@ -2124,10 +2120,6 @@ select {
     color: #00547a;
 }
 
-.z-window {
-    background: transparent;
-}
-
 .z-row .z-row-inner, .z-row .z-cell {
     border: none;
     border-right: 1px solid rgb(204, 204, 204);
@@ -2153,20 +2145,13 @@ textarea {
 
 /* Synchronization window ( Job Scheduling ) */
 .job-scheduling-manual-header .z-window-header {
-    background: none;
-
     padding-left: 6px;
     color: white;
-    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
     border-radius: 5px 5px 0 0;
 }
 
 .z-window-header-move {
-    background: none;
-
     padding-left: 6px;
-    color: white;
-    background-image: url(/libreplan-webapp/zkau/web/86a18669/zul/img/wnd/wnd-ol-hm.png);
 }
 
 .hour-cost-button {
@@ -2363,10 +2348,15 @@ textarea {
     color: #00547a;
 }
 
-.z-comboitem-selected {
-    background: #548da7;
+.z-comboitem-selected,
+.z-comboitem-selected:hover {
+    background: #97BAC9;
 }
 
 .z-comboitem-selected .z-comboitem-text {
     text-shadow: none;
+}
+
+.padding-bottom-queue {
+    padding-bottom: 6px;
 }
