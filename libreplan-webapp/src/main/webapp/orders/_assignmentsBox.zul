@@ -20,6 +20,7 @@
 -->
 
 <newdatasortablegrid id="gridMaterials"
+                     sizedByContent="false"
                      model="@{assignedMaterialsController.assignedMaterials}">
     <columns>
         <newdatasortablecolumn label="${i18n:_('Code')}" />

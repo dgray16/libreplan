@@ -658,10 +658,6 @@ public class OrderCRUDController extends GenericForwardComposer {
             Component orderElementCriterionRequirements =
                     editWindow.getFellowIfAny("orderElementCriterionRequirements");
 
-            /* assignedCriterionRequirementController =
-                    (AssignedCriterionRequirementToOrderElementController) orderElementCriterionRequirements
-                    .getAttribute("assignedCriterionRequirementController", true);*/
-            //TODO Check this ?
             assignedCriterionRequirementController =
                     ((OrderElementCriterionRequirementComponent) orderElementCriterionRequirements).getController();
 

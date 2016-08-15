@@ -37,14 +37,14 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class AssignedMaterialsToOrderElementModel extends AssignedMaterialsModel<OrderElement, MaterialAssignment>
+public class AssignedMaterialsToOrderElementModel
+        extends AssignedMaterialsModel<OrderElement, MaterialAssignment>
         implements IAssignedMaterialsToOrderElementModel {
 
     @Autowired
@@ -63,8 +63,7 @@ public class AssignedMaterialsToOrderElementModel extends AssignedMaterialsModel
         initializeMaterialAssigments(this.orderElement.getMaterialAssignments());
     }
 
-    private void initializeMaterialAssigments(
-            Set<MaterialAssignment> materialAssignments) {
+    private void initializeMaterialAssigments(Set<MaterialAssignment> materialAssignments) {
         for (MaterialAssignment each : materialAssignments) {
             each.getStatus();
             reattachMaterial(each.getMaterial());
@@ -88,25 +87,24 @@ public class AssignedMaterialsToOrderElementModel extends AssignedMaterialsModel
     }
 
     @Override
-    protected MaterialCategory removeAssignment(
-            MaterialAssignment materialAssignment) {
+    protected MaterialCategory removeAssignment(MaterialAssignment materialAssignment) {
         orderElement.removeMaterialAssignment(materialAssignment);
+
         return materialAssignment.getMaterial().getCategory();
     }
 
     @Override
     @Transactional(readOnly = true)
     public void addMaterialAssignment(Material material) {
-        MaterialAssignment materialAssigment = MaterialAssignment
-                .create(material);
+        MaterialAssignment materialAssigment = MaterialAssignment.create(material);
         materialAssigment.setEstimatedAvailability(orderElement.getInitDate());
         addMaterialAssignment(materialAssigment);
     }
 
     @Override
-    protected MaterialCategory addAssignment(
-            MaterialAssignment materialAssignment) {
+    protected MaterialCategory addAssignment(MaterialAssignment materialAssignment) {
         orderElement.addMaterialAssignment(materialAssignment);
+
         return materialAssignment.getMaterial().getCategory();
     }
 
@@ -118,15 +116,18 @@ public class AssignedMaterialsToOrderElementModel extends AssignedMaterialsModel
     @Override
     public BigDecimal getPrice(MaterialCategory materialCategory) {
         BigDecimal result = new BigDecimal(0);
+
         if (orderElement != null) {
-            for (MaterialAssignment materialAssignment : orderElement
-                    .getMaterialAssignments()) {
+
+            for (MaterialAssignment materialAssignment : orderElement.getMaterialAssignments()) {
                 final Material material = materialAssignment.getMaterial();
+
                 if (materialCategory.equals(material.getCategory())) {
                     result = result.add(materialAssignment.getTotalPrice());
                 }
             }
         }
+
         return result;
     }
 
@@ -143,9 +144,10 @@ public class AssignedMaterialsToOrderElementModel extends AssignedMaterialsModel
     @Override
     public boolean isCurrentUnitType(Object assigment, UnitType unitType) {
         MaterialAssignment material = (MaterialAssignment) assigment;
-        return ((material != null)
-                && (material.getMaterial().getUnitType() != null) && (unitType
-                .getId().equals(material.getMaterial().getUnitType().getId())));
+
+        return (material != null) &&
+                (material.getMaterial().getUnitType() != null) &&
+                (unitType.getId().equals(material.getMaterial().getUnitType().getId()));
     }
 
 }
