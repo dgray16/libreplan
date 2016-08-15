@@ -80,159 +80,46 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Óscar González Fernández
- *
  */
 @Component
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class PredefinedDatabaseSnapshots {
 
-    private static final Log LOG = LogFactory
-            .getLog(PredefinedDatabaseSnapshots.class);
-
-    @Autowired
-    private IAdHocTransactionService transactionService;
-
-    @Autowired
-    private ISnapshotRefresherService snapshotRefresherService;
+    private static final Log LOG = LogFactory.getLog(PredefinedDatabaseSnapshots.class);
 
     private IAutoUpdatedSnapshot<SortedMap<CriterionType, List<Criterion>>> criterionsMap;
 
-    public SortedMap<CriterionType, List<Criterion>> snapshotCriterionsMap() {
-        return criterionsMap.getValue();
-    }
-
     private IAutoUpdatedSnapshot<Map<LabelType, List<Label>>> labelsMap;
-
-    public Map<LabelType, List<Label>> snapshotLabelsMap() {
-        return labelsMap.getValue();
-    }
 
     private IAutoUpdatedSnapshot<List<Worker>> listWorkers;
 
-    public List<Worker> snapshotListWorkers() {
-        return listWorkers.getValue();
-    }
-
     private IAutoUpdatedSnapshot<List<CostCategory>> listCostCategories;
-
-    public List<CostCategory> snapshotListCostCategories() {
-        return listCostCategories.getValue();
-    }
 
     private IAutoUpdatedSnapshot<List<Criterion>> listCriterion;
 
-    public List<Criterion> snapshotListCriterion() {
-        return listCriterion.getValue();
-    }
-
     private IAutoUpdatedSnapshot<Map<Class<?>, List<Resource>>> mapResources;
-
-    public Map<Class<?>, List<Resource>> snapshotMapResources() {
-        return mapResources.getValue();
-    }
 
     private IAutoUpdatedSnapshot<List<ExternalCompany>> externalCompanies;
 
-    public List<ExternalCompany> snapshotExternalCompanies() {
-        return externalCompanies.getValue();
-    }
-
     private IAutoUpdatedSnapshot<List<String>> customerReferences;
-
-    public List<String> snapshotCustomerReferences() {
-        return customerReferences.getValue();
-    }
 
     private IAutoUpdatedSnapshot<List<String>> ordersCodes;
 
-    public List<String> snapshotOrdersCodes() {
-        return ordersCodes.getValue();
-    }
-
-    private IAutoUpdatedSnapshot<ResourceLoadChartData>
-        resourceLoadChartData;
-
-    public ResourceLoadChartData snapshotResourceLoadChartData() {
-        return resourceLoadChartData.getValue();
-    }
+    private boolean snapshotsRegistered = false;
 
     private IAutoUpdatedSnapshot<List<WorkReportLine>> workReportLines;
 
-    public List<WorkReportLine> snapshotWorkReportLines() {
-        return workReportLines.getValue();
-    }
+    private IAutoUpdatedSnapshot<Map<TaskElement,SortedMap<LocalDate, BigDecimal>>> advanceCostPerTask;
 
-    private IAutoUpdatedSnapshot<Map<TaskElement,SortedMap<LocalDate, BigDecimal>>>
-            estimatedCostPerTask;
+    private IAutoUpdatedSnapshot<Map<TaskElement,SortedMap<LocalDate, BigDecimal>>> estimatedCostPerTask;
 
-    public Map<TaskElement,SortedMap<LocalDate, BigDecimal>> snapshotEstimatedCostPerTask() {
-        return estimatedCostPerTask.getValue();
-    }
+    private IAutoUpdatedSnapshot<ResourceLoadChartData> resourceLoadChartData;
 
-    private IAutoUpdatedSnapshot<Map<TaskElement,SortedMap<LocalDate, BigDecimal>>>
-            advanceCostPerTask;
+    @Autowired
+    private ILabelTypeDAO labelTypeDAO;
 
-    public Map<TaskElement,SortedMap<LocalDate, BigDecimal>> snapshotAdvanceCostPerTask() {
-        return advanceCostPerTask.getValue();
-    }
-
-    private boolean snapshotsRegistered = false;
-
-    public void registerSnapshots() {
-        if (snapshotsRegistered) {
-            LOG.warn("snapshots have already been registered");
-            return;
-        }
-        snapshotsRegistered = true;
-        criterionsMap = snapshot("criterions map", calculateCriterionsMap(),
-                CriterionType.class, Criterion.class);
-        labelsMap = snapshot("labels map", calculateLabelsMap(),
-                LabelType.class, Label.class);
-        listWorkers = snapshot("workers", calculateWorkers(), Worker.class);
-        listCostCategories = snapshot("list cost categories",
-                calculateListCostCategories(),
-                CostCategory.class);
-        listCriterion = snapshot("list criterions", calculateListCriterion(),
-                Criterion.class);
-        mapResources = snapshot("map resources", calculateMapResources(),
-                Resource.class, Worker.class, Machine.class,
-                VirtualWorker.class);
-        externalCompanies = snapshot("external companies",
-                calculateExternalCompanies(),
-                ExternalCompany.class);
-        customerReferences = snapshot("customer references",
-                calculateCustomerReferences(), Order.class);
-        ordersCodes = snapshot("order codes", calculateOrdersCodes(),
-                Order.class);
-        resourceLoadChartData = snapshot("resource load grouped by date",
-                calculateResourceLoadChartData(),
-                CalendarAvailability.class, CalendarException.class,
-                CalendarData.class, TaskElement.class, SpecificResourceAllocation.class,
-                GenericResourceAllocation.class, ResourceAllocation.class);
-        workReportLines = snapshot("work report lines", calculateWorkReportLines(),
-                WorkReportLine.class);
-        estimatedCostPerTask = snapshot("estimated cost per task",
-                calculateEstimatedCostPerTask(),
-                TaskElement.class, Task.class, TaskGroup.class, DayAssignment.class);
-        advanceCostPerTask = snapshot("advance cost per task",
-                calculateAdvanceCostPerTask(),
-                TaskElement.class, Task.class, TaskGroup.class,
-                DirectAdvanceAssignment.class);
-    }
-
-    private <T> IAutoUpdatedSnapshot<T> snapshot(String name,
-            Callable<T> callable,
-            Class<?>... reloadOnChangesOf) {
-        return snapshotRefresherService.takeSnapshot(name,
-                callableOnReadOnlyTransaction(callable),
-                ReloadOn.onChangeOf(reloadOnChangesOf));
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Callable<T> callableOnReadOnlyTransaction(Callable<T> callable) {
-        return AdHocTransactionService.readOnlyProxy(transactionService,
-                Callable.class, callable);
-    }
+    @Autowired
+    private ILabelDAO labelDAO;
 
     @Autowired
     private ICriterionTypeDAO criterionTypeDAO;
@@ -240,17 +127,160 @@ public class PredefinedDatabaseSnapshots {
     @Autowired
     private ICriterionDAO criterionDAO;
 
+    @Autowired
+    private IWorkerDAO workerDAO;
+
+    @Autowired
+    private ICostCategoryDAO costCategoryDAO;
+
+    @Autowired
+    private IResourceDAO resourceDAO;
+
+    @Autowired
+    private IExternalCompanyDAO externalCompanyDAO;
+
+    @Autowired
+    private IOrderDAO orderDAO;
+
+    @Autowired
+    private IDayAssignmentDAO dayAssignmentDAO;
+
+    @Autowired
+    private IScenarioManager scenarioManager;
+
+    @Autowired
+    private IWorkReportLineDAO workReportLineDAO;
+
+    @Autowired
+    private ICostCalculator hoursCostCalculator;
+
+    @Autowired
+    private ITaskElementDAO taskElementDAO;
+
+    @Autowired
+    private IAdHocTransactionService transactionService;
+
+    @Autowired
+    private ISnapshotRefresherService snapshotRefresherService;
+
+    public SortedMap<CriterionType, List<Criterion>> snapshotCriterionsMap() {
+        return criterionsMap.getValue();
+    }
+
+    public Map<LabelType, List<Label>> snapshotLabelsMap() {
+        return labelsMap.getValue();
+    }
+
+    public List<Worker> snapshotListWorkers() {
+        return listWorkers.getValue();
+    }
+
+    public List<CostCategory> snapshotListCostCategories() {
+        return listCostCategories.getValue();
+    }
+
+    public List<Criterion> snapshotListCriterion() {
+        return listCriterion.getValue();
+    }
+
+    public Map<Class<?>, List<Resource>> snapshotMapResources() {
+        return mapResources.getValue();
+    }
+
+    public List<ExternalCompany> snapshotExternalCompanies() {
+        return externalCompanies.getValue();
+    }
+
+    public List<String> snapshotCustomerReferences() {
+        return customerReferences.getValue();
+    }
+
+    public List<String> snapshotOrdersCodes() {
+        return ordersCodes.getValue();
+    }
+
+    public ResourceLoadChartData snapshotResourceLoadChartData() {
+        return resourceLoadChartData.getValue();
+    }
+
+    public List<WorkReportLine> snapshotWorkReportLines() {
+        return workReportLines.getValue();
+    }
+
+    public Map<TaskElement,SortedMap<LocalDate, BigDecimal>> snapshotEstimatedCostPerTask() {
+        return estimatedCostPerTask.getValue();
+    }
+
+    public Map<TaskElement,SortedMap<LocalDate, BigDecimal>> snapshotAdvanceCostPerTask() {
+        return advanceCostPerTask.getValue();
+    }
+
+    public void registerSnapshots() {
+        if (snapshotsRegistered) {
+            LOG.warn("snapshots have already been registered");
+            return;
+        }
+
+        snapshotsRegistered = true;
+        criterionsMap = snapshot("criterions map", calculateCriterionsMap(), CriterionType.class, Criterion.class);
+        labelsMap = snapshot("labels map", calculateLabelsMap(), LabelType.class, Label.class);
+        listWorkers = snapshot("workers", calculateWorkers(), Worker.class);
+        listCostCategories = snapshot("list cost categories", calculateListCostCategories(), CostCategory.class);
+        listCriterion = snapshot("list criterions", calculateListCriterion(), Criterion.class);
+
+        mapResources = snapshot(
+                "map resources",
+                calculateMapResources(),
+                Resource.class, Worker.class, Machine.class, VirtualWorker.class);
+
+        externalCompanies = snapshot("external companies", calculateExternalCompanies(), ExternalCompany.class);
+        customerReferences = snapshot("customer references", calculateCustomerReferences(), Order.class);
+        ordersCodes = snapshot("order codes", calculateOrdersCodes(), Order.class);
+
+        resourceLoadChartData = snapshot(
+                "resource load grouped by date",
+                calculateResourceLoadChartData(),
+                CalendarAvailability.class, CalendarException.class, CalendarData.class, TaskElement.class,
+                SpecificResourceAllocation.class, GenericResourceAllocation.class, ResourceAllocation.class);
+
+        workReportLines = snapshot("work report lines", calculateWorkReportLines(), WorkReportLine.class);
+
+        estimatedCostPerTask = snapshot(
+                "estimated cost per task",
+                calculateEstimatedCostPerTask(),
+                TaskElement.class, Task.class, TaskGroup.class, DayAssignment.class);
+
+        advanceCostPerTask = snapshot(
+                "advance cost per task",
+                calculateAdvanceCostPerTask(),
+                TaskElement.class, Task.class, TaskGroup.class, DirectAdvanceAssignment.class);
+    }
+
+    private <T> IAutoUpdatedSnapshot<T> snapshot(String name,
+                                                 Callable<T> callable,
+                                                 Class<?>... reloadOnChangesOf) {
+
+        return snapshotRefresherService.takeSnapshot(
+                name,
+                callableOnReadOnlyTransaction(callable),
+                ReloadOn.onChangeOf(reloadOnChangesOf));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Callable<T> callableOnReadOnlyTransaction(Callable<T> callable) {
+        return AdHocTransactionService.readOnlyProxy(transactionService, Callable.class, callable);
+    }
+
+
+
     private Callable<SortedMap<CriterionType, List<Criterion>>> calculateCriterionsMap() {
         return new Callable<SortedMap<CriterionType, List<Criterion>>>() {
             @Override
             public SortedMap<CriterionType, List<Criterion>> call() {
-                SortedMap<CriterionType, List<Criterion>> result = new TreeMap<CriterionType, List<Criterion>>(
-                        getComparatorByName());
-                for (CriterionType criterionType : criterionTypeDAO
-                        .getSortedCriterionTypes()) {
+                SortedMap<CriterionType, List<Criterion>> result = new TreeMap<>(getComparatorByName());
+                for (CriterionType criterionType : criterionTypeDAO.getSortedCriterionTypes()) {
                     if (criterionType.isEnabled()) {
-                        List<Criterion> criterions = criterionType
-                                .getSortCriterions();
+                        List<Criterion> criterions = criterionType.getSortCriterions();
                         result.put(criterionType, criterions);
                     }
                 }
@@ -263,25 +293,18 @@ public class PredefinedDatabaseSnapshots {
         return new Comparator<CriterionType>() {
             @Override
             public int compare(CriterionType arg0, CriterionType arg1) {
-                return (arg0.getName().compareTo(arg1.getName()));
+                return arg0.getName().compareTo(arg1.getName());
             }
         };
     }
-
-    @Autowired
-    private ILabelTypeDAO labelTypeDAO;
-
-    @Autowired
-    private ILabelDAO labelDAO;
 
     private Callable<Map<LabelType, List<Label>>> calculateLabelsMap() {
         return new Callable<Map<LabelType,List<Label>>>() {
             @Override
             public Map<LabelType, List<Label>> call() {
-                Map<LabelType, List<Label>> result = new HashMap<LabelType, List<Label>>();
+                Map<LabelType, List<Label>> result = new HashMap<>();
                 for (LabelType labelType : labelTypeDAO.getAll()) {
-                    List<Label> labels = new ArrayList<Label>(
-                            labelDAO.findByType(labelType));
+                    List<Label> labels = new ArrayList<>(labelDAO.findByType(labelType));
                     result.put(labelType, labels);
                 }
                 return result;
@@ -289,12 +312,10 @@ public class PredefinedDatabaseSnapshots {
         };
     }
 
-    @Autowired
-    private IWorkerDAO workerDAO;
+
 
     private Callable<List<Worker>> calculateWorkers() {
         return new Callable<List<Worker>>() {
-
             @Override
             public List<Worker> call() {
                 return workerDAO.getAll();
@@ -302,8 +323,7 @@ public class PredefinedDatabaseSnapshots {
         };
     }
 
-    @Autowired
-    private ICostCategoryDAO costCategoryDAO;
+
 
     private Callable<List<CostCategory>> calculateListCostCategories() {
         return new Callable<List<CostCategory>>() {
@@ -323,32 +343,27 @@ public class PredefinedDatabaseSnapshots {
         };
     }
 
-    @Autowired
-    private IResourceDAO resourceDAO;
+
 
     private Callable<Map<Class<?>, List<Resource>>> calculateMapResources() {
         return new Callable<Map<Class<?>, List<Resource>>>() {
-
             @Override
             public Map<Class<?>, List<Resource>> call() {
-                Map<Class<?>, List<Resource>> result = new HashMap<Class<?>, List<Resource>>();
-                result.put(Worker.class, Resource
-                        .sortByName(new ArrayList<Resource>(resourceDAO
-                                .getRealWorkers())));
-                result.put(Machine.class, Resource
-                        .sortByName(new ArrayList<Resource>(resourceDAO
-                                .getMachines())));
-                result.put(VirtualWorker.class, Resource
-                        .sortByName(new ArrayList<Resource>(resourceDAO
-                                .getVirtualWorkers())));
+                Map<Class<?>, List<Resource>> result = new HashMap<>();
+                result.put(Worker.class, Resource.sortByName(new ArrayList<Resource>(resourceDAO.getRealWorkers())));
+                result.put(Machine.class, Resource.sortByName(new ArrayList<Resource>(resourceDAO.getMachines())));
+
+                result.put(
+                        VirtualWorker.class,
+                        Resource.sortByName(new ArrayList<Resource>(resourceDAO.getVirtualWorkers())));
+
                 return result;
             }
         };
     }
 
 
-    @Autowired
-    private IExternalCompanyDAO externalCompanyDAO;
+
 
     private Callable<List<ExternalCompany>> calculateExternalCompanies() {
         return new Callable<List<ExternalCompany>>() {
@@ -359,18 +374,16 @@ public class PredefinedDatabaseSnapshots {
         };
     }
 
-    @Autowired
-    private IOrderDAO orderDAO;
+
 
     private Callable<List<String>> calculateCustomerReferences() {
         return new Callable<List<String>>() {
             @Override
             public List<String> call() {
                 // FIXME replace by a HQL query, for god's sake!
-                List<String> result = new ArrayList<String>();
+                List<String> result = new ArrayList<>();
                 for (Order order : orderDAO.getOrders()) {
-                    if ((order.getCustomerReference() != null)
-                            && (!order.getCustomerReference().isEmpty())) {
+                    if ((order.getCustomerReference() != null) && (!order.getCustomerReference().isEmpty())) {
                         result.add(order.getCustomerReference());
                     }
                 }
@@ -383,7 +396,7 @@ public class PredefinedDatabaseSnapshots {
         return new Callable<List<String>>() {
             @Override
             public List<String> call() {
-                List<String> result = new ArrayList<String>();
+                List<String> result = new ArrayList<>();
                 for (Order order : orderDAO.getOrders()) {
                     result.add(order.getCode());
                 }
@@ -392,28 +405,25 @@ public class PredefinedDatabaseSnapshots {
         };
     }
 
-    @Autowired
-    private IDayAssignmentDAO dayAssignmentDAO;
 
-    @Autowired
-    private IScenarioManager scenarioManager;
 
     private Callable<ResourceLoadChartData> calculateResourceLoadChartData() {
         return new Callable<ResourceLoadChartData>() {
             @Override
             public ResourceLoadChartData call() {
 
-                List<DayAssignment> dayAssignments = dayAssignmentDAO.getAllFor(
-                        scenarioManager.getCurrent(), null, null);
+                List<DayAssignment> dayAssignments =
+                        dayAssignmentDAO.getAllFor(scenarioManager.getCurrent(), null, null);
+
                 List<Resource> resources = resourceDAO.list(Resource.class);
+
                 return new ResourceLoadChartData(dayAssignments, resources);
 
             }
         };
     }
 
-    @Autowired
-    private IWorkReportLineDAO workReportLineDAO;
+
 
     private Callable<List<WorkReportLine>> calculateWorkReportLines() {
         return new Callable<List<WorkReportLine>>() {
@@ -424,20 +434,15 @@ public class PredefinedDatabaseSnapshots {
         };
     }
 
-    @Autowired
-    private ICostCalculator hoursCostCalculator;
 
-    @Autowired
-    private ITaskElementDAO taskElementDAO;
 
     private Callable<Map<TaskElement, SortedMap<LocalDate, BigDecimal>>> calculateEstimatedCostPerTask() {
         return new Callable<Map<TaskElement, SortedMap<LocalDate, BigDecimal>>>() {
             @Override
             public Map<TaskElement, SortedMap<LocalDate, BigDecimal>> call() {
-                Map<TaskElement, SortedMap<LocalDate, BigDecimal>> map =
-                    new HashMap<TaskElement, SortedMap<LocalDate,BigDecimal>>();
+                Map<TaskElement, SortedMap<LocalDate, BigDecimal>> map = new HashMap<>();
                 for(TaskElement task : taskElementDAO.list(TaskElement.class)) {
-                    if(task instanceof Task) {
+                    if (task instanceof Task) {
                         map.put(task, hoursCostCalculator.getEstimatedCost((Task)task));
                     }
                 }
@@ -450,10 +455,9 @@ public class PredefinedDatabaseSnapshots {
         return new Callable<Map<TaskElement, SortedMap<LocalDate, BigDecimal>>>() {
             @Override
             public Map<TaskElement, SortedMap<LocalDate, BigDecimal>> call() {
-                Map<TaskElement, SortedMap<LocalDate, BigDecimal>> map =
-                    new HashMap<TaskElement, SortedMap<LocalDate,BigDecimal>>();
+                Map<TaskElement, SortedMap<LocalDate, BigDecimal>> map = new HashMap<>();
                 for(TaskElement task : taskElementDAO.list(TaskElement.class)) {
-                    if(task instanceof Task) {
+                    if (task instanceof Task) {
                         map.put(task, hoursCostCalculator.getAdvanceCost((Task)task));
                     }
                 }

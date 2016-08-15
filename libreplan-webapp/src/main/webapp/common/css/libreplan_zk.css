@@ -85,12 +85,12 @@ body .advanced-allocation-layout .icono .z-button-cm {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
     font-size: 10px;
     font-weight: normal;
+    min-height: 16px;
 }
 
 
 
-/* Perspective and planner buttons
---------------------------------------------------- */
+/* Perspective and planner buttons */
 .perspectives-column {
     padding-top:0;
     overflow-y: auto;
@@ -1028,10 +1028,13 @@ span.z-dottree-line {
     display: none;
 }
 
-.taskdetailsContainer,
-.resourceloaddetailsContainer {
+.taskdetailsContainer, .resourceload-details-container {
     border-left:0;
     border-top:0;
+}
+
+.resourceload-details-container table {
+    height: 35px;
 }
 
 .taskdetail-company-view .clickable-rows {
@@ -1581,13 +1584,9 @@ tr.z-tree-row-seld .z-row-content {
     border: solid 1px black;
 }
 
-/* Expand vertical boxes for non-ffox browsers */
+/* Expand vertical boxes for non-FireFox browsers */
 .z-vbox {
     width:100%;
-    /*
-    display: inline;
-    height: 100% !important;
-    */
 }
 
 .earned-parameter-column .z-label,
@@ -2318,4 +2317,8 @@ textarea {
 
 .label-middle td tr td > span{
     font-size: 12px;
+}
+
+.z-tree-line + button {
+    height: 16px;
 }

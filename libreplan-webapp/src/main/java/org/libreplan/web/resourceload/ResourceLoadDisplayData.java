@@ -16,7 +16,7 @@ import org.zkoss.ganttz.util.Interval;
 public class ResourceLoadDisplayData {
 
     private static <T> Callable<T> cached(Callable<T> callable) {
-        return new CachedCallable<T>(callable);
+        return new CachedCallable<>(callable);
     }
 
     private static <T> T resolve(Callable<T> callable) {

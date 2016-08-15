@@ -31,13 +31,12 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlMacroComponent;
 
 /**
- * LeftPane of the planner. Responsible of showing global commands and the
- * leftTasksTree <br />
+ * LeftPane of the planner. Responsible of showing global commands and the leftTasksTree
+ * <br />
+ *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
 public class LeftPane extends HtmlMacroComponent {
-
-    private final List<Task> topLevelTasks;
 
     private LeftTasksTree leftTasksTree;
 
@@ -52,10 +51,9 @@ public class LeftPane extends HtmlMacroComponent {
     }
 
     public LeftPane(IDisabilityConfiguration disabilityConfiguration,
-             Planner planner,
-            FilterAndParentExpandedPredicates predicate) {
+                    Planner planner,
+                    FilterAndParentExpandedPredicates predicate) {
 
-        this.topLevelTasks = planner.getDiagramGraph().getTopLevelTasks();
         this.disabilityConfiguration = disabilityConfiguration;
         this.predicate = predicate;
         this.planner = planner;

@@ -124,10 +124,10 @@
                 <jdbcDriver.version>9.4.1208.jre7</jdbcDriver.version>
                 <jdbcDriver.className>org.postgresql.Driver</jdbcDriver.className>
                 <!-- Data source properties -->
-                <dataSource.url>jdbc:postgresql://192.168.99.130:5432/libreplan${libreplan.mode}</dataSource.url>
+                <dataSource.url>jdbc:postgresql://192.168.99.100:5432/libreplan${libreplan.mode}</dataSource.url>
                 <testDataSource.url>${dataSource.url}test</testDataSource.url>
                 <!-- Hibernate properties -->
-                <hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</hibernate.dialect>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <databasetable.prefix>public.</databasetable.prefix>
             </properties>
         </profile>
