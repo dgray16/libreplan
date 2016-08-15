@@ -26,12 +26,8 @@ import static org.libreplan.web.I18nHelper._;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.apache.commons.logging.LogFactory;
 import org.libreplan.business.common.entities.Limits;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
 import org.libreplan.business.common.exceptions.ValidationException;
@@ -48,11 +44,8 @@ import org.libreplan.web.common.entrypoints.IURLHandlerRegistry;
 import org.libreplan.web.resources.worker.IWorkerCRUDControllerEntryPoints;
 import org.libreplan.web.security.SecurityUtils;
 import org.libreplan.web.users.bootstrap.PredefinedUsers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -76,9 +69,6 @@ import org.zkoss.zul.Groupbox;
 @SuppressWarnings("serial")
 public class UserCRUDController extends BaseCRUDController<User> implements IUserCRUDController {
 
-    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(UserCRUDController.class);
-
-    @Resource
     private IWorkerCRUDControllerEntryPoints workerCRUD;
 
     private ILimitsModel limitsModel;
@@ -100,11 +90,6 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     private IURLHandlerRegistry URLHandlerRegistry;
 
     public UserCRUDController(){
-        userModel = (IUserModel) SpringUtil.getBean("userModel");
-        limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
-       // workerCRUD = (IWorkerCRUDControllerEntryPoints) SpringUtil.getBean("workerCRUDControllerEntryPoints");
-        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
-
     }
 
     private RowRenderer usersRenderer = (row, data, i) -> {
@@ -118,17 +103,7 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
         Util.appendLabel(row, user.isBound() ? user.getWorker().getShortDescription() : "");
 
         Button[] buttons = Util.appendOperationsAndOnClickEvent(row,
-                new EventListener() {
-                    @Override
-                    public void onEvent(Event event) throws Exception {
-                        goToEditForm(user);
-                    }
-                }, new EventListener() {
-                    @Override
-                    public void onEvent(Event event) throws Exception {
-                        confirmDelete(user);
-                    }
-                });
+                event -> goToEditForm(user), event -> confirmDelete(user));
 
         // Disable remove button for default admin as it's mandatory
         if ( isDefaultAdmin(user) ) {
@@ -140,6 +115,8 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
+        injectsObjects();
 
         passwordBox = (Textbox) editWindow.getFellowIfAny("password");
         passwordConfirmationBox = (Textbox) editWindow.getFellowIfAny("passwordConfirmation");
@@ -153,20 +130,22 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
         handler.register(this, page);
     }
 
+    private void injectsObjects() {
+        userModel = (IUserModel) SpringUtil.getBean("userModel");
+        limitsModel = (ILimitsModel) SpringUtil.getBean("limitsModel");
+        workerCRUD = (IWorkerCRUDControllerEntryPoints) SpringUtil.getBean("workerCRUD");
+        URLHandlerRegistry = (IURLHandlerRegistry) SpringUtil.getBean("URLHandlerRegistry");
+    }
+
     /**
      * Appends the existing UserRoles to the Combobox passed.
      * @param combo
      */
     private void appendAllUserRolesExceptRoleBoundUser(Combobox combo) {
-        List<UserRole> roles = new ArrayList<UserRole>(Arrays.asList(UserRole.values()));
+        List<UserRole> roles = new ArrayList<>(Arrays.asList(UserRole.values()));
         roles.remove(UserRole.ROLE_BOUND_USER);
 
-        Collections.sort(roles, new Comparator<UserRole> () {
-            @Override
-            public int compare(UserRole arg0, UserRole arg1) {
-                return _(arg0.getDisplayName()).compareTo(_(arg1.getDisplayName()));
-            }
-        });
+        Collections.sort(roles, (arg0, arg1) -> _(arg0.getDisplayName()).compareTo(_(arg1.getDisplayName())));
 
         for (UserRole role : roles) {
             Comboitem item = combo.appendItem(_(role.getDisplayName()));
@@ -207,17 +186,18 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
 
     public void addSelectedRole() {
         Comboitem comboItem = userRolesCombo.getSelectedItem();
+
         if(comboItem != null) {
-            addRole((UserRole)comboItem.getValue());
+            addRole(comboItem.getValue());
         }
     }
 
-    private void addRole(UserRole role) {
+    public void addRole(UserRole role) {
         userModel.addRole(role);
         Util.reloadBindings(editWindow);
     }
 
-    private void removeRole(UserRole role) {
+    public void removeRole(UserRole role) {
         userModel.removeRole(role);
         Util.reloadBindings(editWindow);
     }
@@ -228,12 +208,13 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
 
     public void addSelectedProfile() {
         Comboitem comboItem = profilesCombo.getSelectedItem();
+
         if(comboItem != null) {
-            addProfile((Profile)comboItem.getValue());
+            addProfile(comboItem.getValue());
         }
     }
 
-    private void addProfile(Profile profile) {
+    public void addProfile(Profile profile) {
         userModel.addProfile(profile);
         Util.reloadBindings(editWindow);
     }
@@ -252,19 +233,15 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     public void setPassword(String password) {
         userModel.setPassword(password);
         //update the constraint on the confirmation password box
-        ((Textbox)editWindow.getFellowIfAny("passwordConfirmation")).
-                clearErrorMessage(true);
+        ((Textbox)editWindow.getFellowIfAny("passwordConfirmation")).clearErrorMessage(true);
     }
 
     public Constraint validatePasswordConfirmation() {
-        return new Constraint() {
-            @Override
-            public void validate(Component comp, Object value)
-                    throws WrongValueException {
-                ((Textbox)comp).setRawValue(value);
-                if(!((String)value).equals(passwordBox.getValue())) {
-                    throw new WrongValueException(comp, _("passwords don't match"));
-                }
+        return (comp, value) -> {
+            ((Textbox)comp).setRawValue(value);
+
+            if(!value.equals(passwordBox.getValue())) {
+                throw new WrongValueException(comp, _("passwords don't match"));
             }
         };
     }
@@ -283,8 +260,7 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     protected void initCreate() {
         userModel.initCreate();
         //password is compulsory when creating
-        passwordBox.setConstraint("no empty:" +
-                _("Password cannot be empty"));
+        passwordBox.setConstraint("no empty:" + _("Password cannot be empty"));
         //clean the password boxes, they are not cleared automatically
         //because they are not directly associated to an attribute
         passwordBox.setRawValue("");
@@ -328,14 +304,12 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     @Override
     protected boolean beforeDeleting(User user) {
         Worker worker = user.getWorker();
-        if (worker != null) {
-            return Messagebox
-                    .show(_("User is bound to resource \"{0}\" and it will be unbound. Do you want to continue with user removal?",
-                            worker.getShortDescription()),
-                            _("Confirm remove user"), Messagebox.YES
-                                    | Messagebox.NO, Messagebox.QUESTION) == Messagebox.YES;
-        }
-        return true;
+        return worker == null ||
+                Messagebox.show(_("User is bound to resource \"{0}\" and it will be unbound. " +
+                        "Do you want to continue with user removal?",
+                        worker.getShortDescription()),
+                        _("Confirm remove user"),
+                        Messagebox.YES | Messagebox.NO, Messagebox.QUESTION) == Messagebox.YES;
     }
 
     @Override
@@ -343,8 +317,9 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
         userModel.confirmRemove(user);
     }
 
-    private boolean isLdapUser() {
+    public boolean isLdapUser() {
         User user = userModel.getUser();
+
         return user != null && !user.isLibrePlanUser();
     }
 
@@ -357,22 +332,16 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     }
 
     public RowRenderer getRolesRenderer() {
-        return new RowRenderer() {
-            @Override
-            public void render(Row row, Object data, int i) throws Exception {
-                final UserRole role = (UserRole) data;
+        return (row, data, i) -> {
+            final UserRole role = (UserRole) data;
 
-                row.appendChild(new Label(_(role.getDisplayName())));
+            row.appendChild(new Label(_(role.getDisplayName())));
 
-                Button removeButton = Util.createRemoveButton(new EventListener() {
-                            @Override
-                            public void onEvent(Event event) throws Exception {
-                                removeRole(role);}
-                        });
-                removeButton.setDisabled(areRolesAndProfilesDisabled() || role.equals(UserRole.ROLE_BOUND_USER) ||
-                        isUserDefaultAdmin());
-                row.appendChild(removeButton);
-            }
+            Button removeButton = Util.createRemoveButton(event -> removeRole(role));
+            removeButton.setDisabled(areRolesAndProfilesDisabled() ||
+                    role.equals(UserRole.ROLE_BOUND_USER) || isUserDefaultAdmin());
+
+            row.appendChild(removeButton);
         };
     }
 
@@ -406,10 +375,9 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
 
     public void goToWorkerEdition() {
         Worker worker = getUser().getWorker();
-        if (worker != null) {
-            if (showConfirmWorkerEditionDialog() == Messagebox.OK) {
-                workerCRUD.goToEditForm(worker);
-            }
+
+        if (worker != null && showConfirmWorkerEditionDialog() == Messagebox.OK) {
+            workerCRUD.goToEditForm(worker);
         }
     }
 
@@ -425,7 +393,7 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
         Util.reloadBindings(boundResourceGroupbox);
     }
 
-    private boolean isNoRoleWorkers() {
+    public boolean isNoRoleWorkers() {
         return !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_WORKERS);
     }
 
@@ -447,7 +415,7 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
         return user != null && isDefaultAdmin(user);
     }
 
-    private boolean areRolesAndProfilesDisabled() {
+    public boolean areRolesAndProfilesDisabled() {
         return (isLdapUser() && userModel.isLDAPBeingUsed() && userModel.isLDAPRolesBeingUsed()) || isUserDefaultAdmin();
     }
 
@@ -455,7 +423,7 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
         return isLdapUser() || isUserDefaultAdmin();
     }
 
-    private UserAuthenticationType getAuthenticationType() {
+    public UserAuthenticationType getAuthenticationType() {
         User user = getUser();
         if (user != null) {
             return user.getUserType();
@@ -470,8 +438,10 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
                     editWindow.getFellowIfAny("authenticationTypeCombo"),
                     _("cannot be empty"));
         }
+
         UserAuthenticationType authenticationType = item.getValue();
         User user = getUser();
+
         if (user != null) {
             user.setLibrePlanUser(authenticationType.equals(UserAuthenticationType.DATABASE));
         }
@@ -480,17 +450,16 @@ public class UserCRUDController extends BaseCRUDController<User> implements IUse
     public boolean isCreateButtonDisabled(){
         Limits usersTypeLimit = limitsModel.getUsersType();
         Integer usersCount = userModel.getRowCount().intValue();
-        if (usersTypeLimit != null)
-            if ( usersCount >= usersTypeLimit.getValue() )
-                return true;
 
-        return false;
+        return usersTypeLimit != null && usersCount >= usersTypeLimit.getValue();
+
     }
 
     public String getShowCreateFormLabel(){
         Limits usersTypeLimit = limitsModel.getUsersType();
         Integer usersCount = userModel.getRowCount().intValue();
         int usersLeft = usersTypeLimit.getValue() - usersCount;
+
         if ( usersCount >= usersTypeLimit.getValue() )
             return _("User limit reached");
 
