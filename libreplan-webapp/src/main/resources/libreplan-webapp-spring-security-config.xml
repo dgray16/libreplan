@@ -117,7 +117,7 @@
             access="ROLE_SUPERUSER,ROLE_WORK_AND_PROGRESS_PER_TASK_REPORT" />
         <intercept-url pattern="/reports/completedEstimatedHoursPerTask.zul"
             access="ROLE_SUPERUSER,ROLE_ESTIMATED_PLANNED_HOURS_PER_TASK_REPORT" />
-        <intercept-url pattern="/reportsorderCostsPerResource/.zul"
+        <intercept-url pattern="/reports/orderCostsPerResource.zul"
             access="ROLE_SUPERUSER,ROLE_PROJECT_COSTS_REPORT" />
         <intercept-url pattern="/reports/workingArrangementsPerOrderReport.zul"
             access="ROLE_SUPERUSER,ROLE_TASK_SCHEDULING_STATUS_IN_PROJECT_REPORT" />

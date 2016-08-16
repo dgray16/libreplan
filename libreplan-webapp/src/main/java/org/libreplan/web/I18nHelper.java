@@ -90,9 +90,7 @@ public class I18nHelper {
         return i18n;
     }
 
-    private I18nHelper() {
-
-    }
+    private I18nHelper() {}
 
     public static String _(String str) {
         return getI18n().tr(str);

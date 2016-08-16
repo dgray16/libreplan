@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,8 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
  **/
 @Repository
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
-        implements IOrderElementDAO {
+public class OrderElementDAO extends IntegrationEntityDAO<OrderElement> implements IOrderElementDAO {
 
     @Autowired
     private IWorkReportLineDAO workReportLineDAO;
@@ -88,29 +86,29 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
 
     @Override
     public List<OrderElement> findWithoutParent() {
-        Criteria c = getSession().createCriteria(OrderElement.class);
-        c.add(Restrictions.isNull("parent"));
-        return (List<OrderElement>) c.list();
+        return getSession()
+                .createCriteria(OrderElement.class)
+                .add(Restrictions.isNull("parent"))
+                .list();
     }
 
-    public List<OrderElement> findByCodeAndParent(OrderElement parent,
-            String code) {
+    public List<OrderElement> findByCodeAndParent(OrderElement parent, String code) {
         Criteria c = getSession().createCriteria(OrderElement.class);
         c.add(Restrictions.eq("infoComponent.code", code));
+
         if (parent != null) {
             c.add(Restrictions.eq("parent", parent));
         } else {
             c.add(Restrictions.isNull("parent"));
         }
+
         return c.list();
     }
 
-    public OrderElement findUniqueByCodeAndParent(OrderElement parent,
-            String code) throws InstanceNotFoundException {
+    public OrderElement findUniqueByCodeAndParent(OrderElement parent, String code) throws InstanceNotFoundException {
         List<OrderElement> list = findByCodeAndParent(parent, code);
         if (list.isEmpty() || list.size() > 1) {
-            throw new InstanceNotFoundException(code, OrderElement.class
-                    .getName());
+            throw new InstanceNotFoundException(code, OrderElement.class.getName());
         }
         return list.get(0);
     }
@@ -118,34 +116,30 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
     @Override
     @Transactional(readOnly = true)
     public EffortDuration getAssignedDirectEffort(OrderElement orderElement) {
-        List<WorkReportLine> listWRL = this.workReportLineDAO
-                .findByOrderElement(orderElement);
+        List<WorkReportLine> listWRL = this.workReportLineDAO.findByOrderElement(orderElement);
         EffortDuration asignedDirectHours = EffortDuration.zero();
-        Iterator<WorkReportLine> iterator = listWRL.iterator();
-        while (iterator.hasNext()) {
-            asignedDirectHours = asignedDirectHours.plus(iterator.next()
-                    .getEffort());
+
+        for (WorkReportLine aListWRL : listWRL) {
+            asignedDirectHours = asignedDirectHours.plus(aListWRL.getEffort());
         }
+
         return asignedDirectHours;
     }
 
     @Override
     @Transactional(readOnly = true)
     public BigDecimal getHoursAdvancePercentage(OrderElement orderElement) {
-        final EffortDuration totalChargedEffort = orderElement
-                .getSumChargedEffort() != null ? orderElement
-                .getSumChargedEffort().getTotalChargedEffort() : EffortDuration
-                .zero();
-        BigDecimal assignedHours = totalChargedEffort
-                .toHoursAsDecimalWithScale(2);
-        BigDecimal estimatedHours = new BigDecimal(orderElement.getWorkHours())
-                .setScale(2);
+        final EffortDuration totalChargedEffort =
+                orderElement.getSumChargedEffort() != null
+                ? orderElement.getSumChargedEffort().getTotalChargedEffort()
+                : EffortDuration.zero();
 
-        if (estimatedHours.compareTo(BigDecimal.ZERO) <= 0) {
-            return BigDecimal.ZERO;
-        }
+        BigDecimal assignedHours = totalChargedEffort.toHoursAsDecimalWithScale(2);
+        BigDecimal estimatedHours = new BigDecimal(orderElement.getWorkHours()).setScale(2);
 
-        return assignedHours.divide(estimatedHours, RoundingMode.DOWN);
+        return estimatedHours.compareTo(BigDecimal.ZERO) <= 0
+                ? BigDecimal.ZERO
+                : assignedHours.divide(estimatedHours, RoundingMode.DOWN);
     }
 
     @Override
@@ -158,19 +152,18 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         super.remove(id);
     }
 
-    public static void removeTaskSourcesFor(ITaskSourceDAO taskSourceDAO,
-            OrderElement orderElement) throws InstanceNotFoundException {
-        List<SchedulingDataForVersion> allVersions = orderElement
-        .getSchedulingDatasForVersionFromBottomToTop();
+    public static void removeTaskSourcesFor(ITaskSourceDAO taskSourceDAO, OrderElement orderElement)
+            throws InstanceNotFoundException {
+
+        List<SchedulingDataForVersion> allVersions = orderElement.getSchedulingDatasForVersionFromBottomToTop();
         for (TaskSource each : taskSourcesFrom(allVersions)) {
             each.detachAssociatedTaskFromParent();
             taskSourceDAO.remove(each.getId());
         }
     }
 
-    private static List<TaskSource> taskSourcesFrom(
-            List<SchedulingDataForVersion> list) {
-        List<TaskSource> result = new ArrayList<TaskSource>();
+    private static List<TaskSource> taskSourcesFrom(List<SchedulingDataForVersion> list) {
+        List<TaskSource> result = new ArrayList<>();
         for (SchedulingDataForVersion each : list) {
             if (each.getTaskSource() != null) {
                 result.add(each.getTaskSource());
@@ -180,9 +173,8 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
     }
 
     private Set<WorkReport> getWorkReportsPointingTo(OrderElement orderElement) {
-        Set<WorkReport> result = new HashSet<WorkReport>();
-        for (WorkReportLine each : workReportLineDAO
-                        .findByOrderElementAndChildren(orderElement)) {
+        Set<WorkReport> result = new HashSet<>();
+        for (WorkReportLine each : workReportLineDAO.findByOrderElementAndChildren(orderElement)) {
             result.add(each.getWorkReport());
         }
         return result;
@@ -190,30 +182,28 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
 
     @Override
     public List<OrderElement> findAll() {
-        return getSession().createCriteria(getEntityClass()).addOrder(
-                org.hibernate.criterion.Order.asc("infoComponent.code")).list();
+        return getSession()
+                .createCriteria(getEntityClass())
+                .addOrder(org.hibernate.criterion.Order.asc("infoComponent.code"))
+                .list();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     @Transactional(readOnly = true)
-    public OrderElement findByCode(String code)
-            throws InstanceNotFoundException {
+    public OrderElement findByCode(String code) throws InstanceNotFoundException {
 
         if (StringUtils.isBlank(code)) {
-            throw new InstanceNotFoundException(null, getEntityClass()
-                    .getName());
+            throw new InstanceNotFoundException(null, getEntityClass().getName());
         }
 
-        OrderElement entity = (OrderElement) getSession().createCriteria(
-                getEntityClass())
-                .add(
-                        Restrictions.eq("infoComponent.code", code.trim())
-                                .ignoreCase()).uniqueResult();
+        OrderElement entity = (OrderElement) getSession()
+                .createCriteria(getEntityClass())
+                .add(Restrictions.eq("infoComponent.code", code.trim()).ignoreCase())
+                .uniqueResult();
 
         if (entity == null) {
-            throw new InstanceNotFoundException(code, getEntityClass()
-                    .getName());
+            throw new InstanceNotFoundException(code, getEntityClass().getName());
         } else {
             return entity;
         }
@@ -221,21 +211,20 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
     }
 
     public List<OrderElement> findByTemplate(OrderElementTemplate template) {
-        Criteria c = getSession().createCriteria(OrderElement.class);
-        c.add(Restrictions.eq("template", template));
-        return (List<OrderElement>) c.list();
+        return getSession()
+                .createCriteria(OrderElement.class)
+                .add(Restrictions.eq("template", template))
+                .list();
     }
 
     @Override
-    public OrderElement findUniqueByCode(String code)
-            throws InstanceNotFoundException {
+    public OrderElement findUniqueByCode(String code) throws InstanceNotFoundException {
         Criteria c = getSession().createCriteria(OrderElement.class);
         c.add(Restrictions.eq("infoComponent.code", code));
 
         OrderElement orderElement = (OrderElement) c.uniqueResult();
         if (orderElement == null) {
-            throw new InstanceNotFoundException(code, OrderElement.class
-                    .getName());
+            throw new InstanceNotFoundException(code, OrderElement.class.getName());
         } else {
             return orderElement;
         }
@@ -243,8 +232,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-    public OrderElement findUniqueByCodeAnotherTransaction(String code)
-            throws InstanceNotFoundException {
+    public OrderElement findUniqueByCodeAnotherTransaction(String code) throws InstanceNotFoundException {
         return findUniqueByCode(code);
     }
 
@@ -256,9 +244,10 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
 
     @Override
     public List<OrderElement> findOrderElementsWithExternalCode() {
-        Criteria c = getSession().createCriteria(OrderElement.class);
-        c.add(Restrictions.isNotNull("externalCode"));
-        return c.list();
+        return getSession()
+                .createCriteria(OrderElement.class)
+                .add(Restrictions.isNotNull("externalCode"))
+                .list();
     }
 
 
@@ -267,17 +256,16 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
     public OrderElement findByExternalCode(String code) throws InstanceNotFoundException {
 
         if (StringUtils.isBlank(code)) {
-            throw new InstanceNotFoundException(null, getEntityClass()
-                    .getName());
+            throw new InstanceNotFoundException(null, getEntityClass().getName());
         }
 
-        Criteria c = getSession().createCriteria(OrderElement.class);
-        c.add(Restrictions.eq("externalCode", code.trim()).ignoreCase());
-        OrderElement entity = (OrderElement) c.uniqueResult();
+        OrderElement entity = (OrderElement) getSession()
+                .createCriteria(OrderElement.class)
+                .add(Restrictions.eq("externalCode", code.trim()).ignoreCase())
+                .uniqueResult();
 
         if (entity == null) {
-            throw new InstanceNotFoundException(code, getEntityClass()
-                    .getName());
+            throw new InstanceNotFoundException(code, getEntityClass().getName());
         } else {
             return entity;
         }
@@ -285,31 +273,24 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
     }
 
     /**
-     * Methods to calculate estatistics with the estimated hours and worked
-     * hours of a set of order elements.
-     * @param List
-     *            <{@link OrderElement}>
+     * Methods to calculate estatistics with the estimated hours and worked hours of a set of order elements.
+     * @param list
      */
 
-    public BigDecimal calculateAverageEstimatedHours(
-            final List<OrderElement> list) {
-        BigDecimal sum = sumEstimatedHours(list);
-        return average(new BigDecimal(list.size()), sum);
+    public BigDecimal calculateAverageEstimatedHours(final List<OrderElement> list) {
+        return average(new BigDecimal(list.size()), sumEstimatedHours(list));
     }
 
-    public EffortDuration calculateAverageWorkedHours(
-            final List<OrderElement> list) {
-        EffortDuration sum = sumWorkedHours(list);
-        return (list.size() == 0) ? EffortDuration.zero() : EffortDuration
-                .average(sum, list.size());
+    public EffortDuration calculateAverageWorkedHours(final List<OrderElement> list) {
+        return list.isEmpty() ? EffortDuration.zero() : EffortDuration.average(sumWorkedHours(list), list.size());
     }
 
     private BigDecimal average(BigDecimal divisor, BigDecimal sum) {
         BigDecimal average = new BigDecimal(0);
         if (sum.compareTo(new BigDecimal(0)) > 0) {
-            average = sum.divide(divisor, new MathContext(2,
-                    RoundingMode.HALF_UP));
+            average = sum.divide(divisor, new MathContext(2, RoundingMode.HALF_UP));
         }
+
         return average;
     }
 
@@ -318,6 +299,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         for (OrderElement orderElement : list) {
             sum = sum.add(new BigDecimal(orderElement.getWorkHours()));
         }
+
         return sum;
     }
 
@@ -326,6 +308,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         for (OrderElement orderElement : list) {
             sum = sum.plus(getAssignedDirectEffort(orderElement));
         }
+
         return sum;
     }
 
@@ -338,6 +321,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
                 max = getMax(max, value);
             }
         }
+
         return max;
     }
 
@@ -347,6 +331,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         } else if (valueA.compareTo(valueB) > 0) {
             return valueA;
         }
+
         return valueA;
     }
 
@@ -356,6 +341,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         } else if (valueA.compareTo(valueB) < 0) {
             return valueA;
         }
+
         return valueA;
     }
 
@@ -368,6 +354,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
                 min = getMin(min, value);
             }
         }
+
         return min;
     }
 
@@ -381,6 +368,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
                 max = EffortDuration.max(max, value);
             }
         }
+
         return max;
     }
 
@@ -394,6 +382,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
                 min = EffortDuration.min(min, value);
             }
         }
+
         return min;
     }
 
@@ -402,19 +391,24 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         if (orderElement.isNewObject()) {
             return false;
         }
-        boolean usedInWorkReports = !getSession().createCriteria(
-                WorkReport.class).add(
-                Restrictions.eq("orderElement", orderElement)).list().isEmpty();
-        boolean usedInWorkReportLines = !getSession().createCriteria(
-                WorkReportLine.class).add(
-                Restrictions.eq("orderElement", orderElement)).list().isEmpty();
+
+        boolean usedInWorkReports = !getSession()
+                .createCriteria(WorkReport.class)
+                .add(Restrictions.eq("orderElement", orderElement))
+                .list()
+                .isEmpty();
+
+        boolean usedInWorkReportLines = !getSession()
+                .createCriteria(WorkReportLine.class)
+                .add(Restrictions.eq("orderElement", orderElement))
+                .list()
+                .isEmpty();
 
         return usedInWorkReports || usedInWorkReportLines;
     }
 
     @Override
-    public boolean isAlreadyInUseThisOrAnyOfItsChildren(
-            OrderElement orderElement) {
+    public boolean isAlreadyInUseThisOrAnyOfItsChildren(OrderElement orderElement) {
         if (isAlreadyInUse(orderElement)) {
             return true;
         }
@@ -444,11 +438,11 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         if (!ids.isEmpty()) {
             query.setParameterList("ids", ids);
         }
-        return new HashSet<String>(query.list());
+        return new HashSet<>(query.list());
     }
 
     private List<Long> getNoEmptyIds(List<OrderElement> orderElements) {
-        List<Long> result = new ArrayList<Long>();
+        List<Long> result = new ArrayList<>();
         for (OrderElement each: orderElements) {
             final Long id = each.getId();
             if (id != null) {
@@ -470,49 +464,48 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
 
             // There's an element in the DB with the same code and it's a
             // different element in a different order
-            if (orderElementInDB != null
-                    && !orderElementInDB.getId().equals(orderElement.getId())
-                    && !orderElementInDB.getOrder().getId()
-                            .equals(orderElement.getOrder().getId())) {
+            if ( orderElementInDB != null &&
+                    !orderElementInDB.getId().equals(orderElement.getId()) &&
+                    !orderElementInDB.getOrder().getId().equals(orderElement.getOrder().getId()) ) {
+
                 return orderElement;
             }
         }
+
         return null;
     }
 
     private List<OrderElement> getOrderAndAllChildren(OrderElement order) {
-        List<OrderElement> result = new ArrayList<OrderElement>();
+        List<OrderElement> result = new ArrayList<>();
         result.add(order);
         result.addAll(order.getAllChildren());
+
         return result;
     }
 
     private Map<String, OrderElement> createMapByCode(List<OrderElement> orderElements) {
-        Map<String, OrderElement> result = new HashMap<String, OrderElement>();
+        Map<String, OrderElement> result = new HashMap<>();
         for (OrderElement each: orderElements) {
             final String code = each.getCode();
             result.put(code, each);
         }
+
         return result;
     }
 
     @Override
-    public boolean hasImputedExpenseSheet(Long id)
-            throws InstanceNotFoundException {
-        OrderElement orderElement = find(id);
-        return (!expenseSheetLineDAO.findByOrderElement(orderElement).isEmpty());
+    public boolean hasImputedExpenseSheet(Long id) throws InstanceNotFoundException {
+        return !expenseSheetLineDAO.findByOrderElement(find(id)).isEmpty();
     }
 
     @Override
     public boolean hasImputedExpenseSheetThisOrAnyOfItsChildren(Long id) throws InstanceNotFoundException {
-        OrderElement orderElement = find(id);
-        return (!expenseSheetLineDAO.findByOrderElementAndChildren(orderElement).isEmpty());
+        return !expenseSheetLineDAO.findByOrderElementAndChildren(find(id)).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<OrderElement> findByLabelsAndCriteria(Set<Label> labels,
-            Set<Criterion> criteria) {
+    public List<OrderElement> findByLabelsAndCriteria(Set<Label> labels, Set<Criterion> criteria) {
 
         String strQuery = "SELECT oe.id ";
         strQuery += "FROM OrderElement oe ";
@@ -531,11 +524,13 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
 
         if (criteria != null && !criteria.isEmpty()) {
             strQuery += "JOIN oe.criterionRequirements cr ";
+
             if (where.isEmpty()) {
                 where += "WHERE ";
             } else {
                 where += "AND ";
             }
+
             where += "cr.criterion IN (:criteria) ";
             where += "AND cr.class = DirectCriterionRequirement ";
             where += "GROUP BY oe.id ";
@@ -552,6 +547,7 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
                 i++;
             }
         }
+
         if (criteria != null && !criteria.isEmpty()) {
             query.setParameterList("criteria", criteria);
             query.setParameter("criteriaSize", (long) criteria.size());
@@ -563,35 +559,30 @@ public class OrderElementDAO extends IntegrationEntityDAO<OrderElement>
         }
 
         return getSession()
-                .createQuery(
-                        "FROM OrderElement oe WHERE oe.id IN (:ids) ORDER BY oe.infoComponent.code")
-                .setParameterList("ids", orderElementsIds).list();
+                .createQuery("FROM OrderElement oe WHERE oe.id IN (:ids) ORDER BY oe.infoComponent.code")
+                .setParameterList("ids", orderElementsIds)
+                .list();
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-    public boolean existsByCodeInAnotherOrderAnotherTransaction(
-            OrderElement orderElement) {
+    public boolean existsByCodeInAnotherOrderAnotherTransaction(OrderElement orderElement) {
         return existsByCodeInAnotherOrder(orderElement);
     }
 
     private boolean existsByCodeInAnotherOrder(OrderElement orderElement) {
         try {
-            OrderElement found = findUniqueByCode(orderElement.getCode());
-            return !areInTheSameOrder(orderElement, found);
+            return !areInTheSameOrder(orderElement, findUniqueByCode(orderElement.getCode()));
         } catch (InstanceNotFoundException e) {
             return false;
         }
     }
 
-    private boolean areInTheSameOrder(OrderElement orderElement1,
-            OrderElement orderElement2) {
+    private boolean areInTheSameOrder(OrderElement orderElement1, OrderElement orderElement2) {
         Order order1 = orderElement1.getOrder();
         Order order2 = orderElement2.getOrder();
-        if (order1 == null || order2 == null) {
-            return false;
-        }
-        return Objects.equals(order1.getId(), order2.getId());
+
+        return !(order1 == null || order2 == null) && Objects.equals(order1.getId(), order2.getId());
     }
 
 }

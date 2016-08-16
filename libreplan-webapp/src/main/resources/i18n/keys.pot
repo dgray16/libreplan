@@ -7354,7 +7354,7 @@ msgstr ""
 #: libreplan-webapp/src/main/webapp/reports/completedEstimatedHoursPerTask.zul:184
 #: libreplan-webapp/src/main/webapp/reports/orderCostsPerResource.zul:223
 #: libreplan-webapp/src/main/webapp/reports/workingArrangementsPerOrderReport.zul:191
-msgid "if the report is not opened automatically"
+msgid "if the report is not opened automatically or use save as..."
 msgstr ""
 
 #: libreplan-business/src/main/java/org/libreplan/business/orders/entities/OrderSyncInfo.java:87

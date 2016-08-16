@@ -30,13 +30,15 @@ import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
-import org.zkoss.zul.Textbox;
+import org.zkoss.zul.Constraint;
+import org.zkoss.zul.Intbox;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,6 +52,7 @@ import static org.libreplan.web.I18nHelper._;
  * @author Cristina Alvarino Perez <cristina.alvarino@comtecsf.es>
  * @author Ignacio Diaz Teijido <ignacio.diaz@comtecsf.es>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class SettingsController extends GenericForwardComposer {
 
@@ -59,15 +62,9 @@ public class SettingsController extends GenericForwardComposer {
 
     private ISettingsModel settingsModel;
 
-    private Textbox password;
-
     private BandboxSearch projectsFilterLabelBandboxSearch;
 
     private BandboxSearch resourcesLoadFilterCriterionBandboxSearch;
-
-    public SettingsController(){
-        settingsModel = (ISettingsModel) SpringUtil.getBean("settingsModel");
-    }
 
     private static ListitemRenderer languagesRenderer = (item, data, i) -> {
         Language language = (Language) data;
@@ -79,6 +76,10 @@ public class SettingsController extends GenericForwardComposer {
 
         item.setLabel(displayName);
     };
+
+    public SettingsController() {
+        settingsModel = (ISettingsModel) SpringUtil.getBean("settingsModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -106,9 +107,11 @@ public class SettingsController extends GenericForwardComposer {
             if (o1.equals(Language.BROWSER_LANGUAGE)) {
                 return -1;
             }
+
             if (o2.equals(Language.BROWSER_LANGUAGE)) {
                 return 1;
             }
+
             return o1.getDisplayName().compareTo(o2.getDisplayName());
         });
 
@@ -117,11 +120,15 @@ public class SettingsController extends GenericForwardComposer {
 
     public boolean save() {
         try {
-            checkEmptyBandboxes();
-            clearSessionVariables();
-            settingsModel.confirmSave();
-            messages.showMessage(Level.INFO, _("Settings saved"));
-            return true;
+            if ( monthsValuesAreValid() ) {
+                checkEmptyBandboxes();
+                clearSessionVariables();
+                settingsModel.confirmSave();
+                messages.showMessage(Level.INFO, _("Settings saved"));
+
+                return true;
+            }
+
         } catch (ValidationException e) {
             messages.showInvalidValues(e);
         }
@@ -138,9 +145,44 @@ public class SettingsController extends GenericForwardComposer {
         if (projectsFilterLabelBandboxSearch.getSelectedElement() == null) {
             settingsModel.setProjectsFilterLabel(null);
         }
+
         if (resourcesLoadFilterCriterionBandboxSearch.getSelectedElement() == null) {
             settingsModel.setResourcesLoadFilterCriterion(null);
         }
+    }
+
+    /* Should be public! */
+    public Constraint checkMonthsMaxValue() {
+        return (comp, value) -> {
+            if ( value != null && (Integer) value > 999 ) {
+                ((Intbox) comp).setValue(null);
+                throw new WrongValueException(comp, _("Max value = 999"));
+            }
+        };
+    }
+
+    private boolean monthsValuesAreValid() {
+        Integer projectsSince = settingsModel.getProjectsFilterPeriodSince();
+        Integer projectsTo = settingsModel.getProjectsFilterPeriodTo();
+
+        if ( projectsTo != null && projectsSince != null && projectsSince > projectsTo ) {
+            messages.clearMessages();
+            messages.showMessage(Level.WARNING, _("Project since should be lower than project to"));
+
+            return false;
+        }
+
+        Integer resourcesSince = settingsModel.getResourcesLoadFilterPeriodSince();
+        Integer resourcesTo = settingsModel.getResourcesLoadFilterPeriodTo();
+
+        if ( resourcesTo != null && resourcesSince != null && resourcesSince > resourcesTo ) {
+            messages.clearMessages();
+            messages.showMessage(Level.WARNING, _("Resources load since should be lower than resources load to"));
+
+            return false;
+        }
+
+        return true;
     }
 
     public void setSelectedLanguage(Language language) {
@@ -158,7 +200,6 @@ public class SettingsController extends GenericForwardComposer {
     public void setExpandCompanyPlanningViewCharts(boolean expandCompanyPlanningViewCharts) {
         checkEmptyBandboxes();
         settingsModel.setExpandCompanyPlanningViewCharts(expandCompanyPlanningViewCharts);
-
     }
 
     public boolean isExpandCompanyPlanningViewCharts() {

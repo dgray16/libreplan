@@ -33,7 +33,6 @@ import org.libreplan.web.common.Util;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.orders.IOrderElementModel;
 import org.libreplan.web.security.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
@@ -60,19 +59,17 @@ import java.util.Date;
 
 import static org.libreplan.web.I18nHelper._;
 
-
 /**
- * Controller for managing Order files
- * Created by
- * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
- * on 12.24.2015.
+ * Controller for managing Order files.
+ *
+ * @author Created by Vova Perebykivskyi <vova@libreplan-enterprise.com> on 12.24.2015.
  */
 
 public class OrderFilesController extends GenericForwardComposer {
 
-    IConfigurationModel configurationModel;
+    private IConfigurationModel configurationModel;
 
-    IUserDAO userDAO;
+    private IUserDAO userDAO;
 
     private Component messagesContainer;
 
@@ -84,7 +81,7 @@ public class OrderFilesController extends GenericForwardComposer {
 
     private Listbox filesList;
 
-    public OrderFilesController(){
+    public OrderFilesController() {
         configurationModel = (IConfigurationModel) SpringUtil.getBean("configurationModel");
         userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
         orderElementModel = (IOrderElementModel) SpringUtil.getBean("orderElementModel");
@@ -102,19 +99,18 @@ public class OrderFilesController extends GenericForwardComposer {
         configurationModel.init();
 
         File repositoryDirectory = null;
-        if ( !(configurationModel.getRepositoryLocation() == null) )
+        if ( configurationModel.getRepositoryLocation() != null )
             repositoryDirectory = new File(configurationModel.getRepositoryLocation());
 
         return repositoryDirectory != null && repositoryDirectory.exists();
 
     }
 
-    public boolean isUploadButtonDisabled(){
+    public boolean isUploadButtonDisabled() {
         return !isRepositoryExists();
-
     }
 
-    public ListitemRenderer getFilesRenderer(){
+    public ListitemRenderer getFilesRenderer() {
         return new ListitemRenderer() {
             @Override
             public void render(Listitem listitem, Object data, int i) throws Exception {
@@ -123,6 +119,7 @@ public class OrderFilesController extends GenericForwardComposer {
                 Listcell nameCell = new Listcell();
                 listitem.appendChild(nameCell);
                 Label label = new Label(file.getName());
+
                 label.addEventListener("onClick", new EventListener() {
                     @Override
                     public void onEvent(Event event) throws Exception {
@@ -134,6 +131,7 @@ public class OrderFilesController extends GenericForwardComposer {
                         Filedownload.save(fileToDownload.getAbsoluteFile(), null);
                     }
                 });
+
                 label.setClass("label-highlight");
                 label.setTooltiptext("Download file");
                 nameCell.appendChild(label);
@@ -154,6 +152,7 @@ public class OrderFilesController extends GenericForwardComposer {
 
                 Listcell operationsCell = new Listcell();
                 listitem.appendChild(operationsCell);
+
                 operationsCell.appendChild(Util.createRemoveButton(new EventListener() {
                     @Override
                     public void onEvent(Event event) throws Exception {
@@ -168,8 +167,10 @@ public class OrderFilesController extends GenericForwardComposer {
 
     public void confirmRemove(OrderFile file){
 
-        int status = Messagebox.show(_("Confirm deleting this file. Are you sure?"), _("Delete"),
+        int status = Messagebox.show(
+                _("Confirm deleting this file. Are you sure?"), _("Delete"),
                 Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+
         if ( Messagebox.OK != status ) {
             return;
         }
@@ -208,7 +209,7 @@ public class OrderFilesController extends GenericForwardComposer {
     public void upload() {
         configurationModel.init();
 
-        String directory = "";
+        String directory;
         if ( isRepositoryExists() ){
 
             String projectCode = orderElementModel.getOrderElement().getCode();
@@ -230,10 +231,11 @@ public class OrderFilesController extends GenericForwardComposer {
 
                 OutputStream outputStream = new FileOutputStream(file);
 
-                InputStream inputStream = media.isBinary() ? (media.getStreamData()) :
-                        (new ReaderInputStream(media.getReaderData()));
+                InputStream inputStream = media.isBinary()
+                        ? media.getStreamData()
+                        : new ReaderInputStream(media.getReaderData());
 
-                if ( inputStream != null ){
+                if ( inputStream != null ) {
                     byte[] buffer = new byte[1024];
                     for ( int count; (count = inputStream.read(buffer)) != -1; )
                         outputStream.write(buffer, 0, count);
@@ -241,10 +243,10 @@ public class OrderFilesController extends GenericForwardComposer {
 
                 outputStream.flush();
                 outputStream.close();
+
                 if (inputStream != null) {
                     inputStream.close();
                 }
-
 
                 orderFileModel.createNewFileObject();
                 orderFileModel.setFileName(FilenameUtils.getBaseName(media.getName()));
@@ -270,20 +272,21 @@ public class OrderFilesController extends GenericForwardComposer {
 
     /**
      * This method is a:
-     * 1. setter for current opened {@link org.libreplan.business.orders.entities.Order}
-     * 2. setter for model of ListBox of files
+     * 1. Setter for current opened {@link org.libreplan.business.orders.entities.Order}.
+     * 2. Setter for model of ListBox of files.
      *
      * The easiest way is to set a model in zul file, but its setter was invoking before
-     * setter of current {@link org.libreplan.business.orders.entities.Order}
+     * setter of current {@link org.libreplan.business.orders.entities.Order}.
      */
     public void openWindow(IOrderElementModel orderElementModel) {
         setOrderElementModel(orderElementModel);
 
-        if ( isRepositoryExists() ) updateListbox();
+        if ( isRepositoryExists() )
+            updateListbox();
     }
 
     /**
-     * Listbox is updating after re set the model for it
+     * Listbox is updating after re set the model for it.
      */
     private void updateListbox(){
         OrderElement currentOrder = orderElementModel.getOrderElement();

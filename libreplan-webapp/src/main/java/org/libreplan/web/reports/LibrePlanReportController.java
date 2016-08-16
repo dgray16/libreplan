@@ -41,12 +41,12 @@ import com.igalia.java.zk.components.JasperreportComponent;
 
 /**
  *
- * Handles the basic behaviour of a Controller for showing reports
+ * Handles the basic behaviour of a Controller for showing reports.
  *
  * All reports consists of several input components and a show button which
- * retrieves the necessary data to build resulting report. The method showReport
- * takes care of this behaviour. In addition, when a new report is shown, a link
- * to the report shows up as well.
+ * retrieves the necessary data to build resulting report.
+ * The method showReport takes care of this behaviour.
+ * In addition, when a new report is shown, a link to the report shows up as well.
  *
  * @author Diego Pino Garcia <dpino@igalia.com>
  * @author Manuel Rego Casasnovas <rego@igalia.com>
@@ -76,26 +76,31 @@ public abstract class LibrePlanReportController extends GenericForwardComposer<C
         } else {
             /*
              * We cant use FileDownload.save(<url>) as it creates a new url
-             * where the resource can't be find so we have to create ourselves
-             * the download request
+             * where the resource can't be find so we have to create ourselves the download request
              * */
             Executions.getCurrent().addAuResponse(new AuDownload(jasperreport.getReportUrl()));
-          URItext.setStyle("display: inline");
-          URIlink.setHref(jasperreport.getReportUrl());
+            URItext.setStyle("display: inline");
+            URIlink.setHref(jasperreport.getReportUrl());
         }
     }
 
     protected Map<String, Object> getParameters() {
         Map<String, Object> parameters = new HashMap<>();
-        String companyLogo = Registry.getConfigurationDAO()
+
+        String companyLogo = Registry
+                .getConfigurationDAO()
                 .getConfigurationWithReadOnlyTransaction()
                 .getCompanyLogoURL();
 
         if ( StringUtils.isBlank(companyLogo) ) {
-            companyLogo = "/logos/logo.png";
+            // TODO  check if path will work
+            // TODO check img/fix on HTML page of report
+            companyLogo = "/common/img/logo.png";
         }
+
         parameters.put("logo", companyLogo);
         parameters.put(JRParameter.REPORT_LOCALE, Locales.getCurrent());
+
         return parameters;
     }
 

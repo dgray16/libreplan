@@ -23,7 +23,6 @@ package org.zkoss.ganttz.timetracker.zoom;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.zkoss.ganttz.i18n.I18nHelper;
 
 /**
  * Describes levels of zooming (time-zooming) on Gantt panel.
@@ -159,7 +158,7 @@ public enum ZoomLevel {
 
     @Override
     public String toString() {
-        return I18nHelper._(internalName);
+        return _(internalName);
     }
 
     public static ZoomLevel getFromString(String zoomLevelParameter) {

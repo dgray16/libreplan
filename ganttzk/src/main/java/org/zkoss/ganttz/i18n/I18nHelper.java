@@ -31,15 +31,19 @@ import org.zkoss.util.Locales;
 
 public class I18nHelper {
 
-    private static HashMap<Locale, I18n> localesCache = new HashMap<Locale, I18n>();
+    private static HashMap<Locale, I18n> localesCache = new HashMap<>();
 
     public static I18n getI18n() {
         if (localesCache.keySet().contains(Locales.getCurrent())) {
             return localesCache.get(Locales.getCurrent());
         }
 
-        I18n i18n = I18nFactory.getI18n(I18nHelper.class, "app.i18n.Messages", Locales.getCurrent(),
+        I18n i18n = I18nFactory.getI18n(
+                I18nHelper.class,
+                "app.i18n.Messages",
+                Locales.getCurrent(),
                 org.xnap.commons.i18n.I18nFactory.FALLBACK);
+
         localesCache.put(Locales.getCurrent(), i18n);
 
         return i18n;
@@ -61,8 +65,7 @@ public class I18nHelper {
         return getI18n().tr(text, o1, o2, o3);
     }
 
-    public static String _(String text, Object o1, Object o2, Object o3,
-            Object o4) {
+    public static String _(String text, Object o1, Object o2, Object o3, Object o4) {
         return getI18n().tr(text, o1, o2, o3, o4);
     }
 

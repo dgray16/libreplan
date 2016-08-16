@@ -68,17 +68,17 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
 
     private Textbox subjectTextbox;
 
-
-    public EmailTemplateController() {
-        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
-        emailTemplateModel = (IEmailTemplateModel) SpringUtil.getBean("emailTemplateModel");
-    }
-
     private static ListitemRenderer languagesRenderer = (item, data, i) -> {
         Language language = (Language) data;
         String displayName = language.getDisplayName();
         item.setLabel(displayName);
     };
+
+
+    public EmailTemplateController() {
+        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
+        emailTemplateModel = (IEmailTemplateModel) SpringUtil.getBean("emailTemplateModel");
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -87,8 +87,8 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         messages = new MessagesForUser(messagesContainer);
 
         /*
-         Set default template and language for user.
-         And content and subject for that language & template.
+        * Set default template and language for user.
+        * And content and subject for that language & template.
         */
         setUser();
         setSelectedLanguage(user.getApplicationLanguage());
@@ -104,6 +104,7 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
             emailTemplateModel.confirmSave();
             messages.clearMessages();
             messages.showMessage(Level.INFO, _("E-mail template saved"));
+
             return true;
         } catch (ValidationException e) {
             messages.showInvalidValues(e);

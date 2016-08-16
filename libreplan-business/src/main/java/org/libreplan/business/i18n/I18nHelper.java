@@ -23,17 +23,15 @@ package org.libreplan.business.i18n;
 
 
 /**
- * This class provides a function to mark strings to be translated. Real
- * translation have to be done in webapp module depending on user language and
+ * This class provides a function to mark strings to be translated.
+ * Real translation have to be done in webapp module depending on user language and
  * not done here depending on server language.
  *
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  */
 public class I18nHelper {
 
-    private I18nHelper() {
-
-    }
+    private I18nHelper() {}
 
     public static String _(String text) {
         return text;
