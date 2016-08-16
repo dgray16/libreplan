@@ -49,6 +49,14 @@ public class I18nHelper {
         return i18n;
     }
 
+
+    //TODO It should be changed since JDK9.
+    /**
+     * Use of '_' as an identifier might not be supported in releases after Java SE 8.
+     *
+     * @param str
+     * @return Text depends on locale
+     */
     public static String _(String str) {
         return getI18n().tr(str);
     }

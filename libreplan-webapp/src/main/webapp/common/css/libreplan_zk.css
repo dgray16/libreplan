@@ -2010,7 +2010,7 @@ select {
     color: #0F3B82;
 }
 
-.z-menu-popup a:focus {
+.z-menupopup a:focus {
     text-decoration: none !important;
 }
 
