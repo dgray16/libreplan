@@ -155,7 +155,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         return getAssignedMaterials(materialCategory);
     }
 
-    public List<A> getAssignedMaterials(MaterialCategory materialCategory) {
+    private List<A> getAssignedMaterials(MaterialCategory materialCategory) {
         return getModel().getAssignedMaterials(materialCategory);
     }
 
@@ -285,6 +285,7 @@ public abstract class AssignedMaterialsController<T, A> extends GenericForwardCo
         getModel().searchMaterials("", null);
     }
 
+    /* Should be public! */
     public MaterialCategoryRenderer getMaterialCategoryRenderer() {
         return new MaterialCategoryRenderer();
     }
