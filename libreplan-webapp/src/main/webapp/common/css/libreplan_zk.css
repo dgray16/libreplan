@@ -36,16 +36,6 @@ body {
     font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
 }
 
-.logo {
-    background-image: url("../img/v3/blue_ga.jpg");
-    width: 300px;
-    height: 100px;
-    float: left;
-    clear: both;
-    position: absolute;
-    border: 0;
-}
-
 .headings {
     height: 90px;
 }
@@ -74,7 +64,7 @@ table {
 body .z-window-embedded .icono .z-button-cm,
 body .z-window-modal .icono .z-button-cm,
 body .advanced-allocation-layout .icono .z-button-cm {
-    color: #007bbe;`
+    color: #007bbe;
     border: 0 solid #007bbe;
     padding: 0;
 }

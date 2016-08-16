@@ -25,7 +25,15 @@ import static org.libreplan.web.I18nHelper._;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.hibernate.Hibernate;
