@@ -142,8 +142,14 @@
 
         </groupbox>
 
-        <popup id="allocation-type-popup" width="700px" >
-            <iframe id="iframe" src="/help/${i18n:_('en')}/08-asignacion.html" width="100%" />
+        <zscript><![CDATA[
+                i18iframe = org.libreplan.web.HelpLinkUtil.checkUrlPath(
+                    "/help/" + org.libreplan.web.I18nHelper._("en") + "/08-asignacion.html");
+            ]]>
+        </zscript>
+
+        <popup id="allocation-type-popup" width="700px" onOpen="iframe.setSrc(i18iframe)">
+            <iframe id="iframe" width="100%" />
         </popup>
 
     </vbox>

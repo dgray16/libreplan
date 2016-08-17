@@ -47,11 +47,11 @@ public class GlobalProgressChart {
 
     public static String CRITICAL_PATH_DURATION;
 
-    private Map<String, BigDecimal> current = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> current = new LinkedHashMap<>();
 
-    private Map<String, BigDecimal> expected = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> expected = new LinkedHashMap<>();
 
-    private List<Series> series = new ArrayList<Series>();
+    private List<Series> series = new ArrayList<>();
 
     private GlobalProgressChart() {
         series.add(Series.create(_("Current"), "#004469"));
@@ -82,7 +82,7 @@ public class GlobalProgressChart {
     }
 
     private String jsonifyPercentages(Collection<BigDecimal> array) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         int i = 1;
         for (BigDecimal each : array) {
@@ -92,7 +92,7 @@ public class GlobalProgressChart {
     }
 
     private String jsonify(Collection<?> list) {
-        Collection<String> result = new ArrayList<String>();
+        Collection<String> result = new ArrayList<>();
         for (Object each : list) {
             result.add(jsonify(each));
         }

@@ -1213,6 +1213,7 @@ span.z-dottree-line {
 }
 
 .z-treerow.z-treerow-selected > .z-treecell,
+.z-treerow-focus > .z-treecell,
 .z-treerow.z-treerow-selected.z-treerow-focus:hover > .z-treecell,
 .z-treerow.z-treerow-selected.z-treerow-focus > .z-treecell,
 .z-treerow.z-treerow-selected:hover > .z-treecell,
