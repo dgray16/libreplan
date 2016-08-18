@@ -331,14 +331,18 @@ public class MutableTreeModel<T> extends AbstractTreeModel {
             node = find(parent);
         }
 
-        T nodeToReturn = null;
+        T nodeToReturn;
 
         try {
             nodeToReturn = unwrap(node.children.get(index));
         } catch (IndexOutOfBoundsException e) {
-            if ( index - 1 >= 0 ) {
+            if (parent != null) {
+                nodeToReturn = unwrap(node.parentNode.children.get(index));
+            } else if (index - 1 >= 0) {
                 nodeToReturn = unwrap(node.children.get(index - 1));
-            } else throw new IndexOutOfBoundsException("Something wrong with indexes");
+            } else {
+                throw new IndexOutOfBoundsException("Something wrong with indexes");
+            }
         }
 
         return nodeToReturn;
