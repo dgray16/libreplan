@@ -213,8 +213,8 @@
                 -->
                 <plugins>
                     <plugin>
-                        <groupId>org.xnap.commons</groupId>
-                        <artifactId>maven-gettext-plugin</artifactId>
+                        <groupId>com.googlecode.gettext-commons</groupId>
+                        <artifactId>gettext-maven-plugin</artifactId>
                         <configuration>
                             <targetBundle>i18n.Messages</targetBundle>
                             <poDirectory>${project.build.sourceDirectory}/../resources/i18n</poDirectory>
