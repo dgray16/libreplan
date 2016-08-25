@@ -107,22 +107,34 @@
             access="ROLE_SUPERUSER,ROLE_RECEIVED_FROM_CUSTOMERS" />
         <intercept-url pattern="/workreports/workReportQuery.zul"
             access="ROLE_SUPERUSER,ROLE_TIMESHEET_LINES_LIST" />
+
         <intercept-url pattern="/reports/hoursWorkedPerWorkerReport.zul"
-            access="ROLE_SUPERUSER,ROLE_HOURS_WORKED_PER_RESOURCE_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_HOURS_WORKED_PER_RESOURCE_REPORT" />
+
         <intercept-url pattern="/reports/hoursWorkedPerWorkerInAMonthReport.zul"
-            access="ROLE_SUPERUSER,ROLE_TOTAL_WORKED_HOURS_BY_RESOURCE_IN_A_MONTH_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_TOTAL_WORKED_HOURS_BY_RESOURCE_IN_A_MONTH_REPORT" />
+
         <intercept-url pattern="/reports/schedulingProgressPerOrderReport.zul"
-            access="ROLE_SUPERUSER,ROLE_WORK_AND_PROGRESS_PER_PROJECT_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_WORK_AND_PROGRESS_PER_PROJECT_REPORT" />
+
         <intercept-url pattern="/reports/workingProgressPerTaskReport.zul"
-            access="ROLE_SUPERUSER,ROLE_WORK_AND_PROGRESS_PER_TASK_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_WORK_AND_PROGRESS_PER_TASK_REPORT" />
+
         <intercept-url pattern="/reports/completedEstimatedHoursPerTask.zul"
-            access="ROLE_SUPERUSER,ROLE_ESTIMATED_PLANNED_HOURS_PER_TASK_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_ESTIMATED_PLANNED_HOURS_PER_TASK_REPORT" />
+
         <intercept-url pattern="/reports/orderCostsPerResource.zul"
-            access="ROLE_SUPERUSER,ROLE_PROJECT_COSTS_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_PROJECT_COSTS_REPORT" />
+
         <intercept-url pattern="/reports/workingArrangementsPerOrderReport.zul"
-            access="ROLE_SUPERUSER,ROLE_TASK_SCHEDULING_STATUS_IN_PROJECT_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_TASK_SCHEDULING_STATUS_IN_PROJECT_REPORT" />
+
         <intercept-url pattern="/reports/timeLineMaterialReport.zul"
-            access="ROLE_SUPERUSER,ROLE_MATERIALS_NEED_AT_DATE_REPORT" />
+                       access="ROLE_SUPERUSER,ROLE_MATERIALS_NEED_AT_DATE_REPORT" />
+
+        <intercept-url pattern="/reports/projectStatusReport.zul"
+                       access="ROLE_SUPERUSER,ROLE_PROJECT_STATUS_REPORT" />
+
         <intercept-url pattern="/myaccount/userDashboard.zul"
             access="ROLE_BOUND_USER" />
         <intercept-url pattern="/myaccount/monthlyTimesheet.zul"

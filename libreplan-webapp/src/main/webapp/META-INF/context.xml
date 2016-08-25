@@ -2,7 +2,7 @@
 
  <Context antiJARLocking="true" path="">
     <ResourceLink name="${dataSource.jndiName}"
-        global="${dataSource.jndiName}"
-        type="javax.sql.DataSource">
+                  global="${dataSource.jndiName}"
+                  type="javax.sql.DataSource">
     </ResourceLink>
 </Context>

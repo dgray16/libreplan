@@ -5,11 +5,14 @@
     <display-name>libreplan-webapp</display-name>
 
     <!--
-        It searches all libreplan-business-spring-config.xml files, it can
-        found several. There must be at least one. It searches
-        libreplan-webapp-spring-config.xml. There must be just one. It
-        searches libreplan-override-spring-config.xml to override some
-        previous definitions. There could be several or none.
+        It searches all libreplan-business-spring-config.xml files, it can found several.
+        There must be at least one.
+
+        It searches libreplan-webapp-spring-config.xml.
+        There must be just one.
+
+        It searches libreplan-override-spring-config.xml to override some previous definitions.
+        There could be several or none.
     -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
@@ -20,14 +23,13 @@
         </param-value>
     </context-param>
 
-
-    <!-- /// -->
     <!-- DSP -->
     <servlet>
         <description><![CDATA[The servlet loads the DSP pages.]]></description>
         <servlet-name>dspLoader</servlet-name>
         <servlet-class>org.zkoss.web.servlet.dsp.InterpreterServlet</servlet-class>
     </servlet>
+
     <servlet>
         <description><![CDATA[Callback Servlet]]></description>
         <servlet-name>callbackServlet</servlet-name>
@@ -42,7 +44,6 @@
         <servlet-name>dspLoader</servlet-name>
         <url-pattern>*.dsp</url-pattern>
     </servlet-mapping>
-    <!-- /// -->
 
     <!-- Spring security -->
     <filter>
@@ -55,7 +56,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- //// -->
     <listener>
         <listener-class>org.libreplan.web.LoggingConfiguration</listener-class>
     </listener>
@@ -71,10 +71,11 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
-    <!-- end Spring listeners -->
+    <!-- End of Spring listeners -->
 
     <!-- Loads all IDataBootstrap and executes them -->
     <listener>
@@ -86,8 +87,8 @@
         <servlet-name>zkLoader</servlet-name>
         <servlet-class>org.zkoss.zk.ui.http.DHtmlLayoutServlet</servlet-class>
         <!--
-            Must. Specifies URI of the update engine (DHtmlUpdateServlet). It
-            must be the same as <url-pattern> for the update engine.
+            Specifies URI of the update engine (DHtmlUpdateServlet).
+            It must be the same as <url-pattern> for the update engine.
         -->
         <init-param>
             <param-name>update-uri</param-name>
@@ -103,6 +104,7 @@
         <servlet-name>zkLoader</servlet-name>
         <url-pattern>*.zhtml</url-pattern>
     </servlet-mapping>
+
     <servlet>
         <description>The asynchronous update engine for ZK</description>
         <servlet-name>auEngine</servlet-name>

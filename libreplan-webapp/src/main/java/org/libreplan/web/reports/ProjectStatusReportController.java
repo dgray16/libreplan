@@ -33,7 +33,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.codehaus.plexus.util.StringUtils;
 import org.libreplan.business.common.entities.Configuration;
 import org.libreplan.business.common.Registry;
-import org.libreplan.business.common.daos.ConfigurationDAO;
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.business.reports.dtos.ProjectStatusReportDTO;
@@ -43,7 +42,6 @@ import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
-import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zkplus.spring.SpringUtil;
@@ -93,13 +91,11 @@ public class ProjectStatusReportController extends LibrePlanReportController {
 
     @Override
     protected String getReportName() {
-        Configuration configuration = Registry.getConfigurationDAO()
-                .getConfigurationWithReadOnlyTransaction();
-        if (configuration != null && configuration.isEnabledAutomaticBudget()) {
-            return REPORT_WITH_HOURS_BUDGET_NAME;
-        } else {
-            return REPORT_NAME;
-        }
+        Configuration configuration = Registry.getConfigurationDAO().getConfigurationWithReadOnlyTransaction();
+
+        return configuration != null && configuration.isEnabledAutomaticBudget()
+                ? REPORT_WITH_HOURS_BUDGET_NAME
+                : REPORT_NAME;
     }
 
     @Override
@@ -175,7 +171,7 @@ public class ProjectStatusReportController extends LibrePlanReportController {
 
         Set<Label> labels = projectStatusReportModel.getSelectedLabels();
         if (!labels.isEmpty()) {
-            List<String> labelNames = new ArrayList<String>();
+            List<String> labelNames = new ArrayList<>();
             for (Label label : labels) {
                 labelNames.add(label.getName());
             }
@@ -185,7 +181,7 @@ public class ProjectStatusReportController extends LibrePlanReportController {
 
         Set<Criterion> criteria = projectStatusReportModel.getSelectedCriteria();
         if (!criteria.isEmpty()){
-            List<String> criterionNames = new ArrayList<String>();
+            List<String> criterionNames = new ArrayList<>();
             for (Criterion criterion : criteria) {
                 criterionNames.add(criterion.getName());
             }

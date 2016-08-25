@@ -23,6 +23,13 @@ package org.libreplan.web.common;
 
 import static org.libreplan.web.I18nHelper._;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.ConcurrentModificationException;
 import java.util.Comparator;
@@ -38,7 +45,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
-
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -80,6 +86,8 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DefaultDirObjectFactory;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.web.context.ContextLoaderListener;
+import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
@@ -87,7 +95,6 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
-
 
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.ListitemRenderer;
@@ -165,8 +172,6 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private Textbox prefixBox;
 
-    private UserRole roles;
-
     private Textbox ldapGroupPath;
 
     private Radiogroup strategy;
@@ -185,8 +190,9 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private Textbox emailSenderTextbox;
 
-    public ConfigurationController(){
-    }
+    private Textbox companyLogoURL;
+
+    public ConfigurationController() {}
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
@@ -197,11 +203,11 @@ public class ConfigurationController extends GenericForwardComposer {
         comp.setAttribute("configurationController", this, true);
         configurationModel.init();
 
-        defaultCalendarBandboxSearch.setListboxEventListener(Events.ON_SELECT,
-                event -> {
-                    Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
-                    setDefaultCalendar(selectedItem.getValue());
-                });
+        defaultCalendarBandboxSearch.setListboxEventListener(Events.ON_SELECT, event -> {
+            Listitem selectedItem = (Listitem) ((SelectEvent) event).getSelectedItems().iterator().next();
+            setDefaultCalendar(selectedItem.getValue());
+        });
+
         initializeProgressTypeList();
         messages = new MessagesForUser(messagesContainer);
         reloadEntitySequences();
@@ -218,8 +224,9 @@ public class ConfigurationController extends GenericForwardComposer {
         machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
         expenseSheetModel = (IExpenseSheetModel) SpringUtil.getBean("expenseSheetModel");
         materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
-        assignedQualityFormsModel =
-                (IAssignedTaskQualityFormsToOrderElementModel) SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
+
+        assignedQualityFormsModel = (IAssignedTaskQualityFormsToOrderElementModel)
+                SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
     }
 
     public void changeRoleStrategy() {
@@ -988,10 +995,6 @@ public class ConfigurationController extends GenericForwardComposer {
         return UserRole.values();
     }
 
-    public void setRoles(UserRole roles) {
-        this.roles = roles;
-    }
-
     public boolean isChangedDefaultPasswdAdmin() {
         return configurationModel.isChangedDefaultPasswdAdmin();
     }
@@ -1259,25 +1262,132 @@ public class ConfigurationController extends GenericForwardComposer {
         };
     }
 
-    private boolean isEmailFieldsValid(){
-        if ( protocolsCombobox != null && protocolsCombobox.getSelectedItem() != null ){
+    private boolean isEmailFieldsValid() {
+        if ( protocolsCombobox != null && protocolsCombobox.getSelectedItem() != null ) {
 
             boolean isNotNullValue =  emailUsernameTextbox.getValue() != null &&
                     emailPasswordTextbox.getValue() != null &&
                     emailUsernameTextbox.getValue().length() != 0 &&
                     emailPasswordTextbox.getValue().length() != 0;
 
-            if ("STARTTLS".equals(protocolsCombobox.getSelectedItem().getLabel()) && isNotNullValue &&
-                    emailSenderTextbox.getValue().matches("^\\S+@\\S+\\.\\S+$"))
+            if ( "STARTTLS".equals(protocolsCombobox.getSelectedItem().getLabel()) && isNotNullValue &&
+                    emailSenderTextbox.getValue().matches("^\\S+@\\S+\\.\\S+$") ) {
 
                 return true;
+            }
 
             if ( protocolsCombobox.getSelectedItem() != null  &&
                     "SMTP".equals(protocolsCombobox.getSelectedItem().getLabel()) ) {
+
                     return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Upload image to classes folder via ZK Fileupload.
+     * Should be public!
+     *
+     * @param media
+     */
+    public void importLogo(Media media) {
+
+        if ( Util.logo != null ) {
+            /* We are going to overwrite existing logo */
+            removeLogo();
+        }
+
+        if ( Util.logo == null ) {
+            if ( checkFormat(media.getFormat()) ) {
+                BufferedInputStream in;
+                BufferedOutputStream out = null;
+                File fileToSave;
+
+                InputStream inputStream = media.getStreamData();
+                in = new BufferedInputStream(inputStream);
+
+                try {
+                    fileToSave = new File(
+                            ContextLoaderListener
+                                    .getCurrentWebApplicationContext()
+                                    .getResource("/")
+                                    .getFile()
+                                    .getPath() + "\\" + media.getName());
+
+                    OutputStream outputStream = new FileOutputStream(fileToSave);
+                    out = new BufferedOutputStream(outputStream);
+
+                    byte[] buffer = new byte[1024];
+                    int ch = in.read(buffer);
+
+                    while ( ch != -1 ) {
+                        out.write(buffer, 0, ch);
+                        ch = in.read(buffer);
+                    }
+
+                } catch (IOException ignored) {}
+
+                finally {
+                    try {
+                        if (out != null)
+                            out.close();
+
+                        in.close();
+                    } catch (IOException ignored) {}
+                }
+
+                Util.setLogoFromTarget(media.getName());
+                configurationModel.setCompanyLogoURL(media.getName());
+                ((Textbox) configurationWindow.getFellow("companyLogoURL")).setValue(media.getName());
+                ((org.zkoss.zul.Image) configurationWindow.getFellow("logoPreview")).setContent(Util.logo);
+
+            } else {
+                messages.showMessage(Level.WARNING, _("The only current supported formats are png and jpeg"));
+            }
+
+        }
+    }
+
+    private boolean checkFormat(String format) {
+        /* http://stackoverflow.com/questions/23424399/jpg-vs-jpeg-image-formats */
+        return format.matches("(?i).*png") || format.matches("(?i).*jpeg") || format.matches("(?i).*jpg");
+    }
+
+    /**
+     * Handler of remove logo button.
+     * Should be public!
+     */
+    public void removeLogo() {
+        if ( !"".equals(companyLogoURL.getValue()) ) {
+            ((org.zkoss.zul.Image) configurationWindow.getFellow("logoPreview")).setSrc("");
+            findAndRemoveLogoFromTarget(companyLogoURL.getValue());
+            Util.logo = null;
+        }
+
+        companyLogoURL.setValue("");
+        configurationModel.setCompanyLogoURL("");
+    }
+
+    /**
+     * Setting preview image.
+     * Should be public!
+     */
+    public void setPreviewLogo() {
+        if ( !"".equals(companyLogoURL.getValue()) ) {
+            ((org.zkoss.zul.Image) configurationWindow.getFellow("logoPreview")).setContent(Util.logo);
+        }
+    }
+
+    /**
+     * Trying to delete file from classes folder.
+     */
+    private void findAndRemoveLogoFromTarget(String name) {
+        File fileToDelete;
+        try {
+            fileToDelete = ContextLoaderListener.getCurrentWebApplicationContext().getResource(name).getFile();
+            fileToDelete.delete();
+        } catch (IOException ignored) {}
     }
 }

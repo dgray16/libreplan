@@ -181,6 +181,7 @@
               <artifactId>jasperreports</artifactId>
               <version>6.2.2</version>
             </dependency>
+
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports-fonts</artifactId>
@@ -771,8 +772,8 @@
                 <version>3.5.1</version>
                 <configuration>
                     <verbose>true</verbose>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

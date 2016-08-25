@@ -38,6 +38,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zul.Image;
 import org.zkoss.zul.Window;
 
 import java.util.Collections;
@@ -69,6 +70,8 @@ public class TemplateController extends GenericForwardComposer {
 
     private String lastVersionNumber = "";
 
+    private Image logo;
+
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -96,11 +99,25 @@ public class TemplateController extends GenericForwardComposer {
     }
 
     public String getCompanyLogoURL() {
-        if ( templateModel == null || templateModel.getCompanyLogoURL() == null ) {
-            return "";
-        }
+        return templateModel == null || templateModel.getCompanyLogoURL() == null
+                ? ""
+                : templateModel.getCompanyLogoURL().trim();
+    }
 
-        return templateModel.getCompanyLogoURL().trim();
+    /**
+     * Setup logo from outside of Web Application Context.
+     * Should be public!
+     */
+    public void setupLogoFromOutside() {
+        if ( logo.getContent() == null ) {
+
+            /* Try to find logo */
+            if ( Util.logo == null ) {
+                Util.findLogo();
+            }
+
+            logo.setContent(Util.logo);
+        }
     }
 
     public void accept() {

@@ -55,6 +55,8 @@ import java.util.Set;
 import static org.libreplan.web.I18nHelper._;
 
 /**
+ * Controller for page Hours Worked Per Resource
+ *
  * @author Diego Pino Garcia <dpino@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
@@ -150,6 +152,7 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
         if ( startingDate.getValue() == null ) {
             return null;
         }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startingDate.getValue());
         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0);
@@ -214,7 +217,8 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     /**
-     * ListItemRenderer for a @{Resource} element
+     * ListItemRenderer for a @{Resource} element.
+     *
      * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
      */
     class ResourceListRenderer implements ListitemRenderer {
@@ -283,10 +287,9 @@ public class HoursWorkedPerWorkerController extends LibrePlanReportController {
     }
 
     private String getName(Resource resource) {
-        if ( (resource instanceof Worker) && (((Worker) resource).isReal()) )
-            return (resource).getShortDescription();
-
-        return resource.getName();
+        return (resource instanceof Worker) && (((Worker) resource).isReal())
+                ?  (resource).getShortDescription()
+                : resource.getName();
     }
 
     private String getType(Resource resource) {

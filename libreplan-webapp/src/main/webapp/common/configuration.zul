@@ -100,9 +100,20 @@
 
                             <row>
                                 <label value="${i18n:_('Company logo URL')}" />
-                                <textbox id="companyLogoURL"
-                                         value="@{configurationController.companyLogoURL}"
-                                         width="300px" />
+                                <hbox>
+                                    <textbox id="companyLogoURL"
+                                             value="@{configurationController.companyLogoURL}"
+                                             width="200px" readonly="true" />
+
+                                    <button label="Upload" upload="true,maxsize=999"
+                                            onUpload="configurationController.importLogo(event.getMedia())"/>
+
+                                    <image id="logoPreview" height="20px" width="20px"
+                                           onCreate="configurationController.setPreviewLogo()"/>
+
+                                    <button label="Delete image" onClick="configurationController.removeLogo()"/>
+                                </hbox>
+
                             </row>
 
                             <row>
