@@ -25,7 +25,7 @@
 
     <tabbox>
         <tabs>
-            <tab label="${i18n:_('Company data')}"></tab>
+            <tab label="${i18n:_('Company data')}"/>
         </tabs>
         <tabpanels>
             <tabpanel>
@@ -88,7 +88,7 @@
                             </row>
                             <row>
                                 <label value="${i18n:_('Company password')}:" />
-                                <textbox id="ourCompanyPassword"
+                                <textbox id="ourCompanyPassword" type="password"
                                     value="@{controller.company.ourCompanyPassword}" />
                             </row>
                         </rows>

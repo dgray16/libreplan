@@ -222,7 +222,8 @@
 
     <zscript>
         <![CDATA[
-            i18iframe = "/help/" + org.libreplan.web.I18nHelper._("en") + "/05-recursos.html#recursos-limitantes";
+            i18iframe = org.libreplan.web.HelpLinkUtil.checkUrlPath(
+           "/help/" + org.libreplan.web.I18nHelper._("en") + "/05-recursos.html#recursos-limitantes");
         ]]>
     </zscript>
 

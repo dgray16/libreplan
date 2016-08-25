@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.libreplan.business.common.daos.IConfigurationDAO;
 import org.libreplan.business.common.exceptions.InstanceNotFoundException;
-import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.externalcompanies.entities.ExternalCompany;
 import org.libreplan.business.orders.daos.IOrderDAO;
 import org.libreplan.business.orders.daos.IOrderElementDAO;
@@ -71,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Model for operations related with subcontracted tasks.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
+ * @author Bogdan Bodnarjuk <b.bodnarjuk@libreplan-enterprise.com>
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -157,7 +157,7 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
     @Override
     @Transactional
     public void sendToSubcontractor(SubcontractedTaskData subcontractedTaskData)
-            throws ValidationException, ConnectionProblemsException, UnrecoverableErrorServiceException {
+            throws ConnectionProblemsException, UnrecoverableErrorServiceException {
 
         subcontractedTaskDataDAO.save(subcontractedTaskData);
 
@@ -177,11 +177,11 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
             throw new RuntimeException("External company has not interaction fields filled");
         }
 
-        makeSubcontractRequestRequest(subcontractedTaskData,currentState);
+        makeSubcontractRequest(subcontractedTaskData,currentState);
 
         Date today = new Date();
-        if ( (currentState.equals(SubcontractState.PENDING_INITIAL_SEND)) ||
-                (currentState.equals(SubcontractState.FAILED_SENT)) ) {
+        if (currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
+                currentState.equals(SubcontractState.FAILED_SENT)) {
 
             subcontractedTaskData.setSubcontractCommunicationDate(today);
         }
@@ -192,8 +192,8 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
         subcontractedTaskData.setState(SubcontractState.SUCCESS_SENT);
     }
 
-    private void makeSubcontractRequestRequest(
-            SubcontractedTaskData subcontractedTaskData, SubcontractState currentState)
+    private void makeSubcontractRequest(SubcontractedTaskData subcontractedTaskData,
+                                        SubcontractState currentState)
             throws ConnectionProblemsException, UnrecoverableErrorServiceException {
 
         if ( subcontractedTaskData.getState() != null ) {
@@ -215,7 +215,8 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
             throws ConnectionProblemsException, UnrecoverableErrorServiceException {
 
         UpdateDeliveringDateDTO updateDeliveringDateDTO =
-                SubcontractedTaskDataConverter.toUpdateDeliveringDateDTO(getCompanyCode(), subcontractedTaskData);
+                SubcontractedTaskDataConverter.toUpdateDeliveringDateDTO(subcontractedTaskData.getExternalCompany().getNif(),
+                        subcontractedTaskData);
 
         ExternalCompany externalCompany = subcontractedTaskData.getExternalCompany();
 
@@ -234,16 +235,7 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
             List<InstanceConstraintViolationsDTO> instanceConstraintViolationsList =
                     instanceConstraintViolationsListDTO.instanceConstraintViolationsList;
 
-            if ( (instanceConstraintViolationsList != null) && (!instanceConstraintViolationsList.isEmpty()) ) {
-
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (ConstraintViolationDTO current : instanceConstraintViolationsList.get(0).constraintViolations) {
-                    stringBuilder.append(current.toString()).append("\n");
-                }
-
-                throw new UnrecoverableErrorServiceException(stringBuilder.toString());
-            }
+            checkConstraintViolations(instanceConstraintViolationsList);
 
         } catch (WebApplicationException e) {
             LOG.error(CONNECTION_PROBLEM, e);
@@ -280,15 +272,7 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
             List<InstanceConstraintViolationsDTO> instanceConstraintViolationsList =
                     instanceConstraintViolationsListDTO.instanceConstraintViolationsList;
 
-            if ( (instanceConstraintViolationsList != null) && (!instanceConstraintViolationsList.isEmpty()) ) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (ConstraintViolationDTO current :  instanceConstraintViolationsList.get(0).constraintViolations) {
-                    stringBuilder.append(current.toString()).append("\n");
-                }
-
-                throw new UnrecoverableErrorServiceException(stringBuilder.toString());
-            }
+            checkConstraintViolations(instanceConstraintViolationsList);
 
         } catch (WebApplicationException e) {
             LOG.error(CONNECTION_PROBLEM, e);
@@ -302,17 +286,30 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
         }
     }
 
-    private SubcontractedTaskDataDTO getSubcontractedTaskData(SubcontractedTaskData subcontractedTaskData) {
-        return SubcontractedTaskDataConverter.toDTO(
-                getCompanyCode(), subcontractedTaskData, getOrderElement(subcontractedTaskData));
+    private void checkConstraintViolations(List<InstanceConstraintViolationsDTO> instanceConstraintViolationsList)
+            throws UnrecoverableErrorServiceException {
+
+        if ( instanceConstraintViolationsList != null && !instanceConstraintViolationsList.isEmpty() ) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (ConstraintViolationDTO current :  instanceConstraintViolationsList.get(0).constraintViolations) {
+                stringBuilder.append(current.toString()).append("\n");
+            }
+
+            throw new UnrecoverableErrorServiceException(stringBuilder.toString());
+        }
     }
 
-    private String getCompanyCode() {
-        return configurationDAO.getConfiguration().getCompanyCode();
+    private SubcontractedTaskDataDTO getSubcontractedTaskData(SubcontractedTaskData subcontractedTaskData) {
+        return SubcontractedTaskDataConverter.toDTO(
+                subcontractedTaskData.getExternalCompany().getNif(),
+                subcontractedTaskData,
+                getOrderElement(subcontractedTaskData));
     }
 
     private OrderElementDTO getOrderElement(SubcontractedTaskData subcontractedTaskData) {
         OrderElement orderElement;
+
         try {
             orderElement = orderElementDAO.find(subcontractedTaskData.getTask().getOrderElement().getId());
         } catch (InstanceNotFoundException e) {
@@ -351,9 +348,8 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
     public String exportXML(SubcontractedTaskData subcontractedTaskData) {
         SubcontractState currentState = subcontractedTaskData.getState();
 
-        if ( currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
+        if (currentState.equals(SubcontractState.PENDING_INITIAL_SEND) ||
                 currentState.equals(SubcontractState.FAILED_SENT) ) {
-
             return exportXML_CreateSubcontractor(subcontractedTaskData);
         } else {
             return exportXML_UpdateSubcontractor(subcontractedTaskData);
@@ -379,9 +375,11 @@ public class SubcontractedTasksModel implements ISubcontractedTasksModel {
         subcontractedTaskDataDAO.reattachUnmodifiedEntity(subcontractedTaskData);
 
         UpdateDeliveringDateDTO updateDeliveringDateDTO =
-                SubcontractedTaskDataConverter.toUpdateDeliveringDateDTO(getCompanyCode(), subcontractedTaskData);
+                SubcontractedTaskDataConverter.toUpdateDeliveringDateDTO(subcontractedTaskData.getExternalCompany().getNif(),
+                        subcontractedTaskData);
 
         StringWriter xml = new StringWriter();
+
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(UpdateDeliveringDateDTO.class);
             Marshaller marshaller = jaxbContext.createMarshaller();

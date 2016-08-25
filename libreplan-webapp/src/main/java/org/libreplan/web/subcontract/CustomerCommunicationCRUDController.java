@@ -19,7 +19,6 @@
 
 package org.libreplan.web.subcontract;
 
-import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.externalcompanies.entities.CommunicationType;
 import org.libreplan.business.externalcompanies.entities.CustomerCommunication;
 import org.libreplan.business.orders.entities.Order;
@@ -28,13 +27,17 @@ import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.planner.tabs.IGlobalViewEntryPoints;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.RowRenderer;
+import org.zkoss.zul.SimpleListModel;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 import static org.libreplan.web.I18nHelper._;
@@ -57,21 +60,27 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
 
     private Grid listing;
 
-    public CustomerCommunicationCRUDController(){
-        customerCommunicationModel = (ICustomerCommunicationModel) SpringUtil.getBean("customerCommunicationModel");
-    }
-
-    @Resource
     private IGlobalViewEntryPoints globalView;
+
+    public CustomerCommunicationCRUDController(){
+    }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         comp.setAttribute("controller", this);
+
+        injectsObjects();
+
         messagesForUser = new MessagesForUser(messagesContainer);
     }
 
-    private void goToEdit(CustomerCommunication customerCommunication) {
+    private void injectsObjects() {
+        customerCommunicationModel = (ICustomerCommunicationModel) SpringUtil.getBean("customerCommunicationModel");
+        globalView = (IGlobalViewEntryPoints) SpringUtil.getBean("globalView");
+    }
+
+    public void goToEdit(CustomerCommunication customerCommunication) {
         if(customerCommunication != null && customerCommunication.getOrder() != null){
             Order order = customerCommunication.getOrder();
             globalView.goToOrderDetails(order);
@@ -97,19 +106,17 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
         listing.invalidate();
     }
 
-    protected void save(CustomerCommunication customerCommunication) throws ValidationException {
+    protected void save(CustomerCommunication customerCommunication) {
         customerCommunicationModel.confirmSave(customerCommunication);
     }
 
     public List<CustomerCommunication> getCustomerCommunications() {
         FilterCommunicationEnum currentFilter = customerCommunicationModel.getCurrentFilter();
         switch(currentFilter){
-            case ALL:
-                return customerCommunicationModel.getCustomerAllCommunications();
-
             case NOT_REVIEWED:
-                return customerCommunicationModel.getCustomerCommunicationWithoutReviewed();
+            return customerCommunicationModel.getCustomerCommunicationWithoutReviewed();
 
+            case ALL:
             default:
                 return customerCommunicationModel.getCustomerAllCommunications();
         }
@@ -190,7 +197,7 @@ public class CustomerCommunicationCRUDController extends GenericForwardComposer 
      * Apply filter to customers communications
      * @param event
      */
-    public void onApplyFilter(Event event) {
+    public void onApplyFilter() {
         refreshCustomerCommunicationsList();
     }
 }

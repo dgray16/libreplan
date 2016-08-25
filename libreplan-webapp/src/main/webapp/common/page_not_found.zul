@@ -35,7 +35,7 @@
 
     <window self="@{define(content)}" >
 
-        <vbox apply="org.libreplan.web.error.PageForErrorOnEvent" sclass="errorbox">
+        <vbox apply="org.libreplan.web.error.PageForErrorOnEvent" sclass="errorbox" width="96%">
 
             <label value="${i18n:_('The page that you are requesting does not exist.')}" />
 

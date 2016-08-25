@@ -36,13 +36,14 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class InstanceConstraintViolationsDTO {
 
-    public final static String NUM_ITEM_ATTRIBUTE_NAME = "num-item";
-    public final static String CODE_ATTRIBUTE_NAME =
-        IntegrationEntityDTO.CODE_ATTRIBUTE_NAME;
-    public final static String ENTITY_TYPE_ATTRIBUTE_NAME = "entity-type";
+    public static final String NUM_ITEM_ATTRIBUTE_NAME = "num-item";
+
+    public static final String CODE_ATTRIBUTE_NAME = IntegrationEntityDTO.CODE_ATTRIBUTE_NAME;
+
+    public static final String ENTITY_TYPE_ATTRIBUTE_NAME = "entity-type";
 
     @Deprecated
-    public final static String INSTANCE_ID_ATTRIBUTE_NAME = "instance-id";
+    public static final String INSTANCE_ID_ATTRIBUTE_NAME = "instance-id";
 
     @Deprecated
     @XmlAttribute(name=INSTANCE_ID_ATTRIBUTE_NAME)
@@ -117,26 +118,22 @@ public class InstanceConstraintViolationsDTO {
     public static InstanceConstraintViolationsDTO create(String instanceId,
         String message) {
 
-        List<ConstraintViolationDTO> constraintViolations =
-            new ArrayList<ConstraintViolationDTO>();
+        List<ConstraintViolationDTO> constraintViolations = new ArrayList<>();
 
         constraintViolations.add(new ConstraintViolationDTO(null, message));
 
-        return new InstanceConstraintViolationsDTO(instanceId,
-            constraintViolations);
+        return new InstanceConstraintViolationsDTO(instanceId, constraintViolations);
 
     }
 
     public static InstanceConstraintViolationsDTO create(
         InstanceConstraintViolationsDTOId instanceId, String message) {
 
-        List<ConstraintViolationDTO> constraintViolations =
-            new ArrayList<ConstraintViolationDTO>();
+        List<ConstraintViolationDTO> constraintViolations = new ArrayList<>();
 
         constraintViolations.add(new ConstraintViolationDTO(null, message));
 
-        return new InstanceConstraintViolationsDTO(instanceId,
-            constraintViolations);
+        return new InstanceConstraintViolationsDTO(instanceId, constraintViolations);
 
     }
 
@@ -146,8 +143,7 @@ public class InstanceConstraintViolationsDTO {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
 
-        printWriter.println("** " + INSTANCE_ID_ATTRIBUTE_NAME + " = " +
-            instanceId + " **");
+        printWriter.println("** " + INSTANCE_ID_ATTRIBUTE_NAME + " = " + instanceId + " **");
 
         printWriter.println("** " +
             NUM_ITEM_ATTRIBUTE_NAME + " = " + numItem + " - " +

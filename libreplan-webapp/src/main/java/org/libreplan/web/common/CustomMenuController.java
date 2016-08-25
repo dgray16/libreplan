@@ -64,13 +64,21 @@ import org.zkoss.zul.Vbox;
  */
 public class CustomMenuController extends Div implements IMenuItemsRegister {
 
+    private static final Pattern perspectiveCssClass = Pattern.compile("\\bperspective(-\\w+)?\\b");
+
     private List<CustomMenuItem> firstLevel;
 
     private IGlobalViewEntryPoints globalView;
 
-    private static final Pattern perspectiveCssClass = Pattern.compile("\\bperspective(-\\w+)?\\b");
-
     private Button currentOne = null;
+
+    public CustomMenuController() {
+        this.firstLevel = new ArrayList<>();
+        this.globalView = findGlobalViewEntryPoints();
+        initializeMenu();
+        activateCurrentOne();
+        getLocator().store(this);
+    }
 
     public static class CustomMenuItem {
 
@@ -192,14 +200,6 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
         ServletContext context = request.getSession().getServletContext();
 
         return WebApplicationContextUtils.getWebApplicationContext(context);
-    }
-
-    public CustomMenuController() {
-        this.firstLevel = new ArrayList<>();
-        this.globalView = findGlobalViewEntryPoints();
-        initializeMenu();
-        activateCurrentOne();
-        getLocator().store(this);
     }
 
     private void activateCurrentOne() {
@@ -615,7 +615,7 @@ public class CustomMenuController extends Div implements IMenuItemsRegister {
 
             if ( ci.isActiveParent() ) {
 
-                if ( (ci.name != null) ) {
+                if ( ci.name != null ) {
 
                     for (CustomMenuItem child : ci.children) {
 

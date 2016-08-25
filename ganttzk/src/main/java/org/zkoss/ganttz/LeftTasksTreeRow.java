@@ -252,7 +252,12 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
         findComponents((Treerow) component);
         registerTextboxesListeners();
         updateComponents();
-        task.addFundamentalPropertiesChangeListener(evt -> updateComponents());
+        task.addFundamentalPropertiesChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                updateComponents();
+            }
+        });
 
     }
 

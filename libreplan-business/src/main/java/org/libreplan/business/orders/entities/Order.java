@@ -569,8 +569,7 @@ public class Order extends OrderLineGroup implements Comparable {
             return null;
         }
 
-        AdvanceType advanceType = PredefinedAdvancedTypes.SUBCONTRACTOR
-                .getType();
+        AdvanceType advanceType = PredefinedAdvancedTypes.SUBCONTRACTOR.getType();
 
         return getAdvanceAssignmentByType(advanceType);
     }

@@ -24,11 +24,9 @@ package org.libreplan.web.planner.taskedition;
 import static org.libreplan.web.I18nHelper._;
 
 import org.libreplan.business.common.exceptions.ValidationException;
-import org.libreplan.business.planner.entities.ITaskPositionConstrained;
 import org.libreplan.business.planner.entities.Task;
 import org.libreplan.business.planner.entities.TaskElement;
 import org.libreplan.web.common.IMessagesForUser;
-import org.libreplan.web.common.Level;
 import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.planner.allocation.ResourceAllocationController;
@@ -176,7 +174,8 @@ public class EditTaskController extends GenericForwardComposer {
         showTabPanel(taskPropertiesController.getResourceAllocationType(taskElement));
     }
 
-    void showTabPanel(ResourceAllocationTypeEnum resourceAllocationType) {
+    public void showTabPanel(
+            ResourceAllocationTypeEnum resourceAllocationType) {
         subcontractTab.setVisible(false);
         resourceAllocationTab.setVisible(false);
         limitingResourceAllocationTab.setVisible(false);
@@ -207,9 +206,9 @@ public class EditTaskController extends GenericForwardComposer {
         limitingResourceAllocationTab.setVisible(true);
     }
 
-    void showEditFormTaskProperties(IContextWithPlannerTask<TaskElement> context, TaskElement taskElement,
+    public void showEditFormTaskProperties(IContextWithPlannerTask<TaskElement> context,
+                                           TaskElement taskElement,
                                            PlanningState planningState) {
-
         editTaskTabbox.setSelectedPanel(taskPropertiesTabpanel);
         showEditForm(context, taskElement, planningState);
     }
@@ -225,7 +224,7 @@ public class EditTaskController extends GenericForwardComposer {
         showEditFormResourceAllocation(context, taskElement, planningState, false);
     }
 
-    private void showEditFormResourceAllocation(IContextWithPlannerTask<TaskElement> context, TaskElement taskElement,
+    public void showEditFormResourceAllocation(IContextWithPlannerTask<TaskElement> context, TaskElement taskElement,
                                                PlanningState planningState, boolean fromLimitingResourcesView) {
 
         if ( isTask(taskElement) ) {
@@ -244,7 +243,7 @@ public class EditTaskController extends GenericForwardComposer {
         showEditForm(context, taskElement, planningState, fromLimitingResourcesView);
     }
 
-    void selectAssignmentTab(int index) {
+   public void selectAssignmentTab(int index) {
         editTaskTabbox.setSelectedIndex(index);
     }
 
@@ -307,7 +306,7 @@ public class EditTaskController extends GenericForwardComposer {
         }
     }
 
-    private Task asTask(TaskElement taskElement) {
+    public Task asTask(TaskElement taskElement) {
         return (Task) taskElement;
     }
 

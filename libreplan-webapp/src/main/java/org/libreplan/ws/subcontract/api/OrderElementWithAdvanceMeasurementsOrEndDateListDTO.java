@@ -42,7 +42,7 @@ public class OrderElementWithAdvanceMeasurementsOrEndDateListDTO {
     public String externalCompanyNif;
 
     @XmlElement(name = "order-element")
-    public List<OrderElementWithAdvanceMeasurementsOrEndDateDTO> orderElements = new ArrayList<OrderElementWithAdvanceMeasurementsOrEndDateDTO>();
+    public List<OrderElementWithAdvanceMeasurementsOrEndDateDTO> orderElements = new ArrayList<>();
 
     public OrderElementWithAdvanceMeasurementsOrEndDateListDTO() {
     }

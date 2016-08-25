@@ -35,6 +35,7 @@ import org.libreplan.business.common.daos.IConfigurationDAO;
 import org.libreplan.business.common.daos.IEntitySequenceDAO;
 import org.libreplan.business.workingday.EffortDuration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  */
 @Component
-@Scope("singleton")
+@Scope(BeanDefinition.SCOPE_SINGLETON)
 @BootstrapOrder(-1)
 public class ConfigurationBootstrap implements IConfigurationBootstrap {
 
@@ -94,7 +95,7 @@ public class ConfigurationBootstrap implements IConfigurationBootstrap {
     }
 
     private Map<EntityNameEnum, List<EntitySequence>> initEntitySequences() {
-        Map<EntityNameEnum, List<EntitySequence>> entitySequences = new HashMap<EntityNameEnum, List<EntitySequence>>();
+        Map<EntityNameEnum, List<EntitySequence>> entitySequences = new HashMap<>();
         for (EntityNameEnum entityName : EntityNameEnum.values()) {
             entitySequences.put(entityName, new ArrayList<EntitySequence>());
         }

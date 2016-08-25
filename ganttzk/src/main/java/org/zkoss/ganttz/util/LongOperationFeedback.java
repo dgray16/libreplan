@@ -76,15 +76,17 @@ public class LongOperationFeedback {
 
         Clients.showBusy(longOperation.getName());
 
-        executeLater(component, () -> {
-            try {
-                alreadyInside.set(true);
-                longOperation.doAction();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            } finally {
-                alreadyInside.remove();
-                Clients.clearBusy();
+        executeLater(component, new Runnable() {
+            public void run() {
+                try {
+                    alreadyInside.set(true);
+                    longOperation.doAction();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    alreadyInside.remove();
+                    Clients.clearBusy();
+                }
             }
         });
     }

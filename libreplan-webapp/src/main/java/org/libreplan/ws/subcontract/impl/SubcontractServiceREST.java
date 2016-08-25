@@ -115,6 +115,7 @@ public class SubcontractServiceREST implements ISubcontractService {
     private IAdHocTransactionService adHocTransactionService;
 
     static class ViolationError extends RuntimeException {
+
         private final List<InstanceConstraintViolationsDTO> violations;
 
         ViolationError(InstanceConstraintViolationsDTO... violations) {
@@ -141,26 +142,25 @@ public class SubcontractServiceREST implements ISubcontractService {
     @Consumes("application/xml")
     public InstanceConstraintViolationsListDTO updateDeliveringDates(
             final UpdateDeliveringDateDTO updateDeliveringDateDTO) {
+
         try {
             updateSubcontract(updateDeliveringDateDTO);
         } catch (ViolationError e) {
             return e.toViolationList();
         }
+
         return new InstanceConstraintViolationsListDTO();
     }
 
 
-    private void updateSubcontract(
-            final UpdateDeliveringDateDTO updateDeliveringDateDTO) {
+    private void updateSubcontract(final UpdateDeliveringDateDTO updateDeliveringDateDTO) {
 
         if (StringUtils.isEmpty(updateDeliveringDateDTO.externalCompanyNif)) {
-            throw new ViolationError(updateDeliveringDateDTO.externalCompanyNif,
-                    "external company Nif not specified");
+            throw new ViolationError(updateDeliveringDateDTO.externalCompanyNif, "external company Nif not specified");
         }
 
         if (StringUtils.isEmpty(updateDeliveringDateDTO.externalCode)) {
-            throw new ViolationError(updateDeliveringDateDTO.externalCode,
-                    "external order code not specified");
+            throw new ViolationError(updateDeliveringDateDTO.externalCode, "external order code not specified");
         }
 
         if ((updateDeliveringDateDTO.deliverDate) == null) {
@@ -193,31 +193,30 @@ public class SubcontractServiceREST implements ISubcontractService {
             InstanceConstraintViolationsDTO violation = ConstraintViolationConverter
                     .toDTO(new InstanceConstraintViolationsDTOId(Long.valueOf(1),
                             updateDeliveringDateDTO.externalCompanyNif, OrderDTO.ENTITY_TYPE), e);
+
             throw new ViolationError(violation);
         }
     }
 
     private void updateDeliveringDateInOrder(UpdateDeliveringDateDTO updateDeliveringDateDTO){
         try {
-            OrderElement orderElement = orderElementDAO
-                    .findByExternalCode(updateDeliveringDateDTO.externalCode);
+            OrderElement orderElement = orderElementDAO.findByExternalCode(updateDeliveringDateDTO.externalCode);
 
-            if((orderElement != null) && (orderElement instanceof Order)) {
+            if(orderElement != null && orderElement instanceof Order) {
                 Order order = (Order)orderElement;
 
                 Date newDeliverDate = DateConverter.toDate(updateDeliveringDateDTO.deliverDate);
-                DeadlineCommunication deadlineCommunication = DeadlineCommunication
-                        .create(new Date(), newDeliverDate);
+                DeadlineCommunication deadlineCommunication = DeadlineCommunication.create(new Date(), newDeliverDate);
                 order.getDeliveringDates().add(deadlineCommunication);
 
                 LocalDate newLocalDeliverDate = new LocalDate(newDeliverDate);
-                OrderVersion orderVersion = order.getOrderVersionFor(Registry
-                        .getScenarioManager().getCurrent());
+                OrderVersion orderVersion = order.getOrderVersionFor(Registry.getScenarioManager().getCurrent());
                 order.useSchedulingDataFor(orderVersion);
+
                 if (order.getAssociatedTaskElement() != null) {
-                    order.getAssociatedTaskElement().setDeadline(
-                            newLocalDeliverDate);
+                    order.getAssociatedTaskElement().setDeadline(newLocalDeliverDate);
                 }
+
                 createCustomerCommunication(order, CommunicationType.UPDATE_DELIVERING_DATE);
                 orderElementDAO.save(order);
 
@@ -236,22 +235,20 @@ public class SubcontractServiceREST implements ISubcontractService {
     @POST
     @Path("create/")
     @Consumes("application/xml")
-    public InstanceConstraintViolationsListDTO subcontract(
-            final SubcontractedTaskDataDTO subcontractedTaskDataDTO) {
+    public InstanceConstraintViolationsListDTO subcontract(final SubcontractedTaskDataDTO subcontractedTaskDataDTO) {
         try {
             doSubcontract(subcontractedTaskDataDTO);
         } catch (ViolationError e) {
             return e.toViolationList();
         }
+
         return new InstanceConstraintViolationsListDTO();
     }
 
-    private void doSubcontract(final SubcontractedTaskDataDTO subcontractedTask)
-            throws ViolationError {
+    private void doSubcontract(final SubcontractedTaskDataDTO subcontractedTask) {
 
         if (StringUtils.isEmpty(subcontractedTask.externalCompanyNif)) {
-            throw new ViolationError(subcontractedTask.subcontractedCode,
-                    "external company ID not specified");
+            throw new ViolationError(subcontractedTask.subcontractedCode, "external company ID not specified");
         }
 
         final ExternalCompany externalCompany = adHocTransactionService
@@ -268,8 +265,7 @@ public class SubcontractServiceREST implements ISubcontractService {
 
         final OrderElementDTO orderElementDTO = subcontractedTask.orderElementDTO;
         if (orderElementDTO == null) {
-            throw new ViolationError(subcontractedTask.subcontractedCode,
-                    "task not specified");
+            throw new ViolationError(subcontractedTask.subcontractedCode, "task not specified");
         }
         try {
             adHocTransactionService
@@ -284,16 +280,15 @@ public class SubcontractServiceREST implements ISubcontractService {
                     });
         } catch (ValidationException e) {
             InstanceConstraintViolationsDTO violation = ConstraintViolationConverter
-                    .toDTO(new InstanceConstraintViolationsDTOId(Long.valueOf(1),
-                            orderElementDTO.code, OrderDTO.ENTITY_TYPE), e);
+                    .toDTO(new InstanceConstraintViolationsDTOId(1L, orderElementDTO.code, OrderDTO.ENTITY_TYPE), e);
+
             throw new ViolationError(violation);
         }
     }
 
-    private void createOrder(
-            final SubcontractedTaskDataDTO subcontractedTaskDataDTO,
-            final ExternalCompany externalCompany,
-            final OrderElementDTO orderElementDTO) throws ViolationError{
+    private void createOrder(final SubcontractedTaskDataDTO subcontractedTaskDataDTO,
+                             final ExternalCompany externalCompany,
+                             final OrderElementDTO orderElementDTO) {
         Scenario current = Registry.getScenarioManager().getCurrent();
         OrderVersion version = OrderVersion.createInitialVersion(current);
         OrderElement orderElement = OrderElementConverter.toEntity(version,
@@ -307,8 +302,7 @@ public class SubcontractServiceREST implements ISubcontractService {
             order.useSchedulingDataFor(version);
             order.setExternalCode(order.getCode());
         } else {
-            order = wrapInOrder(current, version,
-                    orderElement);
+            order = wrapInOrder(current, version, orderElement);
         }
 
         addOrderToDerivedScenarios(current, version, order);
@@ -328,21 +322,19 @@ public class SubcontractServiceREST implements ISubcontractService {
         if (subcontractedTaskDataDTO.workDescription != null) {
             order.setName(subcontractedTaskDataDTO.workDescription);
         }
+
         order.setCustomer(externalCompany);
         order.setCustomerReference(subcontractedTaskDataDTO.subcontractedCode);
         order.setWorkBudget(subcontractedTaskDataDTO.subcontractPrice);
 
         if (subcontractedTaskDataDTO.deliverDate != null) {
-            Date deliveryDate = DateConverter
-                    .toDate(subcontractedTaskDataDTO.deliverDate);
-            DeadlineCommunication deadlineCommunication = DeadlineCommunication
-                    .create(new Date(), deliveryDate);
+            Date deliveryDate = DateConverter.toDate(subcontractedTaskDataDTO.deliverDate);
+            DeadlineCommunication deadlineCommunication = DeadlineCommunication.create(new Date(), deliveryDate);
             order.getDeliveringDates().add(deadlineCommunication);
             order.setDeadline(deliveryDate);
         }
 
-        synchronizeWithSchedule(order,
-                TaskSource.persistTaskSources(taskSourceDAO));
+        synchronizeWithSchedule(order, TaskSource.persistTaskSources(taskSourceDAO));
         order.writeSchedulingDataChanges();
 
         order.validate();
@@ -356,19 +348,17 @@ public class SubcontractServiceREST implements ISubcontractService {
         }
     }
 
-    private void synchronizeWithSchedule(OrderElement orderElement,
-            IOptionalPersistence persistence) {
-        List<TaskSourceSynchronization> synchronizationsNeeded = orderElement
-                .calculateSynchronizationsNeeded();
+    private void synchronizeWithSchedule(OrderElement orderElement, IOptionalPersistence persistence) {
+        List<TaskSourceSynchronization> synchronizationsNeeded = orderElement.calculateSynchronizationsNeeded();
+
         for (TaskSourceSynchronization each : synchronizationsNeeded) {
             each.apply(persistence);
         }
     }
 
-    private void addOrderToDerivedScenarios(Scenario currentScenario,
-            OrderVersion orderVersion, Order order) {
-        List<Scenario> derivedScenarios = scenarioDAO
-                .getDerivedScenarios(currentScenario);
+    private void addOrderToDerivedScenarios(Scenario currentScenario, OrderVersion orderVersion, Order order) {
+        List<Scenario> derivedScenarios = scenarioDAO.getDerivedScenarios(currentScenario);
+
         for (Scenario scenario : derivedScenarios) {
             scenario.addOrder(order, orderVersion);
         }
@@ -376,22 +366,19 @@ public class SubcontractServiceREST implements ISubcontractService {
 
     private void generateCodes(Order order) {
         EntitySequence entitySequence;
+
         try {
-            entitySequence = entitySequenceDAO
-                    .getActiveEntitySequence(EntityNameEnum.ORDER);
+            entitySequence = entitySequenceDAO.getActiveEntitySequence(EntityNameEnum.ORDER);
             int numberOfDigits = entitySequence.getNumberOfDigits();
             order.generateOrderElementCodes(numberOfDigits);
         } catch (NonUniqueResultException e) {
-            throw new ViolationError("",
-                    "There are several active project sequences");
+            throw new ViolationError("", "There are several active project sequences");
         } catch (InstanceNotFoundException e) {
-            throw new ViolationError("",
-                    "It does not exist any activated code sequence.");
+            throw new ViolationError("", "It does not exist any activated code sequence.");
         }
     }
 
-    private Order wrapInOrder(Scenario current, OrderVersion version,
-            OrderElement orderElement) {
+    private Order wrapInOrder(Scenario current, OrderVersion version, OrderElement orderElement) {
         if (orderElement instanceof Order) {
             return (Order) orderElement;
         }
@@ -414,40 +401,34 @@ public class SubcontractServiceREST implements ISubcontractService {
         return configurationDAO.getConfiguration().getDefaultCalendar();
     }
 
-    private ExternalCompany findExternalCompanyFor(
-            final SubcontractedTaskDataDTO subcontractedTask){
+    private ExternalCompany findExternalCompanyFor(final SubcontractedTaskDataDTO subcontractedTask){
        return findExternalCompanyFor(subcontractedTask.externalCompanyNif);
     }
 
-    private ExternalCompany findExternalCompanyFor(
-            final String externalCompanyNif)
-            throws ViolationError {
+    private ExternalCompany findExternalCompanyFor(final String externalCompanyNif) {
         try {
-            return externalCompanyDAO
-                    .findUniqueByNif(externalCompanyNif);
+            return externalCompanyDAO.findUniqueByNif(externalCompanyNif);
         } catch (InstanceNotFoundException e) {
-            throw new ViolationError(externalCompanyNif,
-                    "external company not found");
+            throw new ViolationError(externalCompanyNif, "external company not found");
         }
     }
 
-    private static InstanceConstraintViolationsDTO createConstraintViolationFor(
-            String code, String message) {
-        return InstanceConstraintViolationsDTO.create(
-                Util.generateInstanceId(1, code), message);
+    private static InstanceConstraintViolationsDTO createConstraintViolationFor(String code, String message) {
+        return InstanceConstraintViolationsDTO.create(Util.generateInstanceId(1, code), message);
     }
 
     private void createCustomerCommunication(Order order, CommunicationType type){
         Date communicationDate = new Date();
-        Date deadline = null;
-        if(type.equals(CommunicationType.NEW_PROJECT)){
+        Date deadline;
+
+        if (type.equals(CommunicationType.NEW_PROJECT)){
              deadline = order.getDeadline();
-        }else{
+        } else {
             deadline = order.getDeliveringDates().first().getDeliverDate();
         }
         CustomerCommunication customerCommunication = CustomerCommunication
-                .create(deadline, communicationDate,
-                        type, order);
+                .create(deadline, communicationDate, type, order);
+
         customerCommunicationDAO.save(customerCommunication);
     }
 }

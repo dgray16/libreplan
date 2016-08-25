@@ -144,7 +144,8 @@
                 <property name="budgetMargin" column="budget_margin" access="field" />
 
                 <!-- Not indexed -->
-                <many-to-one name="customer" access="field" class="org.libreplan.business.externalcompanies.entities.ExternalCompany"/>
+                <many-to-one name="customer" access="field" class="org.libreplan.business.externalcompanies.entities.ExternalCompany"
+                 lazy="false"/>
 
                 <!-- Not indexed -->
                 <many-to-one name="calendar" column="base_calendar_id" cascade="none"

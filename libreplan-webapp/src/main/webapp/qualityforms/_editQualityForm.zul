@@ -140,8 +140,11 @@
     </hbox>
 
     <zscript><![CDATA[
-        i18iframe = "/help/" + org.libreplan.web.I18nHelper._("en") + "/12-formularios-calidad.html#administracion-de-formularios-de-calidade";
-    ]]></zscript>
+        i18iframe = org.libreplan.web.HelpLinkUtil.checkUrlPath(
+            "/help/" + org.libreplan.web.I18nHelper._("en") +
+            "/12-formularios-calidad.html#administracion-de-formularios-de-calidade");
+        ]]>
+    </zscript>
     <popup id="quality-forms-popup" width="700px" onOpen='iframe.setSrc(i18iframe)'>
         <iframe id="iframe" width="100%" />
     </popup>
