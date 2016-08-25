@@ -41,6 +41,8 @@ import org.zkoss.ganttz.util.MutableTreeModel;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.HtmlMacroComponent;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
 import org.zkoss.zul.Tree;
 import org.zkoss.zul.Treeitem;
@@ -61,16 +63,23 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
         @Override
         public void render(final Treeitem treeitem, Task o, int i) throws Exception {
-            Task task = (Task) o;
+            Task task = o;
             treeitem.setOpen(isOpened(task));
 
+            //TODO Investigate this problem
             if ( task instanceof TaskContainer ) {
 
                 final TaskContainer container = (TaskContainer) task;
-                IExpandListener expandListener = isNowExpanded -> treeitem.setOpen(isNowExpanded);
+                IExpandListener expandListener = new IExpandListener() {
 
+                    @Override
+                    public void expandStateChanged(boolean isNowExpanded) {
+                        treeitem.setOpen(isNowExpanded);
+                    }
+                };
                 expandListeners.put(container, expandListener);
                 container.addExpandListener(expandListener);
+
             }
 
             LeftTasksTreeRow leftTasksTreeRow = LeftTasksTreeRow
@@ -93,10 +102,14 @@ public class LeftTasksTree extends HtmlMacroComponent {
             deferredFiller.isBeingRendered(task, treeitem);
         }
 
-        private void expandWhenOpened(final TaskContainer taskBean, Treeitem item) {
-            item.addEventListener("onOpen", event -> {
-                OpenEvent openEvent = (OpenEvent) event;
-                taskBean.setExpanded(openEvent.isOpen());
+        private void expandWhenOpened(final TaskContainer taskBean,
+                Treeitem item) {
+            item.addEventListener("onOpen", new EventListener() {
+                @Override
+                public void onEvent(Event event) {
+                    OpenEvent openEvent = (OpenEvent) event;
+                    taskBean.setExpanded(openEvent.isOpen());
+                }
             });
         }
     }
@@ -430,7 +443,9 @@ public class LeftTasksTree extends HtmlMacroComponent {
         tasksTreeModel = MutableTreeModel.create(Task.class);
         fillModel(tasks, true);
         tasksTree.setModel(tasksTreeModel);
-        tasksTree.setTreeitemRenderer(new TaskBeanRenderer());
+        tasksTree.setItemRenderer(new TaskBeanRenderer());
+        //TODO Waiting for answer from ZK Sales about PE & EE
+        tasksTree.onInitRender();
     }
 
     void addTask(Position position, Task task) {

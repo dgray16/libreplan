@@ -33,15 +33,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.zkoss.ganttz.adapters.IDisabilityConfiguration;
 import org.zkoss.ganttz.data.GanttDate;
-import org.zkoss.ganttz.data.ITaskFundamentalProperties.IModifications;
-import org.zkoss.ganttz.data.ITaskFundamentalProperties.IUpdatablePosition;
 import org.zkoss.ganttz.data.Task;
 import org.zkoss.ganttz.util.ComponentsFinder;
 import org.zkoss.util.Locales;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.KeyEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
@@ -258,7 +254,12 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
         findComponents((Treerow) component);
         registerTextboxesListeners();
         updateComponents();
-        task.addFundamentalPropertiesChangeListener(evt -> updateComponents());
+        task.addFundamentalPropertiesChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                updateComponents();
+            }
+        });
 
     }
 

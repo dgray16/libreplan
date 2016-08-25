@@ -1612,7 +1612,7 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     public String getProjectType() {
-        return (isSubcontractedProject()) ? _("Subcontracted by client") : _("Regular project");
+        return isSubcontractedProject() ? _("Subcontracted by client") : _("Regular project");
     }
 
     public void setCurrentDeliveryDate(Grid listDeliveryDates) {

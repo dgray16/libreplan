@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.libreplan.business.advance.entities.AdvanceMeasurement;
-import org.libreplan.business.advance.entities.DirectAdvanceAssignment;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.orders.entities.Order;
 import org.libreplan.web.common.IMessagesForUser;
@@ -70,6 +69,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
     private Window window;
 
     private Component messagesContainer;
+
     private IMessagesForUser messagesForUser;
 
     @Autowired
@@ -131,7 +131,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
             appendLabel(row, _(status));
 
             // append the operations
-            if (status.equals("Updated")) {
+            if ("Updated".equals(status)) {
                 appendOperations(row, order, true);
             } else {
                 appendOperations(row, order, false);
@@ -159,6 +159,7 @@ public class ReportAdvancesController extends GenericForwardComposer {
 
         private Button getExportButton(final Order order) {
             Button exportButton = new Button("XML");
+            exportButton.setSclass("add-button");
             exportButton.addEventListener(Events.ON_CLICK, new EventListener() {
 
                 IServletRequestHandler requestHandler = new IServletRequestHandler() {
@@ -190,24 +191,20 @@ public class ReportAdvancesController extends GenericForwardComposer {
 
         private Button getSendButton(final Order order, boolean sendButtonDisabled) {
             Button sendButton = new Button(_("Send"));
-            sendButton.addEventListener(Events.ON_CLICK, new EventListener() {
-
-                @Override
-                public void onEvent(Event event) {
-                    try {
-                        reportAdvancesModel.sendAdvanceMeasurements(order);
-                        messagesForUser.showMessage(Level.INFO, _("Progress sent successfully"));
-                    } catch (UnrecoverableErrorServiceException e) {
-                        messagesForUser.showMessage(Level.ERROR, e.getMessage());
-                    } catch (ConnectionProblemsException e) {
-                        messagesForUser.showMessage(Level.ERROR, e.getMessage());
-                    } catch (ValidationException e) {
-                        messagesForUser.showInvalidValues(e);
-                    }
-
-                    Util.reloadBindings(window);
+            sendButton.setSclass("add-button");
+            sendButton.addEventListener(Events.ON_CLICK,  event -> {
+                try {
+                    reportAdvancesModel.sendAdvanceMeasurements(order);
+                    messagesForUser.showMessage(Level.INFO, _("Progress sent successfully"));
+                } catch (UnrecoverableErrorServiceException e) {
+                    messagesForUser.showMessage(Level.ERROR, e.getMessage());
+                } catch (ConnectionProblemsException e) {
+                    messagesForUser.showMessage(Level.ERROR, e.getMessage());
+                } catch (ValidationException e) {
+                    messagesForUser.showInvalidValues(e);
                 }
 
+                Util.reloadBindings(window);
             });
 
             sendButton.setDisabled(sendButtonDisabled);

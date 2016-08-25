@@ -271,6 +271,7 @@ public class SubcontractController extends GenericForwardComposer {
             updateButton.setDisabled(!isUpgradeable(endDateFromSubcontractor));
 
             updateButton.setTooltiptext(_("Update task end"));
+            updateButton.setSclass("add-button");
 
             updateButton.addEventListener(
                     Events.ON_CLICK, (EventListener) event -> updateTaskEnd(endDateFromSubcontractor.getEndDate()));
@@ -282,14 +283,11 @@ public class SubcontractController extends GenericForwardComposer {
             EndDateCommunication lastEndDateReported =
                     getSubcontractedTaskData().getLastEndDatesCommunicatedFromSubcontractor();
 
-            if ( lastEndDateReported != null ) {
+            if ( lastEndDateReported != null && lastEndDateReported.equals(endDateFromSubcontractor) ) {
+                Date newEndDate = lastEndDateReported.getEndDate();
+                Date endDateTask = taskEditFormComposer.getTaskDTO().endDate;
 
-                if ( lastEndDateReported.equals(endDateFromSubcontractor) ) {
-                    Date newEndDate = lastEndDateReported.getEndDate();
-                    Date endDateTask = taskEditFormComposer.getTaskDTO().endDate;
-
-                    return endDateTask == null || (newEndDate.compareTo(endDateTask) != 0);
-                }
+                return endDateTask == null || (newEndDate.compareTo(endDateTask) != 0);
             }
 
             return false;

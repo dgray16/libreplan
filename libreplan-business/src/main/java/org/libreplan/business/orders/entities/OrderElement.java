@@ -581,7 +581,7 @@ public abstract class OrderElement extends IntegrationEntity implements ICriteri
     }
 
     public boolean checkAtLeastOneHoursGroup() {
-        return getHoursGroups().isEmpty();
+        return !getHoursGroups().isEmpty();
     }
 
     public boolean isFormatCodeValid(String code) {

@@ -43,7 +43,6 @@ import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.SimpleListModel;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 import static org.libreplan.web.I18nHelper._;
@@ -61,7 +60,6 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     private SubcontractorCommunicationRenderer subcontractorCommunicationRenderer =
             new SubcontractorCommunicationRenderer();
 
-    @Resource
     private IGlobalViewEntryPoints globalView;
 
     protected IMessagesForUser messagesForUser;
@@ -75,15 +73,21 @@ public class SubcontractorCommunicationCRUDController extends GenericForwardComp
     private Popup pp;
 
     public SubcontractorCommunicationCRUDController() {
-        subcontractorCommunicationModel =
-                (ISubcontractorCommunicationModel) SpringUtil.getBean("subcontractorCommunicationModel");
     }
 
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         comp.setAttribute("controller", this);
+
+        injectsObjects();
         messagesForUser = new MessagesForUser(messagesContainer);
+    }
+
+    private void injectsObjects() {
+        subcontractorCommunicationModel =
+                (ISubcontractorCommunicationModel) SpringUtil.getBean("subcontractorCommunicationModel");
+        globalView = (IGlobalViewEntryPoints) SpringUtil.getBean("globalView");
     }
 
     public void goToEdit(SubcontractorCommunication subcontractorCommunication) {
