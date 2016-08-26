@@ -74,6 +74,7 @@
                                 onClick="allocationController.goToAdvancedSearch()" />
 
                         <checkbox id="extendedViewCheckbox" label="${i18n:_('Extended view')}"
+                                  sclass="resource-allocation-checkbox"
                                   onCheck="allocationController.onCheckExtendedView()"/>
                     </hbox>
 
