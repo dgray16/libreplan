@@ -54,6 +54,7 @@
                        visible="@{subController.sent}"/>
             </row>
             <row>
+                 <!--TODO Create tooltips like help link, from Bogdan)-->
                 <label value="${i18n:_('Work description')}" />
                 <textbox value="@{subController.subcontractedTaskData.workDescription}"
                          readonly="@{subController.sent}" hflex="1"/>
