@@ -30,7 +30,7 @@
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 
 <?component name="combobox_output_format" macroURI="combobox_output_format.zul"
-    class="org.libreplan.web.reports.ComboboxOutputFormat" ?>
+            class="org.libreplan.web.reports.ComboboxOutputFormat" ?>
 
 <zk>
 
@@ -70,6 +70,7 @@
                         <column width="200px" />
                         <column />
                     </columns>
+
                     <rows>
                         <row>
                             <label value="${i18n:_('Show dependencies')}" />
@@ -91,8 +92,8 @@
                                        widthListbox="380px"
                                        widthBandbox="350px"
                                        sclass="bandbox-margin"/>
-                        <button label="${i18n:_('Add')}" sclass="add-button"
-                                onClick="controller.onSelectLabel()"/>
+
+                        <button label="${i18n:_('Add')}" sclass="add-button" onClick="controller.onSelectLabel()"/>
                     </hbox>
                 </vbox>
 
@@ -108,6 +109,7 @@
                         <listheader label="${i18n:_('Name')}" align="center" />
                         <listheader label="${i18n:_('Operations')}" align="center" width="100px"/>
                     </listhead>
+
                     <listitem self="@{each='label'}" value="@{label}">
                         <listcell label="@{label.type.name}" />
                         <listcell label="@{label.name}" />
@@ -134,8 +136,8 @@
                                        widthListbox="380px"
                                        widthBandbox="350px"
                                        sclass="bandbox-margin"/>
-                        <button label="${i18n:_('Add')}" sclass="add-button"
-                                onClick="controller.onSelectCriterion()"/>
+
+                        <button label="${i18n:_('Add')}" sclass="add-button" onClick="controller.onSelectCriterion()"/>
                     </hbox>
                 </vbox>
 
@@ -151,6 +153,7 @@
                         <listheader label="${i18n:_('Name')}" align="center" />
                         <listheader label="${i18n:_('Operations')}" align="center" width="100px"/>
                     </listhead>
+
                     <listitem self="@{each='criterion'}" value="@{criterion}">
                         <listcell label="@{criterion.type.name}" />
                         <listcell label="@{criterion.name}" />
@@ -174,6 +177,7 @@
                         <column width="200px" />
                         <column />
                     </columns>
+
                     <rows>
                         <row>
                             <label value="${i18n:_('Output format')}" />
@@ -190,7 +194,7 @@
         <hbox style="display: none" id="URItext">
             <label value="${i18n:_('Click on this')}" />
             <a id="URIlink" sclass="z-label" zclass="z-label" label="${i18n:_('direct link')}" />
-            <label value="${i18n:_('if the report is not opened automatically')}" />
+            <label value="${i18n:_('if the report is not opened automatically or use save as...')}" />
         </hbox>
 
         <separator spacing="10px" orient="horizontal" />

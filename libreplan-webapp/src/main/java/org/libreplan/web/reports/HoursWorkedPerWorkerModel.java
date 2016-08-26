@@ -156,6 +156,7 @@ public class HoursWorkedPerWorkerModel implements IHoursWorkedPerWorkerModel {
     @Transactional(readOnly = true)
     public List<Label> getAllLabels(){
         List<Label> allLabels = labelDAO.getAll();
+
         /* Initialize the labels */
         for (Label label : allLabels) {
             label.getType().getName();
@@ -278,15 +279,19 @@ public class HoursWorkedPerWorkerModel implements IHoursWorkedPerWorkerModel {
         if ( hasChangeCriteria ) {
             this.selectedCriteria = null;
             Iterator<Criterion> iterator = this.selectedCriterions.iterator();
+
             if ( iterator.hasNext() ) {
                 this.selectedCriteria = "";
                 this.selectedCriteria = this.selectedCriteria.concat(iterator.next().getName());
             }
+
             while ( iterator.hasNext() ) {
                 this.selectedCriteria = this.selectedCriteria.concat(", " + iterator.next().getName());
             }
+
             hasChangeCriteria = false;
         }
+
         return selectedCriteria;
     }
 

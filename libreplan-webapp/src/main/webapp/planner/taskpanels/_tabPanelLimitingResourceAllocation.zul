@@ -23,19 +23,19 @@
 <?taglib uri="/WEB-INF/tld/i18n.tld" prefix="i18n" ?>
 
 <?component name="newAllocationSelectorCombo"
-    class="org.libreplan.web.common.components.NewAllocationSelectorCombo"
-    macroURI="/resources/search/allocation_selector_combo.zul" ?>
+        class="org.libreplan.web.common.components.NewAllocationSelectorCombo"
+        macroURI="/resources/search/allocation_selector_combo.zul" ?>
 
 <?component name="newAllocationSelector"
-    class="org.libreplan.web.common.components.NewAllocationSelector"
-    macroURI="/resources/search/allocation_selector.zul" ?>
+        class="org.libreplan.web.common.components.NewAllocationSelector"
+        macroURI="/resources/search/allocation_selector.zul" ?>
 
 <?component name="taskInformation"
-    class="org.libreplan.web.planner.allocation.TaskInformation"
-    macroURI="_taskInformation.zul" ?>
+        class="org.libreplan.web.planner.allocation.TaskInformation"
+        macroURI="_taskInformation.zul" ?>
 
 <tabpanel id="${arg.id}">
- <tabbox mold="accordion">
+    <tabbox mold="accordion">
         <tabs>
             <tab id="tabLimitingResourceAllocation" />
             <tab id="tabLimitingWorkerSearch" />
@@ -60,7 +60,8 @@
                         <button label="${i18n:_('Add')}" sclass="add-button"
                                 onClick="limitingAllocationController.selectWorkers(limitingNewAllocationSelectorCombo)" />
 
-                        <button label="${i18n:_('Advanced search')}" onClick="tabLimitingWorkerSearch.setSelected(true);"
+                        <button label="${i18n:_('Advanced search')}"
+                                onClick="tabLimitingWorkerSearch.setSelected(true);"
                                 sclass="add-button"/>
                     </hbox>
 
@@ -89,7 +90,7 @@
                             onClick="limitingAllocationController.selectWorkers(limitingNewAllocationSelector)" />
                     <button label="${i18n:_('Close')}"  sclass="add-button"
                             onClick="limitingAllocationController.closeSelectWorkers()" />
-               </hbox>
+                </hbox>
             </tabpanel>
         </tabpanels>
     </tabbox>

@@ -395,6 +395,9 @@ Instructions:
 
     # Example location: C:/Program Files/Apache Software Foundation/Tomcat 6.0/bin/Tomcat6.exe
 
+If you will face SKIP_IDENTIFIER_CHECK error, refer to:
+  http://stackoverflow.com/questions/24546304/how-to-skip-java-reserve-keyword-identifier-check-in-tomcat
+
 * Go to http://localhost:8080/libreplan
 
 Logs

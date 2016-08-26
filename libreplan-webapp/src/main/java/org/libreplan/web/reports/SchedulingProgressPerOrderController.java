@@ -21,7 +21,7 @@
 
 package org.libreplan.web.reports;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import com.libreplan.java.zk.components.JasperreportComponent;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
@@ -36,7 +36,11 @@ import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -65,8 +69,10 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
         schedulingProgressPerOrderModel =
                 (ISchedulingProgressPerOrderModel) SpringUtil.getBean("schedulingProgressPerOrderModel");
+
         comp.setAttribute("controller", this, true);
         lbAdvanceType.setSelectedIndex(0);
         schedulingProgressPerOrderModel.init();
@@ -77,8 +83,8 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
     }
 
     public List<Order> getSelectedOrdersToFilter() {
-        return (getSelectedOrders().isEmpty()) ? Collections
-                .unmodifiableList(getAllOrders())
+        return getSelectedOrders().isEmpty()
+                ? Collections.unmodifiableList(getAllOrders())
                 : getSelectedOrders();
     }
 
@@ -95,10 +101,10 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
         if (order == null) {
             throw new WrongValueException(bdOrders, _("please, select a project"));
         }
+
         boolean result = schedulingProgressPerOrderModel.addSelectedOrder(order);
         if (!result) {
-            throw new WrongValueException(bdOrders,
-                    _("This project has already been added."));
+            throw new WrongValueException(bdOrders, _("This project has already been added."));
         } else {
             Util.reloadBindings(lbOrders);
         }
@@ -117,14 +123,17 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
     protected JRDataSource getDataSource() {
         List<Order> orders = getSelectedOrdersToFilter();
 
-        return schedulingProgressPerOrderModel
-                .getSchedulingProgressPerOrderReport(orders, getAdvanceType(),
-                        startingDate.getValue(), endingDate.getValue(),
-                        new LocalDate(getReferenceDate()));
-   }
+        return schedulingProgressPerOrderModel.getSchedulingProgressPerOrderReport(
+                orders,
+                getAdvanceType(),
+                startingDate.getValue(),
+                endingDate.getValue(),
+                new LocalDate(getReferenceDate()));
+    }
 
     public Date getReferenceDate() {
         Date result = referenceDate.getValue();
+
         if (result == null) {
             referenceDate.setValue(new Date());
         }
@@ -153,9 +162,7 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
     }
 
     public AdvanceTypeDTO getSelectedAdvanceType() {
-        final Listitem item = lbAdvanceType.getSelectedItem();
-
-        return (AdvanceTypeDTO) item.getValue();
+        return (AdvanceTypeDTO) lbAdvanceType.getSelectedItem().getValue();
     }
 
     private String asString(AdvanceTypeDTO advanceTypeDTO) {
@@ -219,9 +226,7 @@ public class SchedulingProgressPerOrderController extends LibrePlanReportControl
 
         private AdvanceType advanceType;
 
-        public AdvanceTypeDTO() {
-
-        }
+        public AdvanceTypeDTO() {}
 
         public AdvanceTypeDTO(AdvanceType advanceType) {
             this.name = advanceType.getUnitName().toUpperCase();

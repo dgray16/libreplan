@@ -137,6 +137,7 @@ public class LimitingResourceAllocationController extends GenericForwardComposer
         return resourceAllocationModel.getResourceAllocationRows();
     }
 
+    /* Should be public! */
     public void selectWorkers(AllocationSelector allocationSelector) {
         try {
             allocationSelector.addChoosen();

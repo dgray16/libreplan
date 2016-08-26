@@ -44,8 +44,11 @@ import org.joda.time.LocalTime;
 import org.libreplan.business.common.BaseEntity;
 import org.libreplan.business.common.Configuration;
 import org.libreplan.business.common.Registry;
+import org.springframework.web.context.ContextLoaderListener;
 import org.zkoss.bind.DefaultBinder;
 import org.zkoss.ganttz.util.ComponentsFinder;
+import org.zkoss.image.AImage;
+import org.zkoss.image.Image;
 import org.zkoss.util.Locales;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Execution;
@@ -95,6 +98,11 @@ public class Util {
             return false;
         }
     };
+
+    /**
+     * Static object that contains logo image.
+     */
+    public static Image logo;
 
     private Util() {}
 
@@ -915,6 +923,45 @@ public class Util {
      */
     public static String formatTime(LocalTime time) {
         return time == null ? "" : formatTime(time.toDateTimeToday().toDate());
+    }
+
+    /**
+     * Setter of {@link Util#logo}.
+     * Will trigger after uploading new image.
+     *
+     * @param name
+     */
+    static void setLogoFromTarget(String name) {
+        try {
+            logo = new AImage(ContextLoaderListener
+                    .getCurrentWebApplicationContext()
+                    .getResource(name)
+                    .getFile()
+                    .getPath());
+
+        } catch (IOException ignored) {}
+    }
+
+    /**
+     * Setter of {@link Util#logo}.
+     * But it will trigger only if {@link Util#logo} is null.
+     * So it is just kind of attempt to find logo with known data.
+     */
+    static void findLogo() {
+        String name = Registry
+                .getConfigurationDAO()
+                .getConfigurationWithReadOnlyTransaction()
+                .getCompanyLogoURL();
+
+        try {
+            if ( !name.isEmpty() ) {
+                logo = new AImage(ContextLoaderListener
+                        .getCurrentWebApplicationContext()
+                        .getResource(name)
+                        .getFile()
+                        .getPath());
+            }
+        } catch (IOException ignored) {}
     }
 
 }

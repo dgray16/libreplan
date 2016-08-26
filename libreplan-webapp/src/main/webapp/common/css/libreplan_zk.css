@@ -1367,6 +1367,10 @@ tr.z-treerow-over input {
     background-color: #EECCCC;
 }
 
+.resource-allocation-checkbox input {
+    margin-bottom: -1px;
+}
+
 .allocation-not-satisfied td.z-row-inner {
     /* Important rule will overlap rule for z-row:hover */
     background-color: #EECCCC !important;

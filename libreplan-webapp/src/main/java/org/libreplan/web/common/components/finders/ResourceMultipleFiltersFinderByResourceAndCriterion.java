@@ -34,10 +34,9 @@ import org.libreplan.business.resources.entities.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Implements all the methods needed to search the different criteria to filter
- * the {@link Resource}s.<br />
- * It provides the following criteria to filter: {@link Resource} and
- * {@link Criterion}.
+ * Implements all the methods needed to search the different criteria to filter the {@link Resource}s.
+ * <br />
+ * It provides the following criteria to filter: {@link Resource} and {@link Criterion}.
  *
  * @author Manuel Rego Casasnovas <rego@igalia.com>
  */
@@ -46,8 +45,7 @@ public class ResourceMultipleFiltersFinderByResourceAndCriterion extends Multipl
     @Autowired
     private PredefinedDatabaseSnapshots databaseSnapshots;
 
-    protected ResourceMultipleFiltersFinderByResourceAndCriterion() {
-    }
+    protected ResourceMultipleFiltersFinderByResourceAndCriterion() {}
 
     @Override
     public List<FilterPair> getFirstTenFilters() {

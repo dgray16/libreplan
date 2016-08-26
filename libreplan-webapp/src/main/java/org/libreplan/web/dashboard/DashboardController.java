@@ -95,6 +95,7 @@ public class DashboardController extends GenericForwardComposer {
         Resource res = ctx.getResource(filename);
         BufferedReader reader;
         StringBuilder sb = new StringBuilder();
+
         try {
            reader = new BufferedReader(new InputStreamReader(res.getInputStream()));
            String line;
@@ -104,8 +105,9 @@ public class DashboardController extends GenericForwardComposer {
               sb.append(newline);
            }
         } catch (IOException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
+
         return sb.toString();
     }
 

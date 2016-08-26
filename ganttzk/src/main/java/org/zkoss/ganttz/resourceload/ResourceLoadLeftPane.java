@@ -160,17 +160,20 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
             }
 
             private void addExpandedListener(final Treeitem item, final LoadTimeLine line) {
-                item.addEventListener("onOpen", event -> {
-                    OpenEvent openEvent = (OpenEvent) event;
+                item.addEventListener("onOpen", new EventListener<Event>() {
+                    @Override
+                    public void onEvent(Event event) throws Exception {
+                        OpenEvent openEvent = (OpenEvent) event;
 
-                    if ( openEvent.isOpen() &&
-                            !line.getChildren().isEmpty() &&
-                            calculatedClosedItems(item).isEmpty() ) {
+                        if ( openEvent.isOpen() &&
+                                !line.getChildren().isEmpty() &&
+                                calculatedClosedItems(item).isEmpty() ) {
 
-                        onOpenEventQueue = new OnOpenEvent(item, line, openEvent);
+                            onOpenEventQueue = new OnOpenEvent(item, line, openEvent);
 
-                    } else {
-                        collapse(line);
+                        } else {
+                            collapse(line);
+                        }
                     }
                 });
             }

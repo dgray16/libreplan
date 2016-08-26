@@ -291,7 +291,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
                 default:
                     LOG.warn("no i18n for " + resourceType.name());
                     return resourceType.name();
-                }
+            }
         }
 
         public abstract Component cell(HoursRendererColumn column, AggregatedHoursGroup data);
@@ -299,6 +299,7 @@ public class ResourceAllocationController extends GenericForwardComposer {
 
     /**
      * Pick resources selected from {@link NewAllocationSelector} and add them to resource allocation list.
+     * Should be public!
      *
      * @param allocationSelector
      */
@@ -308,12 +309,12 @@ public class ResourceAllocationController extends GenericForwardComposer {
         } finally {
             // For email notification feature
             int rowsSize = allocationRows.getCurrentRows().size();
-
-            editTaskController
-                    .getTaskPropertiesController()
-                    .listToAdd
-                    .add(allocationRows.getCurrentRows().get(rowsSize - 1).getAssociatedResources().get(0));
-
+            if ( rowsSize >= 1 ) {
+                editTaskController
+                        .getTaskPropertiesController()
+                        .listToAdd
+                        .add(allocationRows.getCurrentRows().get(rowsSize - 1).getAssociatedResources().get(0));
+            }
             editTaskController.getTaskPropertiesController().setResourcesAdded(true);
 
             tbResourceAllocation.setSelected(true);

@@ -58,8 +58,10 @@
         </groupbox>
 
         <hbox>
-            <button id="btnImportProject" label="${i18n:_('Upload Project')}" upload="true,maxsize=9000"
-                    onUpload="projectImportController.importProject(event.getMedia())" class="create-button global-action"/>
+            <button id="btnImportProject" label="${i18n:_('Upload Project')}"
+                    upload="true,maxsize=9000"
+                    onUpload="projectImportController.importProject(event.getMedia())"
+                    class="create-button global-action"/>
         </hbox>
     </window>
 </zk>

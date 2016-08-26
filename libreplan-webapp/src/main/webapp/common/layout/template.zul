@@ -56,8 +56,12 @@
                     <n:tr>
                         <n:td valign="center" class="logo-area">
                             <n:a href="${contextPath}/">
-                                <n:img src="${templateCtrl.companyLogoURL}" if="${templateCtrl.companyLogoURL!=''}" />
-                                <n:img src="${contextPath}/common/img/logo.png" if="${templateCtrl.companyLogoURL==''}" />
+                                <image id="logo"
+                                       onCreate="templateCtrl.setupLogoFromOutside()"
+                                       if="${templateCtrl.companyLogoURL != ''}" />
+
+                                <n:img src="${contextPath}/common/img/logo.png"
+                                       if="${templateCtrl.companyLogoURL == ''}" />
                             </n:a>
                         </n:td>
 

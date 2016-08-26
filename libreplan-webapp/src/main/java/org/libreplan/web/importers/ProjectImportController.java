@@ -212,8 +212,7 @@ public class ProjectImportController extends GenericForwardComposer {
      * @return boolean True if is correct, false if not.
      */
     private boolean checkFileFormat(String file) {
-
-        return file.matches("(?i).*mpp") | file.matches("(?i).*planner");
+        return file.matches("(?i).*mpp") || file.matches("(?i).*planner");
     }
 
 }

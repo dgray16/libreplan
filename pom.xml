@@ -166,10 +166,10 @@
     <pluginRepositories>
         <!-- Gettext commons plugin -->
         <pluginRepository>
-          <id>gettext-commons-site</id>
-          <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
+            <id>gettext-commons-site</id>
+            <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
         </pluginRepository>
-     </pluginRepositories>
+    </pluginRepositories>
 
     <!-- Dependency management -->
     <dependencyManagement>
@@ -177,10 +177,11 @@
 
             <!-- Jasper Reports -->
             <dependency>
-              <groupId>net.sf.jasperreports</groupId>
-              <artifactId>jasperreports</artifactId>
-              <version>6.2.2</version>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports</artifactId>
+                <version>6.2.2</version>
             </dependency>
+
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports-fonts</artifactId>
@@ -189,9 +190,9 @@
 
             <!-- GPL Jasperreport Component for ZK -->
             <dependency>
-              <groupId>com.igalia.java.zk.components</groupId>
-              <artifactId>jasperreportcomponent</artifactId>
-              <version>1.0</version>
+                <groupId>com.libreplan.java.zk.components</groupId>
+                <artifactId>jasperreportcomponent</artifactId>
+                <version>1.1</version>
             </dependency>
 
             <!-- GPL JFreechartEngine for ZK -->
@@ -223,9 +224,9 @@
 
             <!-- Spring ORM -->
             <dependency>
-              <groupId>org.springframework</groupId>
-              <artifactId>spring-orm</artifactId>
-              <version>4.0.3.RELEASE</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>4.0.3.RELEASE</version>
             </dependency>
 
             <!-- Hibernate -->
@@ -249,15 +250,15 @@
 
             <!-- Usertype.Core -->
             <dependency>
-              <groupId>org.jadira.usertype</groupId>
-              <artifactId>usertype.core</artifactId>
-              <version>3.2.0.GA</version>
-                  <exclusions>
+                <groupId>org.jadira.usertype</groupId>
+                <artifactId>usertype.core</artifactId>
+                <version>3.2.0.GA</version>
+                <exclusions>
                     <exclusion>
-                      <groupId>org.hibernate</groupId>
-                      <artifactId>hibernate-entitymanager</artifactId>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-entitymanager</artifactId>
                     </exclusion>
-                  </exclusions>
+                </exclusions>
             </dependency>
 
             <!-- JDBC driver -->
@@ -273,10 +274,10 @@
                 <version>1.0.1.Final</version>
                 <scope>compile</scope>
                 <exclusions>
-                  <exclusion>
-                    <artifactId>xml-apis</artifactId>
-                    <groupId>xml-apis</groupId>
-                  </exclusion>
+                    <exclusion>
+                        <artifactId>xml-apis</artifactId>
+                        <groupId>xml-apis</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
 
@@ -348,10 +349,10 @@
 
             <!-- datasource for testing -->
             <dependency>
-              <groupId>com.jolbox</groupId>
-              <artifactId>bonecp</artifactId>
-              <version>0.8.0.RELEASE</version>
-              <scope>test</scope>
+                <groupId>com.jolbox</groupId>
+                <artifactId>bonecp</artifactId>
+                <version>0.8.0.RELEASE</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Easy mock -->
@@ -603,11 +604,11 @@
                 <artifactId>timelinez</artifactId>
                 <version>2.3.1_50</version>
                 <exclusions>
-                <exclusion>
-                    <groupId>org.zkoss.common</groupId>
-                    <artifactId>zcommon</artifactId>
-                </exclusion>
-            </exclusions>
+                    <exclusion>
+                        <groupId>org.zkoss.common</groupId>
+                        <artifactId>zcommon</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- LiquiBase -->
@@ -638,26 +639,26 @@
 
             <!-- ZK fileupload -->
             <dependency>
-              <groupId>commons-io</groupId>
-              <artifactId>commons-io</artifactId>
-              <version>2.5</version>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.5</version>
             </dependency>
 
             <!-- Quartz framework -->
             <dependency>
-              <groupId>org.quartz-scheduler</groupId>
-              <artifactId>quartz</artifactId>
-              <version>1.8.6</version>
-              <exclusions>
-                <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-              </exclusions>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>1.8.6</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
         </dependencies>
@@ -771,8 +772,8 @@
                 <version>3.5.1</version>
                 <configuration>
                     <verbose>true</verbose>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -811,7 +812,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                   <runOrder>alphabetical</runOrder>
+                    <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
 
@@ -847,35 +848,35 @@
                 </configuration>
 
                 <dependencies>
-                  <dependency>
-                    <groupId>${jdbcDriver.groupId}</groupId>
-                    <artifactId>${jdbcDriver.artifactId}</artifactId>
-                    <version>${jdbcDriver.version}</version>
-                  </dependency>
+                    <dependency>
+                        <groupId>${jdbcDriver.groupId}</groupId>
+                        <artifactId>${jdbcDriver.artifactId}</artifactId>
+                        <version>${jdbcDriver.version}</version>
+                    </dependency>
 
-                  <!-- connection pooling -->
-                  <dependency>
-                    <groupId>com.jolbox</groupId>
-                    <artifactId>bonecp</artifactId>
-                    <version>0.8.0.RELEASE</version>
-                  </dependency>
+                    <!-- connection pooling -->
+                    <dependency>
+                        <groupId>com.jolbox</groupId>
+                        <artifactId>bonecp</artifactId>
+                        <version>0.8.0.RELEASE</version>
+                    </dependency>
 
-                  <!-- connection pooling dependencies -->
-                  <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                    <version>1.7.21</version>
-                  </dependency>
-                  <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                    <version>1.7.21</version>
-                  </dependency>
-                  <dependency>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                    <version>19.0</version>
-                  </dependency>
+                    <!-- connection pooling dependencies -->
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <version>1.7.21</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                        <version>1.7.21</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                        <version>19.0</version>
+                    </dependency>
                 </dependencies>
             </plugin>
 
