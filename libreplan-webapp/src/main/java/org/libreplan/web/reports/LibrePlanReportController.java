@@ -39,7 +39,7 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.A;
 import org.zkoss.zul.Hbox;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import com.libreplan.java.zk.components.JasperreportComponent;
 
 /**
  *

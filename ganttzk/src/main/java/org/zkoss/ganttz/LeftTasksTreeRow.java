@@ -21,6 +21,8 @@
 
 package org.zkoss.ganttz;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -220,15 +222,15 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
         int position = textBoxes.indexOf(textbox);
         switch (navigation) {
             case UP:
-            focusGoUp(position);
-            break;
+                focusGoUp(position);
+                break;
 
             case DOWN:
-            focusGoDown(position);
-            break;
+                focusGoDown(position);
+                break;
 
             default:
-            throw new RuntimeException("case not covered: " + navigation);
+                throw new RuntimeException("case not covered: " + navigation);
         }
     }
 
@@ -464,17 +466,17 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
 
         switch (status) {
             case MARGIN_EXCEEDED:
-            cssClass = "status-red";
-            break;
+                cssClass = "status-red";
+                break;
 
             case WITHIN_MARGIN:
-            cssClass = "status-orange";
-            break;
+                cssClass = "status-orange";
+                break;
 
             case AS_PLANNED:
 
             default:
-            cssClass = "status-green";
+                cssClass = "status-green";
         }
 
         return cssClass;
@@ -482,7 +484,8 @@ public class LeftTasksTreeRow extends GenericForwardComposer {
 
     private void onProjectStatusClick(Component statucComp) {
         if ( !disabilityConfiguration.isTreeEditable() ) {
-            statucComp.addEventListener(Events.ON_CLICK,
+            statucComp.addEventListener(
+                    Events.ON_CLICK,
                     arg0 -> Executions.getCurrent().sendRedirect("/planner/index.zul;order=" + task.getProjectCode()));
         }
     }

@@ -21,7 +21,7 @@
 
 package org.libreplan.web.reports;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import com.libreplan.java.zk.components.JasperreportComponent;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.orders.entities.Order;
@@ -37,7 +37,12 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -79,13 +84,14 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
     }
 
     private void setupTaskStatusListbox() {
-        for(TaskStatusEnum status : getTasksStatus()) {
+        for (TaskStatusEnum status : getTasksStatus()) {
             Listitem item = new Listitem();
             item.setParent(lbTaskStatus);
             item.setValue(status);
             item.appendChild(new Listcell(_(status.toString())));
             lbTaskStatus.appendChild(item);
-            if(status.equals(TaskStatusEnum.ALL)) {
+
+            if (status.equals(TaskStatusEnum.ALL)) {
                 item.setSelected(true);
             }
         }
@@ -100,10 +106,12 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
     }
 
     protected JRDataSource getDataSource() {
-        return workingArrangementsPerOrderModel
-                .getWorkingArrangementsPerOrderReportReport(getSelectedOrder(),
-                        getSelectedTaskStatus(), showDependencies(),
-                        getSelectedLabels(), getSelectedCriterions());
+        return workingArrangementsPerOrderModel.getWorkingArrangementsPerOrderReportReport(
+                getSelectedOrder(),
+                getSelectedTaskStatus(),
+                showDependencies(),
+                getSelectedLabels(),
+                getSelectedCriterions());
     }
 
     private boolean showDependencies() {
@@ -150,12 +158,10 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
     }
 
     private static class TaskStatusEnumComparator implements Comparator<TaskStatusEnum> {
-
         @Override
         public int compare(TaskStatusEnum arg0, TaskStatusEnum arg1) {
             return arg0.toString().compareTo(arg1.toString());
         }
-
     }
 
     public List<Label> getAllLabels() {
@@ -167,6 +173,7 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
         if (label == null) {
             throw new WrongValueException(bdLabels, _("please, select a label"));
         }
+
         boolean result = workingArrangementsPerOrderModel.addSelectedLabel(label);
         if (!result) {
             throw new WrongValueException(bdLabels, _("Label has already been added."));
@@ -198,6 +205,7 @@ public class WorkingArrangementsPerOrderController extends LibrePlanReportContro
         if (criterion == null) {
             throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
         }
+
         boolean result = workingArrangementsPerOrderModel.addSelectedCriterion(criterion);
         if (!result) {
             throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));

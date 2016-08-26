@@ -21,7 +21,7 @@
 
 package org.libreplan.web.reports;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import com.libreplan.java.zk.components.JasperreportComponent;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.libreplan.business.labels.entities.Label;
 import org.libreplan.business.orders.entities.Order;
@@ -83,8 +83,7 @@ public class WorkingProgressPerTaskController extends LibrePlanReportController 
 
     protected JRDataSource getDataSource() {
         return workingProgressPerTaskModel.getWorkingProgressPerTaskReport(
-                getSelectedOrder(), getDeadlineDate(), getSelectedLabels(),
-                getSelectedCriterions());
+                getSelectedOrder(), getDeadlineDate(), getSelectedLabels(), getSelectedCriterions());
     }
 
     private Order getSelectedOrder() {
@@ -128,6 +127,7 @@ public class WorkingProgressPerTaskController extends LibrePlanReportController 
         if (label == null) {
             throw new WrongValueException(bdLabels, _("please, select a label"));
         }
+
         boolean result = workingProgressPerTaskModel.addSelectedLabel(label);
         if (!result) {
             throw new WrongValueException(bdLabels, _("Label has already been added."));
@@ -159,6 +159,7 @@ public class WorkingProgressPerTaskController extends LibrePlanReportController 
         if (criterion == null) {
             throw new WrongValueException(bdCriterions, _("please, select a Criterion"));
         }
+
         boolean result = workingProgressPerTaskModel.addSelectedCriterion(criterion);
         if (!result) {
             throw new WrongValueException(bdCriterions, _("This Criterion has already been added."));

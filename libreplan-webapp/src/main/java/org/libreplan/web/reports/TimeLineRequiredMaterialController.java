@@ -21,7 +21,7 @@
 
 package org.libreplan.web.reports;
 
-import com.igalia.java.zk.components.JasperreportComponent;
+import com.libreplan.java.zk.components.JasperreportComponent;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.libreplan.business.materials.entities.Material;
 import org.libreplan.business.materials.entities.MaterialCategory;
@@ -32,10 +32,24 @@ import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
 
-import java.util.*;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Tree;
+import org.zkoss.zul.TreeModel;
+import org.zkoss.zul.Treecell;
+import org.zkoss.zul.Treeitem;
+import org.zkoss.zul.TreeitemRenderer;
+import org.zkoss.zul.Treerow;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.libreplan.web.I18nHelper._;
 
@@ -64,9 +78,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
 
     private BandboxSearch bdOrders;
 
-    List<MaterialCategory> filterCategories = new ArrayList<>();
-
-    List<Material> filterMaterials = new ArrayList<>();
+    private List<MaterialCategory> filterCategories = new ArrayList<>();
 
     public TimeLineRequiredMaterialController(){
         timeLineRequiredMaterialModel =
@@ -94,8 +106,8 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         if (order == null) {
             throw new WrongValueException(bdOrders, _("please, select a project"));
         }
-        boolean result = timeLineRequiredMaterialModel
-                .addSelectedOrder(order);
+
+        boolean result = timeLineRequiredMaterialModel.addSelectedOrder(order);
         if (!result) {
             throw new WrongValueException(bdOrders,
                     _("This project has already been added."));
@@ -118,9 +130,11 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
     @Override
     protected JRDataSource getDataSource() {
         return timeLineRequiredMaterialModel.getTimeLineRequiredMaterial(
-                getStartingDate(), getEndingDate(),
+                getStartingDate(),
+                getEndingDate(),
                 getCorrespondentStatus(selectedStatus),
-                getSelectedOrders(), getSelectedCategories(),
+                getSelectedOrders(),
+                getSelectedCategories(),
                 getSelectedMaterials());
     }
 
@@ -217,11 +231,7 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
     }
 
     public String getSelectedStatusName() {
-        if (getSelectedStatus().equals(getDefaultStatus())) {
-            return null;
-        }
-
-        return selectedStatus;
+        return getSelectedStatus().equals(getDefaultStatus()) ? null : selectedStatus;
     }
 
     /**
@@ -292,8 +302,8 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
 
         for (Treeitem ti : setItems) {
             if ((ti.getValue() != null) && (ti.getValue() instanceof MaterialCategory)) {
-                filterCategories.add((MaterialCategory) ti.getValue());
-                addSubCategories((MaterialCategory) ti.getValue());
+                filterCategories.add(ti.getValue());
+                addSubCategories(ti.getValue());
             }
         }
 
@@ -311,8 +321,12 @@ public class TimeLineRequiredMaterialController extends LibrePlanReportControlle
         List<Material> materials = new ArrayList<>();
         Set<Treeitem> setItems = allCategoriesTree.getSelectedItems();
         for (Treeitem ti : setItems) {
-            if ((ti.getValue() != null) && (ti.getValue() instanceof Material) && (!isContainedInCategories((Material) ti.getValue()))) {
-                materials.add((Material) ti.getValue());
+
+            if ( (ti.getValue() != null) &&
+                    (ti.getValue() instanceof Material) &&
+                    (!isContainedInCategories(ti.getValue())) ) {
+
+                materials.add(ti.getValue());
             }
         }
 
