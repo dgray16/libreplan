@@ -63,7 +63,7 @@
                             <caption label="${i18n:_('Required materials')}" />
 
                             <button label="${i18n:_('Add materials')}"
-                                    style="margin: 0 0 5px 10px"
+                                    style="margin: 0 0 5px 0px"
                                     sclass="add-button"
                                     onClick="materialsAccordion.setSelectedIndex(1);" />
 

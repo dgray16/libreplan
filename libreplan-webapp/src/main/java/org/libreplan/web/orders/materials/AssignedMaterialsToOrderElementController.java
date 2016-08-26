@@ -39,8 +39,8 @@ import org.zkoss.zul.TreeModel;
  * @author Diego Pino García <dpino@igalia.com>
  *
  */
-public class AssignedMaterialsToOrderElementController extends
-        AssignedMaterialsController<OrderElement, MaterialAssignment> {
+public class AssignedMaterialsToOrderElementController
+        extends AssignedMaterialsController<OrderElement, MaterialAssignment> {
 
     private IAssignedMaterialsToOrderElementModel assignedMaterialsToOrderElementModel;
 
@@ -64,10 +64,12 @@ public class AssignedMaterialsToOrderElementController extends
         assignedMaterialsToOrderElementModel.initEdit(orderElement);
     }
 
+    @Override
     public TreeModel getMaterialCategories() {
         return assignedMaterialsToOrderElementModel.getMaterialCategories();
     }
 
+    @Override
     public TreeModel getAllMaterialCategories() {
         return assignedMaterialsToOrderElementModel.getAllMaterialCategories();
     }
