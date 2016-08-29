@@ -43,6 +43,20 @@ Written by
 LibrePlan Team
 --------------
 
+* Jeroen Baten <jeroen@libreplan-enterprise.com>
+* Edwin Zuijdendorp <edwin@zuydendorp.nl>
+* Bjørn Vos <bjorn@libreplan-enterprise.com>
+* Philippe Poumaroux <philippe.poumaroux@free.fr>
+* Vova Perebykivskyi <vova@libreplan-enterprise.com>
+
+Previous Team Members
+---------------------
+
+* Fernando Bellas Permuy <fbellas@udc.es>
+* José María Casanova Crespo <jmcasanova@igalia.com>
+* Óscar González Fernández <ogonzalez@igalia.com>
+* Pablo Fernández de la Cigoña Nóvoa <pcigonha@igalia.com>
+* Farruco Sanjurjo Arcay <fsanjurjo@igalia.com>
 * Cristina Alvariño Pérez <cristina.alvarino@cafedered.es>
 * Jacobo Aragunde Pérez <jaragunde@igalia.com>
 * Nacho Barrientos Arias <nacho@igalia.com>
@@ -53,15 +67,8 @@ LibrePlan Team
 * Diego Pino García <dpino@igalia.com>
 * Manuel Rego Casasnovas <rego@igalia.com>
 * Lorenzo Tilve Álvaro <ltilve@igalia.com>
-
-Previous Team Members
----------------------
-
-* Fernando Bellas Permuy <fbellas@udc.es>
-* José María Casanova Crespo <jmcasanova@igalia.com>
-* Óscar González Fernández <ogonzalez@igalia.com>
-* Pablo Fernández de la Cigoña Nóvoa <pcigonha@igalia.com>
-* Farruco Sanjurjo Arcay <fsanjurjo@igalia.com>
+* Misha Gozda <misha@libreplan-enterprise.com>
+* Bogdan Bodnarjuk <b.bodnarjuk@libreplan-enterprise.com>
 
 Translators
 -----------

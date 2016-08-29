@@ -7,10 +7,10 @@ LibrePlan Team
 --------------
 
 * Jeroen Baten <jeroen@libreplan-enterprise.com>
+* Edwin Zuijdendorp <edwin@zuydendorp.nl>
 * Bjørn Vos <bjorn@libreplan-enterprise.com>
+* Philippe Poumaroux <philippe.poumaroux@free.fr>
 * Vova Perebykivskyi <vova@libreplan-enterprise.com>
-* Міша Гожда <misha@libreplan-enterprise.com>
-
 
 Previous Team Members
 ---------------------
@@ -30,6 +30,8 @@ Previous Team Members
 * Óscar González Fernández <ogonzalez@igalia.com>
 * Pablo Fernández de la Cigoña Nóvoa <pcigonha@igalia.com>
 * Farruco Sanjurjo Arcay <fsanjurjo@igalia.com>
+* Misha Gozda <misha@libreplan-enterprise.com>
+* Bogdan Bodnarjuk <b.bodnarjuk@libreplan-enterprise.com
 
 
 Translators
