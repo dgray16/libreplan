@@ -415,9 +415,8 @@ Debian/Ubuntu
 
     # apt-get install make python-docutils texlive-latex-base texlive-latex-recommended texlive-latex-extra textlive-fonts-recommended
 
-* Go to the directory where the documentation you want to generate
-  is. For example, if you want to generate the user manual in
-  English::
+* Go to the directory where the documentation you want to generate is.
+  For example, if you want to generate the user manual in English::
 
    # cd doc/src/user/en
 

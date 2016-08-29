@@ -34,6 +34,7 @@ public class HelpLinkUtil {
      * Checks in the current path file existing.
      * File path may contains a reference to the part of the page (symbol '#').
      * If current path doesn't exist then it will return page with relevant message.
+     * Should be public!
      *
      * @param path
      * @return The path to an existing page or the path to a warning message page if current page doesn't exist.
