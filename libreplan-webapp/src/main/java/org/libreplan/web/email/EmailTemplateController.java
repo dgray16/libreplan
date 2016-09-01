@@ -33,7 +33,6 @@ import org.libreplan.web.security.SecurityUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zk.ui.Component;
 
-
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 
@@ -87,9 +86,9 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         messages = new MessagesForUser(messagesContainer);
 
         /*
-        * Set default template and language for user.
-        * And content and subject for that language & template.
-        */
+         * Set default template and language for user.
+         * And content and subject for that language & template.
+         */
         setUser();
         setSelectedLanguage(user.getApplicationLanguage());
 
@@ -119,12 +118,18 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         Executions.getCurrent().sendRedirect("../planner/index.zul");
     }
 
-    /* Should be public! */
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public Language getSelectedLanguage() {
         return emailTemplateModel.getLanguage();
     }
 
-    /* Should be public! */
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public void setSelectedLanguage(Language language) {
         emailTemplateModel.setLanguage(language);
 
@@ -132,10 +137,18 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         getContentDataBySelectedLanguage();
     }
 
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public static ListitemRenderer getLanguagesRenderer() {
         return languagesRenderer;
     }
 
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public List<Language> getLanguages() {
         List<Language> languages = new LinkedList<>(Arrays.asList(Language.values()));
         Collections.sort(languages, (o1, o2) -> {
@@ -152,11 +165,18 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         return languages;
     }
 
-    /* Should be public! */
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public EmailTemplateEnum getSelectedEmailTemplateEnum() {
         return emailTemplateModel.getEmailTemplateEnum();
     }
 
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public void setSelectedEmailTemplateEnum(EmailTemplateEnum emailTemplateEnum){
         emailTemplateModel.setEmailTemplateEnum(emailTemplateEnum);
 
@@ -164,6 +184,10 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         getContentDataBySelectedTemplate();
     }
 
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public ListitemRenderer getEmailTemplateEnumRenderer() {
         return (item, data, i) -> {
             EmailTemplateEnum template = (EmailTemplateEnum) data;
@@ -172,10 +196,13 @@ public class EmailTemplateController extends GenericForwardComposer<Component>{
         };
     }
 
+    /**
+     * Used in email_templates.zul
+     * Should be public!
+     */
     public List<EmailTemplateEnum> getEmailTemplateEnum() {
         return Arrays.asList(EmailTemplateEnum.values());
     }
-
 
     void setSelectedContent() {
         emailTemplateModel.setContent(contentsTextbox.getValue());

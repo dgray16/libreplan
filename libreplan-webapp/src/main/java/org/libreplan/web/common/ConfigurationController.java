@@ -192,6 +192,10 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private Textbox companyLogoURL;
 
+    private String STARTTLS_PROTOCOL = "STARTTLS";
+
+    private String LOGO_PREVIEW_COMPONENT = "logoPreview";
+
     public ConfigurationController() {}
 
     @Override
@@ -229,6 +233,10 @@ public class ConfigurationController extends GenericForwardComposer {
                 SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void changeRoleStrategy() {
         this.getLdapConfiguration().setLdapGroupStrategy("group".equals(strategy.getSelectedItem().getValue()));
         loadRoleStrategyRows();
@@ -266,14 +274,26 @@ public class ConfigurationController extends GenericForwardComposer {
         });
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public List<ProgressType> getProgressTypes() {
         return configurationModel.getProgresTypes();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public ProgressType getSelectedProgressType() {
         return configurationModel.getProgressType();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setSelectedProgressType(ProgressType progressType) {
         configurationModel.setProgressType(progressType);
     }
@@ -294,6 +314,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
         if ( getSelectedConnector() != null && "E-mail".equals(getSelectedConnector().getName()) &&
                 !isEmailFieldsValid() ) {
+
             messages.showMessage(Level.ERROR, _("Check all fields"));
 
         } else {
@@ -307,11 +328,15 @@ public class ConfigurationController extends GenericForwardComposer {
                     // Send data to server
                     if ( !SecurityUtils.isGatheredStatsAlreadySent &&
                             configurationDAO.getConfigurationWithReadOnlyTransaction()
-                                    .isAllowToGatherUsageStatsEnabled() )
+                                    .isAllowedToGatherUsageStatsEnabled() ) {
+
                         sendDataToServer();
+                    }
+
 
                     if ( getSelectedConnector() != null &&
                             !configurationModel.scheduleOrUnscheduleJobs(getSelectedConnector())) {
+
                         messages.showMessage(Level.ERROR,
                                 _("Scheduling or unscheduling of jobs for this connector is not completed"));
                     }
@@ -336,8 +361,11 @@ public class ConfigurationController extends GenericForwardComposer {
     private void sendDataToServer(){
         GatheredUsageStats gatheredUsageStats = new GatheredUsageStats();
 
-        gatheredUsageStats.setupNotAutowiredClasses(userDAO, orderModel, workReportModel, workerModel, machineModel,
-                expenseSheetModel, materialsModel, assignedQualityFormsModel);
+        gatheredUsageStats.setupNotAutowiredClasses(
+                userDAO, orderModel,
+                workReportModel, workerModel,
+                machineModel, expenseSheetModel,
+                materialsModel, assignedQualityFormsModel);
 
         gatheredUsageStats.sendGatheredUsageStatsToServer();
         SecurityUtils.isGatheredStatsAlreadySent = true;
@@ -352,10 +380,16 @@ public class ConfigurationController extends GenericForwardComposer {
         reloadConnectors();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void testLDAPConnection() {
         LdapContextSource source = new LdapContextSource();
-        source.setUrl(configurationModel.getLdapConfiguration().getLdapHost()
-                + ":" + configurationModel.getLdapConfiguration().getLdapPort());
+
+        source.setUrl(configurationModel.getLdapConfiguration().getLdapHost() + ":" +
+                configurationModel.getLdapConfiguration().getLdapPort());
+
         source.setBase(configurationModel.getLdapConfiguration().getLdapBase());
         source.setUserDn(configurationModel.getLdapConfiguration().getLdapUserDn());
         source.setPassword(configurationModel.getLdapConfiguration().getLdapPassword());
@@ -369,9 +403,12 @@ public class ConfigurationController extends GenericForwardComposer {
 
         LdapTemplate template = new LdapTemplate(source);
         try {
-            template.authenticate(DistinguishedName.EMPTY_PATH,
-                    new EqualsFilter(configurationModel.getLdapConfiguration()
-                            .getLdapUserId(), "test").toString(), "test");
+
+            template.authenticate(
+                    DistinguishedName.EMPTY_PATH,
+                    new EqualsFilter(configurationModel.getLdapConfiguration().getLdapUserId(), "test").toString(),
+                    "test");
+
             messages.showMessage(Level.INFO, _("LDAP connection was successful"));
         } catch (Exception e) {
             LOG.info(e);
@@ -380,7 +417,10 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     /**
-     * Tests connection
+     * Tests connection.
+     *
+     * Used in configuration.zul
+     * Should be public!
      */
     public void testConnection() {
         if (selectedConnector == null) {
@@ -396,9 +436,11 @@ public class ConfigurationController extends GenericForwardComposer {
 
         if ( selectedConnector.getName().equals(PredefinedConnectors.TIM.getName()) ) {
             testTimConnection(url, username, password);
+
         } else if ( selectedConnector.getName().equals(PredefinedConnectors.JIRA.getName()) ) {
             testJiraConnection(url, username, password);
-        } else if( selectedConnector.getName().equals(PredefinedConnectors.EMAIL.getName()) ){
+
+        } else if( selectedConnector.getName().equals(PredefinedConnectors.EMAIL.getName()) ) {
             String host = properties.get(PredefinedConnectorProperties.HOST);
             username = properties.get(PredefinedConnectorProperties.EMAIL_USERNAME);
             password = properties.get(PredefinedConnectorProperties.EMAIL_PASSWORD);
@@ -410,7 +452,7 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     /**
-     * Test tim connection
+     * Test tim connection.
      *
      * @param url
      *            the url of the server
@@ -428,7 +470,7 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     /**
-     * Test JIRA connection
+     * Test JIRA connection.
      *
      * @param url
      *            the url
@@ -462,7 +504,7 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     /**
-     * Test E-mail connection
+     * Test E-mail connection.
      *
      * @param host
      *            the host
@@ -473,12 +515,12 @@ public class ConfigurationController extends GenericForwardComposer {
      * @param password
      *            the password
      */
-    private void testEmailConnection(String host, String port, String username, String password){
+    private void testEmailConnection(String host, String port, String username, String password) {
         Properties props = System.getProperties();
         Transport transport = null;
 
         try {
-            if ("SMTP".equals(protocolsCombobox.getSelectedItem().getLabel())){
+            if ("SMTP".equals(protocolsCombobox.getSelectedItem().getLabel())) {
                 props.setProperty("mail.smtp.port", port);
                 props.setProperty("mail.smtp.host", host);
                 Session session = Session.getInstance(props, null);
@@ -488,7 +530,7 @@ public class ConfigurationController extends GenericForwardComposer {
                     transport.connect();
                 }
             }
-            else if ("STARTTLS".equals(protocolsCombobox.getSelectedItem().getLabel())) {
+            else if (STARTTLS_PROTOCOL.equals(protocolsCombobox.getSelectedItem().getLabel())) {
                 props.setProperty("mail.smtps.port", port);
                 props.setProperty("mail.smtps.host", host);
                 Session session = Session.getInstance(props, null);
@@ -546,9 +588,10 @@ public class ConfigurationController extends GenericForwardComposer {
                             seq.setNumberOfDigits(digitsBox.getValue());
                         }
                     } catch (IllegalArgumentException e) {
-                        throw new WrongValueException(digitsBox, _("number of digits must be between {0} and {1}",
-                                EntitySequence.MIN_NUMBER_OF_DIGITS,
-                                EntitySequence.MAX_NUMBER_OF_DIGITS));
+                        throw new WrongValueException(
+                                digitsBox,
+                                _("number of digits must be between {0} and {1}",
+                                        EntitySequence.MIN_NUMBER_OF_DIGITS, EntitySequence.MAX_NUMBER_OF_DIGITS));
                     }
                 }
 
@@ -575,66 +618,130 @@ public class ConfigurationController extends GenericForwardComposer {
         Util.reloadBindings(connectorPropertriesGrid);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public String getCompanyCode() {
         return configurationModel.getCompanyCode();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setCompanyCode(String companyCode) {
         configurationModel.setCompanyCode(companyCode);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public String getCompanyLogoURL() {
         return configurationModel.getCompanyLogoURL();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setCompanyLogoURL(String companyLogoURL) {
         configurationModel.setCompanyLogoURL(companyLogoURL);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForCriterion() {
         return configurationModel.getGenerateCodeForCriterion();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForCriterion(Boolean generateCodeForCriterion) {
         configurationModel.setGenerateCodeForCriterion(generateCodeForCriterion);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForWorkReportType() {
         return configurationModel.getGenerateCodeForWorkReportType();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForWorkReportType(Boolean generateCodeForWorkReportType) {
         configurationModel.setGenerateCodeForWorkReportType(generateCodeForWorkReportType);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForCalendarExceptionType() {
         return configurationModel.getGenerateCodeForCalendarExceptionType();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForCalendarExceptionType(Boolean generateCodeForCalendarExceptionType) {
         configurationModel.setGenerateCodeForCalendarExceptionType(generateCodeForCalendarExceptionType);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForCostCategory() {
         return configurationModel.getGenerateCodeForCostCategory();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForCostCategory(Boolean generateCodeForCostCategory) {
         configurationModel.setGenerateCodeForCostCategory(generateCodeForCostCategory);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForLabel() {
         return configurationModel.getGenerateCodeForLabel();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForLabel(Boolean generateCodeForLabel) {
         configurationModel.setGenerateCodeForLabel(generateCodeForLabel);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForWorkReport() {
         return configurationModel.getGenerateCodeForWorkReport();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForWorkReport(Boolean generateCodeForWorkReport) {
         configurationModel.setGenerateCodeForWorkReport(generateCodeForWorkReport);
     }
@@ -643,58 +750,114 @@ public class ConfigurationController extends GenericForwardComposer {
         return configurationModel.getGenerateCodeForResources();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForResources(Boolean generateCodeForResources) {
         configurationModel.setGenerateCodeForResources(generateCodeForResources);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForTypesOfWorkHours() {
         return configurationModel.getGenerateCodeForTypesOfWorkHours();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForTypesOfWorkHours(Boolean generateCodeForTypesOfWorkHours) {
         configurationModel.setGenerateCodeForTypesOfWorkHours(generateCodeForTypesOfWorkHours);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForMaterialCategories() {
         return configurationModel.getGenerateCodeForMaterialCategories();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForMaterialCategories(Boolean generateCodeForMaterialCategories) {
         configurationModel.setGenerateCodeForMaterialCategories(generateCodeForMaterialCategories);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForExpenseSheets() {
         return configurationModel.getGenerateCodeForExpenseSheets();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForExpenseSheets(Boolean generateCodeForExpenseSheets) {
         configurationModel.setGenerateCodeForExpenseSheets(generateCodeForExpenseSheets);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void reloadGeneralConfiguration() {
         reloadWindow();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForUnitTypes() {
         return configurationModel.getGenerateCodeForUnitTypes();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForUnitTypes(Boolean generateCodeForUnitTypes) {
         configurationModel.setGenerateCodeForUnitTypes(generateCodeForUnitTypes);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getGenerateCodeForBaseCalendars() {
         return configurationModel.getGenerateCodeForBaseCalendars();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setGenerateCodeForBaseCalendars(Boolean generateCodeForBaseCalendars) {
         configurationModel.setGenerateCodeForBaseCalendars(generateCodeForBaseCalendars);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean isAutocompleteLogin() {
         return configurationModel.isAutocompleteLogin();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setAutocompleteLogin(Boolean autocompleteLogin) {
         configurationModel.setAutocompleteLogin(autocompleteLogin);
     }
@@ -708,21 +871,31 @@ public class ConfigurationController extends GenericForwardComposer {
         reloadEntitySequences();
     }
 
-
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setMonteCarloMethodTabVisible(Boolean expandResourceLoadViewCharts) {
         configurationModel.setMonteCarloMethodTabVisible(expandResourceLoadViewCharts);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean isMonteCarloMethodTabVisible() {
         return configurationModel.isMonteCarloMethodTabVisible();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public ProgressTypeRenderer getProgressTypeRenderer() {
         return progressTypeRenderer;
     }
 
     private static class ProgressTypeRenderer implements ListitemRenderer {
-
         @Override
         public void render(Listitem listitem, Object o, int i) throws Exception {
             ProgressType progressType = (ProgressType) o;
@@ -732,7 +905,6 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     private class EntitySequenceGroupRenderer implements RowRenderer {
-
         @Override
         public void render(Row row, Object o, int i) throws Exception {
             EntitySequence entitySequence = (EntitySequence) o;
@@ -755,14 +927,16 @@ public class ConfigurationController extends GenericForwardComposer {
             if ( (row.getPreviousSibling() != null) &&
                     !((EntitySequence) ((Row) row.getPreviousSibling()).getValue()).getEntityName()
                             .equals(entityName)) {
+
                 row.setClass("separator");
             }
         }
 
         private void appendActiveRadiobox(final Row row, final EntitySequence entitySequence) {
-
-            final Radio radiobox = Util.bind(new Radio(),
-                    entitySequence::isActive, value -> {
+            final Radio radiobox = Util.bind(
+                    new Radio(),
+                    entitySequence::isActive,
+                    value -> {
                         updateOtherSequences(entitySequence);
                         entitySequence.setActive(value);
                         Util.reloadBindings(entitySequencesGrid);
@@ -776,13 +950,18 @@ public class ConfigurationController extends GenericForwardComposer {
         private void appendPrefixTextbox(Row row, final EntitySequence entitySequence) {
             final Textbox tempTextbox = new Textbox();
             tempTextbox.setWidth("200px");
-            Textbox textbox = Util.bind(tempTextbox, entitySequence::getPrefix, value -> {
-                try {
-                    entitySequence.setPrefix(value);
-                } catch (IllegalArgumentException e) {
-                    throw new WrongValueException(tempTextbox, e.getMessage());
-                }
-            });
+
+            Textbox textbox = Util.bind(
+                    tempTextbox,
+                    entitySequence::getPrefix,
+                    value -> {
+                        try {
+                            entitySequence.setPrefix(value);
+                        } catch (IllegalArgumentException e) {
+                            throw new WrongValueException(tempTextbox, e.getMessage());
+                        }
+                    });
+
             textbox.setConstraint(checkConstraintFormatPrefix());
 
             if ( entitySequence.isAlreadyInUse() ) {
@@ -794,16 +973,21 @@ public class ConfigurationController extends GenericForwardComposer {
 
         private void appendNumberOfDigitsInbox(Row row, final EntitySequence entitySequence) {
             final Intbox tempIntbox = new Intbox();
-            Intbox intbox = Util.bind(tempIntbox, entitySequence::getNumberOfDigits, value -> {
-                try {
-                    entitySequence.setNumberOfDigits(value);
-                } catch (IllegalArgumentException e) {
-                    throw new WrongValueException(tempIntbox, _(
-                            "number of digits must be between {0} and {1}",
-                            EntitySequence.MIN_NUMBER_OF_DIGITS,
-                            EntitySequence.MAX_NUMBER_OF_DIGITS));
-                }
-            });
+
+            Intbox intbox = Util.bind(
+                    tempIntbox,
+                    entitySequence::getNumberOfDigits,
+                    value -> {
+                        try {
+                            entitySequence.setNumberOfDigits(value);
+                        } catch (IllegalArgumentException e) {
+                            throw new WrongValueException(tempIntbox, _(
+                                    "number of digits must be between {0} and {1}",
+                                    EntitySequence.MIN_NUMBER_OF_DIGITS,
+                                    EntitySequence.MAX_NUMBER_OF_DIGITS));
+                        }
+                    });
+
             intbox.setConstraint(checkConstraintNumberOfDigits());
 
             if ( entitySequence.isAlreadyInUse() ) {
@@ -814,7 +998,8 @@ public class ConfigurationController extends GenericForwardComposer {
         }
 
         private void appendLastValueInbox(Row row, final EntitySequence entitySequence) {
-            Textbox textbox = Util.bind(new Textbox(),
+            Textbox textbox = Util.bind(
+                    new Textbox(),
                     () -> {
                         return EntitySequence.formatValue(
                                 entitySequence.getNumberOfDigits(),
@@ -864,7 +1049,10 @@ public class ConfigurationController extends GenericForwardComposer {
     private String validPrefix(EntitySequence sequence, String prefixValue) {
         sequence.setPrefix(prefixValue);
         if ( !configurationModel.checkFrefixFormat(sequence) ) {
-            String message = _("Invalid format prefix. Format prefix cannot be empty, contain '_' or contain whitespaces.");
+
+            String message =
+                    _("Invalid format prefix. Format prefix cannot be empty, contain '_' or contain whitespaces.");
+
             if ( sequence.getEntityName().canContainLowBar() ) {
                 message = _("format prefix invalid. It cannot be empty or contain whitespaces.");
             }
@@ -884,16 +1072,16 @@ public class ConfigurationController extends GenericForwardComposer {
                 try {
                     sequence.setNumberOfDigits(numberOfDigits);
                 } catch (IllegalArgumentException e) {
-                    throw new WrongValueException(comp, _("number of digits must be between {0} and {1}",
-                            EntitySequence.MIN_NUMBER_OF_DIGITS,
-                            EntitySequence.MAX_NUMBER_OF_DIGITS));
+                    throw new WrongValueException(
+                            comp,
+                            _("number of digits must be between {0} and {1}",
+                                    EntitySequence.MIN_NUMBER_OF_DIGITS, EntitySequence.MAX_NUMBER_OF_DIGITS));
                 }
             }
         };
     }
 
-    private void addEntitySequence(EntityNameEnum entityName, String prefix,
-            Integer digits) {
+    private void addEntitySequence(EntityNameEnum entityName, String prefix, Integer digits) {
         configurationModel.addEntitySequence(entityName, prefix, digits);
         reloadEntitySequences();
     }
@@ -907,10 +1095,8 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     private void showMessageNotDelete() {
-        Messagebox
-                .show(_("It can not be deleted. At least one sequence is necessary."),
-                        _("Deleting sequence"), Messagebox.OK,
-                        Messagebox.INFORMATION);
+        Messagebox.show(_("It can not be deleted. At least one sequence is necessary."),
+                        _("Deleting sequence"), Messagebox.OK, Messagebox.INFORMATION);
     }
 
     public static class EntitySequenceComparator implements Comparator<EntitySequence> {
@@ -921,6 +1107,10 @@ public class ConfigurationController extends GenericForwardComposer {
         }
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public EntitySequenceGroupRenderer getEntitySequenceGroupRenderer() {
         return new EntitySequenceGroupRenderer();
     }
@@ -935,6 +1125,10 @@ public class ConfigurationController extends GenericForwardComposer {
         return allSequences;
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void addNewEntitySequence() {
         if ( entityCombo != null && numDigitBox != null ) {
             if ( entityCombo.getSelectedItem() == null ) {
@@ -946,15 +1140,19 @@ public class ConfigurationController extends GenericForwardComposer {
             }
 
             try {
-                addEntitySequence(entityCombo.getSelectedItem().getValue(),
-                        prefixBox.getValue(),
-                        numDigitBox.getValue());
+                addEntitySequence(
+                        entityCombo.getSelectedItem().getValue(), prefixBox.getValue(), numDigitBox.getValue());
+
             } catch (IllegalArgumentException e) {
                 throw new WrongValueException(numDigitBox, e.getMessage());
             }
         }
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public EntityNameEnum[] getEntityNames() {
         return EntityNameEnum.values();
     }
@@ -964,27 +1162,39 @@ public class ConfigurationController extends GenericForwardComposer {
         return configurationModel.getLdapConfiguration();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setLdapConfiguration(LDAPConfiguration ldapConfiguration) {
         configurationModel.setLdapConfiguration(ldapConfiguration);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public RowRenderer getAllUserRolesRenderer() {
         return (row, o, i) -> {
             final UserRole role = (UserRole) o;
             row.appendChild(new Label(role.getDisplayName()));
 
             final Textbox tempTextbox = new Textbox();
-            Textbox textbox = Util.bind(tempTextbox, () -> {
+            Textbox textbox = Util.bind(
+                    tempTextbox,
+                    () -> {
+                        List<String> listRoles =
+                                configurationModel.getLdapConfiguration().getMapMatchingRoles().get(role.name());
 
-                List<String> listRoles =
-                        configurationModel.getLdapConfiguration().getMapMatchingRoles().get(role.name());
-                Collections.sort(listRoles);
-                return StringUtils.join(listRoles, ";");
-            }, value -> {
-                // Created a set in order to avoid duplicates
-                Set<String> rolesLdap = new HashSet<>(Arrays.asList(StringUtils.split(value, ";")));
-                configurationModel.getLdapConfiguration().setConfigurationRolesLdap(role.name(), rolesLdap);
-            });
+                        Collections.sort(listRoles);
+
+                        return StringUtils.join(listRoles, ";");
+                    },
+                    value -> {
+                        // Created a set in order to avoid duplicates
+                        Set<String> rolesLdap = new HashSet<>(Arrays.asList(StringUtils.split(value, ";")));
+                        configurationModel.getLdapConfiguration().setConfigurationRolesLdap(role.name(), rolesLdap);
+                    });
 
             textbox.setWidth("300px");
             row.appendChild(textbox);
@@ -995,38 +1205,50 @@ public class ConfigurationController extends GenericForwardComposer {
         return UserRole.values();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public boolean isChangedDefaultPasswdAdmin() {
         return configurationModel.isChangedDefaultPasswdAdmin();
     }
 
-    public boolean isLdapGroupStrategy() {
-        return getLdapConfiguration().getLdapGroupStrategy();
-    }
-
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public boolean isLdapPropertyStrategy() {
         return !getLdapConfiguration().getLdapGroupStrategy();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public boolean isCheckNewVersionEnabled() {
         return configurationModel.isCheckNewVersionEnabled();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setCheckNewVersionEnabled(boolean checkNewVersionEnabled) {
         configurationModel.setCheckNewVersionEnabled(checkNewVersionEnabled);
     }
 
-    public boolean isAllowToGatherUsageStatsEnabled() {
-        return configurationModel.isAllowToGatherUsageStatsEnabled();
-    }
-
-    public void setAllowToGatherUsageStatsEnabled(boolean allowToGatherUsageStatsEnabled) {
-        configurationModel.setAllowToGatherUsageStatsEnabled(allowToGatherUsageStatsEnabled);
-    }
-
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Set<String> getCurrencies() {
         return configurationModel.getCurrencies();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public ListitemRenderer getCurrencyRenderer() {
         return (listitem, o, i) -> {
             String currencyCode = (String) o;
@@ -1035,42 +1257,82 @@ public class ConfigurationController extends GenericForwardComposer {
         };
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public String getSelectedCurrency() {
         return configurationModel.getCurrencyCode();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setSelectedCurrency(String currencyCode) {
         configurationModel.setCurrency(currencyCode);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public TypeOfWorkHours getPersonalTimesheetsTypeOfWorkHours() {
         return configurationModel.getPersonalTimesheetsTypeOfWorkHours();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setPersonalTimesheetsTypeOfWorkHours(TypeOfWorkHours typeOfWorkHours) {
         configurationModel.setPersonalTimesheetsTypeOfWorkHours(typeOfWorkHours);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public TypeOfWorkHours getBudgetDefaultTypeOfWorkHours() {
         return configurationModel.getBudgetDefaultTypeOfWorkHours();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setBudgetDefaultTypeOfWorkHours(TypeOfWorkHours typeOfWorkHours) {
         configurationModel.setBudgetDefaultTypeOfWorkHours(typeOfWorkHours);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Boolean getEnabledAutomaticBudget() {
         return configurationModel.getEnabledAutomaticBudget();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setEnabledAutomaticBudget(Boolean enabledAutomaticBudget) {
         configurationModel.setEnabledAutomaticBudget(enabledAutomaticBudget);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public List<PersonalTimesheetsPeriodicityEnum> getPersonalTimesheetsPeriodicities() {
         return Arrays.asList(PersonalTimesheetsPeriodicityEnum.values());
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public ListitemRenderer getPersonalTimesheetsPeriodicityRenderer() {
         return (listitem, o, i) -> {
             PersonalTimesheetsPeriodicityEnum periodicity = (PersonalTimesheetsPeriodicityEnum) o;
@@ -1079,12 +1341,21 @@ public class ConfigurationController extends GenericForwardComposer {
         };
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public PersonalTimesheetsPeriodicityEnum getSelectedPersonalTimesheetsPeriodicity() {
         return configurationModel.getPersonalTimesheetsPeriodicity();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setSelectedPersonalTimesheetsPeriodicity(
             PersonalTimesheetsPeriodicityEnum personalTimesheetsPeriodicity) {
+
         configurationModel.setPersonalTimesheetsPeriodicity(personalTimesheetsPeriodicity);
     }
 
@@ -1092,27 +1363,45 @@ public class ConfigurationController extends GenericForwardComposer {
         return configurationModel.isAnyPersonalTimesheetAlreadySaved();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public String getPersonalTimesheetsPeriodicityTooltip() {
-        if ( isPersonalTimesheetsPeriodicityDisabled() ) {
-            return _("Periocity cannot be changed because there is already any personal timesheet stored");
-        }
-
-        return "";
+        return isPersonalTimesheetsPeriodicityDisabled()
+                ? _("Periocity cannot be changed because there is already any personal timesheet stored")
+                : "";
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public Integer getSecondsPlanningWarning() {
         return configurationModel.getSecondsPlanningWarning();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setSecondsPlanningWarning(Integer secondsPlanningWarning) {
         configurationModel.setSecondsPlanningWarning(secondsPlanningWarning);
     }
 
-    public String getRepositoryLocation(){
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
+    public String getRepositoryLocation() {
         return configurationModel.getRepositoryLocation();
     }
 
-    public void setRepositoryLocation(String location){
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
+    public void setRepositoryLocation(String location) {
         configurationModel.setRepositoryLocation(location);
     }
 
@@ -1124,19 +1413,27 @@ public class ConfigurationController extends GenericForwardComposer {
         return selectedConnector;
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public void setSelectedConnector(Connector connector) {
         selectedConnector = connector;
         Util.reloadBindings(connectorPropertriesGrid);
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public List<ConnectorProperty> getConnectorPropertries() {
-        if ( selectedConnector == null ) {
-            return Collections.emptyList();
-        }
-
-        return selectedConnector.getProperties();
+        return selectedConnector == null ? Collections.emptyList() : selectedConnector.getProperties();
     }
 
+    /**
+     * Used in configuration.zul
+     * Should be public!
+     */
     public RowRenderer getConnectorPropertriesRenderer() {
         return new RowRenderer() {
             @Override
@@ -1187,7 +1484,7 @@ public class ConfigurationController extends GenericForwardComposer {
                 combobox.setWidth("400px");
                 final List<String> protocols = new ArrayList<>();
                 protocols.add("SMTP");
-                protocols.add("STARTTLS");
+                protocols.add(STARTTLS_PROTOCOL);
 
                 for (String item : protocols){
                     Comboitem comboitem = new Comboitem();
@@ -1195,23 +1492,27 @@ public class ConfigurationController extends GenericForwardComposer {
                     comboitem.setLabel(item);
                     comboitem.setParent(combobox);
 
-                    if ( (!"".equals(property.getValue())) && (item.equals(property.getValue())) ){
+                    if ( (!"".equals(property.getValue())) && (item.equals(property.getValue())) ) {
                         combobox.setSelectedItem(comboitem);
                     }
                 }
 
-                combobox.addEventListener(Events.ON_SELECT,
+                combobox.addEventListener(
+                        Events.ON_SELECT,
                         event -> {
                             if ( combobox.getSelectedItem() != null ){
                                 property.setValue(combobox.getSelectedItem().getValue().toString());
                             }
                         });
 
-                Util.bind(combobox, combobox::getSelectedItem, item -> {
-                    if ( (item != null) && (item.getValue() != null) && (item.getValue() instanceof String) ){
-                        property.setValue(combobox.getSelectedItem().getValue().toString());
-                    }
-                });
+                Util.bind(
+                        combobox,
+                        combobox::getSelectedItem,
+                        item -> {
+                            if ( (item != null) && (item.getValue() != null) && (item.getValue() instanceof String) ){
+                                property.setValue(combobox.getSelectedItem().getValue().toString());
+                            }
+                        });
 
 
                 row.appendChild(combobox);
@@ -1270,7 +1571,7 @@ public class ConfigurationController extends GenericForwardComposer {
                     emailUsernameTextbox.getValue().length() != 0 &&
                     emailPasswordTextbox.getValue().length() != 0;
 
-            if ( "STARTTLS".equals(protocolsCombobox.getSelectedItem().getLabel()) && isNotNullValue &&
+            if ( STARTTLS_PROTOCOL.equals(protocolsCombobox.getSelectedItem().getLabel()) && isNotNullValue &&
                     emailSenderTextbox.getValue().matches("^\\S+@\\S+\\.\\S+$") ) {
 
                 return true;
@@ -1288,6 +1589,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
     /**
      * Upload image to classes folder via ZK Fileupload.
+     * Used in configuration.zul
      * Should be public!
      *
      * @param media
@@ -1341,12 +1643,11 @@ public class ConfigurationController extends GenericForwardComposer {
                 Util.setLogoFromTarget(media.getName());
                 configurationModel.setCompanyLogoURL(media.getName());
                 ((Textbox) configurationWindow.getFellow("companyLogoURL")).setValue(media.getName());
-                ((org.zkoss.zul.Image) configurationWindow.getFellow("logoPreview")).setContent(Util.logo);
+                ((org.zkoss.zul.Image) configurationWindow.getFellow(LOGO_PREVIEW_COMPONENT)).setContent(Util.logo);
 
             } else {
                 messages.showMessage(Level.WARNING, _("The only current supported formats are png and jpeg"));
             }
-
         }
     }
 
@@ -1361,7 +1662,7 @@ public class ConfigurationController extends GenericForwardComposer {
      */
     public void removeLogo() {
         if ( !"".equals(companyLogoURL.getValue()) ) {
-            ((org.zkoss.zul.Image) configurationWindow.getFellow("logoPreview")).setSrc("");
+            ((org.zkoss.zul.Image) configurationWindow.getFellow(LOGO_PREVIEW_COMPONENT)).setSrc("");
             findAndRemoveLogoFromTarget(companyLogoURL.getValue());
             Util.logo = null;
         }
@@ -1372,11 +1673,12 @@ public class ConfigurationController extends GenericForwardComposer {
 
     /**
      * Setting preview image.
+     * Used in configuration.zul
      * Should be public!
      */
     public void setPreviewLogo() {
         if ( !"".equals(companyLogoURL.getValue()) ) {
-            ((org.zkoss.zul.Image) configurationWindow.getFellow("logoPreview")).setContent(Util.logo);
+            ((org.zkoss.zul.Image) configurationWindow.getFellow(LOGO_PREVIEW_COMPONENT)).setContent(Util.logo);
         }
     }
 

@@ -41,18 +41,18 @@ import org.libreplan.business.costcategories.entities.TypeOfWorkHours;
  */
 public interface IConfigurationModel {
 
-    /*
-     * Non conversational steps
+    /**
+     * Non conversational steps.
      */
     List<BaseCalendar> getCalendars();
 
-    /*
-     * Initial conversation steps
+    /**
+     * Initial conversation steps.
      */
     void init();
 
-    /*
-     * Intermediate conversation steps
+    /**
+     * Intermediate conversation steps.
      */
     BaseCalendar getDefaultCalendar();
 
@@ -72,8 +72,7 @@ public interface IConfigurationModel {
 
     Boolean getGenerateCodeForCostCategory();
 
-    void setGenerateCodeForCalendarExceptionType(
-            Boolean generateCodeForCalendarExceptionType);
+    void setGenerateCodeForCalendarExceptionType(Boolean generateCodeForCalendarExceptionType);
 
     Boolean getGenerateCodeForCriterion();
 
@@ -93,27 +92,24 @@ public interface IConfigurationModel {
 
     Boolean getGenerateCodeForTypesOfWorkHours();
 
-    void setGenerateCodeForTypesOfWorkHours(
-            Boolean generateCodeForTypesOfWorkHours);
+    void setGenerateCodeForTypesOfWorkHours(Boolean generateCodeForTypesOfWorkHours);
 
     Boolean getGenerateCodeForMaterialCategories();
 
-    void setGenerateCodeForMaterialCategories(
-            Boolean generateCodeForMaterialCategories);
+    void setGenerateCodeForMaterialCategories(Boolean generateCodeForMaterialCategories);
 
     List<EntitySequence> getEntitySequences(EntityNameEnum entityName);
 
     void addEntitySequence(EntityNameEnum entityName, String prefix, Integer digits);
 
-    void removeEntitySequence(EntitySequence entitySequence)
-            throws IllegalArgumentException;
+    void removeEntitySequence(EntitySequence entitySequence) throws IllegalArgumentException;
 
     Boolean isMonteCarloMethodTabVisible();
 
     void setMonteCarloMethodTabVisible(Boolean visible);
 
-    /*
-     * Final conversation steps
+    /**
+     * Final conversation steps.
      */
     void confirm();
 
@@ -153,11 +149,6 @@ public interface IConfigurationModel {
 
     void setCheckNewVersionEnabled(boolean checkNewVersionEnabled);
 
-    boolean isAllowToGatherUsageStatsEnabled();
-
-    void setAllowToGatherUsageStatsEnabled(
-            boolean allowToGatherUsageStatsEnabled);
-
     Boolean getGenerateCodeForExpenseSheets();
 
     void setGenerateCodeForExpenseSheets(Boolean generateCodeForExpenseSheets);
@@ -176,15 +167,13 @@ public interface IConfigurationModel {
 
     PersonalTimesheetsPeriodicityEnum getPersonalTimesheetsPeriodicity();
 
-    void setPersonalTimesheetsPeriodicity(
-            PersonalTimesheetsPeriodicityEnum personalTimesheetsPeriodicity);
+    void setPersonalTimesheetsPeriodicity(PersonalTimesheetsPeriodicityEnum personalTimesheetsPeriodicity);
 
     boolean isAnyPersonalTimesheetAlreadySaved();
 
     Integer getSecondsPlanningWarning();
 
-    void setSecondsPlanningWarning(
-            Integer planningWarningExitWithoutSavingSeconds);
+    void setSecondsPlanningWarning(Integer planningWarningExitWithoutSavingSeconds);
 
     String getRepositoryLocation();
 

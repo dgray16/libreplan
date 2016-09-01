@@ -121,8 +121,9 @@
         <macro-uri>/limitingresources/leftPane.zul</macro-uri>
     </component>
 
+    <!-- Limiting resources queue -->
     <component>
-        <component-name>queuecomponent</component-name><!-- Limiting resources queue -->
+        <component-name>queuecomponent</component-name>
         <component-class>org.libreplan.web.limitingresources.QueueComponent</component-class>
         <widget-class>limitingresources.QueueComponent</widget-class>
         <mold>

@@ -265,7 +265,7 @@
 
         <!-- GPL detailrow Component for ZK -->
         <dependency>
-            <groupId>com.igalia.java.zk.components</groupId>
+            <groupId>com.libreplan.java.zk.components</groupId>
             <artifactId>customdetailrowcomponent</artifactId>
         </dependency>
 

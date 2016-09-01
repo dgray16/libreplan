@@ -19,21 +19,34 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<?component name="orderElementTree" macroURI="components/_orderElementTree.zul"
-  class="org.libreplan.web.orders.OrdersTreeComponent"?>
+<?component name="orderElementTree"
+        macroURI="components/_orderElementTree.zul"
+        class="org.libreplan.web.orders.OrdersTreeComponent"?>
+
 <?component name="listOrderElementHours" inline="true" macroURI="_listOrderElementHours.zul"?>
+
 <?component name="listOrderElementAdvances" inline="true" macroURI="_listOrderElementAdvances.zul"?>
-<?component name="listOrderElementLabels" class="org.libreplan.web.orders.labels.LabelsAssignmentToOrderElementComponent" macroURI="components/_listOrderElementLabels.zul"?>
+
+<?component name="listOrderElementLabels"
+        class="org.libreplan.web.orders.labels.LabelsAssignmentToOrderElementComponent"
+        macroURI="components/_listOrderElementLabels.zul"?>
+
 <?component name="listOrderElementCriterionRequirements"
-    class="org.libreplan.web.orders.criterionrequirements.OrderElementCriterionRequirementComponent"
-    macroURI="/orders/_listOrderElementCriterionRequirements.zul"?>
+        class="org.libreplan.web.orders.criterionrequirements.OrderElementCriterionRequirementComponent"
+        macroURI="/orders/_listOrderElementCriterionRequirements.zul"?>
+
 <?component name="listOrderElementMaterials"
-    class="org.libreplan.web.orders.materials.OrderElementMaterialAssignmentsComponent"
-    macroURI="/orders/components/_listOrderElementMaterials.zul"?>
+        class="org.libreplan.web.orders.materials.OrderElementMaterialAssignmentsComponent"
+        macroURI="/orders/components/_listOrderElementMaterials.zul"?>
+
 <?component name="listOrderElementTaskQualityForms" inline="true" macroURI="_listOrderElementTaskQualityForms.zul"?>
+
 <?component name="listOrderElementAuthorizations" inline="true" macroURI="_listOrderElementAuthorizations.zul"?>
+
 <?component name="listOrderElementFiles" inline="true" macroURI="_listOrderElementFiles.zul"?>
+
 <?component name="jiraOrderElementSynchronizer" inline="true" macroURI="components/_jiraOrderElementSync.zul"?>
+
 <?component name="timOrderTimesheetSynchronizer" inline="true" macroURI="components/_timOrderTimesheetSync.zul"?>
 
 <window id="${arg.top_id}">

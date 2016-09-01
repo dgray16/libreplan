@@ -171,7 +171,7 @@
             </panelchildren>
         </panel>
 
-        <!--Manage Hours Groups in OrdeLine-->
+        <!-- Manage Hours Groups in OrdeLine -->
         <panel title="${i18n:_('Hours Group')}" border="normal"
                visible="@{criterionRequirementsController.editableHoursGroup}">
             <panelchildren>
@@ -190,27 +190,24 @@
                                      style="margin: 5px"
                                      pageSize="4">
                     <columns>
-                        <newdatasortablecolumn width="25px" sort="auto"/>
+                        <newdatasortablecolumn width="30px" sort="auto"/>
                         <newdatasortablecolumn label="Code" width="160px" sort="auto(code)"
                                                sortDirection="ascending" align="center"/>
 
                         <newdatasortablecolumn label="Type" width="140px" align="center"/>
                         <newdatasortablecolumn label="Hours" width="120px" align="center"/>
                         <newdatasortablecolumn label="%" width="100px" align="center"/>
-                        <newdatasortablecolumn label="Fixed %" width="50px" align="center"/>
-                        <newdatasortablecolumn label="Operations" align="center"/>
+                        <newdatasortablecolumn label="Fixed %" width="55px" align="center"/>
+                        <newdatasortablecolumn label="Operations" width="291px" align="center"/>
                     </columns>
+
                     <rows>
                         <row self="@{each='hoursGroupWrapper'}" value="@{hoursGroupWrapper}">
-                            <!--TODO detail is EE package ZK-->
-                            <!-- This component is paid now. Resolve it -->
-                            <!--
-                                <detail open="true">
-                                    <listHoursGroupCriterionRequirements/>
-                                    <separator bar="false" spacing="40px" orient="vertical"/>
-                                </detail>
-                            -->
-                            <separator bar="false" spacing="40px" orient="vertical"/>
+                            <detailrow open="true">
+                                <separator bar="false" spacing="40px" orient="vertical"/>
+                                <listHoursGroupCriterionRequirements/>
+                                <separator bar="false" spacing="40px" orient="vertical"/>
+                            </detailrow>
 
                             <textbox value="@{hoursGroupWrapper.code}"
                                      readonly="@{criterionRequirementsController.readOnly}"
@@ -234,6 +231,7 @@
 
                             <checkbox checked="@{hoursGroupWrapper.fixedPercentage}"
                                       onCheck="criterionRequirementsController.recalculateHoursGroup()"/>
+
                             <hbox style="margin-left: 35px">
                                 <button id="buttonDeleteHoursGroup"
                                         sclass="icono" image="/common/img/ico_borrar1.png"

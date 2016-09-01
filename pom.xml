@@ -154,22 +154,14 @@
 
     </profiles>
 
-
+    <!-- TODO make changes to  http://nexus.libreplan.org/nexus/content/repositories/thirdparty -->
     <repositories>
         <!-- LibrePlan repository -->
         <repository>
             <id>thirdparty</id>
-            <url>http://nexus.libreplan.org/content/repositories/thirdparty</url>
+            <url>http://nexus.libreplan.org/nexus/content/repositories/test/</url>
         </repository>
     </repositories>
-
-    <pluginRepositories>
-        <!-- Gettext commons plugin -->
-        <pluginRepository>
-            <id>gettext-commons-site</id>
-            <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <!-- Dependency management -->
     <dependencyManagement>
@@ -204,9 +196,9 @@
 
             <!-- GPL detailrow Component for ZK -->
             <dependency>
-                <groupId>com.igalia.java.zk.components</groupId>
+                <groupId>com.libreplan.java.zk.components</groupId>
                 <artifactId>customdetailrowcomponent</artifactId>
-                <version>1.0.0</version>
+                <version>1.1</version>
             </dependency>
 
             <!-- Gettext commons -->

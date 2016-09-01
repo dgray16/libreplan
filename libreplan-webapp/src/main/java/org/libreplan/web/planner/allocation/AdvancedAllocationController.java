@@ -214,8 +214,11 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
     public interface Restriction {
 
-        public interface IRestrictionSource {
+        interface IRestrictionSource {
 
+            /**
+             * Method in use.
+             */
             EffortDuration getTotalEffort();
 
             LocalDate getStart();

@@ -75,7 +75,7 @@ public class ConfigurationModel implements IConfigurationModel {
      */
     private Configuration configuration;
 
-    private Map<EntityNameEnum, List<EntitySequence>> entitySequences = new HashMap<EntityNameEnum, List<EntitySequence>>();
+    private Map<EntityNameEnum, List<EntitySequence>> entitySequences = new HashMap<>();
 
     private static Map<String, String> currencies = getAllCurrencies();
 
@@ -107,10 +107,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public BaseCalendar getDefaultCalendar() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getDefaultCalendar();
+        return configuration == null ? null : configuration.getDefaultCalendar();
     }
 
     @Override
@@ -124,12 +121,13 @@ public class ConfigurationModel implements IConfigurationModel {
 
     private void initEntitySequences() {
         this.entitySequences.clear();
+
         for (EntityNameEnum entityName : EntityNameEnum.values()) {
-            entitySequences.put(entityName, new ArrayList<EntitySequence>());
+            entitySequences.put(entityName, new ArrayList<>());
         }
+
         for (EntitySequence entitySequence : entitySequenceDAO.getAll()) {
-            entitySequences.get(entitySequence.getEntityName()).add(
-                    entitySequence);
+            entitySequences.get(entitySequence.getEntityName()).add(entitySequence);
         }
     }
 
@@ -156,6 +154,7 @@ public class ConfigurationModel implements IConfigurationModel {
             configuration = Configuration.create();
         }
         forceLoad(configuration);
+
         return configuration;
     }
 
@@ -193,38 +192,37 @@ public class ConfigurationModel implements IConfigurationModel {
         try {
             storeAndRemoveEntitySequences();
         } catch (IllegalStateException e) {
-            throw new OptimisticLockingFailureException(
-                    "concurrency problem in entity sequences");
+            throw new OptimisticLockingFailureException("concurrency problem in entity sequences");
         }
     }
 
     private void checkEntitySequences() {
-        // check if exist at least one sequence for each entity
+        // Check if exist at least one sequence for each entity
         for (EntityNameEnum entityName : EntityNameEnum.values()) {
             String entity = entityName.getDescription();
             List<EntitySequence> sequences = entitySequences.get(entityName);
+
             if (sequences.isEmpty()) {
-                throw new ValidationException(_(
-                        "At least one {0} sequence is needed", entity));
+                throw new ValidationException(_("At least one {0} sequence is needed", entity));
             }
 
             if (!isAnyActive(sequences)) {
-                throw new ValidationException(_(
-                        "At least one {0} sequence must be active", entity));
+                throw new ValidationException(_("At least one {0} sequence must be active", entity));
             }
+
             if (!checkConstraintPrefixNotRepeated(sequences)) {
-                throw new ValidationException(_(
-                        "The {0} sequence prefixes cannot be repeated",
-                        entityName.getDescription()));
+
+                throw new ValidationException(
+                        _("The {0} sequence prefixes cannot be repeated", entityName.getDescription()));
             }
         }
     }
 
-    private boolean checkConstraintPrefixNotRepeated(
-            List<EntitySequence> sequences) {
-        Set<String> prefixes = new HashSet<String>();
+    private boolean checkConstraintPrefixNotRepeated(List<EntitySequence> sequences) {
+        Set<String> prefixes = new HashSet<>();
         for (EntitySequence sequence : sequences) {
             String prefix = sequence.getPrefix();
+
             if (prefixes.contains(prefix)) {
                 return false;
             }
@@ -243,10 +241,10 @@ public class ConfigurationModel implements IConfigurationModel {
     }
 
     private void storeAndRemoveEntitySequences() {
-        Collection<List<EntitySequence>> col_sequences = entitySequences
-                .values();
-        List<EntitySequence> sequences = new ArrayList<EntitySequence>();
-        for (List<EntitySequence> list : col_sequences) {
+        Collection<List<EntitySequence>> sequencesCollection = entitySequences.values();
+        List<EntitySequence> sequences = new ArrayList<>();
+
+        for (List<EntitySequence> list : sequencesCollection) {
             sequences.addAll(list);
         }
         removeEntitySequences(sequences);
@@ -254,7 +252,7 @@ public class ConfigurationModel implements IConfigurationModel {
     }
 
     public void removeEntitySequences(final List<EntitySequence> sequences) {
-        // first one is necessary to remove the deleted sequences.
+        // First one is necessary to remove the deleted sequences
         List<EntitySequence> toRemove = entitySequenceDAO.findEntitySquencesNotIn(sequences);
         for (final EntitySequence entitySequence : toRemove) {
             try {
@@ -268,8 +266,8 @@ public class ConfigurationModel implements IConfigurationModel {
     }
 
     public void storeEntitySequences(List<EntitySequence> sequences) {
-        // it updates the sequences that are not active first
-        List<EntitySequence> toSaveAfter = new ArrayList<EntitySequence>();
+        // It updates the sequences that are not active first
+        List<EntitySequence> toSaveAfter = new ArrayList<>();
         for (EntitySequence entitySequence : sequences) {
             if ( entitySequence.isActive() ) {
                 toSaveAfter.add(entitySequence);
@@ -290,10 +288,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public String getCompanyCode() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getCompanyCode();
+        return configuration == null ? null : configuration.getCompanyCode();
     }
 
     @Override
@@ -305,10 +300,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean getGenerateCodeForCriterion() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForCriterion();
+        return configuration == null ? null : configuration.getGenerateCodeForCriterion();
     }
 
     @Override
@@ -320,11 +312,9 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean isAutocompleteLogin() {
-        if (configuration == null) {
-            return null;
-        }
-        return (configuration.isAutocompleteLogin() && (!configuration
-                .getChangedDefaultAdminPassword()));
+        return configuration == null
+                ? null
+                : (configuration.isAutocompleteLogin() && (!configuration.getChangedDefaultAdminPassword()));
     }
 
     @Override
@@ -336,67 +326,48 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean isChangedDefaultPasswdAdmin() {
-        return configuration != null ? configuration
-                .getChangedDefaultAdminPassword() : false;
+        return configuration != null ? configuration.getChangedDefaultAdminPassword() : false;
     }
 
     @Override
     public Boolean getGenerateCodeForWorkReportType() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForWorkReportType();
+        return configuration == null ? null : configuration.getGenerateCodeForWorkReportType();
     }
 
     @Override
-    public void setGenerateCodeForWorkReportType(
-            Boolean generateCodeForWorkReportType) {
+    public void setGenerateCodeForWorkReportType(Boolean generateCodeForWorkReportType) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForWorkReportType(generateCodeForWorkReportType);
+            configuration.setGenerateCodeForWorkReportType(generateCodeForWorkReportType);
         }
     }
 
     @Override
     public Boolean getGenerateCodeForCalendarExceptionType() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForCalendarExceptionType();
+        return configuration == null ? null : configuration.getGenerateCodeForCalendarExceptionType();
     }
 
     @Override
-    public void setGenerateCodeForCalendarExceptionType(
-            Boolean generateCodeForCalendarExceptionType) {
+    public void setGenerateCodeForCalendarExceptionType(Boolean generateCodeForCalendarExceptionType) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForCalendarExceptionType(generateCodeForCalendarExceptionType);
+            configuration.setGenerateCodeForCalendarExceptionType(generateCodeForCalendarExceptionType);
         }
     }
 
     @Override
-    public void setGenerateCodeForCostCategory(
-            Boolean generateCodeForCostCategory) {
+    public void setGenerateCodeForCostCategory(Boolean generateCodeForCostCategory) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForCostCategory(generateCodeForCostCategory);
+            configuration.setGenerateCodeForCostCategory(generateCodeForCostCategory);
         }
     }
 
     @Override
     public Boolean getGenerateCodeForCostCategory() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForCostCategory();
+        return configuration == null ? null : configuration.getGenerateCodeForCostCategory();
     }
 
     @Override
     public Boolean getGenerateCodeForLabel() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForLabel();
+        return configuration == null ? null : configuration.getGenerateCodeForLabel();
     }
 
     @Override
@@ -408,26 +379,19 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean getGenerateCodeForWorkReport() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForWorkReport();
+        return configuration == null ? null : configuration.getGenerateCodeForWorkReport();
     }
 
     @Override
     public void setGenerateCodeForWorkReport(Boolean generateCodeForWorkReport) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForWorkReport(generateCodeForWorkReport);
+            configuration.setGenerateCodeForWorkReport(generateCodeForWorkReport);
         }
     }
 
     @Override
     public Boolean getGenerateCodeForResources() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForResources();
+        return configuration == null ? null : configuration.getGenerateCodeForResources();
     }
 
     @Override
@@ -439,61 +403,43 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean getGenerateCodeForTypesOfWorkHours() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForTypesOfWorkHours();
+        return configuration == null ? null : configuration.getGenerateCodeForTypesOfWorkHours();
     }
 
     @Override
-    public void setGenerateCodeForTypesOfWorkHours(
-            Boolean generateCodeForTypesOfWorkHours) {
+    public void setGenerateCodeForTypesOfWorkHours(Boolean generateCodeForTypesOfWorkHours) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForTypesOfWorkHours(generateCodeForTypesOfWorkHours);
+            configuration.setGenerateCodeForTypesOfWorkHours(generateCodeForTypesOfWorkHours);
         }
     }
 
     @Override
     public Boolean getGenerateCodeForMaterialCategories() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForMaterialCategories();
+        return configuration == null ? null : configuration.getGenerateCodeForMaterialCategories();
     }
 
     @Override
-    public void setGenerateCodeForMaterialCategories(
-            Boolean generateCodeForMaterialCategories) {
+    public void setGenerateCodeForMaterialCategories(Boolean generateCodeForMaterialCategories) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForMaterialCategories(generateCodeForMaterialCategories);
+            configuration.setGenerateCodeForMaterialCategories(generateCodeForMaterialCategories);
         }
     }
 
     @Override
     public Boolean getGenerateCodeForUnitTypes() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForUnitTypes();
+        return configuration == null ? null : configuration.getGenerateCodeForUnitTypes();
     }
 
     @Override
-    public void setGenerateCodeForBaseCalendars(
-            Boolean generateCodeForBaseCalendars) {
+    public void setGenerateCodeForBaseCalendars(Boolean generateCodeForBaseCalendars) {
         if (configuration != null) {
-            configuration
-                    .setGenerateCodeForBaseCalendars(generateCodeForBaseCalendars);
+            configuration.setGenerateCodeForBaseCalendars(generateCodeForBaseCalendars);
         }
     }
 
     @Override
     public Boolean getGenerateCodeForBaseCalendars() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForBaseCalendars();
+        return configuration == null ? null : configuration.getGenerateCodeForBaseCalendars();
     }
 
     @Override
@@ -505,10 +451,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean getGenerateCodeForExpenseSheets() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.getGenerateCodeForExpenseSheets();
+        return configuration == null ? null : configuration.getGenerateCodeForExpenseSheets();
     }
 
     @Override
@@ -520,10 +463,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean isMonteCarloMethodTabVisible() {
-        if (configuration == null) {
-            return null;
-        }
-        return configuration.isMonteCarloMethodTabVisible();
+        return configuration == null ? null : configuration.isMonteCarloMethodTabVisible();
     }
 
     @Override
@@ -539,23 +479,20 @@ public class ConfigurationModel implements IConfigurationModel {
 
     public void addEntitySequence(EntityNameEnum entityName, String prefix, Integer digits) {
         List<EntitySequence> sequences = entitySequences.get(entityName);
-        EntitySequence entitySequence = EntitySequence.create(prefix,
-                entityName, digits);
+        EntitySequence entitySequence = EntitySequence.create(prefix, entityName, digits);
+
         if (sequences.isEmpty()) {
             entitySequence.setActive(true);
         }
         sequences.add(entitySequence);
     }
 
-    public void removeEntitySequence(EntitySequence entitySequence)
-            throws IllegalArgumentException {
-        entitySequences.get(entitySequence.getEntityName()).remove(
-                entitySequence);
+    public void removeEntitySequence(EntitySequence entitySequence) throws IllegalArgumentException {
+        entitySequences.get(entitySequence.getEntityName()).remove(entitySequence);
     }
 
     public boolean checkFrefixFormat(EntitySequence sequence) {
-        return (sequence.isWithoutLowBarConstraint() && sequence
-                .isPrefixWithoutWhiteSpacesConstraint());
+        return (sequence.isWithoutLowBarConstraint() && sequence.isPrefixWithoutWhiteSpacesConstraint());
     }
 
     @Override
@@ -587,6 +524,7 @@ public class ConfigurationModel implements IConfigurationModel {
     public void setLdapConfiguration(LDAPConfiguration ldapConfiguration) {
         configuration.setLdapConfiguration(ldapConfiguration);
     }
+
     @Override
     public LDAPConfiguration getLdapConfiguration() {
         return configuration.getLdapConfiguration();
@@ -602,25 +540,13 @@ public class ConfigurationModel implements IConfigurationModel {
         configuration.setCheckNewVersionEnabled(checkNewVersionEnabled);
     }
 
-    @Override
-    public boolean isAllowToGatherUsageStatsEnabled() {
-        return configuration.isAllowToGatherUsageStatsEnabled();
-    }
-
-    @Override
-    public void setAllowToGatherUsageStatsEnabled(
-            boolean allowToGatherUsageStatsEnabled) {
-        configuration
-                .setAllowToGatherUsageStatsEnabled(allowToGatherUsageStatsEnabled);
-    }
-
     private static Map<String, String> getAllCurrencies() {
-        Map<String, String> currencies = new TreeMap<String, String>();
+        Map<String, String> currencies = new TreeMap<>();
         for (Locale locale : Locale.getAvailableLocales()) {
+
             if (StringUtils.isNotBlank(locale.getCountry())) {
                 Currency currency = Currency.getInstance(locale);
-                currencies.put(currency.getCurrencyCode(),
-                        currency.getSymbol(locale));
+                currencies.put(currency.getCurrencyCode(), currency.getSymbol(locale));
             }
         }
         return currencies;
@@ -655,8 +581,7 @@ public class ConfigurationModel implements IConfigurationModel {
     }
 
     @Override
-    public void setPersonalTimesheetsTypeOfWorkHours(
-            TypeOfWorkHours typeOfWorkHours) {
+    public void setPersonalTimesheetsTypeOfWorkHours(TypeOfWorkHours typeOfWorkHours) {
         if (configuration != null) {
             configuration.setPersonalTimesheetsTypeOfWorkHours(typeOfWorkHours);
         }
@@ -668,10 +593,8 @@ public class ConfigurationModel implements IConfigurationModel {
     }
 
     @Override
-    public void setPersonalTimesheetsPeriodicity(
-            PersonalTimesheetsPeriodicityEnum personalTimesheetsPeriodicity) {
-        configuration
-                .setPersonalTimesheetsPeriodicity(personalTimesheetsPeriodicity);
+    public void setPersonalTimesheetsPeriodicity(PersonalTimesheetsPeriodicityEnum personalTimesheetsPeriodicity) {
+        configuration.setPersonalTimesheetsPeriodicity(personalTimesheetsPeriodicity);
     }
 
     @Override
@@ -744,10 +667,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
     @Override
     public Boolean getEnabledAutomaticBudget() {
-        if (configuration == null) {
-            return null;
-        }
-        return (configuration.isEnabledAutomaticBudget());
+        return configuration == null ? null : configuration.isEnabledAutomaticBudget();
     }
 
     @Override

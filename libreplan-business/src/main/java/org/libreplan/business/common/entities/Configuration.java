@@ -412,7 +412,7 @@ public class Configuration extends BaseEntity {
         this.checkNewVersionEnabled = checkNewVersionEnabled;
     }
 
-    public boolean isAllowToGatherUsageStatsEnabled() {
+    public boolean isAllowedToGatherUsageStatsEnabled() {
         return allowToGatherUsageStatsEnabled != null ? allowToGatherUsageStatsEnabled : false;
     }
 

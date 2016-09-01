@@ -85,31 +85,28 @@ import static org.libreplan.web.I18nHelper._;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class TemplateModel implements ITemplateModel {
 
+    @Autowired
+    private IScenarioDAO scenarioDAO;
+
+    @Autowired
+    private IOrderVersionDAO orderVersionDAO;
+
+    @Autowired
+    private ITaskSourceDAO taskSourceDAO;
+
+    @Autowired
+    private IUserDAO userDAO;
+
+    @Autowired
+    private IResourcesSearcher resourcesSearcher;
+
+    @Autowired
+    private IAdHocTransactionService transactionService;
+
+    @Autowired
+    private IConfigurationDAO configurationDAO;
+
     public static class DependencyWithVisibility implements IDependency<TaskElement> {
-
-        static DependencyWithVisibility createInvisible(TaskElement source,
-                                                        TaskElement destination,
-                                                        DependencyType type) {
-            return new DependencyWithVisibility(source, destination, type, false);
-        }
-
-        public static DependencyWithVisibility existent(Dependency each) {
-
-            return new DependencyWithVisibility(each.getOrigin(), each.getDestination(),
-                    toGraphicalType(each.getType()), true);
-        }
-
-        static List<Constraint<GanttDate>> getConstraints(ConstraintCalculator<TaskElement> calculator,
-                                                          Set<DependencyWithVisibility> withDependencies,
-                                                          Point point) {
-
-            List<Constraint<GanttDate>> result = new ArrayList<>();
-            for (DependencyWithVisibility each : withDependencies) {
-                result.addAll(calculator.getConstraints(each, point));
-            }
-
-            return result;
-        }
 
         private final TaskElement source;
 
@@ -131,6 +128,30 @@ public class TemplateModel implements ITemplateModel {
             this.destination = destination;
             this.type = type;
             this.visible = visible;
+        }
+
+        static DependencyWithVisibility createInvisible(TaskElement source,
+                                                        TaskElement destination,
+                                                        DependencyType type) {
+
+            return new DependencyWithVisibility(source, destination, type, false);
+        }
+
+        public static DependencyWithVisibility existent(Dependency each) {
+            return new DependencyWithVisibility(
+                    each.getOrigin(), each.getDestination(), toGraphicalType(each.getType()), true);
+        }
+
+        static List<Constraint<GanttDate>> getConstraints(ConstraintCalculator<TaskElement> calculator,
+                                                          Set<DependencyWithVisibility> withDependencies,
+                                                          Point point) {
+
+            List<Constraint<GanttDate>> result = new ArrayList<>();
+            for (DependencyWithVisibility each : withDependencies) {
+                result.addAll(calculator.getConstraints(each, point));
+            }
+
+            return result;
         }
 
         public boolean isVisible() {
@@ -156,40 +177,22 @@ public class TemplateModel implements ITemplateModel {
             switch (domainDependencyType) {
                 case END_START:
                     return DependencyType.END_START;
+
                 case START_START:
                     return DependencyType.START_START;
+
                 case END_END:
                     return DependencyType.END_END;
+
                 case START_END:
                     return DependencyType.START_END;
+
                 default:
-                    throw new RuntimeException("can't handle "
-                            + domainDependencyType);
+                    throw new RuntimeException("can't handle " + domainDependencyType);
                 }
         }
 
     }
-
-    @Autowired
-    private IScenarioDAO scenarioDAO;
-
-    @Autowired
-    private IOrderVersionDAO orderVersionDAO;
-
-    @Autowired
-    private ITaskSourceDAO taskSourceDAO;
-
-    @Autowired
-    private IUserDAO userDAO;
-
-    @Autowired
-    private IResourcesSearcher resourcesSearcher;
-
-    @Autowired
-    private IAdHocTransactionService transactionService;
-
-    @Autowired
-    private IConfigurationDAO configurationDAO;
 
     @Override
     @Transactional(readOnly = true)
@@ -201,16 +204,6 @@ public class TemplateModel implements ITemplateModel {
     @Transactional(readOnly = true)
     public String getCompanyLogoURL() {
         return configurationDAO.getConfiguration().getCompanyLogoURL();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Scenario getScenarioByName(String name) {
-        try {
-            return scenarioDAO.findByName(name);
-        } catch (InstanceNotFoundException e) {
-            return null;
-        }
     }
 
     @Override
@@ -238,16 +231,14 @@ public class TemplateModel implements ITemplateModel {
         userDAO.save(user);
         CustomUser customUser = SecurityUtils.getLoggedUser();
         assert customUser != null : "user must be logged for this method to be called";
-
         customUser.setScenario(scenario);
     }
 
-    private void doReassignations(final Scenario scenario,
-            IOnFinished onFinish) {
+    private void doReassignations(final Scenario scenario, IOnFinished onFinish) {
         if (isOnZKExecution()) {
             doReassignationsWithFeedback(getDesktop(), scenario, onFinish);
         } else {
-            doReassignations(scenario, LongOperationFeedback.<IDesktopUpdate> doNothingEmitter());
+            doReassignations(scenario, LongOperationFeedback.doNothingEmitter());
             onFinish.onWithoutErrorFinish();
         }
     }
@@ -259,37 +250,34 @@ public class TemplateModel implements ITemplateModel {
     }
 
     private Desktop getDesktop() {
-        Execution current = Executions.getCurrent();
-
-        return current.getDesktop();
+        return Executions.getCurrent().getDesktop();
     }
 
     private void doReassignationsWithFeedback(Desktop desktop, final Scenario scenario, final IOnFinished onFinish) {
         IBackGroundOperation<IDesktopUpdate> reassignations = new IBackGroundOperation<IDesktopUpdate>() {
             @Override
-            public void doOperation(
-                    final IDesktopUpdatesEmitter<IDesktopUpdate> desktopUpdateEmitter) {
+            public void doOperation(final IDesktopUpdatesEmitter<IDesktopUpdate> desktopUpdateEmitter) {
                 Exception exceptionHappened = null;
                 try {
-                    transactionService
-                            .runOnTransaction(new IOnTransaction<Void>() {
-                                @Override
-                                public Void execute() {
-                                    doReassignations(reloadScenario(scenario),
-                                            desktopUpdateEmitter);
-                                    return null;
-                                }
-                            });
+                    transactionService.runOnTransaction(new IOnTransaction<Void>() {
+                        @Override
+                        public Void execute() {
+                            doReassignations(reloadScenario(scenario), desktopUpdateEmitter);
+
+                            return null;
+                        }
+                    });
+
                 } catch (Exception e) {
                     exceptionHappened = e;
                 } finally {
                     desktopUpdateEmitter.doUpdate(showEnd());
                 }
+
                 if (exceptionHappened == null) {
                     desktopUpdateEmitter.doUpdate(notifySuccess(onFinish));
                 } else {
-                    desktopUpdateEmitter.doUpdate(notifyException(onFinish,
-                            exceptionHappened));
+                    desktopUpdateEmitter.doUpdate(notifyException(onFinish, exceptionHappened));
                 }
             }
 
@@ -299,7 +287,6 @@ public class TemplateModel implements ITemplateModel {
 
     private IDesktopUpdate notifySuccess(final IOnFinished onFinish) {
         return new IDesktopUpdate() {
-
             @Override
             public void doUpdate() {
                 onFinish.onWithoutErrorFinish();
@@ -309,7 +296,6 @@ public class TemplateModel implements ITemplateModel {
 
     private IDesktopUpdate notifyException(final IOnFinished onFinish, final Exception exceptionHappened) {
         return new IDesktopUpdate() {
-
             @Override
             public void doUpdate() {
                 onFinish.errorHappened(exceptionHappened);
@@ -348,15 +334,11 @@ public class TemplateModel implements ITemplateModel {
     }
 
     private IDesktopUpdate sendMessage(final String message) {
-        return () -> {
-            Clients.showBusy((Component) new Object(), message);
-        };
+        return () -> Clients.showBusy((Component) new Object(), message);
     }
 
     private IDesktopUpdate showEnd() {
-        return () -> {
-            Clients.showBusy(null, "");
-        };
+        return () -> Clients.showBusy(null, "");
     }
 
     private void doReassignationsOn(Order order, Scenario from, Scenario to) {
@@ -386,8 +368,7 @@ public class TemplateModel implements ITemplateModel {
 
     private void doReassignations(Order order, Scenario scenario) {
         for (Task each : getTasksFrom(order)) {
-            each.reassignAllocationsWithNewResources(scenario,
-                    resourcesSearcher);
+            each.reassignAllocationsWithNewResources(scenario, resourcesSearcher);
         }
     }
 
@@ -456,12 +437,6 @@ public class TemplateModel implements ITemplateModel {
     @Override
     @Transactional(readOnly = true)
     public boolean isCheckNewVersionEnabled() {
-        return configurationDAO.getConfiguration().isCheckNewVersionEnabled();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isAllowToGatherUsageStatsEnabled() {
         return configurationDAO.getConfiguration().isCheckNewVersionEnabled();
     }
 
