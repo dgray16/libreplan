@@ -316,7 +316,8 @@ public class OrderDAO extends IntegrationEntityDAO<Order> implements IOrderDAO {
      */
     private List<Long> getOrdersIdsByDates(Date startDate, Date endDate) {
         if (startDate == null && endDate == null) {
-            return Collections.emptyList();
+            /* Don't replace null with Collections.emptyList(), as the prompt says (sometimes), because it breaks logic */
+            return null;
         }
 
         String strQuery = "SELECT t.taskSource.schedulingData.orderElement.id "

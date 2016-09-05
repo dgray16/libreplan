@@ -2354,3 +2354,10 @@ textarea {
 .padding-bottom-queue {
     padding-bottom: 6px;
 }
+
+.more-options-caption div{
+    position: absolute;
+    top: 28%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
