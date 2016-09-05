@@ -33,7 +33,7 @@
 
     <groupbox sclass="filter-more-options" mold="3d"  width="120px" open="false"
         contentStyle="border: 1px solid #B2CCD9;">
-        <caption label="${i18n:_('More options')}" />
+        <caption sclass="more-options-caption" label="${i18n:_('More options')}" />
 
             <hbox>
                 <!-- Filter by date -->
