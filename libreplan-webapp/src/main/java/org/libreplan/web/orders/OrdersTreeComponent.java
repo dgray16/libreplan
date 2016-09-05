@@ -35,21 +35,15 @@ import org.zkoss.zul.Treeitem;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
- *
  */
 public class OrdersTreeComponent extends TreeComponent {
 
-    protected boolean resourcesBudgetEnabled = Registry.getConfigurationDAO()
-            .getConfigurationWithReadOnlyTransaction()
-            .isEnabledAutomaticBudget();
+    protected boolean resourcesBudgetEnabled =
+            Registry.getConfigurationDAO().getConfigurationWithReadOnlyTransaction().isEnabledAutomaticBudget();
 
     abstract class OrdersTreeColumn extends Column {
         OrdersTreeColumn(String label, String cssClass, String tooltip) {
             super(label, cssClass, tooltip);
-        }
-
-        OrdersTreeColumn(String label, String cssClass) {
-            super(label, cssClass);
         }
 
         @Override
@@ -72,54 +66,46 @@ public class OrdersTreeComponent extends TreeComponent {
         columns.add(codeColumn);
         columns.add(nameAndDescriptionColumn);
 
-        columns.add(new OrdersTreeColumn(_("Hours"), "hours",
-                _("Total task hours")) {
-
+        columns.add(new OrdersTreeColumn(_("Hours"), "hours", _("Total task hours")) {
             @Override
             protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addHoursCell(currentElement);
             }
-
         });
 
-        columns.add(new OrdersTreeColumn(_("Budget"), "budget",
-                _("Total task budget")) {
-
+        columns.add(new OrdersTreeColumn(_("Budget"), "budget", _("Total task budget")) {
             @Override
             protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addBudgetCell(currentElement);
             }
-
         });
 
         if (resourcesBudgetEnabled) {
-            columns.add(new OrdersTreeColumn(_("Expenses"), "budget",
-                    _("Budget minus resources costs")) {
-
-            @Override
-            protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
-                treeRenderer.addResourcesBudgetCell(currentElement);
-            }
-
-        });
-
+            columns.add(new OrdersTreeColumn(_("Expenses"), "budget", _("Budget minus resources costs")) {
+                @Override
+                protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
+                    treeRenderer.addResourcesBudgetCell(currentElement);
+                }
+            });
         }
 
-        columns.add(new OrdersTreeColumn(_("Must start after"),
-                        "estimated_init",
-                        _("Estimated start date for the task (press enter in textbox to open calendar popup or type in date directly)")) {
+        columns.add(new OrdersTreeColumn(
+                _("Must start after"),
+                "estimated_init",
+                _("Estimated start date for the task " +
+                        "(press enter in textbox to open calendar popup or type in date directly)")) {
 
             @Override
             protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {
                 treeRenderer.addInitDateCell(currentElement);
             }
-
         });
 
         columns.add(new OrdersTreeColumn(
                         _("Deadline"),
                         "estimated_end",
-                        _("Estimated end date for the task (press enter in textbox to open calendar popup or type in date directly)")) {
+                        _("Estimated end date for the task " +
+                                "(press enter in textbox to open calendar popup or type in date directly)")) {
 
             @Override
             protected void doCell(OrderElementTreeitemRenderer treeRenderer, OrderElement currentElement) {

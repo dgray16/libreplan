@@ -11,6 +11,7 @@ LibrePlan Team
 * Bjørn Vos <bjorn@libreplan-enterprise.com>
 * Philippe Poumaroux <philippe.poumaroux@free.fr>
 * Vova Perebykivskyi <vova@libreplan-enterprise.com>
+* Paul Luchyn <ddiamondbbackk@gmail.com>
 
 Previous Team Members
 ---------------------

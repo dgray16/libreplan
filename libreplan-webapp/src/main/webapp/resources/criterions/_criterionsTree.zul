@@ -27,16 +27,18 @@
         <hbox align="center">
             <label value="${i18n:_('New criterion')}" />
             <textbox value="" id="criterionName" width="200px" onOK="criterionTreeController.addCriterion();"/>
+
             <button id="add_new_criterion" label="${i18n:_('Add')}" sclass="add-button"
-                onClick="criterionTreeController.addCriterion();"/>
+                    onClick="criterionTreeController.addCriterion();"/>
         </hbox>
     </vbox>
+
     <vbox>
         <tree id="tree" rows="10" multiple="true" droppable="true"
-            onDrop="criterionTreeController.move(self, event.dragged)"
-            model="@{criterionTreeController.criterionTreeModel}"
-            treeitemRenderer="@{criterionTreeController.renderer}" pageSize="10"
-            sclass="orderTree" fixedLayout="true" mold="paging">
+              onDrop="criterionTreeController.move(self, event.dragged)"
+              model="@{criterionTreeController.criterionTreeModel}"
+              treeitemRenderer="@{criterionTreeController.renderer}"
+              pageSize="10" sclass="orderTree" fixedLayout="true" mold="paging">
             <treecols sizable="true">
                 <treecol label="${i18n:_('Name')}" />
                 <treecol width="200px" label="${i18n:_('Cost category')}" />
@@ -47,6 +49,7 @@
         </tree>
     </vbox>
 </vbox>
+
 <separator bar="false" spacing="40px" orient="vertical"/>
 
 </groupbox>

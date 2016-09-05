@@ -75,11 +75,12 @@ import org.zkoss.zul.Treechildren;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.TreeitemRenderer;
 import org.zkoss.zul.Treerow;
+import org.zkoss.zul.Treecol;
 import org.zkoss.zul.impl.InputElement;
 
 
 /**
- * Tree controller for project WBS structures
+ * Tree controller for project WBS structures.
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
@@ -138,6 +139,25 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
         }
 
         messagesForUser = new MessagesForUser(messagesContainer);
+
+        setUpTreeColumns();
+    }
+
+    /**
+     * Resolves issue with width of columns.
+     */
+    private void setUpTreeColumns() {
+        for (Component column : tree.getFellow("treeCols").getChildren()) {
+            if ( "Code".equals( ((Treecol) column).getLabel() ) ) {
+                ((Treecol) column).setWidth("110px;");
+            } else if ( "Name".equals( ((Treecol) column).getLabel() ) ) {
+                ((Treecol) column).setHflex("1");
+            } else if ( "Op.".equals( ((Treecol) column).getLabel() ) ) {
+                ((Treecol) column).setWidth("50px;");
+            } else {
+                ((Treecol) column).setHflex("min");
+            }
+        }
     }
 
     public abstract Renderer getRenderer();
@@ -433,9 +453,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
     }
 
     protected boolean isFirstItem(T element) {
-        List children = element.getParent().getChildren();
-
-        return (children.get(0).equals(element));
+        return element.getParent().getChildren().get(0).equals(element);
     }
 
     protected boolean isLastItem(T element) {
@@ -464,6 +482,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
             void register(final InputElement inputElement) {
                 inputElement.setCtrlKeys("#up#down");
                 registerNavigableElement(inputElement);
+
                 inputElement.addEventListener("onCtrlKey", event -> {
                     Treerow treerow = getCurrentTreeRow();
                     Navigation navigation = Navigation.getIntentFrom((KeyEvent) event);
@@ -1138,6 +1157,7 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                 remove(currentElement);
                 reloadTreeUIAfterChanges();
             };
+
             final Button result;
 
             if (readOnly) {
@@ -1157,6 +1177,8 @@ public abstract class TreeController<T extends ITreeNode<T>> extends GenericForw
                         "icono",
                         removeListener);
             }
+
+            result.setStyle("margin-left: 8px;");
 
             return result;
         }

@@ -32,7 +32,8 @@ import org.zkoss.zk.ui.util.Composer;
 import org.zkoss.zul.Treeitem;
 
 /**
- * macro component for order elements tree and similar pages<br />
+ * Macro component for order elements tree and similar pages.
+ * <br />
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
@@ -40,6 +41,46 @@ import org.zkoss.zul.Treeitem;
 public abstract class TreeComponent extends HtmlMacroComponent {
 
     private static final String CONTROLLER_NAME = "treeController";
+
+    protected Column codeColumn = new Column(_("Code"), "code") {
+        @Override
+        public <T extends ITreeNode<T>> void doCell(
+                TreeController<T>.Renderer renderer, Treeitem item, T currentElement) {
+
+            renderer.addCodeCell(currentElement);
+        }
+    };
+
+    protected final Column nameAndDescriptionColumn = new Column(_("Name"), "name") {
+        @Override
+        public <T extends ITreeNode<T>> void doCell(
+                TreeController<T>.Renderer renderer, Treeitem item, T currentElement) {
+
+            renderer.addDescriptionCell(currentElement);
+        }
+    };
+
+    protected final Column operationsColumn = new Column(_("Op."), "operations", _("Operations")) {
+        @Override
+        public <T extends ITreeNode<T>> void doCell(
+                TreeController<T>.Renderer renderer, Treeitem item, T currentElement) {
+
+            renderer.addOperationsCell(item, currentElement);
+        }
+    };
+
+    protected final Column schedulingStateColumn = new Column(
+            _("Scheduling state"),
+            "scheduling_state",
+            _("Fully, Partially or Unscheduled. (Drag and drop to move tasks)")) {
+
+        @Override
+        public <T extends ITreeNode<T>> void doCell(
+                TreeController<T>.Renderer renderer, Treeitem item, T currentElement) {
+
+            renderer.addSchedulingStateCell(currentElement);
+        }
+    };
 
     private void doAfterComposeOnController(Composer controller) {
         try {
@@ -82,17 +123,19 @@ public abstract class TreeComponent extends HtmlMacroComponent {
             return tooltip;
         }
 
+        /* TODO remove me, if ZK Load on demand issue will be resolved */
         public String getHflex() {
             return cssClass.equals("name") ? "1" : "min";
         }
 
-        public String getWidth(){
-            if (cssClass.equals("scheduling_state")) {
+        /* TODO remove me, if ZK Load on demand issue will be resolved */
+        public String getWidth() {
+            if (cssClass.contains("scheduling_state")) {
                 return "135px";
             } else if (cssClass.equals("code")) {
                 return "106px";
             } else if (cssClass.equals("name")) {
-                return "1150px";
+                return "950px";
             } else if (cssClass.equals("hours")) {
                 return "50px";
             } else if (cssClass.equals("budget")) {
@@ -101,7 +144,7 @@ public abstract class TreeComponent extends HtmlMacroComponent {
                 return "100px";
             } else if (cssClass.equals("estimated_end")) {
                 return "100px";
-            } else if (cssClass.equals("operations") ){
+            } else if (cssClass.equals("operations") ) {
                 return "50px";
             }
 
@@ -111,52 +154,6 @@ public abstract class TreeComponent extends HtmlMacroComponent {
         public abstract <T extends ITreeNode<T>> void doCell(
                 TreeController<T>.Renderer renderer, Treeitem item, T currentElement);
     }
-
-    protected final Column codeColumn = new Column(_("Code"), "code") {
-
-        @Override
-        public <T extends ITreeNode<T>> void doCell(
-                TreeController<T>.Renderer renderer,
-                Treeitem item,
-                T currentElement) {
-            renderer.addCodeCell(currentElement);
-        }
-    };
-    protected final Column nameAndDescriptionColumn = new Column(_("Name"), "name") {
-
-        @Override
-        public <T extends ITreeNode<T>> void doCell(
-                TreeController<T>.Renderer renderer,
-                Treeitem item, T currentElement) {
-
-            renderer.addDescriptionCell(currentElement);
-        }
-    };
-    protected final Column operationsColumn = new Column(_("Op."), "operations", _("Operations")) {
-
-        @Override
-        public <T extends ITreeNode<T>> void doCell(
-                TreeController<T>.Renderer renderer,
-                Treeitem item, T currentElement) {
-
-            renderer.addOperationsCell(item, currentElement);
-        }
-    };
-
-    protected final Column schedulingStateColumn = new Column(
-            _("Scheduling state"),
-            "scheduling_state",
-            _("Fully, Partially or Unscheduled. (Drag and drop to move tasks)")) {
-
-        @Override
-        public <T extends ITreeNode<T>> void doCell(
-                TreeController<T>.Renderer renderer,
-                Treeitem item, T currentElement) {
-
-            renderer.addSchedulingStateCell(currentElement);
-        }
-
-    };
 
     public abstract List<Column> getColumns();
 

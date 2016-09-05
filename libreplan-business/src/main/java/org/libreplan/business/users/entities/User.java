@@ -71,7 +71,9 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     private Scenario lastConnectedScenario;
 
-    // Iif a user is a LibrePlan user or not (ldap)
+    /**
+     * If a user is a LibrePlan user or not (LDAP)
+     */
     private Boolean librePlanUser = true;
 
     private boolean expandCompanyPlanningViewCharts = false;
@@ -117,7 +119,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
     }
 
     public static User create(String loginName, String password, Set<UserRole> roles) {
-        return create(loginName, password, roles, new HashSet<Profile>());
+        return create(loginName, password, roles, new HashSet<>());
     }
 
     public static User create(String loginName, String password, Set<UserRole> roles, Set<Profile> profiles) {
@@ -171,7 +173,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     /**
      * Retrieves UserRoles from related Profiles and returns them together with
-     * the UserRoles related directly to the User entity
+     * the UserRoles related directly to the User entity.
      *
      * @return A list of UserRole objects
      */
@@ -186,7 +188,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
     }
 
     /**
-     * Checks if current user is in the requested role
+     * Checks if current user is in the requested role.
      */
     public boolean isInRole(UserRole role) {
         if (roles.contains(role)) {
@@ -255,8 +257,7 @@ public class User extends BaseEntity implements IHumanIdentifiable{
             return !userDAO.existsByLoginNameAnotherTransaction(loginName);
         } else {
             try {
-                User u = userDAO.findByLoginNameAnotherTransaction(loginName);
-                return u.getId().equals(getId());
+                return userDAO.findByLoginNameAnotherTransaction(loginName).getId().equals(getId());
             } catch (InstanceNotFoundException e) {
                 return true;
             }
@@ -358,7 +359,8 @@ public class User extends BaseEntity implements IHumanIdentifiable{
 
     public enum UserAuthenticationType {
 
-        DATABASE(_("Database")), LDAP(_("LDAP"));
+        DATABASE(_("Database")),
+        LDAP(_("LDAP"));
 
         private String name;
 
@@ -366,14 +368,14 @@ public class User extends BaseEntity implements IHumanIdentifiable{
             this.name = name;
         }
 
+        @Override
         public String toString() {
             return name;
         }
     }
 
     public UserAuthenticationType getUserType() {
-        return isLibrePlanUser() ? UserAuthenticationType.DATABASE
-                : UserAuthenticationType.LDAP;
+        return isLibrePlanUser() ? UserAuthenticationType.DATABASE : UserAuthenticationType.LDAP;
     }
 
     @AssertTrue(message = "You have exceeded the maximum limit of users")

@@ -566,7 +566,7 @@ div.z-grid {
 }
 
 .z-tree .z-datebox-input {
-    height:25px;
+    height: 25px;
 }
 .orderTree .operations {
     width: 50px;
@@ -577,12 +577,13 @@ div.z-grid {
 .orderTree .hours {
     width: 50px;
 }
+/* After ZK8, this code is not working */
 .orderTree .code {
-    min-width: 100px;
+    min-width: 110px;
 }
 
 .orderTree .scheduling_state {
-    min-width:140px;
+    min-width: 140px;
 }
 .orderTree .estimated_init,
 .orderTree .estimated_end {
@@ -816,9 +817,7 @@ div.z-listbox-pgi-b {
     padding: 1px 5px;
     height: 14px;
     font-size: 9px;
-    /*width: 5px;*/
 }
-
 
 .scheduling-state {
     cursor: move;

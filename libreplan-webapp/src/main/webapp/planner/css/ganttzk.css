@@ -1021,7 +1021,6 @@ height: 100%
 }
 
 .advanced-allocation-layout .leftpanelgap .z-grid-header {
-    /* padding-bottom: 3px; */
     border-bottom: solid 1px #DDDDDD;
     background: #FFFFFF;
 }
@@ -1084,10 +1083,6 @@ height: 100%
 
 .listdetails .z-tree-header {
     margin-bottom:17px;
-}
-
-.listdetails .z-tree-header table {
-    /* display:none; */
 }
 
 .plannerlayout div.z-tree, .plannerlayout div.z-grid,
@@ -1475,8 +1470,6 @@ div.z-dottree {
 .z-dottree-line.z-dottree-spacer {
     width: 18px;
 }
-
-/* New css classes */
 
 .parentResourceLoad > div {
     height: 100%;

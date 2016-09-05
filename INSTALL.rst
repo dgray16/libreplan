@@ -499,3 +499,4 @@ Where the different parameters have the following meaning:
 .. NOTE::
 
    Take into account that size of PermGen is additional to heap size.
+   Since JDK8(b75) you will not see java.lang.OutOfMemoryError: PermGen space.
