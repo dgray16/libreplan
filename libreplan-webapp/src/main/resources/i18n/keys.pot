@@ -9411,8 +9411,10 @@ msgstr ""
 msgid "Email: timesheet data missing"
 msgstr ""
 
-
-
 #: libreplan-webapp/src/main/java/org/libreplan/web/planner/taskedition/TaskPropertiesController.java:804
 msgid "You cannot email user twice with the same info"
+msgstr ""
+
+#: libreplan-webapp/src/main/webapp/orders/_list.zul:24
+msgid "No projects"
 msgstr ""

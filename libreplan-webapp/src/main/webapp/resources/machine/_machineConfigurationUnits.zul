@@ -25,34 +25,37 @@
             onClick="configurationController.addConfigurationUnit();" />
 
     <grid sizedByContent="true"
-          model="@{configurationController.configurationUnits}" id="configurationUnitsGrid">
+          model="@{configurationController.configurationUnits}" id="configurationUnitsGrid" sclass="remove-detailrow-background">
         <columns>
-            <column width="25px" />
+            <column width="29px"/>
             <column label="${i18n:_('Name')}"
                     tooltiptext="${i18n:_('Configuration unit name')}"
-                    width="400px" sort="auto(name)" />
+                    width="400px"
+                    sort="auto(name)" />
             <column label="${i18n:_('Alpha')}"
+                    width="715px"
                     tooltiptext="${i18n:_('Human hours per machine working hour within configuration unit')}" />
-            <column label="${i18n:_('Operations')}" />
+            <column label="${i18n:_('Operations')}"
+                    width="724px"/>
         </columns>
         <rows>
             <!-- To iterate on workersConfiguration Units -->
             <row self="@{each='configurationUnit'}" value="@{configurationUnit}">
-               <!-- <detailrow>-->
+                <detailrow>
                     <!-- Assigned resources -->
-                    <panel title="${i18n:_('Worker assignments')}" border="normal">
+                    <panel title="${i18n:_('Worker assignments')}" border="normal" style="margin-top:10px;">
                         <panelchildren style="padding:10px;">
                     <autocomplete finder="WorkerFinder" buttonVisible="true" width="300px" style="padding-bottom:10px;margin-top:10px;"/>
                     <button label="${i18n:_('Add new worker assignment')}" sclass="add-button"
                             onClick="configurationController.addWorkerAssignment(self.parent.parent.parent.parent.value,self)"/>
 
                             <grid sizedByContent="true"
-                                  model="@{configurationUnit.workerAssignments}" style="margin-top:10px;">
+                                  model="@{configurationUnit.workerAssignments}" span="true">
                                 <columns sizable="true">
-                                    <column label="${i18n:_('Name')}" />
-                                    <column label="${i18n:_('Start date')}" />
-                                    <column label="${i18n:_('End date')}" />
-                                    <column label="${i18n:_('Operations')}" />
+                                    <column hflex="1" label="${i18n:_('Name')}" />
+                                    <column hflex="1" label="${i18n:_('Start date')}" />
+                                    <column hflex="1" label="${i18n:_('End date')}" />
+                                    <column hflex="1" label="${i18n:_('Operations')}" />
                                 </columns>
                                 <rows>
                                     <row self="@{each='workerAssignment'}" value="@{workerAssignment}">
@@ -77,7 +80,7 @@
 
                     <!-- Assigned criteria -->
                     <textbox value="@{configurationUnit.id}" visible="false" />
-                    <panel title="${i18n:_('Criterion requirements')}" border="normal">
+                    <panel title="${i18n:_('Criterion requirements')}" border="normal" style="margin-top:10px; margin-bottom:10px;">
                         <panelchildren style="padding:10px;">
                     <textbox value="@{configurationUnit.id}" visible="false" />
                     <bandbox width="300px">
@@ -121,7 +124,7 @@
                         </panelchildren>
                     </panel>
 
-                <!--  </detailrow>-->
+                  </detailrow>
                 <textbox value="@{configurationUnit.name}"
                          constraint="no empty:${i18n:_('cannot be empty')}" />
                 <textbox value="@{configurationUnit.alpha}"

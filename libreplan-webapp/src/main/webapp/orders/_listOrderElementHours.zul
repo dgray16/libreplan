@@ -20,7 +20,6 @@
 -->
 <vbox id="${arg.id}"
     apply="org.libreplan.web.orders.AssignedHoursToOrderElementController" width="100%">
-
     <!-- Direct imputation -->
     <vbox width="100%">
         <panel title="${i18n:_('Imputed hours calculation')}">
@@ -198,17 +197,17 @@
                         <column />
                         <column />
                     </columns>
-                    <rows>
+                    <rows sclass="remove-detailrow-background">
                          <row>
                             <grid fixedLayout="true">
                                 <columns>
-                                    <column width="20px" />
-                                    <column width="200px" />
-                                    <column align="right"/>
+                                    <column width="40px"/>
+                                    <column width="200px"/>
+                                    <column width="199px"/>
                                 </columns>
                                 <rows>
                                     <row>
-                                       <!-- <detailrow open="true">-->
+                                        <detailrow open="false">
                                             <grid fixedLayout="true">
                                                 <columns>
                                                     <column width="200px" />
@@ -217,24 +216,24 @@
                                                 <rows>
                                                     <row>
                                                         <label value="${i18n:_('Resources budget')}:" />
-                                                        <hbox>
+                                                        <hbox sclass="move-to-right-in-table">
                                                             <label value="@{assignedHoursToOrderElementController.resourcesBudget}" />
                                                             <label value="@{assignedHoursToOrderElementController.currencySymbol}" />
                                                         </hbox>
                                                     </row>
                                                     <row>
                                                         <label value="${i18n:_('Expenses budget')}:" />
-                                                        <hbox>
+                                                        <hbox sclass="move-to-right-in-table">
                                                             <label value="@{assignedHoursToOrderElementController.budget}" />
                                                             <label value="@{assignedHoursToOrderElementController.currencySymbol}" />
                                                         </hbox>
                                                     </row>
                                                 </rows>
                                             </grid>
-                                        <!--</detailrow>-->
+                                        </detailrow>
                                         <label
                                             value="${i18n:_('Total calculated budget')}:" />
-                                        <hbox>
+                                        <hbox sclass="move-to-right-in-table">
                                             <label value="@{assignedHoursToOrderElementController.calculatedBudget}" />
                                             <label value="@{assignedHoursToOrderElementController.currencySymbol}" />
                                         </hbox>
@@ -242,7 +241,7 @@
 
 
                                     <row>
-                                     <!--   <detailrow open="true">-->
+                                        <detailrow open="false">
                                             <grid fixedLayout="true">
                                                 <columns>
                                                     <column width="200px" />
@@ -251,24 +250,24 @@
                                                 <rows>
                                                     <row>
                                                         <label value="${i18n:_('Hours cost')}:" />
-                                                        <hbox>
+                                                        <hbox sclass="move-to-right-in-table">
                                                             <label value="@{assignedHoursToOrderElementController.costOfHours}" />
                                                             <label value="@{assignedHoursToOrderElementController.currencySymbol}" />
                                                         </hbox>
                                                     </row>
                                                     <row>
                                                         <label value="${i18n:_('Expenses cost')}:" />
-                                                        <hbox>
+                                                        <hbox sclass="move-to-right-in-table">
                                                             <label value="@{assignedHoursToOrderElementController.costOfExpenses}" />
                                                             <label value="@{assignedHoursToOrderElementController.currencySymbol}" />
                                                         </hbox>
                                                     </row>
                                                 </rows>
                                             </grid>
-                                       <!-- </detailrow>-->
+                                        </detailrow>
                                         <label
                                             value="${i18n:_('Money spent')}:" />
-                                        <hbox>
+                                        <hbox sclass="move-to-right-in-table">
                                             <label
                                                 value="@{assignedHoursToOrderElementController.moneyCost}" />
                                             <label value="@{assignedHoursToOrderElementController.currencySymbol}" />
@@ -283,8 +282,8 @@
                                 <label value="${i18n:_('%')}" />
                                 <progressmeter id="moneyCostProgressBar" />
                                 <progressmeter id="exceedMoneyCostProgressBar"
-                                    style="background:red ; border:1px solid red"
-                                    value="0" />
+                                               style="background:red ; border:1px solid red"
+                                               value="0" />
                             </hbox>
                         </row>
                     </rows>
@@ -292,4 +291,10 @@
             </panelchildren>
         </panel>
     </vbox>
+    <!-- Script for aligning money values and currency symbols to right -->
+    <script>
+        zk.afterMount(function() {
+            $('.move-to-right-in-table').parent().css({'float':'right'});
+        });
+    </script>
 </vbox>

@@ -21,7 +21,7 @@
 
 <window id="${arg.top_id}" title="${i18n:_('Projects list')}">
     <grid id="listing" model="@{controller.orders}" mold="paging"
-        emptyMessage="No projects"
+        emptyMessage="${i18n:_('No projects')}"
         pageSize="15" span="0" sizedByContent="false"
         rowRenderer= "@{controller.ordersRowRender}"
         onInitRender ="controller.sortOrders();" sclass="clickable-rows projects-list">
