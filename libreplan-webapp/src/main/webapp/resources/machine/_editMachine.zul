@@ -85,7 +85,7 @@
                 <!-- Calendar -->
                 <resourceCalendar />
             </tabpanel>
-            <tabpanel visible="false">
+            <tabpanel>
                 <!-- Configuration units -->
                 <machineConfigurationUnits id="configurationUnits" />
             </tabpanel>

@@ -9418,3 +9418,7 @@ msgstr ""
 #: libreplan-webapp/src/main/webapp/orders/_listHoursGroupCriterionRequirement.zul:25
 msgid "No criterions"
 msgstr ""
+
+#: libreplan-webapp/src/main/webapp/orders/_list.zul:24
+msgid "No projects"
+msgstr ""
