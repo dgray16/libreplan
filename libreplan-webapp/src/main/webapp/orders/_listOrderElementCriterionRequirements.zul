@@ -202,7 +202,7 @@
                     </columns>
 
                     <rows>
-                        <row self="@{each='hoursGroupWrapper'}" value="@{hoursGroupWrapper}">
+                        <row self="@{each=hoursGroupWrapper}" value="@{hoursGroupWrapper}">
                             <detailrow open="true">
                                 <separator bar="false" spacing="40px" orient="vertical"/>
                                 <listHoursGroupCriterionRequirements/>
@@ -249,6 +249,7 @@
                                         onClick="criterionRequirementsController.addExceptionToHoursGroups(self)" />
                             </hbox>
                         </row>
+
                     </rows>
                 </newdatasortablegrid>
             </panelchildren>

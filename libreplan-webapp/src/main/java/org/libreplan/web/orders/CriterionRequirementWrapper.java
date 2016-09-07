@@ -24,6 +24,7 @@
  */
 
 package org.libreplan.web.orders;
+
 import static org.libreplan.web.I18nHelper._;
 
 import org.libreplan.business.INewObject;
@@ -42,7 +43,7 @@ import org.libreplan.business.resources.entities.ResourceEnum;
  */
 public class CriterionRequirementWrapper  implements INewObject {
 
-    public final String DIRECT = _("Direct");
+    private final String DIRECT = _("Direct");
 
     private String type;
 
@@ -66,15 +67,13 @@ public class CriterionRequirementWrapper  implements INewObject {
     }
 
     public CriterionRequirementWrapper(
-            CriterionRequirement criterionRequirement,
-            HoursGroupWrapper hoursGroupWrapper,
-            boolean isNewObject) {
+            CriterionRequirement criterionRequirement, HoursGroupWrapper hoursGroupWrapper, boolean isNewObject) {
         
         this.criterionAndType = "";
         this.criterionRequirement = criterionRequirement;
         this.hoursGroupWrapper = hoursGroupWrapper;
         this.initType(criterionRequirement);
-        this.initValid(criterionRequirement);
+        this.initValid();
         this.setNewObject(isNewObject);
 
         if (!isNewObject) {
@@ -94,10 +93,10 @@ public class CriterionRequirementWrapper  implements INewObject {
 
     public void setCriterionWithItsType(CriterionWithItsType criterionWithItsType) {
         this.criterionWithItsType = criterionWithItsType;
+
         if (criterionRequirement != null) {
             if (criterionWithItsType != null) {
-                criterionRequirement.setCriterion(criterionWithItsType
-                    .getCriterion());
+                criterionRequirement.setCriterion(criterionWithItsType.getCriterion());
             } else {
                 criterionRequirement.setCriterion(null);
             }
@@ -130,7 +129,7 @@ public class CriterionRequirementWrapper  implements INewObject {
 
     public void setCriterionRequirement(CriterionRequirement criterionRequirement) {
         this.criterionRequirement = criterionRequirement;
-        this.initValid(criterionRequirement);
+        this.initValid();
     }
 
     public CriterionRequirement getCriterionRequirement() {
@@ -160,25 +159,24 @@ public class CriterionRequirementWrapper  implements INewObject {
         return "Exception " + type;
     }
 
-    public boolean isDirect(){
-        return (type.equals(DIRECT)) ? true : false;
+    public boolean isDirect() {
+        return type.equals(DIRECT);
     }
 
     public ResourceEnum getResourceTypeHoursGroup() {
-        if (hoursGroupWrapper != null) {
-            return hoursGroupWrapper.getResourceType();
-        }
-        return null;
+        return hoursGroupWrapper != null ? hoursGroupWrapper.getResourceType() : null;
     }
 
     public boolean isNewDirectAndItsHoursGroupIsWorker() {
-        return ((isNewDirect()) && (getResourceTypeHoursGroup() != null) && (getResourceTypeHoursGroup()
-                .equals(ResourceEnum.WORKER)));
+        return isNewDirect() &&
+                getResourceTypeHoursGroup() != null &&
+                getResourceTypeHoursGroup().equals(ResourceEnum.WORKER);
     }
 
     public boolean isNewDirectAndItsHoursGroupIsMachine() {
-        return ((isNewDirect()) && (getResourceTypeHoursGroup() != null) && (getResourceTypeHoursGroup()
-                .equals(ResourceEnum.MACHINE)));
+        return isNewDirect() &&
+                getResourceTypeHoursGroup() != null &&
+                getResourceTypeHoursGroup().equals(ResourceEnum.MACHINE);
     }
 
     public boolean isIndirectValid(){
@@ -198,17 +196,17 @@ public class CriterionRequirementWrapper  implements INewObject {
         }
     }
 
-    private void initValid(CriterionRequirement requirement) {
+    private void initValid() {
         this.valid = true;
-        if(criterionRequirement instanceof IndirectCriterionRequirement){
-            this.valid = ((IndirectCriterionRequirement)criterionRequirement).isValid();
+        if (criterionRequirement instanceof IndirectCriterionRequirement) {
+            this.valid = criterionRequirement.isValid();
         }
     }
 
     public boolean isValid() {
         if ((criterionRequirement != null)
                 && (criterionRequirement instanceof IndirectCriterionRequirement)) {
-            return ((IndirectCriterionRequirement) criterionRequirement)
+            return criterionRequirement
                     .isValid();
         }
         return valid == null ? false : valid;

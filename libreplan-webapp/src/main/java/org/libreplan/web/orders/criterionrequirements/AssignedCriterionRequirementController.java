@@ -35,13 +35,8 @@ import org.apache.commons.lang3.Validate;
 import org.libreplan.business.orders.entities.HoursGroup;
 import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.business.orders.entities.OrderLine;
-import org.libreplan.business.resources.entities.Criterion;
-import org.libreplan.business.resources.entities.CriterionType;
-import org.libreplan.business.resources.entities.CriterionWithItsType;
-import org.libreplan.business.resources.entities.ResourceEnum;
+import org.libreplan.business.resources.entities.*;
 import org.libreplan.business.workreports.entities.WorkReportLine;
-import org.libreplan.web.common.IMessagesForUser;
-import org.libreplan.web.common.MessagesForUser;
 import org.libreplan.web.common.Util;
 import org.libreplan.web.common.components.NewDataSortableGrid;
 import org.libreplan.web.orders.CriterionRequirementWrapper;
@@ -69,19 +64,17 @@ import org.zkoss.zul.Panel;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Rows;
 import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.Detail;
+
+import com.libreplan.java.zk.components.customdetailrowcomponent.Detail;
 
 /**
- * Controller for showing OrderElement assigned labels
+ * Controller for showing OrderElement assigned labels.
  *
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Diego Pino Garcia <dpino@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public abstract class AssignedCriterionRequirementController<T, M> extends GenericForwardComposer<Component> {
-
-    private IMessagesForUser messagesForUser;
-
-    private Component messagesContainer;
 
     private Listbox hoursGroupsInOrderLineGroup;
 
@@ -98,10 +91,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
-        messagesForUser = new MessagesForUser(messagesContainer);
         comp.setAttribute("assignedCriterionRequirementController", this, true);
 
-        // init the resorcesType
+        // Init the resourcesType
         listResourceTypes.add(ResourceEnum.MACHINE);
         listResourceTypes.add(ResourceEnum.WORKER);
     }
@@ -129,12 +121,14 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
         CriterionRequirementWrapper invalidWrapper = validateWrappers(criterionRequirementWrappers());
         if (invalidWrapper != null) {
             showInvalidValues(invalidWrapper);
+
             return true;
         }
 
         CriterionRequirementWrapper invalidHoursGroupWrapper = validateHoursGroupWrappers();
         if (invalidHoursGroupWrapper != null) {
             showInvalidValuesInHoursGroups(invalidHoursGroupWrapper);
+
             return true;
         }
 
@@ -145,6 +139,10 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     public abstract List<CriterionWithItsType> getCriterionWithItsTypes();
 
+    /**
+     * Used in _listHoursGroupCriterionRequirement.zul
+     * Should be public!
+     */
     public List<CriterionWithItsType> getCriterionWithItsTypesWorker() {
         List<CriterionWithItsType> result = new ArrayList<>();
         for (CriterionWithItsType criterionAndType : getCriterionWithItsTypes()) {
@@ -156,6 +154,10 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
         return result;
     }
 
+    /**
+     * Used in _listHoursGroupCriterionRequirement.zul
+     * Should be public!
+     */
     public List<CriterionWithItsType> getCriterionWithItsTypesMachine() {
         List<CriterionWithItsType> result = new ArrayList<>();
         for (CriterionWithItsType criterionAndType : getCriterionWithItsTypes()) {
@@ -171,6 +173,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
         return listResourceTypes;
     }
 
+    /**
+     * It is used!
+     */
     public abstract void addCriterionRequirementWrapper();
 
     public abstract void remove(CriterionRequirementWrapper requirement);
@@ -180,8 +185,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
     public abstract void validate(CriterionRequirementWrapper requirement);
 
     protected abstract void changeCriterionAndType(
-            CriterionRequirementWrapper requirementWrapper,
-            CriterionWithItsType newCriterionAndType);
+            CriterionRequirementWrapper requirementWrapper, CriterionWithItsType newCriterionAndType);
 
     public void selectCriterionAndType(Listitem item,
                                        Bandbox bandbox,
@@ -239,21 +243,42 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     protected abstract void updateCriterionsWithDiferentResourceType(HoursGroupWrapper hoursGroupWrapper);
 
+    /**
+     * Used in _listOrderElementCriterionRequirements.zul
+     * Should be public!
+     */
     public void selectResourceType(Combobox combobox) throws InterruptedException {
         HoursGroupWrapper hoursGroupWrapper = ((Row) combobox.getParent()).getValue();
+        boolean reloadBindings = true;
 
         if (combobox.getSelectedItem() != null) {
             int status = Messagebox.show(
-                        _("Are you sure of changing the resource type? You will lose the criteria with different resource type."),
+                        _("Are you sure of changing the resource type? " +
+                                "You will lose the criteria with different resource type."),
                         "Question", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
 
             if (Messagebox.OK == status) {
                 ResourceEnum resource = combobox.getSelectedItem().getValue();
-                hoursGroupWrapper.assignResourceType(resource);
+                hoursGroupWrapper.setResourceType(resource.toString());
                 updateCriterionsWithDiferentResourceType(hoursGroupWrapper);
             }
+
+            /* Set Type ComboBox to previous value */
+            if ( Messagebox.CANCEL == status ) {
+
+                if ( ResourceEnum.WORKER.toString().equals(combobox.getValue()) ) {
+                    combobox.setValue(ResourceEnum.MACHINE.toString());
+                } else
+                    combobox.setValue(ResourceEnum.WORKER.toString());
+
+                reloadBindings = false;
+            }
         }
-        Util.reloadBindings(listHoursGroups);
+
+        /* Avoid unnecessary reload of bindings when cancel button pushed */
+        if ( reloadBindings ) {
+            Util.reloadBindings(listHoursGroups);
+        }
     }
 
     public void reload() {
@@ -270,7 +295,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
     protected abstract CriterionRequirementWrapper validateHoursGroupWrappers();
 
-    // Show invalid values inside listhoursGroup.
+    /**
+     * Show invalid values inside listHoursGroup.
+     */
     private void showInvalidValuesInHoursGroups(CriterionRequirementWrapper requirementWrapper) {
         if (listHoursGroups != null) {
             List<Row> listRowsHoursGroup = listHoursGroups.getRows().getChildren();
@@ -354,7 +381,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
         return (HoursGroupWrapper) ((Row) panel.getParent().getParent()).getValue();
     }
 
-    /* Operations to manage OrderElement's hoursGroups and to assign criterion requirements to this hoursGroups */
+    /**
+     * Operations to manage OrderElement's hoursGroups and to assign criterion requirements to this hoursGroups.
+     */
 
     public boolean isReadOnly() {
         return !isEditableHoursGroup();
@@ -365,17 +394,18 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
     public abstract List<HoursGroupWrapper> getHoursGroupWrappers();
 
     /**
-     * Adds a new {@link HoursGroup} to the current {@link OrderElement} The
-     * {@link OrderElement} should be a {@link OrderLine}.
+     * Adds a new {@link HoursGroup} to the current {@link OrderElement}.
+     * The {@link OrderElement} should be a {@link OrderLine}.
      */
     public abstract void addHoursGroup();
 
     /**
-     * Deletes the selected {@link HoursGroup} for the current
-     * {@link OrderElement} The {@link OrderElement} should be a {@link OrderLine}
+     * Deletes the selected {@link HoursGroup} for the current {@link OrderElement}.
+     * The {@link OrderElement} should be a {@link OrderLine}.
      */
     public void deleteHoursGroups(Component self) throws InterruptedException {
         if (getHoursGroupWrappers().size() < 2) {
+
             Messagebox.show(
                     _("At least one HoursGroup is needed"),
                     _("Error"), Messagebox.OK, Messagebox.ERROR);
@@ -425,7 +455,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
             HoursGroupWrapper hoursGroupWrapper = getHoursGroupOfRequirementWrapper(row);
             deleteCriterionToHoursGroup(hoursGroupWrapper, requirementWrapper);
             repaint(self, hoursGroupWrapper);
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 
     public abstract void deleteCriterionToHoursGroup(
@@ -469,7 +499,7 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
         throw new WrongValueException(bandbox, _(e.getMessage()));
     }
 
-    /*
+    /**
      * Operations to manage the data hoursGroup,
      * for example validate the percentage and its number of hours or set the fixed percentage.
      */
@@ -512,7 +542,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
         };
     }
 
-    /* Operations to return grouped list of hours Group */
+    /**
+     * Operations to return grouped list of hours Group.
+     */
 
     /**
      * Returns a {@link List} of {@link HoursGroup}.
@@ -535,8 +567,8 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
             if (hoursGroupAggregation == null) {
 
-                // This is not a real HoursGroup element, it's just an
-                // aggregation that join HoursGroup with the same Criterions
+                // This is not a real HoursGroup element,
+                // it's just an aggregation that join HoursGroup with the same Criterions
                 hoursGroupAggregation = new HoursGroup();
 
                 hoursGroupAggregation.setWorkingHours(hoursGroup.getWorkingHours());
@@ -674,7 +706,10 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
     private Grid getHoursGroupDetailsGrid(Component self) {
         try {
             Detail detail = (Detail) self.getParent().getParent().getFirstChild();
-            Panel panel = (Panel) detail.getFirstChild();
+
+            /* Because first element is Separator */
+            Panel panel = (Panel) detail.getChildren().get(1);
+            //panel.setAttribute("")
 
             return (Grid) panel.getFirstChild().getFirstChild();
         } catch (Exception e) {

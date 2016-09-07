@@ -107,8 +107,15 @@ public class HoursGroupWrapper implements INewObject, Comparable<HoursGroupWrapp
         return hoursGroup.getResourceType();
     }
 
-    public void assignResourceType(ResourceEnum resource) {
-        hoursGroup.setResourceType(resource);
+    /**
+     * In ComboBox, value is ResourceEnum, but ZK returns String.
+     */
+    public void setResourceType(String resource) {
+        if ( ResourceEnum.MACHINE.toString().equals(resource) ) {
+            hoursGroup.setResourceType(ResourceEnum.MACHINE);
+        } else {
+            hoursGroup.setResourceType(ResourceEnum.WORKER);
+        }
     }
 
     @Override
@@ -221,7 +228,9 @@ public class HoursGroupWrapper implements INewObject, Comparable<HoursGroupWrapp
         return (hoursGroup.isFixedPercentage()) || (orderElementIsOrderLineGroup());
     }
 
-    /* Operations to manage the criterions requirements */
+    /**
+     * Operations to manage the criterions requirements
+     */
     public void assignCriterionRequirementWrapper(CriterionRequirementWrapper newRequirementWrapper) {
         directRequirementWrappers.add(newRequirementWrapper);
     }
@@ -291,6 +300,8 @@ public class HoursGroupWrapper implements INewObject, Comparable<HoursGroupWrapp
         for (CriterionRequirement requirement : hoursGroup.getDirectCriterionRequirement()) {
             if (!hoursGroup.isValidResourceType(requirement)) {
                 removeCriterionRequirementWrapper(requirement);
+            } else if ( !hoursGroup.isValidResourceTypeChanged(requirement) ) {
+                removeCriterionRequirementWrapper(requirement);
             }
         }
     }
@@ -310,6 +321,10 @@ public class HoursGroupWrapper implements INewObject, Comparable<HoursGroupWrapp
         return list;
     }
 
+    /**
+     * Used in _listHoursGroupCriterionRequirements.zul
+     * Should be public!
+     */
     public List<CriterionWithItsType> getValidCriterions() {
         List<CriterionWithItsType> list = new ArrayList<>();
         for (IndirectCriterionRequirement requirement : getValidIndirectCriterionRequirement()) {

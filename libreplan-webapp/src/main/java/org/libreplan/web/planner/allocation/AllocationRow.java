@@ -61,7 +61,6 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.SimpleConstraint;
 import org.zkoss.zul.SimpleListModel;
-import org.zkoss.zul.Detail;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -69,6 +68,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import com.libreplan.java.zk.components.customdetailrowcomponent.Detail;
 
 import static org.libreplan.business.workingday.EffortDuration.zero;
 import static org.libreplan.web.I18nHelper._;
@@ -125,6 +126,8 @@ public abstract class AllocationRow {
     private Grid derivedAllocationsGrid;
 
     private Listbox assignmentFunctionListbox;
+
+    private Component currentDetail;
 
     public AllocationRow(CalculatedValue calculatedValue) {
         this.currentCalculatedValue = calculatedValue;
@@ -635,6 +638,7 @@ public abstract class AllocationRow {
         if (hasDerivedAllocations() && !(currentDetail instanceof Detail)) {
             replaceOld(currentDetail, createDetail());
         }
+
         reloadDerivedAllocationsData();
     }
 
@@ -650,12 +654,11 @@ public abstract class AllocationRow {
         parent.removeChild(oldDetail);
     }
 
-    private Component currentDetail;
-
     Component createDetail() {
         if (!hasDerivedAllocations()) {
             return currentDetail = new Label();
         }
+
         Detail result = new Detail();
         createDerivedAllocationsGrid();
         result.appendChild(derivedAllocationsGrid);
@@ -668,6 +671,7 @@ public abstract class AllocationRow {
         if (derivedAllocationsGrid != null) {
             return;
         }
+
         derivedAllocationsGrid = new Grid();
         DerivedAllocationColumn.appendColumnsTo(derivedAllocationsGrid);
         derivedAllocationsGrid.setRowRenderer(DerivedAllocationColumn.createRenderer());

@@ -37,20 +37,19 @@ import org.libreplan.web.orders.IOrderElementModel;
 import org.zkoss.zkplus.spring.SpringUtil;
 
 /**
- * Controller for showing OrderElement assigned labels
+ * Controller for showing OrderElement assigned labels.
  *
  * @author Diego Pino Garcia <dpino@igalia.com>
  */
-public class AssignedCriterionRequirementToOrderElementController extends
-        AssignedCriterionRequirementController<OrderElement, IOrderElementModel> {
+public class AssignedCriterionRequirementToOrderElementController
+        extends AssignedCriterionRequirementController<OrderElement, IOrderElementModel> {
 
 
     protected IAssignedCriterionRequirementToOrderElementModel assignedCriterionRequirementToOrderElementModel;
 
     public AssignedCriterionRequirementToOrderElementController(){
-        assignedCriterionRequirementToOrderElementModel =
-                (IAssignedCriterionRequirementToOrderElementModel)
-                        SpringUtil.getBean("assignedCriterionRequirementToOrderElementModel");
+        assignedCriterionRequirementToOrderElementModel = (IAssignedCriterionRequirementToOrderElementModel)
+                SpringUtil.getBean("assignedCriterionRequirementToOrderElementModel");
     }
 
     @Override
@@ -113,8 +112,8 @@ public class AssignedCriterionRequirementToOrderElementController extends
         reload();
     }
 
-    protected void changeCriterionAndType(CriterionRequirementWrapper requirementWrapper,
-                                          CriterionWithItsType newCriterionAndType) {
+    protected void changeCriterionAndType(
+            CriterionRequirementWrapper requirementWrapper, CriterionWithItsType newCriterionAndType) {
 
         assignedCriterionRequirementToOrderElementModel.changeCriterionAndType(requirementWrapper, newCriterionAndType);
     }
@@ -156,8 +155,7 @@ public class AssignedCriterionRequirementToOrderElementController extends
                                             CriterionRequirementWrapper requirementWrapper) {
 
         assignedCriterionRequirementToOrderElementModel
-                .deleteCriterionToHoursGroup(hoursGroupWrapper,
-                        requirementWrapper);
+                .deleteCriterionToHoursGroup(hoursGroupWrapper, requirementWrapper);
     }
 
     protected void selectCriterionToHoursGroup(HoursGroupWrapper hoursGroupWrapper,
@@ -165,8 +163,7 @@ public class AssignedCriterionRequirementToOrderElementController extends
                                                CriterionWithItsType criterionAndType) {
 
         assignedCriterionRequirementToOrderElementModel
-                .selectCriterionToHoursGroup(hoursGroupWrapper,
-                        requirementWrapper, criterionAndType);
+                .selectCriterionToHoursGroup(hoursGroupWrapper, requirementWrapper, criterionAndType);
     }
 
     public void recalculateHoursGroup() {
@@ -179,11 +176,9 @@ public class AssignedCriterionRequirementToOrderElementController extends
     }
 
     public List<HoursGroup> getHoursGroups() {
-        if ((getElement() == null) || (assignedCriterionRequirementToOrderElementModel == null)) {
-            return new ArrayList<>();
-        }
-
-        return super.getHoursGroups();
+        return (getElement() == null) || (assignedCriterionRequirementToOrderElementModel == null)
+                ? new ArrayList<>()
+                : super.getHoursGroups();
     }
 
     @Override
