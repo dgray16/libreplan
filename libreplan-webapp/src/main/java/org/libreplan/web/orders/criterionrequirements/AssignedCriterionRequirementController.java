@@ -708,7 +708,6 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
 
             /* Because first element is Separator */
             Panel panel = (Panel) detail.getChildren().get(1);
-            //panel.setAttribute("")
 
             return (Grid) panel.getFirstChild().getFirstChild();
         } catch (Exception e) {

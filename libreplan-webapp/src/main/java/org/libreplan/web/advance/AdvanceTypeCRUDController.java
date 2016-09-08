@@ -29,7 +29,13 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Constraint;
+import org.zkoss.zul.Hbox;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.RowRenderer;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -57,7 +63,9 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         return advanceTypeModel.getAdvanceType();
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public Constraint lessThanDefaultMaxValue() {
         return (comp, value) -> {
             if (value == null) {
@@ -71,7 +79,9 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         };
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public Constraint greaterThanPrecision() {
         return (comp, value) -> {
             if (value == null) {
@@ -85,15 +95,18 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         };
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public Constraint distinctNames() {
         return (comp, value) -> {
             if (((String) value).isEmpty()) {
-                throw new WrongValueException(comp,
-                        _("The name is not valid, the name must not be null "));
+                throw new WrongValueException(comp, _("The name is not valid, the name must not be null "));
             }
+
             if (!advanceTypeModel.distinctNames((String) value)) {
-                throw new WrongValueException(comp,
+                throw new WrongValueException(
+                        comp,
                         _("The name is not valid, there is another progress type with the same name. "));
             }
         };
@@ -105,7 +118,9 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         advanceTypeModel.save();
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public void setDefaultMaxValue(BigDecimal defaultMaxValue) {
         try {
             advanceTypeModel.setDefaultMaxValue(defaultMaxValue);
@@ -116,7 +131,9 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         }
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public BigDecimal getDefaultMaxValue() {
         return advanceTypeModel.getDefaultMaxValue();
     }
@@ -129,12 +146,16 @@ public class AdvanceTypeCRUDController extends BaseCRUDController<AdvanceType> {
         return advanceTypeModel.getPercentage();
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public boolean isImmutable() {
         return advanceTypeModel.isImmutable();
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     */
     public RowRenderer getAdvanceTypeRenderer() {
         return new RowRenderer() {
 

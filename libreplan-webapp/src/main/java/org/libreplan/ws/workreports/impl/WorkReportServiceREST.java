@@ -62,9 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("/workreports/")
 @Produces("application/xml")
 @Service("workReportServiceREST")
-public class WorkReportServiceREST extends
-        GenericRESTService<WorkReport, WorkReportDTO> implements
-        IWorkReportService {
+public class WorkReportServiceREST extends GenericRESTService<WorkReport, WorkReportDTO> implements IWorkReportService {
 
     private Set<OrderElement> orderElements;
 
@@ -87,8 +85,7 @@ public class WorkReportServiceREST extends
     @Override
     @POST
     @Consumes("application/xml")
-    public InstanceConstraintViolationsListDTO addWorkReports(
-            WorkReportListDTO workReportListDTO) {
+    public InstanceConstraintViolationsListDTO addWorkReports(WorkReportListDTO workReportListDTO) {
         return save(workReportListDTO.workReports);
     }
 

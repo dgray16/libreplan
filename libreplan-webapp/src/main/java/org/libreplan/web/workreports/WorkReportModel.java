@@ -555,7 +555,8 @@ public class WorkReportModel extends IntegrationEntityModel implements IWorkRepo
     }
 
     private List<LabelType> getAssignedLabelTypes() {
-        return getWorkReportType().getWorkReportLabelTypeAssignments()
+        return getWorkReportType()
+                .getWorkReportLabelTypeAssignments()
                 .parallelStream()
                 .map(WorkReportLabelTypeAssignment::getLabelType)
                 .collect(Collectors.toList());

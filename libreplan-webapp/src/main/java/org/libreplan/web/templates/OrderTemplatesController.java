@@ -70,7 +70,6 @@ import org.zkoss.zul.Window;
 
 /**
  * @author Óscar González Fernández <ogonzalez@igalia.com>
- *
  */
 @org.springframework.stereotype.Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -308,11 +307,10 @@ public class OrderTemplatesController extends GenericForwardComposer implements 
     }
 
     /**
-     * Ensures that the tree component is correctly initialized. It's called
-     * from templates.zul page when selecting the tab.
+     * Ensures that the tree component is correctly initialized.
+     * It's called from templates.zul page when selecting the tab.
      * <p>
-     * Please not that this method is not called if the first tab shown is the
-     * templates tree tab.
+     *     Please not that this method is not called if the first tab shown is the templates tree tab.
      * </p>
      */
     public void openTemplateTree() {
@@ -368,8 +366,7 @@ public class OrderTemplatesController extends GenericForwardComposer implements 
      */
     public void confirmDelete(OrderElementTemplate template) {
         if (Messagebox.show(
-                _("Delete template. Are you sure?"),
-                _("Confirm"),
+                _("Delete template. Are you sure?"), _("Confirm"),
                 Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION) == Messagebox.OK) {
 
             if (this.model.hasNotApplications(template)) {
@@ -380,9 +377,7 @@ public class OrderTemplatesController extends GenericForwardComposer implements 
                     Util.reloadBindings(gridOrderTemplates);
                 }
             } else {
-                messagesForUser.showMessage(
-                        Level.ERROR,
-                        _("Template cannot be removed because it has applications"));
+                messagesForUser.showMessage(Level.ERROR, _("Template cannot be removed because it has applications"));
             }
         }
 

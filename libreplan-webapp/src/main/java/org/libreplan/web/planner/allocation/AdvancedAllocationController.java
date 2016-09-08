@@ -95,6 +95,7 @@ import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Column;
 
 /**
+ * Controller for Advanced Allocation of task.
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Diego Pino García <dpino@igalia.com>
@@ -231,6 +232,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
         static Restriction build(IRestrictionSource restrictionSource) {
             switch (restrictionSource.getCalculatedValue()) {
+
                 case END_DATE:
                 case RESOURCES_PER_DAY:
                     return Restriction.emptyRestriction();
@@ -474,6 +476,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
         private Period intervalIncrease() {
             switch (zoomLevel) {
+
                 case DETAIL_ONE:
                 case DETAIL_TWO:
                     return Period.years(5);
@@ -486,8 +489,8 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
                 case DETAIL_FIVE:
                     return Period.weeks(6);
+
                 default:
-                    /* It must be */
                     break;
             }
 
@@ -660,7 +663,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         populateHorizontalListbox();
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void paginationDown() {
         paginatorFilter.previous();
         reloadComponent();
@@ -670,7 +675,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void paginationUp() {
         paginatorFilter.next();
         reloadComponent();
@@ -679,7 +686,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
                 .setSelectedIndex(Math.max(0, advancedAllocationHorizontalPagination.getSelectedIndex()) + 1);
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void goToSelectedHorizontalPage() {
         paginatorFilter.goToHorizontalPage(advancedAllocationHorizontalPagination.getSelectedIndex());
         reloadComponent();
@@ -694,7 +703,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         timeTrackedTableWithLeftPane.reload();
         timeTrackerComponent.recreate();
 
-        // Reattach listener for zoomLevel changes. May be optimized
+        // Reattach listener for zoomLevel changes
         timeTracker.addZoomListener(detailLevel -> {
             paginatorFilter.setZoomLevel(detailLevel);
             paginatorFilter.setInterval(timeTracker.getRealInterval());
@@ -731,7 +740,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         }
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void onClick$acceptButton() {
         checkInvalidTotalEffort();
 
@@ -741,7 +752,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
             allocationInput.getResultReceiver().accepted(allocationInput.getAggregate());
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void onClick$saveButton() {
         checkInvalidTotalEffort();
 
@@ -751,14 +764,18 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         Messagebox.show(_("Changes applied"), _("Information"), Messagebox.OK, Messagebox.INFORMATION);
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void onClick$cancelButton() {
         back.goBack();
         for (AllocationInput allocationInput : allocationInputs)
             allocationInput.getResultReceiver().cancel();
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public ListModel getZoomLevels() {
         ZoomLevel[] selectableZoomlevels = {
                 ZoomLevel.DETAIL_ONE,
@@ -770,17 +787,23 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         return new SimpleListModel<>(selectableZoomlevels);
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void setZoomLevel(final ZoomLevel zoomLevel) {
         timeTracker.setZoomLevel(zoomLevel);
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void onClick$zoomIncrease() {
         timeTracker.zoomIncrease();
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void onClick$zoomDecrease() {
         timeTracker.zoomDecrease();
     }
@@ -830,21 +853,27 @@ public class AdvancedAllocationController extends GenericForwardComposer {
                         : rows.size());
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void verticalPagedown() {
         verticalPage++;
         verticalIndex = verticalPaginationIndexes.get(verticalPage);
         timeTrackedTableWithLeftPane.reload();
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void verticalPageup() {
         verticalPage--;
         verticalIndex = verticalPaginationIndexes.get(verticalPage);
         timeTrackedTableWithLeftPane.reload();
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void goToSelectedVerticalPage() {
         verticalPage = advancedAllocationVerticalPagination.getSelectedIndex();
         verticalIndex = verticalPaginationIndexes.get(verticalPage);
@@ -899,7 +928,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         return allocationInput
                 .getAggregate()
                 .getSpecificAllocations()
-                .parallelStream()
+                .stream()
                 .map(specificResourceAllocation -> createSpecificRow(
                         specificResourceAllocation,
                         allocationInput.getResultReceiver().createRestriction(),
@@ -926,7 +955,7 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         return allocationInput
                 .getAggregate()
                 .getGenericAllocations()
-                .parallelStream()
+                .stream()
                 .map(genericResourceAllocation -> buildGenericRow(
                         genericResourceAllocation,
                         allocationInput.getResultReceiver().createRestriction(),
@@ -964,13 +993,14 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
     private ICellForDetailItemRenderer<ColumnOnRow, Row> getLeftRenderer() {
         /*
-        Do not replace it with method reference or lambda expression.
-        It will be the reason of
-        java.lang.IllegalArgumentException:
-        the generic type cannot be inferred if actual type parameters are not declared or implements the raw interface
-        */
-        return new ICellForDetailItemRenderer<ColumnOnRow, Row>() {
+         * Do not replace it with method reference or lambda expression.
+         * It will be the reason of
+         * java.lang.IllegalArgumentException:
+         * the generic type cannot be inferred
+         * if actual type parameters are not declared or implements the raw interface
+         */
 
+        return new ICellForDetailItemRenderer<ColumnOnRow, Row>() {
             @Override
             public Component cellFor(ColumnOnRow column, Row row) {
                 return column.cellFor(row);
@@ -1016,11 +1046,12 @@ public class AdvancedAllocationController extends GenericForwardComposer {
 
     private ICellForDetailItemRenderer<DetailItem, Row> getRightRenderer() {
         /*
-        Do not replace it with method reference or lambda expression.
-        It will be the reason of
-        java.lang.IllegalArgumentException:
-        the generic type cannot be inferred if actual type parameters are not declared or implements the raw interface
-        */
+         * Do not replace it with method reference or lambda expression.
+         * It will be the reason of
+         * java.lang.IllegalArgumentException:
+         * the generic type cannot be inferred if
+         * actual type parameters are not declared or implements the raw interface
+         */
         return new ICellForDetailItemRenderer<DetailItem, Row>() {
 
             @Override
@@ -1046,7 +1077,9 @@ public class AdvancedAllocationController extends GenericForwardComposer {
         return intervalFromData();
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public boolean isAdvancedAllocationOfSingleTask() {
         return back.isAdvanceAssignmentOfSingleTask();
     }
@@ -1511,9 +1544,9 @@ class Row {
     }
 
     /**
-     * @author Diego Pino García <dpino@igalia.com>
-     *
      * Encapsulates the logic of the combobox used for selecting what type of assignment function to apply.
+     *
+     * @author Diego Pino García <dpino@igalia.com>
      */
     private class AssignmentFunctionListbox extends Listbox {
 
@@ -1586,14 +1619,14 @@ class Row {
 
         private void showCannotApplySigmoidFunction() {
             Messagebox.show(
-                    _("Task contains consolidated progress. Cannot apply sigmoid function."),
-                    _("Error"), Messagebox.OK, Messagebox.ERROR);
+                    _("Task contains consolidated progress. Cannot apply sigmoid function."), _("Error"),
+                    Messagebox.OK, Messagebox.ERROR);
         }
 
         private int showConfirmChangeFunctionDialog() throws InterruptedException {
             return Messagebox.show(
-                    _("Assignment function will be changed. Are you sure?"),
-                    _("Confirm change"), Messagebox.YES | Messagebox.NO, Messagebox.QUESTION);
+                    _("Assignment function will be changed. Are you sure?"), _("Confirm change"),
+                    Messagebox.YES | Messagebox.NO, Messagebox.QUESTION);
         }
 
         private void setSelectedFunction(String functionName) {

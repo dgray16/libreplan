@@ -49,9 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class EntitySequenceDAO extends
         GenericDAOHibernate<EntitySequence, Long> implements IEntitySequenceDAO {
 
-    @Autowired
-    private IAdHocTransactionService transactionService;
-
     @Override
     public List<EntitySequence> getAll() {
         return list(EntitySequence.class);
@@ -59,17 +56,17 @@ public class EntitySequenceDAO extends
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<EntitySequence> findEntitySquencesNotIn(
-            List<EntitySequence> entitySequences) {
-        List<Long> entitySequenceIds = new ArrayList<Long>();
+    public List<EntitySequence> findEntitySquencesNotIn(List<EntitySequence> entitySequences) {
+        List<Long> entitySequenceIds = new ArrayList<>();
         for (EntitySequence entitySequence : entitySequences) {
             if (!entitySequence.isNewObject()) {
                 entitySequenceIds.add(entitySequence.getId());
             }
         }
 
-        return getSession().createCriteria(EntitySequence.class).add(
-                Restrictions.not(Restrictions.in("id", entitySequenceIds)))
+        return getSession()
+                .createCriteria(EntitySequence.class)
+                .add(Restrictions.not(Restrictions.in("id", entitySequenceIds)))
                 .list();
     }
 
