@@ -368,10 +368,9 @@ public abstract class AssignedCriterionRequirementController<T, M> extends Gener
     }
 
     private Rows getRequirementRows(Row row) {
-        Panel panel = (Panel) row.getFirstChild().getFirstChild();
-        NewDataSortableGrid grid = (NewDataSortableGrid) panel.getFirstChild().getFirstChild();
-        
-        return grid.getRows();
+        Panel panel = (Panel) row.getFirstChild().getChildren().get(1);
+
+        return ((NewDataSortableGrid) panel.getFirstChild().getFirstChild()).getRows();
     }
 
     private HoursGroupWrapper getHoursGroupOfRequirementWrapper(Row rowRequirement) {

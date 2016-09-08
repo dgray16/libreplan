@@ -46,21 +46,17 @@ public class OnColumnsRowRendererTest {
     private static class Data {}
 
     private static class CellRenderer implements ICellForDetailItemRenderer<DetailItem, Data> {
-
         @Override
         public Component cellFor(DetailItem item, Data data) {
             return null;
         }
-
     }
 
     private static class CellRendererNotInferable<T> implements ICellForDetailItemRenderer<DetailItem, T> {
-
         @Override
         public Component cellFor(DetailItem item, T data) {
             return null;
         }
-
     }
 
     private List<DetailItem> detailItems;
@@ -144,8 +140,6 @@ public class OnColumnsRowRendererTest {
     @Test(expected = IllegalArgumentException.class)
     public void cantRenderObjectsOfOtherType() throws Exception {
         givenOnDetailItemsRowRenderer(createStub());
-
-        /* 0 - just dummy value, needed by ZK API*/
         rowRenderer.render(new Row(), "", 0);
     }
 
@@ -168,7 +162,6 @@ public class OnColumnsRowRendererTest {
     private void renderingTheData() {
         for (Data d : data) {
             try {
-                /* 0 - just dummy value, needed by ZK API*/
                 rowRenderer.render(new Row(), d, 0);
             } catch (Exception e) {
                 e.printStackTrace();
