@@ -2365,3 +2365,7 @@ textarea {
 .remove-detailrow-background td,tr{
     background: none !important;
 }
+
+.expenses-sheet-code-wide-table table{
+    width: 60%;
+}
