@@ -61,6 +61,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * Model for {@link Configuration}
+ *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Cristina Alvarino Perez <cristina.alvarino@comtecsf.es>
  * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
@@ -71,7 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConfigurationModel implements IConfigurationModel {
 
     /**
-     * Conversation state
+     * Conversation state.
      */
     private Configuration configuration;
 
@@ -492,7 +494,7 @@ public class ConfigurationModel implements IConfigurationModel {
     }
 
     public boolean checkFrefixFormat(EntitySequence sequence) {
-        return (sequence.isWithoutLowBarConstraint() && sequence.isPrefixWithoutWhiteSpacesConstraint());
+        return sequence.isWithoutLowBarConstraint() && sequence.isPrefixWithoutWhiteSpacesConstraint();
     }
 
     @Override

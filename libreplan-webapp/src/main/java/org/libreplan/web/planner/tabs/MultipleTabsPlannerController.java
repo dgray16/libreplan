@@ -30,7 +30,6 @@ import org.libreplan.business.orders.entities.OrderElement;
 import org.libreplan.business.planner.entities.TaskElement;
 import org.libreplan.business.resources.daos.IResourcesSearcher;
 import org.libreplan.business.templates.entities.OrderTemplate;
-import org.libreplan.business.users.daos.IUserDAO;
 import org.libreplan.business.users.entities.UserRole;
 import org.libreplan.web.common.ConfirmCloseUtil;
 import org.libreplan.web.common.GatheredUsageStats;
@@ -38,13 +37,9 @@ import org.libreplan.web.common.entrypoints.EntryPointsHandler;
 import org.libreplan.web.common.entrypoints.URLHandlerRegistry;
 import org.libreplan.web.dashboard.DashboardController;
 import org.libreplan.web.dashboard.DashboardControllerGlobal;
-import org.libreplan.web.expensesheet.IExpenseSheetModel;
 import org.libreplan.web.limitingresources.LimitingResourcesController;
 import org.libreplan.web.logs.LogsController;
-import org.libreplan.web.materials.IMaterialsModel;
 import org.libreplan.web.montecarlo.MonteCarloController;
-import org.libreplan.web.orders.IAssignedTaskQualityFormsToOrderElementModel;
-import org.libreplan.web.orders.IOrderModel;
 import org.libreplan.web.orders.OrderCRUDController;
 import org.libreplan.web.planner.allocation.AdvancedAllocationController.IBack;
 import org.libreplan.web.planner.company.CompanyPlanningController;
@@ -52,10 +47,7 @@ import org.libreplan.web.planner.order.IOrderPlanningGate;
 import org.libreplan.web.planner.order.OrderPlanningController;
 import org.libreplan.web.planner.order.PlanningStateCreator;
 import org.libreplan.web.resourceload.ResourceLoadController;
-import org.libreplan.web.resources.machine.IMachineModel;
-import org.libreplan.web.resources.worker.IWorkerModel;
 import org.libreplan.web.security.SecurityUtils;
-import org.libreplan.web.workreports.IWorkReportModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -111,28 +103,44 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     private PlanningStateCreator planningStateCreator;
 
-    /* Projects Planning */
+    /**
+     * Projects Planning.
+     */
     private TabWithLoadingFeedback planningTab;
 
-    /* Resources Load */
+    /**
+     * Resources Load.
+     */
     private ITab resourceLoadTab;
 
-    /* Queue-based Resources Planning */
+    /**
+     * Queue-based Resources Planning.
+     */
     private ITab limitingResourcesTab;
 
-    /* Monte Carlo Method */
+    /**
+     * Monte Carlo Method.
+     */
     private ITab monteCarloTab;
 
-    /* Projects List */
+    /**
+     * Projects List.
+     */
     private ITab ordersTab;
 
-    /* Advanced Allocation */
+    /**
+     * Advanced Allocation.
+     */
     private ITab advancedAllocationTab;
 
-    /* Dashboard */
+    /**
+     * Dashboard.
+     */
     private ITab dashboardTab;
 
-    /* Logs */
+    /**
+     * Logs.
+     */
     private ITab logsTab;
 
     private TabSwitcher tabsSwitcher;
@@ -180,30 +188,6 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     @Autowired
     private URLHandlerRegistry registry;
-
-    @Autowired
-    private IUserDAO userDAO;
-
-    @Autowired
-    private IOrderModel orderModel;
-
-    @Autowired
-    private IWorkReportModel workReportModel;
-
-    @Autowired
-    private IWorkerModel workerModel;
-
-    @Autowired
-    private IMachineModel machineModel;
-
-    @Autowired
-    private IExpenseSheetModel expenseSheetModel;
-
-    @Autowired
-    private IMaterialsModel materialsModel;
-
-    @Autowired
-    private IAssignedTaskQualityFormsToOrderElementModel assignedQualityFormsModel;
 
     private final class TabWithLoadingFeedback extends TabProxy {
 
@@ -311,8 +295,7 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
                 },
                 breadcrumbs);
 
-        limitingResourcesTab = LimitingResourcesTabCreator.create(
-                mode, limitingResourcesControllerGlobal, breadcrumbs);
+        limitingResourcesTab = LimitingResourcesTabCreator.create(mode, limitingResourcesControllerGlobal, breadcrumbs);
 
         ordersTab = OrdersTabCreator.create(
                 mode,
@@ -383,6 +366,7 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
         }
 
         final State<Void> typeChanged = typeChangedState();
+
         advancedAllocationTab = doFeedbackOn(AdvancedAllocationTabCreator.create(
                 mode, transactionService, planningStateCreator, returnToPlanningTab(), breadcrumbs));
 
@@ -527,13 +511,6 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
 
     private void sendDataToServer(){
         GatheredUsageStats gatheredUsageStats = new GatheredUsageStats();
-
-        gatheredUsageStats.setupNotAutowiredClasses(
-                userDAO, orderModel,
-                workReportModel, workerModel,
-                machineModel, expenseSheetModel,
-                materialsModel, assignedQualityFormsModel);
-
         gatheredUsageStats.sendGatheredUsageStatsToServer();
         SecurityUtils.isGatheredStatsAlreadySent = true;
     }

@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.ConcurrentModificationException;
-import java.util.Comparator;
 import java.util.Properties;
 import java.util.ArrayList;
 import java.util.Set;
@@ -68,19 +67,11 @@ import org.libreplan.business.common.entities.PredefinedConnectors;
 import org.libreplan.business.common.entities.ProgressType;
 import org.libreplan.business.common.exceptions.ValidationException;
 import org.libreplan.business.costcategories.entities.TypeOfWorkHours;
-import org.libreplan.business.users.daos.IUserDAO;
 import org.libreplan.business.users.entities.UserRole;
 import org.libreplan.importers.JiraRESTClient;
 import org.libreplan.importers.TimSoapClient;
 import org.libreplan.web.common.components.bandboxsearch.BandboxSearch;
-import org.libreplan.web.orders.IOrderModel;
-import org.libreplan.web.expensesheet.IExpenseSheetModel;
-import org.libreplan.web.materials.IMaterialsModel;
-import org.libreplan.web.orders.IAssignedTaskQualityFormsToOrderElementModel;
-import org.libreplan.web.resources.machine.IMachineModel;
-import org.libreplan.web.resources.worker.IWorkerModel;
 import org.libreplan.web.security.SecurityUtils;
-import org.libreplan.web.workreports.IWorkReportModel;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DefaultDirObjectFactory;
@@ -144,22 +135,6 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private IConfigurationDAO configurationDAO;
 
-    private IUserDAO userDAO;
-
-    private IOrderModel orderModel;
-
-    private IWorkReportModel workReportModel;
-
-    private IWorkerModel workerModel;
-
-    private IMachineModel machineModel;
-
-    private IExpenseSheetModel expenseSheetModel;
-
-    private IMaterialsModel materialsModel;
-
-    private IAssignedTaskQualityFormsToOrderElementModel assignedQualityFormsModel;
-
     private IMessagesForUser messages;
 
     private Component messagesContainer;
@@ -196,6 +171,7 @@ public class ConfigurationController extends GenericForwardComposer {
 
     private String LOGO_PREVIEW_COMPONENT = "logoPreview";
 
+
     public ConfigurationController() {}
 
     @Override
@@ -221,16 +197,6 @@ public class ConfigurationController extends GenericForwardComposer {
     private void injectsObjects() {
         configurationModel = (IConfigurationModel) SpringUtil.getBean("configurationModel");
         configurationDAO = (IConfigurationDAO) SpringUtil.getBean("configurationDAO");
-        userDAO = (IUserDAO) SpringUtil.getBean("userDAO");
-        orderModel = (IOrderModel) SpringUtil.getBean("orderModel");
-        workReportModel = (IWorkReportModel) SpringUtil.getBean("workReportModel");
-        workerModel = (IWorkerModel) SpringUtil.getBean("workerModel");
-        machineModel = (IMachineModel) SpringUtil.getBean("machineModel");
-        expenseSheetModel = (IExpenseSheetModel) SpringUtil.getBean("expenseSheetModel");
-        materialsModel = (IMaterialsModel) SpringUtil.getBean("materialsModel");
-
-        assignedQualityFormsModel = (IAssignedTaskQualityFormsToOrderElementModel)
-                SpringUtil.getBean("assignedTaskQualityFormsToOrderElementModel");
     }
 
     /**
@@ -358,15 +324,8 @@ public class ConfigurationController extends GenericForwardComposer {
         }
     }
 
-    private void sendDataToServer(){
+    private void sendDataToServer() {
         GatheredUsageStats gatheredUsageStats = new GatheredUsageStats();
-
-        gatheredUsageStats.setupNotAutowiredClasses(
-                userDAO, orderModel,
-                workReportModel, workerModel,
-                machineModel, expenseSheetModel,
-                materialsModel, assignedQualityFormsModel);
-
         gatheredUsageStats.sendGatheredUsageStatsToServer();
         SecurityUtils.isGatheredStatsAlreadySent = true;
     }
@@ -610,9 +569,10 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     private void reloadConnectors() {
-        selectedConnector = configurationModel.getConnectorByName(selectedConnector != null
-                ? selectedConnector.getName()
-                : null);
+        selectedConnector = configurationModel.getConnectorByName(
+                selectedConnector != null
+                        ? selectedConnector.getName()
+                        : null);
 
         Util.reloadBindings(connectorCombo);
         Util.reloadBindings(connectorPropertriesGrid);
@@ -981,10 +941,10 @@ public class ConfigurationController extends GenericForwardComposer {
                         try {
                             entitySequence.setNumberOfDigits(value);
                         } catch (IllegalArgumentException e) {
-                            throw new WrongValueException(tempIntbox, _(
-                                    "number of digits must be between {0} and {1}",
-                                    EntitySequence.MIN_NUMBER_OF_DIGITS,
-                                    EntitySequence.MAX_NUMBER_OF_DIGITS));
+                            throw new WrongValueException(
+                                    tempIntbox,
+                                    _("number of digits must be between {0} and {1}",
+                                            EntitySequence.MIN_NUMBER_OF_DIGITS, EntitySequence.MAX_NUMBER_OF_DIGITS));
                         }
                     });
 
@@ -1000,11 +960,8 @@ public class ConfigurationController extends GenericForwardComposer {
         private void appendLastValueInbox(Row row, final EntitySequence entitySequence) {
             Textbox textbox = Util.bind(
                     new Textbox(),
-                    () -> {
-                        return EntitySequence.formatValue(
-                                entitySequence.getNumberOfDigits(),
-                                entitySequence.getLastValue());
-                    });
+                    () -> EntitySequence.formatValue(
+                            entitySequence.getNumberOfDigits(), entitySequence.getLastValue()));
 
             row.appendChild(textbox);
         }
@@ -1095,16 +1052,9 @@ public class ConfigurationController extends GenericForwardComposer {
     }
 
     private void showMessageNotDelete() {
-        Messagebox.show(_("It can not be deleted. At least one sequence is necessary."),
-                        _("Deleting sequence"), Messagebox.OK, Messagebox.INFORMATION);
-    }
-
-    public static class EntitySequenceComparator implements Comparator<EntitySequence> {
-
-        @Override
-        public int compare(EntitySequence seq1, EntitySequence seq2) {
-            return seq1.getEntityName().compareTo(seq2.getEntityName());
-        }
+        Messagebox.show(
+                _("It can not be deleted. At least one sequence is necessary."), _("Deleting sequence"),
+                Messagebox.OK, Messagebox.INFORMATION);
     }
 
     /**
@@ -1157,7 +1107,9 @@ public class ConfigurationController extends GenericForwardComposer {
         return EntityNameEnum.values();
     }
 
-    // Tab ldap properties
+    /**
+     * Tab ldap properties.
+     */
     public LDAPConfiguration getLdapConfiguration() {
         return configurationModel.getLdapConfiguration();
     }
@@ -1509,7 +1461,7 @@ public class ConfigurationController extends GenericForwardComposer {
                         combobox,
                         combobox::getSelectedItem,
                         item -> {
-                            if ( (item != null) && (item.getValue() != null) && (item.getValue() instanceof String) ){
+                            if ( (item != null) && (item.getValue() != null) && (item.getValue() instanceof String) ) {
                                 property.setValue(combobox.getSelectedItem().getValue().toString());
                             }
                         });
