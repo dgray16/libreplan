@@ -39,11 +39,13 @@
                             style="margin: 5px;"
                             onClick="criterionRequirementsController.addCriterionRequirementWrapper()" />
                 </hbox>
+
                 <newdatasortablegrid id="listingRequirements" sclass="margin-border"
                         model="@{criterionRequirementsController.criterionRequirementWrappers}"
                         mold="paging"
                         pageSize="10"
                         fixedLayout="true" >
+
                     <columns>
                         <newdatasortablecolumn label="${i18n:_('Criterion name')}" sort="auto(criterionAndType)"
                                                sortDirection="ascending"/>
@@ -53,11 +55,12 @@
 
                         <newdatasortablecolumn label="${i18n:_('Operations')}" width="150px" align="center"/>
                     </columns>
+
                     <rows>
                         <row self="@{each='criterionRequirementWrapper'}" value="@{criterionRequirementWrapper}">
                             <hbox>
                                 <!-- Bandbox select criterion-and-type -->
-                                <bandbox onChanging = "criterionRequirementsController.onChangingText(event);"
+                                <bandbox onChanging="criterionRequirementsController.onChangingText(event);"
                                          width="400px"
                                          visible="@{criterionRequirementWrapper.updatable}"
                                          value="@{criterionRequirementWrapper.criterionAndType}"
@@ -67,8 +70,7 @@
                                     <bandpopup>
                                             <listbox width="500px" height="150px" fixedLayout="true"
                                                      model="@{criterionRequirementsController.criterionWithItsTypes}"
-                                                     onSelect="criterionRequirementsController.selectCriterionAndType(
-                                                     self.selectedItem,self.parent.parent,self.parent.parent.parent.parent.value);"
+                                                     onSelect="criterionRequirementsController.selectCriterionAndType(self.selectedItem,self.parent.parent,self.parent.parent.parent.parent.value);"
                                                      onOk="criterionRequirementsController.onOK(event);">
                                             <listhead>
                                                 <listheader label="Type" />
@@ -95,21 +97,21 @@
 
                             <!-- Operations -->
                             <hbox>
-                                <button visible = "@{criterionRequirementWrapper.direct}"
+                                <button visible="@{criterionRequirementWrapper.direct}"
                                         sclass="icono" image="/common/img/ico_borrar1.png"
                                         hoverImage="/common/img/ico_borrar.png"
                                         tooltiptext="${i18n:_('Delete')}"
                                         onClick="criterionRequirementsController.remove(self.parent.parent.value);">
                                 </button>
 
-                                <button visible = "@{criterionRequirementWrapper.indirectInvalid}"
-                                        label = "${i18n:_('Validate')}"
-                                        onClick = "criterionRequirementsController.validate(self.parent.parent.value);">
+                                <button visible="@{criterionRequirementWrapper.indirectInvalid}"
+                                        label="${i18n:_('Validate')}"
+                                        onClick="criterionRequirementsController.validate(self.parent.parent.value);">
                                 </button>
 
-                                <button visible = "@{criterionRequirementWrapper.indirectValid}"
-                                        label = "${i18n:_('Invalidate')}"
-                                        onClick = "criterionRequirementsController.invalidate(self.parent.parent.value);">
+                                <button visible="@{criterionRequirementWrapper.indirectValid}"
+                                        label="${i18n:_('Invalidate')}"
+                                        onClick="criterionRequirementsController.invalidate(self.parent.parent.value);">
                                 </button>
                             </hbox>
                         </row>

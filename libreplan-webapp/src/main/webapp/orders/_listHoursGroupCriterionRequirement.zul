@@ -41,7 +41,7 @@
                                  visible="@{criterionRequirementWrapper.newDirectAndItsHoursGroupIsWorker}"
                                  value="@{criterionRequirementWrapper.criterionAndType}">
                             <bandpopup>
-                                <listbox width="500px" height="150px" sizedByContent="true"
+                                <listbox width="500px" height="150px" sizedByContent="false"
                                          model="@{assignedCriterionRequirementController.criterionWithItsTypesWorker}"
                                          onSelect="assignedCriterionRequirementController.selectCriterionToHoursGroup(self.selectedItem, self.parent.parent,self.parent.parent.parent.parent.value);">
                                     <listhead>

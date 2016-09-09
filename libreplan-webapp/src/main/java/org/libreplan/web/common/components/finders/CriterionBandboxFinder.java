@@ -26,13 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.zul.Listcell;
-import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 
 import java.util.List;
 
 /**
  * Bandbox finder for {@link Criterion}.
+ *
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  */
 @Repository
@@ -43,8 +43,21 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
 
     private final String headers[] = { _("Type"), _("Criterion Name") };
 
+    private final ListitemRenderer orderRenderer = (item, data, i) -> {
+        Criterion criterion = (Criterion)data;
+        item.setValue(criterion);
+
+        Listcell criterionType = new Listcell();
+        criterionType.setLabel(criterion.getType().getName());
+        criterionType.setParent(item);
+
+        Listcell criterionName = new Listcell();
+        criterionName.setLabel(getNamesHierarchy(criterion, ""));
+        criterionName.setParent(item);
+    };
+
     /**
-     * Forces to mark the string as needing translation
+     * Forces to mark the string as needing translation.
      */
     private static String _(String string) {
         return string;
@@ -74,16 +87,14 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
         Criterion criterion = (Criterion) obj;
         text = text.trim().toLowerCase();
 
-        return (criterion.getType().getName().toLowerCase().contains(text) ||
-                getNamesHierarchy(criterion, "").toLowerCase().contains(text));
+        return criterion.getType().getName().toLowerCase().contains(text) ||
+                getNamesHierarchy(criterion, "").toLowerCase().contains(text);
     }
 
     @Override
     @Transactional(readOnly = true)
     public String objectToString(Object obj) {
-        Criterion criterion = (Criterion) obj;
-
-        return criterion.getCompleteName();
+        return ((Criterion) obj).getCompleteName();
     }
 
     @Override
@@ -96,27 +107,9 @@ public class CriterionBandboxFinder extends BandboxFinder implements IBandboxFin
         return orderRenderer;
     }
 
-    private final ListitemRenderer orderRenderer = new ListitemRenderer() {
-
-        @Override
-        public void render(Listitem item, Object data, int i) {
-            Criterion criterion = (Criterion)data;
-            item.setValue(criterion);
-
-            Listcell criterionType = new Listcell();
-            criterionType.setLabel(criterion.getType().getName());
-            criterionType.setParent(item);
-
-            Listcell criterionName = new Listcell();
-            criterionName.setLabel(getNamesHierarchy(criterion, ""));
-            criterionName.setParent(item);
-        }
-
-    };
-
     private String getNamesHierarchy(Criterion criterion,String etiqueta){
         Criterion parent = criterion.getParent();
-        if(parent != null){
+        if (parent != null) {
             etiqueta = getNamesHierarchy(parent,etiqueta);
             etiqueta = etiqueta.concat(" > ");
         }
