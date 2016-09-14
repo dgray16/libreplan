@@ -189,9 +189,9 @@
 
             <!-- GPL JFreechartEngine for ZK -->
             <dependency>
-                <groupId>com.igalia.java.zk.components</groupId>
+                <groupId>com.libreplan.java.zk.components</groupId>
                 <artifactId>jfreechartengine</artifactId>
-                <version>1.1</version>
+                <version>1.2</version>
             </dependency>
 
             <!-- GPL detailrow Component for ZK -->
@@ -591,6 +591,7 @@
                 <artifactId>timeplotz</artifactId>
                 <version>1.1_50_1</version>
             </dependency>
+
             <dependency>
                 <groupId>org.zkoss.zkforge</groupId>
                 <artifactId>timelinez</artifactId>

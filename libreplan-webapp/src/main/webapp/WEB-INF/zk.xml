@@ -45,7 +45,7 @@
 
     <library-property>
         <name>org.zkoss.zul.chart.engine.class</name>
-        <value>com.igalia.java.zk.components.JFreeChartEngine</value>
+        <value>com.libreplan.java.zk.components.JFreeChartEngine</value>
     </library-property>
 
     <library-property>

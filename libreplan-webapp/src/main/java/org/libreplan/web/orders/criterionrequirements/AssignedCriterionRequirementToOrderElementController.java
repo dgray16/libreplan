@@ -112,8 +112,8 @@ public class AssignedCriterionRequirementToOrderElementController
         reload();
     }
 
-    protected void changeCriterionAndType(
-            CriterionRequirementWrapper requirementWrapper, CriterionWithItsType newCriterionAndType) {
+    protected void changeCriterionAndType(CriterionRequirementWrapper requirementWrapper,
+                                          CriterionWithItsType newCriterionAndType) {
 
         assignedCriterionRequirementToOrderElementModel.changeCriterionAndType(requirementWrapper, newCriterionAndType);
     }

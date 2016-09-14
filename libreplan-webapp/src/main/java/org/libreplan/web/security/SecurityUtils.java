@@ -49,7 +49,9 @@ import org.zkoss.zk.ui.Executions;
  */
 public final class SecurityUtils {
 
-    // Related to the data that is sending to LibrePlan server
+    /**
+     * Related to the data that is sending to LibrePlan server.
+     */
     public static boolean isGatheredStatsAlreadySent = false;
 
     private SecurityUtils() {}
@@ -62,8 +64,8 @@ public final class SecurityUtils {
      * Returns <code>true</code> if current user:
      *
      * <ul>
-     * <li>Has role {@link UserRole#ROLE_SUPERUSER}</li>
-     * <li>Or has at least one of the <code>roles</code> provided as parameters.
+     *     <li>Has role {@link UserRole#ROLE_SUPERUSER}</li>
+     *     <li>Or has at least one of the <code>roles</code> provided as parameters.</li>
      * </ul>
      */
     public static boolean isSuperuserOrUserInRoles(UserRole... roles) {
@@ -111,14 +113,14 @@ public final class SecurityUtils {
 
     /**
      * Returns <code>true</code> if current user:
-     *
+     *+
      * <ul>
-     * <li>Has role {@link UserRole#ROLE_SUPERUSER}</li>
-     * <li>Or has role {@link UserRole#ROLE_PLANNING}</li>
-     * <li>Or has role {@link UserRole#ROLE_READ_ALL_PROJECTS}</li>
-     * <li>Or has role {@link UserRole#ROLE_EDIT_ALL_PROJECTS}</li>
-     * <li>Or has role {@link UserRole#ROLE_CREATE_PROJECTS}</li>
-     * <li>Or has any {@link OrderAuthorization} over any project</li>
+     *     <li>Has role {@link UserRole#ROLE_SUPERUSER}</li>
+     *     <li>Or has role {@link UserRole#ROLE_PLANNING}</li>
+     *     <li>Or has role {@link UserRole#ROLE_READ_ALL_PROJECTS}</li>
+     *     <li>Or has role {@link UserRole#ROLE_EDIT_ALL_PROJECTS}</li>
+     *     <li>Or has role {@link UserRole#ROLE_CREATE_PROJECTS}</li>
+     *     <li>Or has any {@link OrderAuthorization} over any project</li>
      * </ul>
      */
     public static boolean isSuperuserOrRolePlanningOrHasAnyAuthorization() {
@@ -175,8 +177,7 @@ public final class SecurityUtils {
                 Registry.getOrderAuthorizationDAO().listByOrderUserAndItsProfiles(order, user);
 
         for (OrderAuthorization authorization : orderAuthorizations) {
-            if (authorization.getAuthorizationType().equals(
-                    OrderAuthorizationType.WRITE_AUTHORIZATION)) {
+            if (authorization.getAuthorizationType().equals(OrderAuthorizationType.WRITE_AUTHORIZATION)) {
                 return true;
             }
         }
