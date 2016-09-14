@@ -35,7 +35,7 @@
             apply="org.libreplan.web.common.ConfigurationController"
             title="${i18n:_('Main Settings')}">
 
-        <vbox id="messagesContainer" />
+        <vbox id="messagesContainer" width="30%" />
 
         <tabbox>
 
