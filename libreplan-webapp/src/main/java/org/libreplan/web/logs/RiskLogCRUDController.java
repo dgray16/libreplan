@@ -35,7 +35,13 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Textbox;
+import org.zkoss.zul.Hbox;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.Cell;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.RowRenderer;
 
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
@@ -45,7 +51,7 @@ import java.util.List;
 import static org.libreplan.web.I18nHelper._;
 
 /**
- * Controller for RiskLog CRUD actions
+ * Controller for RiskLog CRUD actions.
  *
  * @author Misha Gozhda <misha@libreplan-enterprise.com>
  */
@@ -61,7 +67,31 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
 
     private Textbox riskScore;
 
-    public RiskLogCRUDController(){
+    /**
+     * Renders LOW, MEDIUM, HIGH enums.
+     *
+     * Should be public!
+     * Used in _editRiskLog.zul
+     */
+    public static ListitemRenderer lowMediumHighEnumRenderer = (item, data, i) -> {
+        LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
+        String displayName = lowMediumHighEnum.getDisplayName();
+        item.setLabel(displayName);
+    };
+
+    /**
+     * Renders riskScoreState enums.
+     *
+     * Should be public!
+     * Used in _editRiskLog.zul
+     */
+    public static ListitemRenderer riskScoreStatesEnumRenderer = (item, data, i) -> {
+        RiskScoreStatesEnum riskScoreStatesEnum = (RiskScoreStatesEnum) data;
+        String displayName = riskScoreStatesEnum.getDisplayName();
+        item.setLabel(displayName);
+    };
+
+    public RiskLogCRUDController() {
         riskLogModel = (IRiskLogModel) SpringUtil.getBean("riskLogModel");
     }
 
@@ -78,16 +108,17 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Initializes order component
+     * Initializes order component.
      */
     private void initializeOrderComponent() {
         bdProjectRiskLog = (BandboxSearch) editWindow.getFellow("bdProjectRiskLog");
         Util.createBindingsFor(bdProjectRiskLog);
-        bdProjectRiskLog.setListboxEventListener(Events.ON_SELECT,
-                event -> {
-                    final Object object = bdProjectRiskLog.getSelectedElement();
-                    riskLogModel.setOrder((Order) object);
-                });
+
+        bdProjectRiskLog.setListboxEventListener(Events.ON_SELECT, event -> {
+            final Object object = bdProjectRiskLog.getSelectedElement();
+            riskLogModel.setOrder((Order) object);
+        });
+
         bdProjectRiskLog.setListboxEventListener(Events.ON_OK, event -> {
             final Object object = bdProjectRiskLog.getSelectedElement();
             riskLogModel.setOrder((Order) object);
@@ -96,26 +127,28 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Initializes user component
+     * Initializes user component.
      */
     private void initializeUserComponent() {
         bdUserRiskLog = (BandboxSearch) editWindow.getFellow("bdUserRiskLog");
         Util.createBindingsFor(bdUserRiskLog);
-        bdUserRiskLog.setListboxEventListener(Events.ON_SELECT,
-                event -> {
-                    final Object object = bdUserRiskLog.getSelectedElement();
-                    riskLogModel.setCreatedBy((User) object);
-                });
-        bdUserRiskLog.setListboxEventListener(Events.ON_OK,
-                event -> {
-                    final Object object = bdUserRiskLog.getSelectedElement();
-                    riskLogModel.setCreatedBy((User) object);
-                    bdUserRiskLog.close();
-                });
+
+        bdUserRiskLog.setListboxEventListener(Events.ON_SELECT, event -> {
+            final Object object = bdUserRiskLog.getSelectedElement();
+            riskLogModel.setCreatedBy((User) object);
+        });
+
+        bdUserRiskLog.setListboxEventListener(Events.ON_OK, event -> {
+            final Object object = bdUserRiskLog.getSelectedElement();
+            riskLogModel.setCreatedBy((User) object);
+            bdUserRiskLog.close();
+        });
     }
 
     /**
-     * Renders risk logs
+     * Renders risk logs.
+     * Should be public!
+     * Used in _listRiskLog.zul
      *
      * @return {@link RowRenderer}
      */
@@ -175,41 +208,13 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
         }
     }
 
-    public static ListitemRenderer lowMediumHighEnumRenderer = (item, data, i) -> {
-        LowMediumHighEnum lowMediumHighEnum = (LowMediumHighEnum) data;
-        String displayName = lowMediumHighEnum.getDisplayName();
-        item.setLabel(displayName);
-    };
-
-    public static ListitemRenderer riskScoreStatesEnumRenderer = (item, data, i) -> {
-        RiskScoreStatesEnum riskScoreStatesEnum = (RiskScoreStatesEnum) data;
-        String displayName = riskScoreStatesEnum.getDisplayName();
-        item.setLabel(displayName);
-    };
-
     /**
-     * Renders LOW, MEDIUM, HIGH enums
-     *
-     * @return {@link ListitemRenderer}
-    public ListitemRenderer getLowMediumHighEnumRenderer() {
-        return lowMediumHighEnumRenderer;
-    }
-
-    *
-     * Renders riskScoreState enums
-     *
-     * @return {@link ListitemRenderer}
-    public ListitemRenderer getRiskScoreStatesEnumRenderer() {
-        return riskScoreStatesEnumRenderer;
-    }
-
-    *
-     * Appends the specified <code>object</code> to the specified
-     * <code>row</code>
+     * Appends the specified <code>object</code> to the specified <code>row</code>.
      *
      * @param row
      * @param object
-*/    private void appendObject(final Row row, Object object) {
+     */
+    private void appendObject(final Row row, Object object) {
         String text = "";
         if (object != null) {
             text = object.toString();
@@ -218,8 +223,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Creates {@link Label} bases on the specified <code>value</code> and
-     * appends to the specified <code>row</code>
+     * Creates {@link Label} bases on the specified <code>value</code> and appends to the specified <code>row</code>.
      *
      * @param row
      * @param value
@@ -232,7 +236,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Appends the specified <code>date</code> to the specified <code>row</code>
+     * Appends the specified <code>date</code> to the specified <code>row</code>.
      *
      * @param row
      * @param date
@@ -246,7 +250,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Appends operation(edit and remove) to the specified <code>row</code>
+     * Appends operation(edit and remove) to the specified <code>row</code>.
      *
      * @param row
      * @param riskLog
@@ -259,34 +263,40 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Returns {@link LowMediumHighEnum} values
+     * Should be public!
+     * Used in _editRiskLog.zul
+     *
+     * @return  {@link LowMediumHighEnum} values
      */
     public LowMediumHighEnum[] getLowMediumHighEnums() {
         return LowMediumHighEnum.values();
     }
     /**
-     * Returns {@link org.libreplan.business.logs.entities.RiskScoreStatesEnum} values
+     * Should be public!
+     * Used in _editRiskLog.zul
+     *
+     * @return  {@link RiskScoreStatesEnum} values
      */
     public RiskScoreStatesEnum[] getRiskScoreStatesEnums() {
         return RiskScoreStatesEnum.values();
     }
 
     /**
-     * Returns a list of {@link Order} objects
+     * @return {@link List<Order>}
      */
     public List<Order> getOrders() {
         return riskLogModel.getOrders();
     }
 
     /**
-     * Returns a list of {@link User} objects
+     * @return {@link List<User>}
      */
     public List<User> getUsers() {
         return riskLogModel.getUsers();
     }
 
     /**
-     * Returns {@link Date} value
+     * @return  {@link Date}
      */
     public Date getDateCreated() {
         if (riskLogModel.getRiskLog() == null) {
@@ -316,7 +326,7 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Returns {@link Date} value
+     * @return  {@link Date}
      */
     public Date getActionWhen() {
         if (riskLogModel.getRiskLog() == null) {
@@ -326,15 +336,16 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     }
 
     /**
-     * Sets the Score for risk
-     *
+     * Sets the Score for risk.
      */
     public void setUpdateScore() {
         riskScore.setValue(String.valueOf(getRiskLog().getRiskScore()));
     }
 
     /**
-     * Returns the {@link RiskLog} object
+     * Should be public!
+     * Used in _editRiskLog.zul
+     * @return {@link RiskLog}
      */
     public RiskLog getRiskLog() {
         return riskLogModel.getRiskLog();
@@ -344,31 +355,34 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
      * Returns a list of {@link RiskLog} objects
      */
     public List<RiskLog> getRiskLogs() {
-        if (LogsController.getProjectNameVisibility())
+        if (LogsController.getProjectNameVisibility()) {
             return riskLogModel.getRiskLogs();
-        else{
+
+        } else {
             List<RiskLog> riskLogs = new ArrayList<>();
             Order order = LogsController.getOrder();
+
             for (RiskLog issueLog : riskLogModel.getRiskLogs()) {
-                if (issueLog.getOrder().equals(order))
+                if (issueLog.getOrder().equals(order)) {
                     riskLogs.add(issueLog);
+                }
+
             }
 
             return riskLogs;
         }
     }
 
-    public List<RiskLog> getTest(){
-        return riskLogModel.getRiskLogs();
-    }
-
     public Order getOrder() {
         if (!LogsController.getProjectNameVisibility()) {
             getRiskLog().setOrder(LogsController.getOrder());
+
             return getRiskLog().getOrder();
-        }
-        else
+
+        } else {
             return riskLogModel.getRiskLog().getOrder();
+        }
+
     }
 
     @Override
@@ -412,7 +426,6 @@ public class RiskLogCRUDController extends BaseCRUDController<RiskLog> {
     @Override
     protected void delete(RiskLog entity) throws InstanceNotFoundException {
         riskLogModel.remove(entity);
-
     }
 
 }

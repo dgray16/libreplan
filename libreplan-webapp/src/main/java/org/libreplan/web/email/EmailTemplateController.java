@@ -51,7 +51,7 @@ import static org.libreplan.web.I18nHelper._;
  * @author Created by Vova Perebykivskyi <vova@libreplan-enterprise.com> on 25.09.2015.
  */
 
-public class EmailTemplateController extends GenericForwardComposer<Component>{
+public class EmailTemplateController extends GenericForwardComposer<Component> {
 
     private IUserDAO userDAO;
 
