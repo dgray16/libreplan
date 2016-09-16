@@ -23,8 +23,7 @@ package org.libreplan.web.resources.machine;
 import static org.libreplan.web.I18nHelper._;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,16 +41,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Constraint;
-import org.zkoss.zul.Datebox;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.Listbox;
-import org.zkoss.zul.Listitem;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.Rows;
-import org.zkoss.zul.Bandbox;
-
+import org.zkoss.zul.*;
 
 /**
  *
@@ -84,6 +74,7 @@ public class MachineConfigurationController extends GenericForwardComposer {
         MachineWorkersConfigurationUnit unit = MachineWorkersConfigurationUnit
                 .create(machineModel.getMachine(), "New configuration unit", new BigDecimal(1));
         machineModel.getMachine().addMachineWorkersConfigurationUnit(unit);
+        configurationUnitsGrid.invalidate();
         Util.reloadBindings(configurationUnitsGrid);
     }
 
@@ -125,8 +116,12 @@ public class MachineConfigurationController extends GenericForwardComposer {
         Autocomplete a = (Autocomplete) c.getPreviousSibling();
         Worker worker = (Worker) a.getItemByText(a.getValue());
         if (worker == null) {
+//        Combobox workerCombobox = (Combobox) c.getPreviousSibling();
+//        Comboitem selectedItem = workerCombobox.getSelectedItem();
+//        if (selectedItem == null) {
             messages.showMessage(Level.ERROR, _("No worker selected"));
         } else {
+//            Worker worker = selectedItem.getValue();
             machineModel.addWorkerAssigmentToConfigurationUnit(unit, worker);
             Util.reloadBindings(c.getNextSibling());
         }
@@ -170,8 +165,10 @@ public class MachineConfigurationController extends GenericForwardComposer {
     }
 
 
-    public void deleteConfigurationUnit(MachineWorkersConfigurationUnit unit) {
-        machineModel.removeConfigurationUnit(unit);
+    public void deleteConfigurationUnit(Row row) {
+        machineModel.removeConfigurationUnit(row.getValue());
+        configurationUnitsGrid.getChildren().get(1).removeChild(row);
+        configurationUnitsGrid.getChildren().get(1).invalidate();
         Util.reloadBindings(configurationUnitsGrid);
     }
 
@@ -203,14 +200,39 @@ public class MachineConfigurationController extends GenericForwardComposer {
     }
 
     private void validateEndDate(Component comp, Object value) {
-        Datebox startDateBox = (Datebox) comp.getPreviousSibling();
-        if (startDateBox != null) {
-            if (startDateBox.getValue() != null) {
-                if (startDateBox.getValue().compareTo((Date) value) > 0) {
-                    throw new WrongValueException(comp,
-                            _("End date is not valid, the new end date must be after start date"));
+        if (value == null) {
+            throw new WrongValueException(comp,
+                    _("End date is not valid, the date field can not be blank"));
+        }
+        else {
+            Datebox startDateBox = (Datebox) comp.getPreviousSibling();
+            if (startDateBox != null) {
+                if (startDateBox.getValue() != null) {
+                    if (startDateBox.getValue().compareTo((Date) value) > 0) {
+                        throw new WrongValueException(comp,
+                                _("End date is not valid, the new end date must be after start date"));
+                    }
                 }
             }
         }
     }
+
+    /*
+    Need to get the worker list on _machineConfigurationUnits.zul page
+     */
+    public ListModelList<Worker> getAllWorkers() {
+        ListModelList <Worker> modellist = new ListModelList<>();
+        modellist.addAll(machineModel.getWorkers());
+        return modellist;
+    }
+
+    /*
+    Need to redraw configurationUnitsGrid after "Save" and "Save & Continue" events on
+    _machineConfigurationUnits.zul page
+     */
+    public void redrawConfigurationUnitsGrid ()
+    {
+        configurationUnitsGrid.invalidate();
+    }
+
 }

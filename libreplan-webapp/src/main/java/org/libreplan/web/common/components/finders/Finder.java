@@ -100,9 +100,9 @@ public abstract class Finder implements IFinder {
      * @author Diego Pino Garcia<dpino@igalia.com>
      *
      */
-    class SimpleListModelExt extends SimpleListModel {
+    public class SimpleListModelExt extends SimpleListModel {
 
-        SimpleListModelExt(List data) {
+        public SimpleListModelExt(List data) {
             super(data);
         }
 
