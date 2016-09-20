@@ -20,14 +20,16 @@
 -->
 <vbox apply="org.libreplan.web.resources.machine.MachineConfigurationController"
       id="${arg.id}"
+      onClick="@{configurationController.redrawConfigurationUnitsGrid}"
       width="100%">
+
+
     <button label="${i18n:_('Add new configuration unit')}" sclass="add-button"
             onClick="configurationController.addConfigurationUnit();" />
 
-    <grid sizedByContent="true"
-          model="@{configurationController.configurationUnits}" id="configurationUnitsGrid" sclass="remove-detailrow-background">
+    <grid model="@{configurationController.configurationUnits}" id="configurationUnitsGrid" sclass="remove-detailrow-background" width="1870px">
         <columns>
-            <column width="29px"/>
+            <column width="31px"/>
             <column label="${i18n:_('Name')}"
                     tooltiptext="${i18n:_('Configuration unit name')}"
                     width="400px"
@@ -36,7 +38,7 @@
                     width="715px"
                     tooltiptext="${i18n:_('Human hours per machine working hour within configuration unit')}" />
             <column label="${i18n:_('Operations')}"
-                    width="724px"/>
+                    width="552px"/>
         </columns>
         <rows>
             <!-- To iterate on workersConfiguration Units -->
@@ -45,13 +47,15 @@
                     <!-- Assigned resources -->
                     <panel title="${i18n:_('Worker assignments')}" border="normal" style="margin-top:10px;">
                         <panelchildren style="padding:10px;">
-                    <autocomplete finder="WorkerFinder" buttonVisible="true" width="300px" style="padding-bottom:10px;margin-top:10px;"/>
-                    <button label="${i18n:_('Add new worker assignment')}" sclass="add-button"
+                            <!-- Here finder was deleted because when autocomplete value was changing, then all
+                             autocomplete's values where changed too. Due to the problem described above finder
+                             was replaced with model.-->
+                            <autocomplete model="@{configurationController.allWorkers}" buttonVisible="true" width="300px" style="padding-bottom:10px;margin-top:10px;" />
+                            <button label="${i18n:_('Add new worker assignment')}" sclass="add-button"
                             onClick="configurationController.addWorkerAssignment(self.parent.parent.parent.parent.value,self)"/>
 
-                            <grid sizedByContent="true"
-                                  model="@{configurationUnit.workerAssignments}" span="true">
-                                <columns sizable="true">
+                            <grid model="@{configurationUnit.workerAssignments}" span="true">
+                                <columns >
                                     <column hflex="1" label="${i18n:_('Name')}" />
                                     <column hflex="1" label="${i18n:_('Start date')}" />
                                     <column hflex="1" label="${i18n:_('End date')}" />
@@ -61,10 +65,12 @@
                                     <row self="@{each='workerAssignment'}" value="@{workerAssignment}">
                                         <label
                                             value="@{workerAssignment.worker.name}" />
-                                        <datebox value="@{workerAssignment.startDate}" constraint="no empty"/>
-                                        <datebox
-                                                value="@{workerAssignment.finishDate}"
-                                                constraint="@{configurationController.validateEndDate}" />
+                                        <datebox value="@{workerAssignment.startDate}"
+                                                 constraint="no empty"
+                                                 style="margin-bottom:3px;"/>
+                                        <datebox value="@{workerAssignment.finishDate}"
+                                                constraint="@{configurationController.validateEndDate}"
+                                                style="margin-bottom:3px;"/>
                                         <button sclass="icono"
                                                 image="/common/img/ico_borrar1.png"
                                                 hoverImage="/common/img/ico_borrar.png"
@@ -80,7 +86,7 @@
 
                     <!-- Assigned criteria -->
                     <textbox value="@{configurationUnit.id}" visible="false" />
-                    <panel title="${i18n:_('Criterion requirements')}" border="normal" style="margin-top:10px; margin-bottom:10px;">
+                    <panel title="${i18n:_('Criterion requirements')}" border="normal" style="margin-top:10px; margin-bottom:15px;">
                         <panelchildren style="padding:10px;">
                     <textbox value="@{configurationUnit.id}" visible="false" />
                     <bandbox width="300px">
@@ -131,7 +137,7 @@
                          constraint="no zero,no empty,/[0-9][0-9]*(\.[0-9][0-9]?)?/:${i18n:_('must be a real positive number')}" />
                 <button sclass="icono" image="/common/img/ico_borrar1.png"
                         hoverImage="/common/img/ico_borrar.png" tooltiptext="${i18n:_('Delete')}"
-                        onClick="configurationController.deleteConfigurationUnit(self.parent.value)">
+                        onClick="configurationController.deleteConfigurationUnit(self.parent)">
                 </button>
             </row>
         </rows>
