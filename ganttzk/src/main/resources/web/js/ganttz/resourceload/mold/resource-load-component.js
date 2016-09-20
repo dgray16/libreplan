@@ -2,7 +2,7 @@ function (out) {
     /* 
      * This method draws graphic lines ( charts ) for every resource, if needed.
      * 
-     * After ZK migrated from 5 to 8, this.domAttrs_() started to return NaN.
+     * After we migrated from ZK5 to ZK8, this.domAttrs_() started to return NaN.
      * Possible reason: not enough time to load library. 
      */
     if ( !isNaN(this.domAttrs_()) ) {

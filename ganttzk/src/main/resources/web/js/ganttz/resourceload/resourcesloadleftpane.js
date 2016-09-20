@@ -30,5 +30,6 @@ function addResourcesLoadLeftPaneMethods(object) {
         scrollSync = new ScrollSync(cmp);
         scrollSync.synchYChangeTo(cmp);
     };
+    
     return object;
 }

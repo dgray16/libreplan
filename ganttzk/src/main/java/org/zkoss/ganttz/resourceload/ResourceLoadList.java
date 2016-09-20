@@ -42,15 +42,14 @@ import org.zkoss.zul.impl.XulElement;
  * Component to include a list of ResourceLoads inside the ResourcesLoadPanel.
  *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class ResourceLoadList extends XulElement {
-
-    private final IZoomLevelChangedListener zoomListener;
 
     private Map<LoadTimeLine, ResourceLoadComponent> fromTimeLineToComponent = new HashMap<>();
 
     public ResourceLoadList(TimeTracker timeTracker, MutableTreeModel<LoadTimeLine> timelinesTree) {
-        zoomListener = adjustTimeTrackerSizeListener();
+        IZoomLevelChangedListener zoomListener = adjustTimeTrackerSizeListener();
         timeTracker.addZoomListener(zoomListener);
         LoadTimeLine current = timelinesTree.getRoot();
         List<LoadTimeLine> toInsert = new ArrayList<>();
@@ -80,17 +79,24 @@ public class ResourceLoadList extends XulElement {
 
     private void insertAsComponents(TimeTracker timetracker, List<LoadTimeLine> children) {
         for (LoadTimeLine loadTimeLine : children) {
-
             ResourceLoadComponent component = ResourceLoadComponent.create(timetracker, loadTimeLine);
             appendChild(component);
             fromTimeLineToComponent.put(loadTimeLine, component);
         }
     }
 
+    /**
+     * On Resources Load page it will collapse inherited resources.
+     *
+     * @param line
+     */
     public void collapse(LoadTimeLine line) {
         for (LoadTimeLine l : line.getAllChildren()) {
             getComponentFor(l).detach();
         }
+
+        /* In ZK8, after detaching component, component will be still visible, so we need to redraw it */
+        this.invalidate();
 
         Clients.evalJavaScript(getWidgetClass() + ".getInstance().recalculateTimeTrackerHeight();");
     }
@@ -99,6 +105,12 @@ public class ResourceLoadList extends XulElement {
         return fromTimeLineToComponent.get(l);
     }
 
+    /**
+     * On Resources Load page it will expand inherited resources.
+     *
+     * @param line
+     * @param closed
+     */
     public void expand(LoadTimeLine line, List<LoadTimeLine> closed) {
         ResourceLoadComponent parentComponent = getComponentFor(line);
         Component nextSibling = parentComponent.getNextSibling();
@@ -111,6 +123,9 @@ public class ResourceLoadList extends XulElement {
             insertBefore(child, nextSibling);
             nextSibling = child;
         }
+
+        /* In ZK8, after detaching component, component will be still visible, so we need to redraw it */
+        this.invalidate();
 
         Clients.evalJavaScript(getWidgetClass() + ".getInstance().recalculateTimeTrackerHeight();");
     }
