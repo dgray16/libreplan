@@ -172,7 +172,12 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
             }
 
             public void schedule(final LoadTimeLine taskLine) {
-                scheduleListeners.fireEvent(listener -> listener.seeScheduleOf(taskLine));
+                scheduleListeners.fireEvent(new WeakReferencedListeners.IListenerNotification<ISeeScheduledOfListener>() {
+                    @Override
+                    public void doNotify(ISeeScheduledOfListener listener) {
+                        listener.seeScheduleOf(taskLine);
+                    }
+                });
             }
 
             private void addExpandedListener(final Treeitem item, final LoadTimeLine line) {
