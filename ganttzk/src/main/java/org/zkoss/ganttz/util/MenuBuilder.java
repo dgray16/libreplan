@@ -38,10 +38,24 @@ import org.zkoss.zul.Menuseparator;
 import org.zkoss.zul.impl.XulElement;
 
 /**
- * Create context menu for right-click mouse
+ * Create context menu for right-click mouse.
+ *
  * @param <T>
  */
 public class MenuBuilder<T extends XulElement> {
+
+    private final List<T> elements;
+
+    private final List<Item> items = new ArrayList<>();
+
+    private Component root;
+
+    private T referenced;
+
+    private MenuBuilder(Page page, Collection<? extends T> elements) {
+        this.elements = new ArrayList<>(elements);
+        this.root = findVisibleOn(getRoots(page));
+    }
 
     public static <T extends XulElement> MenuBuilder<T> on(Page page, Collection<T> elements) {
         return new MenuBuilder<>(page, elements);
@@ -52,11 +66,13 @@ public class MenuBuilder<T extends XulElement> {
     }
 
     public interface ItemAction<T> {
-        void onEvent(T choosen, Event event);
+        void onEvent(T chosen, Event event);
     }
 
     private class Item {
+
         private final String name;
+
         private final String icon;
 
         private final ItemAction<T> action;
@@ -78,17 +94,6 @@ public class MenuBuilder<T extends XulElement> {
             return result;
         }
 
-    }
-
-    private final List<T> elements;
-
-    private final List<Item> items = new ArrayList<>();
-
-    private Component root;
-
-    private MenuBuilder(Page page, Collection<? extends T> elements) {
-        this.elements = new ArrayList<>(elements);
-        this.root = findVisibleOn(getRoots(page));
     }
 
     private static List<Component> getRoots(Page page) {
@@ -125,8 +130,6 @@ public class MenuBuilder<T extends XulElement> {
         return this;
     }
 
-    private T referenced;
-
     public Menupopup createWithoutSettingContext() {
         return create(false);
     }
@@ -137,6 +140,7 @@ public class MenuBuilder<T extends XulElement> {
 
     private Menupopup create(boolean setContext) {
         Menupopup result = new Menupopup();
+
         result.addEventListener("onOpen", event -> {
             OpenEvent openEvent = (OpenEvent) event;
             referenced = (T) openEvent.getReference();
@@ -144,12 +148,14 @@ public class MenuBuilder<T extends XulElement> {
 
         for (final Item item : items) {
 
-            if ( !item.name.equals("separator") ) {
+            if ( !"separator".equals(item.name) ) {
                 Menuitem menuItem = item.createMenuItem();
+
                 menuItem.addEventListener("onClick", event -> {
                     ItemAction<T> action = item.action;
                     action.onEvent(referenced, event);
                 });
+
                 result.appendChild(menuItem);
             } else {
                 Menuseparator separator = new Menuseparator();
@@ -171,8 +177,7 @@ public class MenuBuilder<T extends XulElement> {
     private void insertInRootComponent(Menupopup result) {
         ArrayList<Component> children = new ArrayList<>(root.getChildren());
         Collections.reverse(children);
-        // the Menupopup cannot be inserted after a HtmlNativeComponent, so we
-        // try to avoid it
+        // The Menupopup cannot be inserted after a HtmlNativeComponent, so we try to avoid it
         if ( children.isEmpty() ) {
             root.appendChild(result);
         }

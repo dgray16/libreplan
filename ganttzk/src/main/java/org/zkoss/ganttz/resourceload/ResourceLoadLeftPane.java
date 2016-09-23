@@ -95,10 +95,12 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
 
         /* Force call overridden render() */
         try {
-            getRendererForTree().render(
-                    new Treeitem(""),
-                    ((ResourceLoadComponent) this.resourceLoadList.getFirstChild()).getLoadLine(),
-                    0);
+            if ( !this.resourceLoadList.getChildren().isEmpty() ) {
+                getRendererForTree().render(
+                        new Treeitem(""),
+                        ((ResourceLoadComponent) this.resourceLoadList.getFirstChild()).getLoadLine(),
+                        0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,13 +173,17 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 cell.appendChild(buttonPlan);
             }
 
+            /**
+             * Do not replace it with lambda.
+             */
             public void schedule(final LoadTimeLine taskLine) {
-                scheduleListeners.fireEvent(new WeakReferencedListeners.IListenerNotification<ISeeScheduledOfListener>() {
-                    @Override
-                    public void doNotify(ISeeScheduledOfListener listener) {
-                        listener.seeScheduleOf(taskLine);
-                    }
-                });
+                scheduleListeners.fireEvent(
+                        new WeakReferencedListeners.IListenerNotification<ISeeScheduledOfListener>() {
+                            @Override
+                            public void doNotify(ISeeScheduledOfListener listener) {
+                                listener.seeScheduleOf(taskLine);
+                            }
+                        });
             }
 
             private void addExpandedListener(final Treeitem item, final LoadTimeLine line) {

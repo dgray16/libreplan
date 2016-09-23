@@ -98,7 +98,9 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
         /* Force call overridden render() */
         try {
-            getTaskBeanRenderer().render(new Treeitem(""), tasks.get(0), 0);
+            if ( !tasks.isEmpty() ) {
+                getTaskBeanRenderer().render(new Treeitem(""), tasks.get(0), 0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

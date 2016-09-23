@@ -34,6 +34,7 @@ import org.zkoss.ganttz.data.resourceload.LoadPeriod;
 import org.zkoss.ganttz.data.resourceload.LoadTimeLine;
 import org.zkoss.ganttz.timetracker.TimeTracker;
 import org.zkoss.ganttz.timetracker.zoom.IZoomLevelChangedListener;
+import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
 import org.zkoss.ganttz.util.MenuBuilder;
 import org.zkoss.ganttz.util.WeakReferencedListeners;
 import org.zkoss.zk.ui.sys.ContentRenderer;
@@ -45,6 +46,7 @@ import org.zkoss.zul.impl.XulElement;
  * This class wraps ResourceLoad data inside an specific HTML Div component.
  *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class ResourceLoadComponent extends XulElement {
 
@@ -63,10 +65,24 @@ public class ResourceLoadComponent extends XulElement {
         this.timeTracker = timeTracker;
         createChildren(loadLine, timeTracker.getMapper());
 
-        zoomChangedListener = detailLevel ->  {
-            getChildren().clear();
-            createChildren(loadLine, timeTracker.getMapper());
-            invalidate();
+        /* Do not replace it with lambda */
+        zoomChangedListener = new IZoomLevelChangedListener() {
+
+            /**
+             * In general it is working like, on every zoomChanged :
+             * 1. Remove all LoadLines ( divs ).
+             * 2. Create new ones ( for selected zoom mode ).
+             * 3. Redraw insertionPointRightPanel component ( Div ).
+             */
+            @Override
+            public void zoomLevelChanged(ZoomLevel detailLevel) {
+                getChildren().clear();
+                createChildren(loadLine, timeTracker.getMapper());
+                if ( !getFellows().isEmpty() ) {
+                    getFellow("insertionPointRightPanel").invalidate();
+                }
+                invalidate();
+            }
         };
 
         this.timeTracker.addZoomListener(zoomChangedListener);
@@ -130,7 +146,7 @@ public class ResourceLoadComponent extends XulElement {
             menuBuilder.item(
                     _("See resource allocation"),
                     "/common/img/ico_allocation.png",
-                    (choosen, event) -> schedule(loadLine));
+                    (chosen, event) -> schedule(loadLine));
 
             Menupopup result = menuBuilder.createWithoutSettingContext();
             contextMenus.put(div, result);
