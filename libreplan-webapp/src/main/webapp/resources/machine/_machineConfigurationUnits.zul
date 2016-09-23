@@ -47,9 +47,13 @@
                     <!-- Assigned resources -->
                     <panel title="${i18n:_('Worker assignments')}" border="normal" style="margin-top:10px;">
                         <panelchildren style="padding:10px;">
-                            <!-- Here finder was deleted because when autocomplete value was changing, then all
-                             autocomplete's values where changed too. Due to the problem described above finder
-                             was replaced with model.-->
+
+                            <!--
+                            Here finder was deleted because when autocomplete value was changing,
+                            then all autocomplete's values where changed too.
+                            Due to the problem described above finder was replaced with model.
+                            -->
+
                             <autocomplete model="@{configurationController.allWorkers}" buttonVisible="true" width="300px" style="padding-bottom:10px;margin-top:10px;" />
                             <button label="${i18n:_('Add new worker assignment')}" sclass="add-button"
                             onClick="configurationController.addWorkerAssignment(self.parent.parent.parent.parent.value,self)"/>

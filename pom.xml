@@ -89,7 +89,7 @@
                 <hibernate.show_sql>false</hibernate.show_sql>
                 <hibernate.format_sql>false</hibernate.format_sql>
                 <hibernate.use_sql_comments>false</hibernate.use_sql_comments>
-                <hibernate.hbm2ddl.auto>validate</hibernate.hbm2ddl.auto>
+                <hibernate.hbm2ddl.auto></hibernate.hbm2ddl.auto>
 
                 <!-- Enable example users
                 (wsreader, wswriter, wssubcontracting, manager, hresources, outsourcing and reports) -->
