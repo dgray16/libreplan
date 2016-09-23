@@ -154,7 +154,7 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
                 int zoomindex;
                 int scrollLeft;
 
-                if (command.equals("onZoomLevelChange")) {
+                if ( "onZoomLevelChange".equals(command) ) {
                     zoomindex=  (Integer) retrieveData(request, "zoomindex");
                     scrollLeft = (Integer) retrieveData(request, "scrollLeft");
 

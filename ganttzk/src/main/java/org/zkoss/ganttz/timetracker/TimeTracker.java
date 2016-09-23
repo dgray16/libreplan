@@ -171,7 +171,13 @@ public class TimeTracker {
     }
 
     private void fireZoomChanged() {
-        zoomListeners.fireEvent(listener -> listener.zoomLevelChanged(detailLevel));
+        /* Do not replace it with lambda */
+        zoomListeners.fireEvent(new WeakReferencedListeners.IListenerNotification<IZoomLevelChangedListener>() {
+            @Override
+            public void doNotify(IZoomLevelChangedListener listener) {
+                listener.zoomLevelChanged(detailLevel);
+            }
+        });
     }
 
     public int getHorizontalSize() {

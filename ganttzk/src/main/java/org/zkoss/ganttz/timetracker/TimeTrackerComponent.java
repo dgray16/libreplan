@@ -79,15 +79,14 @@ public abstract class TimeTrackerComponent extends HtmlMacroComponent {
         return timeTrackerElementId;
     }
 
-    /*
-     *  fsanjurjo:
-     *  I'm temporary changing the name of this method
-     *  (from afterCompose to compose)
-     *  to get it called after calling recreate().
+    /**
+     * fsanjurjo:
+     * I'm temporary changing the name of this method (from afterCompose to compose)
+     * to get it called after calling recreate().
      *
-     *  To understand why, please read this: http://www.zkoss.org/forum/listComment/14905
-     *  Also renamed the call to its parent.
-     * */
+     * To understand why, please read this: http://www.zkoss.org/forum/listComment/14905
+     * Also renamed the call to its parent.
+     */
     @Override
     public void compose() {
         super.compose();

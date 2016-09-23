@@ -103,6 +103,7 @@ import org.zkoss.zul.Window;
 import org.zkoss.zul.Listbox;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -136,6 +137,10 @@ public class OrderCRUDController extends GenericForwardComposer {
     private final String ON_CLICK_EVENT = "onClick";
 
     private final String ICONO_CLASS = "icono";
+
+    private final String TAB_ADVANCES = "tabAdvances";
+
+    private final String INFORMATION = "Information";
 
     @Autowired
     private IOrderModel orderModel;
@@ -348,11 +353,10 @@ public class OrderCRUDController extends GenericForwardComposer {
         saveOrderAndContinueButton.addEventListener(Events.ON_CLICK, event -> saveAndContinue());
 
         cancelEditionButton.addEventListener(Events.ON_CLICK, event -> Messagebox.show(
-                _("Unsaved changes will be lost. Are you sure?"),
-                _("Confirm exit dialog"),
+                _("Unsaved changes will be lost. Are you sure?"), _("Confirm exit dialog"),
                 Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION,
                 evt -> {
-                    if (evt.getName().equals("onOK")) {
+                    if ( "onOK".equals(evt.getName()) ) {
                         ConfirmCloseUtil.resetConfirmClose();
                         Executions.sendRedirect("/planner/index.zul;company_scheduling");
                     }
@@ -540,9 +544,11 @@ public class OrderCRUDController extends GenericForwardComposer {
         if ( orderElementTreeController == null ) {
             // Create order element edit window
             OrderElementController orderElementController = new OrderElementController();
+
             if ( editOrderElementWindow == null ) {
                 initEditOrderElementWindow();
             }
+
             try {
                 orderElementController.doAfterCompose(self.getFellow("editOrderElement"));
             } catch (Exception e) {
@@ -579,10 +585,10 @@ public class OrderCRUDController extends GenericForwardComposer {
         if ( getCurrentTab() != null ) {
 
             // Confirm advances tab
-            if ( getCurrentTab().getId().equals("tabAdvances") ) {
+            if ( TAB_ADVANCES.equals(getCurrentTab().getId()) ) {
                 if ( manageOrderElementAdvancesController != null && !manageOrderElementAdvancesController.save() ) {
                     resetSelectedTab();
-                    selectTab("tabAdvances");
+                    selectTab(TAB_ADVANCES);
 
                     return false;
                 }
@@ -634,6 +640,7 @@ public class OrderCRUDController extends GenericForwardComposer {
                     orderElementAdvances.getAttribute("manageOrderElementAdvancesController", true);
 
             manageOrderElementAdvancesController.openWindow(orderElementModel);
+
         } else {
             manageOrderElementAdvancesController.refreshChangesFromOrderElement();
             manageOrderElementAdvancesController.createAndLoadBindings();
@@ -711,6 +718,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
             final IOrderElementModel orderElementModel = getOrderElementModel();
             assignedTaskQualityFormController.openWindow(orderElementModel);
+
         } else {
             Util.createBindingsFor(orderElementTaskQualityForms);
             Util.reloadBindings(orderElementTaskQualityForms);
@@ -750,6 +758,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
             orderAuthorizationController.setMessagesForUserComponent(messagesForUser);
             initOrderAuthorizations();
+
         } else {
             Util.createBindingsFor(orderElementAuthorizations);
             Util.reloadBindings(orderElementAuthorizations);
@@ -759,11 +768,13 @@ public class OrderCRUDController extends GenericForwardComposer {
     private void initOrderAuthorizations() {
         Component orderElementAuthorizations = editWindow.getFellowIfAny("orderElementAuthorizations");
         final Order order = orderModel.getOrder();
+
         if ( order.isNewObject() ) {
             orderAuthorizationController.initCreate(orderModel.getPlanningState());
         } else {
             orderAuthorizationController.initEdit(orderModel.getPlanningState());
         }
+
         Util.createBindingsFor(orderElementAuthorizations);
         Util.reloadBindings(orderElementAuthorizations);
     }
@@ -852,7 +863,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             }
         } else {
             Messagebox.show(
-                    _("You don't have read access to this project"), _("Information"),
+                    _("You don't have read access to this project"), _(INFORMATION),
                     Messagebox.OK, Messagebox.INFORMATION);
 
             goToList();
@@ -884,7 +895,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
     private void save(boolean showSaveMessage) {
         if ( manageOrderElementAdvancesController != null ) {
-            selectTab("tabAdvances");
+            selectTab(TAB_ADVANCES);
             if ( !manageOrderElementAdvancesController.save() ) {
                 setCurrentTab();
 
@@ -991,13 +1002,14 @@ public class OrderCRUDController extends GenericForwardComposer {
         }
         else {
             Messagebox.show(
-                    _("Not enough permissions to edit this project"), _("Information"),
+                    _("Not enough permissions to edit this project"), _(INFORMATION),
                     Messagebox.OK, Messagebox.INFORMATION);
         }
     }
 
     private void remove(Order order) {
         boolean hasImputedExpenseSheets = orderModel.hasImputedExpenseSheetsThisOrAnyOfItsChildren(order);
+
         if ( hasImputedExpenseSheets ) {
 
             messagesForUser.showMessage(
@@ -1037,18 +1049,19 @@ public class OrderCRUDController extends GenericForwardComposer {
     public void schedule(Order order) {
         orderModel.useSchedulingDataForCurrentScenario(order);
         if ( orderModel.userCanRead(order, SecurityUtils.getSessionUserLoginName()) ) {
+
             if ( order.isScheduled() ) {
                 planningControllerEntryPoints.goToScheduleOf(order);
                 showCreateButtons(false);
+
             } else {
                 Messagebox.show(
-                        _("The project has no scheduled elements"), _("Information"),
+                        _("The project has no scheduled elements"), _(INFORMATION),
                         Messagebox.OK, Messagebox.INFORMATION);
             }
-        }
-        else {
+        } else {
             Messagebox.show(
-                    _("You don't have read access to this project"), _("Information"),
+                    _("You don't have read access to this project"), _(INFORMATION),
                     Messagebox.OK, Messagebox.INFORMATION);
         }
     }
@@ -1076,8 +1089,8 @@ public class OrderCRUDController extends GenericForwardComposer {
     public void checkUserCanRead(Order order) {
         if ( !orderModel.userCanRead(order, SecurityUtils.getSessionUserLoginName()) ) {
             Messagebox.show(
-                    _("Sorry, you do not have permissions to access this project"),
-                    _("Information"), Messagebox.OK, Messagebox.INFORMATION);
+                    _("Sorry, you do not have permissions to access this project"), _(INFORMATION),
+                    Messagebox.OK, Messagebox.INFORMATION);
         }
     }
 
@@ -1252,7 +1265,6 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     public class OrdersRowRenderer implements RowRenderer {
-
         @Override
         public void render(Row row, Object o, int i) throws Exception {
             final Order order = (Order) o;
@@ -1271,91 +1283,92 @@ public class OrderCRUDController extends GenericForwardComposer {
             row.setTooltiptext(getTooltipText(order));
             row.addEventListener(ON_CLICK_EVENT, event -> goToEditForm(order));
         }
-    }
 
-    private void appendObject(final Row row, java.io.Serializable object) {
-        String text = "";
-        if ( object != null ) {
-            text = object.toString();
+        private void appendObject(final Row row, Serializable object) {
+            String text = "";
+            if ( object != null ) {
+                text = object.toString();
+            }
+            appendLabel(row, text);
         }
-        appendLabel(row, text);
-    }
 
-    private void appendCustomer(final Row row, ExternalCompany externalCompany) {
-        String customerName = "";
-        if ( externalCompany != null ) {
-            customerName = externalCompany.getName();
+        private void appendCustomer(final Row row, ExternalCompany externalCompany) {
+            String customerName = "";
+            if ( externalCompany != null ) {
+                customerName = externalCompany.getName();
+            }
+            appendLabel(row, customerName);
         }
-        appendLabel(row, customerName);
-    }
 
-    private void appendLabel(final Row row, String value) {
-        Label label = new Label(value);
-        row.appendChild(label);
-    }
-
-    private void appendDate(final Row row, Date date) {
-        String labelDate = "";
-        if ( date != null ) {
-            labelDate = Util.formatDate(date);
+        private void appendDate(final Row row, Date date) {
+            String labelDate = "";
+            if ( date != null ) {
+                labelDate = Util.formatDate(date);
+            }
+            appendLabel(row, labelDate);
         }
-        appendLabel(row, labelDate);
-    }
 
-    private void appendOperations(final Row row,final Order order){
-        Hbox hbox = new Hbox();
-        appendButtonEdit(hbox,order);
-        appendButtonDelete(hbox, order);
-        appendButtonPlan(hbox, order);
-        appendButtonDerived(hbox, order);
-        row.appendChild(hbox);
-    }
-
-    private void appendButtonEdit(final Hbox hbox, final Order order) {
-        Button buttonEdit = new Button();
-        buttonEdit.setSclass(ICONO_CLASS);
-        buttonEdit.setImage("/common/img/ico_editar1.png");
-        buttonEdit.setHoverImage("/common/img/ico_editar.png");
-        buttonEdit.setTooltiptext(_("Edit"));
-        buttonEdit.addEventListener(ON_CLICK_EVENT, event -> goToEditForm(order));
-        hbox.appendChild(buttonEdit);
-    }
-
-    private void appendButtonDelete(final Hbox hbox, final Order order) {
-        if ( orderModel.userCanWrite(order) ) {
-            Button buttonDelete = new Button();
-            buttonDelete.setSclass(ICONO_CLASS);
-            buttonDelete.setImage("/common/img/ico_borrar1.png");
-            buttonDelete.setHoverImage("/common/img/ico_borrar.png");
-            buttonDelete.setTooltiptext(_(DELETE));
-            buttonDelete.addEventListener(ON_CLICK_EVENT, event -> confirmRemove(order));
-            hbox.appendChild(buttonDelete);
+        private void appendOperations(final Row row,final Order order){
+            Hbox hbox = new Hbox();
+            appendButtonEdit(hbox,order);
+            appendButtonDelete(hbox, order);
+            appendButtonPlan(hbox, order);
+            appendButtonDerived(hbox, order);
+            row.appendChild(hbox);
         }
-    }
 
-    private void appendButtonPlan(final Hbox hbox, final Order order) {
-        Button buttonPlan = new Button();
-        buttonPlan.setSclass(ICONO_CLASS);
-        buttonPlan.setImage("/common/img/ico_planificador1.png");
-        buttonPlan.setHoverImage("/common/img/ico_planificador.png");
-        buttonPlan.setTooltiptext(_("See scheduling"));
-        buttonPlan.addEventListener(ON_CLICK_EVENT, event -> schedule(order));
-        hbox.appendChild(buttonPlan);
-    }
-
-    private void appendButtonDerived(final Hbox hbox, final Order order) {
-        Button buttonDerived = new Button();
-        buttonDerived.setSclass(ICONO_CLASS);
-        buttonDerived.setImage("/common/img/ico_derived1.png");
-        buttonDerived.setHoverImage("/common/img/ico_derived.png");
-        buttonDerived.setTooltiptext(_("Create Template"));
-        buttonDerived.addEventListener(ON_CLICK_EVENT, event -> createTemplate(order));
-
-        if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_TEMPLATES) ) {
-            buttonDerived.setDisabled(true);
-            buttonDerived.setTooltiptext(_("Not enough permissions to create templates"));
+        private void appendLabel(final Row row, String value) {
+            Label label = new Label(value);
+            row.appendChild(label);
         }
-        hbox.appendChild(buttonDerived);
+
+        private void appendButtonEdit(final Hbox hbox, final Order order) {
+            Button buttonEdit = new Button();
+            buttonEdit.setSclass(ICONO_CLASS);
+            buttonEdit.setImage("/common/img/ico_editar1.png");
+            buttonEdit.setHoverImage("/common/img/ico_editar.png");
+            buttonEdit.setTooltiptext(_("Edit"));
+            buttonEdit.addEventListener(ON_CLICK_EVENT, event -> goToEditForm(order));
+            hbox.appendChild(buttonEdit);
+        }
+
+        private void appendButtonDelete(final Hbox hbox, final Order order) {
+            if ( orderModel.userCanWrite(order) ) {
+                Button buttonDelete = new Button();
+                buttonDelete.setSclass(ICONO_CLASS);
+                buttonDelete.setImage("/common/img/ico_borrar1.png");
+                buttonDelete.setHoverImage("/common/img/ico_borrar.png");
+                buttonDelete.setTooltiptext(_(DELETE));
+                buttonDelete.addEventListener(ON_CLICK_EVENT, event -> confirmRemove(order));
+                hbox.appendChild(buttonDelete);
+            }
+        }
+
+        private void appendButtonPlan(final Hbox hbox, final Order order) {
+            Button buttonPlan = new Button();
+            buttonPlan.setSclass(ICONO_CLASS);
+            buttonPlan.setImage("/common/img/ico_planificador1.png");
+            buttonPlan.setHoverImage("/common/img/ico_planificador.png");
+            buttonPlan.setTooltiptext(_("See scheduling"));
+            buttonPlan.addEventListener(ON_CLICK_EVENT, event -> schedule(order));
+            hbox.appendChild(buttonPlan);
+        }
+
+        private void appendButtonDerived(final Hbox hbox, final Order order) {
+            Button buttonDerived = new Button();
+            buttonDerived.setSclass(ICONO_CLASS);
+            buttonDerived.setImage("/common/img/ico_derived1.png");
+            buttonDerived.setHoverImage("/common/img/ico_derived.png");
+            buttonDerived.setTooltiptext(_("Create Template"));
+            buttonDerived.addEventListener(ON_CLICK_EVENT, event -> createTemplate(order));
+
+            if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_TEMPLATES) ) {
+                buttonDerived.setDisabled(true);
+                buttonDerived.setTooltiptext(_("Not enough permissions to create templates"));
+            }
+
+            hbox.appendChild(buttonDerived);
+        }
     }
 
     public String getTooltipText(final Order order) {
@@ -1410,10 +1423,11 @@ public class OrderCRUDController extends GenericForwardComposer {
     }
 
     private void storeSessionVariables() {
-        FilterUtils.writeProjectsFilter(filterStartDate.getValue(),
-                                        filterFinishDate.getValue(),
-                                        getSelectedBandboxAsTaskGroupFilters(),
-                                        filterProjectName.getValue());
+        FilterUtils.writeProjectsFilter(
+                filterStartDate.getValue(),
+                filterFinishDate.getValue(),
+                getSelectedBandboxAsTaskGroupFilters(),
+                filterProjectName.getValue());
     }
 
     private List<FilterPair> getSelectedBandboxAsTaskGroupFilters() {
@@ -1535,10 +1549,8 @@ public class OrderCRUDController extends GenericForwardComposer {
      * Checks the creation permissions of the current user and enables/disables the create buttons accordingly.
      */
     private void checkCreationPermissions() {
-        if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_CREATE_PROJECTS) ) {
-            if ( createOrderButton != null ) {
-                createOrderButton.setDisabled(true);
-            }
+        if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_CREATE_PROJECTS) && createOrderButton != null ) {
+            createOrderButton.setDisabled(true);
         }
     }
 
@@ -1580,13 +1592,13 @@ public class OrderCRUDController extends GenericForwardComposer {
             if ( StringUtils.isBlank((String) value) ) {
                 throw new WrongValueException(comp, _("cannot be empty"));
             }
+
             try {
                 Order found = orderDAO.findByNameAnotherTransaction((String) value);
                 if ( !found.getId().equals(getOrder().getId()) ) {
                     throw new WrongValueException(comp, _("project name already being used"));
                 }
-            } catch (InstanceNotFoundException ignored) {
-            }
+            } catch (InstanceNotFoundException ignored) {}
         };
     }
 
@@ -1596,13 +1608,13 @@ public class OrderCRUDController extends GenericForwardComposer {
             if ( StringUtils.isBlank((String) value) ) {
                 throw new WrongValueException(comp, _("cannot be empty"));
             }
+
             try {
                 Order found = orderDAO.findByCodeAnotherTransaction((String) value);
                 if ( !found.getId().equals(getOrder().getId()) ) {
                     throw new WrongValueException(comp, _("project code already being used"));
                 }
-            } catch (InstanceNotFoundException ignored) {
-            }
+            } catch (InstanceNotFoundException ignored) {}
         };
     }
 
@@ -1631,6 +1643,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
                     if (deliveryDate.equals(lastDeliveryDate)) {
                         row.setSclass("current-delivery-date");
+
                         return;
                     }
                 }
@@ -1648,6 +1661,7 @@ public class OrderCRUDController extends GenericForwardComposer {
 
             return;
         }
+
         if ( thereIsSomeCommunicationDateEmpty() ) {
             messagesForUser.showMessage(
                     Level.ERROR,
@@ -1655,11 +1669,13 @@ public class OrderCRUDController extends GenericForwardComposer {
                             "have already been sent to the customer."));
             return;
         }
+
         if ( orderModel.alreadyExistsRepeatedEndDate(newEndDate.getValue()) ) {
             messagesForUser.showMessage(Level.ERROR, _("It already exists a end date with the same date. "));
 
             return;
         }
+
         orderModel.addAskedEndDate(newEndDate.getValue());
         reloadGridAskedEndDates();
     }
@@ -1705,7 +1721,6 @@ public class OrderCRUDController extends GenericForwardComposer {
         }
 
         private Button getDeleteButton(final EndDateCommunication endDate) {
-
             Button deleteButton = new Button();
             deleteButton.setDisabled(isNotUpdate(endDate));
             deleteButton.setSclass(ICONO_CLASS);
@@ -1756,6 +1771,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             jiraSynchronizationController = new JiraSynchronizationController();
             jiraSynchronizationController.setOrderController(this);
         }
+
         try {
             jiraSynchronizationController.doAfterCompose(editWindow);
         } catch (Exception e) {
@@ -1771,6 +1787,7 @@ public class OrderCRUDController extends GenericForwardComposer {
             timSynchronizationController = new TimSynchronizationController();
             timSynchronizationController.setOrderController(this);
         }
+
         try {
             timSynchronizationController.doAfterCompose(editWindow);
         } catch (Exception e) {

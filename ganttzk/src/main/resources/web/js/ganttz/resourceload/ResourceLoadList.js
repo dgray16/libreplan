@@ -58,26 +58,27 @@ ganttz.resourceload.ResourceLoadList = zk.$extends(
         },
 
         _listenToScroll : function() {
-            var scrolledPannelScrollLeft = jq('.rightpanel-layout div:first').scrollLeft();
-            var scrolledPannelScrollTop = jq('.rightpanel-layout div:first').scrollTop();
+            var scrolledPanelScrollLeft = jq('.rightpanel-layout div:first').scrollLeft();
+            var scrolledPanelScrollTop = jq('.rightpanel-layout div:first').scrollTop();
 
-            jq('canvas.timeplot-canvas').parent().css("left", "-" + scrolledPannelScrollLeft + "px");
-            jq('.timetrackergap').css("left", "-" + scrolledPannelScrollLeft + "px");
-            jq('.leftpanelgap .z-tree-body').css("top", "-" + scrolledPannelScrollTop + "px");
-            jq('.resourcesloadgraph div').scrollLeft(scrolledPannelScrollLeft + "px");
+            jq('canvas.timeplot-canvas').parent().css("left", "-" + scrolledPanelScrollLeft + "px");
+            jq('.timetrackergap').css("left", "-" + scrolledPanelScrollLeft + "px");
+            jq('.leftpanelgap .z-tree-body').css("top", "-" + scrolledPanelScrollTop + "px");
+            jq('.resourcesloadgraph div').scrollLeft(scrolledPanelScrollLeft + "px");
 
             this.adjustResourceLoadRows();
         }
     },
     {
-        //Class stuff
+        // Class stuff
         WATERMARK_MIN_HEIGHT : 450,
         WATERMARK_MARGIN_BOTTOM : 40,
-        setInstance : function(instance){
+        
+        setInstance : function(instance) {
             this._instance = instance;
         },
 
-        getInstance : function(){
+        getInstance : function() {
             return this._instance;
         }
     });

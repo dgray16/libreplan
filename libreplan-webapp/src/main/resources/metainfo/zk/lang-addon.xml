@@ -6,8 +6,8 @@
     <language-name>xul/html</language-name>
 
     <!-- When the version is changed, the browser will reload the JavaScript modules -->
-    <javascript-module name="webcommon" version="1.4.0" />
-    <javascript-module name="limitingresources" version="1.4.0" />
+    <javascript-module name="webcommon" version="1.6.0" />
+    <javascript-module name="limitingresources" version="1.6.0" />
 
     <component>
         <component-name>twowayselector</component-name>
@@ -72,6 +72,7 @@
             <property-name>model</property-name>
             <attribute>
                 <attribute-name>converter</attribute-name>
+                <!-- TODO resolve deprecated -->
                 <attribute-value>org.zkoss.zkplus.databind.ListModelConverter</attribute-value>
             </attribute>
         </annotation>

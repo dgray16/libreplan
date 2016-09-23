@@ -25,14 +25,13 @@ import static org.zkoss.ganttz.i18n.I18nHelper._;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 
 import org.zkoss.ganttz.data.resourceload.LoadTimeLine;
 import org.zkoss.ganttz.util.MutableTreeModel;
 import org.zkoss.ganttz.util.WeakReferencedListeners;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlMacroComponent;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
 import org.zkoss.zul.Treecell;
 import org.zkoss.zul.Treeitem;
@@ -45,9 +44,13 @@ import org.zkoss.zul.Tree;
 import org.zkoss.zul.Treechildren;
 
 /**
- * Works with left pane of Resouce Load page. Also works with right pane ( a little bit ).
+ * Works with left pane of Resource Load page. Also works with right pane ( a little bit ).
  *
- * @author ?
+ * @author Óscar González Fernández
+ * @author Manuel Rego Casasnovas
+ * @author Susana Montes Pedreira
+ * @author Lorenzo Tilve
+ * @author Jacobo Aragunde Pérez
  * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class ResourceLoadLeftPane extends HtmlMacroComponent {
@@ -59,11 +62,11 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
     private WeakReferencedListeners<ISeeScheduledOfListener> scheduleListeners = WeakReferencedListeners.create();
 
     /**
-     * {@link ResourceLoadLeftPane#onOpenEventQueue}, {@link OnOpenEvent} and proceedOnOpenEventQueue() method
+     * {@link ResourceLoadLeftPane#onOpenEventQueue}, {@link OnOpenEvent} and proceedOnOpenEventQueue()
      * were created because of problem:
      * after migration from ZK5 to ZK8 onOpen event had been calling before render().
      * It produced a problem.
-     * On onOpen event we are calculating closes items to treeItem.
+     * On onOpen event we are calculating closest items to treeItem.
      * render() was not called so, treeItem row had no value.
      * It made calculatedClosedItems(treeItem).isEmpty() to return true, even if it is not!
      *
@@ -71,10 +74,16 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
      */
     private OnOpenEvent onOpenEventQueue = null;
 
+    /**
+     * Made to know if {@link LoadTimeLine} was rendered.
+     */
+    private HashSet<LoadTimeLine> renderedLines;
+
 
     public ResourceLoadLeftPane(MutableTreeModel<LoadTimeLine> modelForTree, ResourceLoadList resourceLoadList) {
         this.resourceLoadList = resourceLoadList;
         this.modelForTree = modelForTree;
+        this.renderedLines = new HashSet<>();
     }
 
     @Override
@@ -83,6 +92,18 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
 
         getContainerTree().setModel(modelForTree);
         getContainerTree().setItemRenderer(getRendererForTree());
+
+        /* Force call overridden render() */
+        try {
+            if ( !this.resourceLoadList.getChildren().isEmpty() ) {
+                getRendererForTree().render(
+                        new Treeitem(""),
+                        ((ResourceLoadComponent) this.resourceLoadList.getFirstChild()).getLoadLine(),
+                        0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private TreeitemRenderer getRendererForTree() {
@@ -96,6 +117,12 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 Treerow row = new Treerow();
                 Treecell cell = new Treecell();
                 Component component = createComponent(line);
+
+                /* Clear existing Treerows */
+                if ( !treeitem.getChildren().isEmpty() ) {
+                    treeitem.getChildren().clear();
+                }
+
                 treeitem.appendChild(row);
                 row.appendChild(cell);
 
@@ -109,20 +136,23 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 row.setSclass("resourceload-leftpanel-row");
 
                 if ( onOpenEventQueue != null ) {
-                    proceedOnOpenEventQueue();
+                    processOnOpenEventQueue();
                 }
+
+                renderedLines.add(line);
             }
 
-            /**
-             * After proceed of queue, clean object, to make it kind of "unique" or "one time only".
-             */
-            private void proceedOnOpenEventQueue() {
+            private void processOnOpenEventQueue() {
                 if ( onOpenEventQueue.event.isOpen() ) {
                     List<LoadTimeLine> closed = calculatedClosedItems(onOpenEventQueue.treeitem);
                     expand(onOpenEventQueue.line, closed);
                 } else {
                     collapse(onOpenEventQueue.line);
                 }
+
+                /*
+                 * When queue processed, clean object, to make it kind of "unique" or "one time only".
+                 */
                 onOpenEventQueue = null;
             }
 
@@ -138,17 +168,14 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 buttonPlan.setImage("/common/img/ico_planificador1.png");
                 buttonPlan.setHoverImage("/common/img/ico_planificador.png");
                 buttonPlan.setTooltiptext(_("See scheduling"));
-
-                buttonPlan.addEventListener("onClick", new EventListener() {
-                    @Override
-                    public void onEvent(Event event) {
-                        schedule(taskLine);
-                    }
-                });
+                buttonPlan.addEventListener("onClick", event -> schedule(taskLine));
 
                 cell.appendChild(buttonPlan);
             }
 
+            /**
+             * Do not replace it with lambda.
+             */
             public void schedule(final LoadTimeLine taskLine) {
                 scheduleListeners.fireEvent(
                         new WeakReferencedListeners.IListenerNotification<ISeeScheduledOfListener>() {
@@ -163,11 +190,14 @@ public class ResourceLoadLeftPane extends HtmlMacroComponent {
                 item.addEventListener("onOpen", event ->  {
                     OpenEvent openEvent = (OpenEvent) event;
 
-                    if ( openEvent.isOpen() &&
-                            !line.getChildren().isEmpty() &&
-                            calculatedClosedItems(item).isEmpty() ) {
+                    if ( openEvent.isOpen() ) {
 
                         onOpenEventQueue = new OnOpenEvent(item, line, openEvent);
+
+                        /* If line was rendered than we need to call expand manually */
+                        if ( renderedLines.contains(line) ) {
+                            processOnOpenEventQueue();
+                        }
 
                     } else {
                         collapse(line);

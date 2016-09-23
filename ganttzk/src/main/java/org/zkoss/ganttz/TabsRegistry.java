@@ -53,8 +53,7 @@ public class TabsRegistry {
         void doAction();
     }
 
-    private static final IBeforeShowAction DO_NOTHING = () -> {
-    };
+    private static final IBeforeShowAction DO_NOTHING = () -> {};
 
     public void show(ITab tab) {
         show(tab, DO_NOTHING);
@@ -93,12 +92,6 @@ public class TabsRegistry {
                 continue;
             }
             t.hide();
-        }
-    }
-
-    public void showFirst() {
-        if (!tabs.isEmpty()) {
-            show(tabs.get(0));
         }
     }
 

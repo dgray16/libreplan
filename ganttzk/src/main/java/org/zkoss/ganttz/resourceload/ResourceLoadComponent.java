@@ -37,8 +37,6 @@ import org.zkoss.ganttz.timetracker.zoom.IZoomLevelChangedListener;
 import org.zkoss.ganttz.timetracker.zoom.ZoomLevel;
 import org.zkoss.ganttz.util.MenuBuilder;
 import org.zkoss.ganttz.util.WeakReferencedListeners;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.sys.ContentRenderer;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Menupopup;
@@ -48,6 +46,7 @@ import org.zkoss.zul.impl.XulElement;
  * This class wraps ResourceLoad data inside an specific HTML Div component.
  *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class ResourceLoadComponent extends XulElement {
 
@@ -66,16 +65,25 @@ public class ResourceLoadComponent extends XulElement {
         this.timeTracker = timeTracker;
         createChildren(loadLine, timeTracker.getMapper());
 
+        /* Do not replace it with lambda */
         zoomChangedListener = new IZoomLevelChangedListener() {
+
+            /**
+             * In general it is working like, on every zoomChanged :
+             * 1. Remove all LoadLines ( divs ).
+             * 2. Create new ones ( for selected zoom mode ).
+             * 3. Redraw insertionPointRightPanel component ( Div ).
+             */
             @Override
             public void zoomLevelChanged(ZoomLevel detailLevel) {
                 getChildren().clear();
                 createChildren(loadLine, timeTracker.getMapper());
+                if ( !getFellows().isEmpty() ) {
+                    getFellow("insertionPointRightPanel").invalidate();
+                }
                 invalidate();
             }
         };
-
-
 
         this.timeTracker.addZoomListener(zoomChangedListener);
     }
@@ -99,12 +107,7 @@ public class ResourceLoadComponent extends XulElement {
     }
 
     private void addDoubleClickAction(final Div div, final LoadTimeLine loadLine) {
-        div.addEventListener("onDoubleClick", new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                schedule(loadLine);
-            }
-        });
+        div.addEventListener("onDoubleClick", event -> schedule(loadLine));
     }
 
     private void addContextMenu(final List<Div> divs, final Div div, final LoadTimeLine loadLine) {
@@ -118,25 +121,17 @@ public class ResourceLoadComponent extends XulElement {
          * non-null page is required by MenuBuilder or a NullPointerException will be raised.
          */
 
-        div.addEventListener("onRightClick", new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                try {
-                    getContextMenuFor(divs, div, loadLine).open(div);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        div.addEventListener("onRightClick", event ->  {
+            try {
+                getContextMenuFor(divs, div, loadLine).open(div);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
 
     public void schedule(final LoadTimeLine taskLine) {
-        scheduleListeners.fireEvent(new WeakReferencedListeners.IListenerNotification<ISeeScheduledOfListener>() {
-            @Override
-            public void doNotify(ISeeScheduledOfListener listener) {
-                listener.seeScheduleOf(taskLine);
-            }
-        });
+        scheduleListeners.fireEvent(listener -> listener.seeScheduleOf(taskLine));
     }
 
     public void addSeeScheduledOfListener(ISeeScheduledOfListener seeScheduledOfListener) {
@@ -151,12 +146,7 @@ public class ResourceLoadComponent extends XulElement {
             menuBuilder.item(
                     _("See resource allocation"),
                     "/common/img/ico_allocation.png",
-                    new MenuBuilder.ItemAction<Div>() {
-                        @Override
-                        public void onEvent(Div choosen, Event event) {
-                            schedule(loadLine);
-                        }
-                    });
+                    (chosen, event) -> schedule(loadLine));
 
             Menupopup result = menuBuilder.createWithoutSettingContext();
             contextMenus.put(div, result);
@@ -175,6 +165,9 @@ public class ResourceLoadComponent extends XulElement {
         return loadLine.getType();
     }
 
+    LoadTimeLine getLoadLine() {
+        return loadLine;
+    }
 
     private static List<Div> createDivsForPeriods(IDatesMapper datesMapper, List<LoadPeriod> loadPeriods) {
         List<Div> result = new ArrayList<>();
@@ -218,6 +211,9 @@ public class ResourceLoadComponent extends XulElement {
         return loadPeriod.getStart().toPixels(datesMapper);
     }
 
+    /**
+     * It is drawing chart on right pane for each ResourceLoad row.
+     */
     @Override
     protected void renderProperties(ContentRenderer renderer) throws IOException{
         render(renderer, "_resourceLoadName", getResourceLoadName());

@@ -41,15 +41,14 @@ import org.zkoss.ganttz.util.MutableTreeModel;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.HtmlMacroComponent;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.OpenEvent;
 import org.zkoss.zul.Tree;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.TreeitemRenderer;
 
 /**
- * Tree element to display tasks structure in the planning Gantt <br />
+ * Tree element to display tasks structure in the planning Gantt.
+ * <br />
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
@@ -57,61 +56,113 @@ import org.zkoss.zul.TreeitemRenderer;
  */
 public class LeftTasksTree extends HtmlMacroComponent {
 
+    private DetailsForBeans detailsForBeans = new DetailsForBeans();
+
+    private final DeferredFiller deferredFiller = new DeferredFiller();
+
+    private final List<Task> tasks;
+
+    private MutableTreeModel<Task> tasksTreeModel;
+
+    private Tree tasksTree;
+
+    private CommandContextualized<?> goingDownInLastArrowCommand;
+
+    private final IDisabilityConfiguration disabilityConfiguration;
+
+    private FilterAndParentExpandedPredicates predicate;
+
+    private final List<Task> visibleTasks = new ArrayList<>();
+
+    private Planner planner;
+
+    public LeftTasksTree(IDisabilityConfiguration disabilityConfiguration,
+                         Planner planner,
+                         FilterAndParentExpandedPredicates predicate) {
+
+        this.disabilityConfiguration = disabilityConfiguration;
+        this.tasks = planner.getTaskList().getAllTasks();
+        this.predicate = predicate;
+        this.planner = planner;
+    }
+
+    @Override
+    public void afterCompose() {
+        setClass("listdetails");
+        super.afterCompose();
+        tasksTree = (Tree) getFellow("tasksTree");
+        tasksTreeModel = MutableTreeModel.create(Task.class);
+        fillModel(tasks, true);
+        tasksTree.setModel(tasksTreeModel);
+        tasksTree.setItemRenderer(getTaskBeanRenderer());
+
+        /* Force call overridden render() */
+        try {
+            if ( !tasks.isEmpty() ) {
+                getTaskBeanRenderer().render(new Treeitem(""), tasks.get(0), 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private final class TaskBeanRenderer implements TreeitemRenderer<Task> {
-
-        private Map<TaskContainer, IExpandListener> expandListeners = new HashMap<>();
-
         @Override
         public void render(final Treeitem treeitem, Task o, int i) throws Exception {
             Task task = o;
             treeitem.setOpen(isOpened(task));
 
-            //TODO Investigate this problem
             if ( task instanceof TaskContainer ) {
 
                 final TaskContainer container = (TaskContainer) task;
-                IExpandListener expandListener = new IExpandListener() {
 
+                IExpandListener expandListener = new IExpandListener() {
                     @Override
                     public void expandStateChanged(boolean isNowExpanded) {
                         treeitem.setOpen(isNowExpanded);
                     }
                 };
-                expandListeners.put(container, expandListener);
+
                 container.addExpandListener(expandListener);
 
             }
 
-            LeftTasksTreeRow leftTasksTreeRow = LeftTasksTreeRow
-                    .create(disabilityConfiguration, task, new TreeNavigator(task), planner);
+            LeftTasksTreeRow leftTasksTreeRow =
+                    LeftTasksTreeRow.create(disabilityConfiguration, task, new TreeNavigator(task), planner);
+
             if ( task.isContainer() ) {
                 expandWhenOpened((TaskContainer) task, treeitem);
             }
 
-            Component row;
-
-            if ( disabilityConfiguration.isTreeEditable() ) {
-                row = Executions.getCurrent().createComponents(
-                        "~./ganttz/zul/leftTasksTreeRow.zul", treeitem, null);
-            } else {
-                row = Executions.getCurrent().createComponents(
-                        "~./ganttz/zul/leftTasksTreeRowLabels.zul", treeitem, null);
+            /* Clear existing Treerows */
+            if ( !treeitem.getChildren().isEmpty() ) {
+                treeitem.getChildren().clear();
             }
+
+            Component row = disabilityConfiguration.isTreeEditable()
+                    ? Executions
+                        .getCurrent()
+                        .createComponents("~./ganttz/zul/leftTasksTreeRow.zul", treeitem, null)
+                    : Executions
+                        .getCurrent()
+                        .createComponents("~./ganttz/zul/leftTasksTreeRowLabels.zul", treeitem, null);
+
             leftTasksTreeRow.doAfterCompose(row);
             detailsForBeans.put(task, leftTasksTreeRow);
             deferredFiller.isBeingRendered(task, treeitem);
         }
 
-        private void expandWhenOpened(final TaskContainer taskBean,
-                Treeitem item) {
-            item.addEventListener("onOpen", new EventListener() {
-                @Override
-                public void onEvent(Event event) {
-                    OpenEvent openEvent = (OpenEvent) event;
-                    taskBean.setExpanded(openEvent.isOpen());
-                }
+        private void expandWhenOpened(final TaskContainer taskBean, Treeitem item) {
+            item.addEventListener("onOpen", event -> {
+                OpenEvent openEvent = (OpenEvent) event;
+                taskBean.setExpanded(openEvent.isOpen());
             });
         }
+    }
+
+    private TaskBeanRenderer getTaskBeanRenderer() {
+        return new TaskBeanRenderer();
     }
 
     public boolean isOpened(Task task) {
@@ -143,10 +194,10 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
     }
 
-    private DetailsForBeans detailsForBeans = new DetailsForBeans();
-
     private final class TreeNavigator implements ILeftTasksTreeNavigator {
+
         private final int[] pathToNode;
+
         private final Task task;
 
         private TreeNavigator(Task task) {
@@ -169,9 +220,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
         }
 
         private LeftTasksTreeRow getChild(Task parent, int position) {
-            Task child = tasksTreeModel.getChild(parent, position);
-
-            return getDetailFor(child);
+            return getDetailFor(tasksTreeModel.getChild(parent, position));
         }
 
         private LeftTasksTreeRow getDetailFor(Task child) {
@@ -183,13 +232,14 @@ public class LeftTasksTree extends HtmlMacroComponent {
             if ( isExpanded() && hasChildren() ) {
                 return getChild(task, 0);
             }
-            for (ChildAndParent childAndParent : group(task, tasksTreeModel
-                    .getParents(task))) {
+
+            for (ChildAndParent childAndParent : group(task, tasksTreeModel.getParents(task))) {
                 if ( childAndParent.childIsNotLast() ) {
                     return getDetailFor(childAndParent.getNextToChild());
                 }
             }
-            // it's the last one, it has none below
+
+            // It's the last one, it has none below
             return null;
         }
 
@@ -237,12 +287,14 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
                 int[] path = tasksTreeModel.getPath(parent, child);
 
-                return positionOfChildCached = path[path.length - 1];
+                positionOfChildCached = path[path.length - 1];
+
+                return positionOfChildCached;
             }
         }
 
         private boolean hasChildren() {
-            return task.isContainer() && task.getTasks().size() > 0;
+            return task.isContainer() && !task.getTasks().isEmpty();
         }
 
         private boolean isExpanded() {
@@ -262,20 +314,30 @@ public class LeftTasksTree extends HtmlMacroComponent {
     }
 
     /**
-     * This class is a workaround for an issue with zk {@link Tree}. Once the
-     * tree is created, adding a node with children is troublesome. Only the top
-     * element is added to the tree, although the element has children. The Tree
-     * discards the adding event for the children because the parent says it's
-     * not loaded. This is the condition that is not satisfied:<br />
-     * <code>if(parent != null &&
-        (!(parent instanceof Treeitem) || ((Treeitem)parent).isLoaded())){</code><br />
+     * This class is a workaround for an issue with zk {@link Tree}.
+     * Once the tree is created, adding a node with children is troublesome.
+     * Only the top element is added to the tree, although the element has children.
+     * The Tree discards the adding event for the children because the parent says it's not loaded.
+     *
+     * This is the condition that is not satisfied:
+     * <br />
+     * <code>
+     *     if( parent != null && (!(parent instanceof Treeitem) || ((Treeitem) parent).isLoaded()) ) {
+     *         // ...
+     *     }
+     * </code>
+     * <br />
+     *
      * This problem is present in zk 3.6.1 at least.
+     *
      * @author Óscar González Fernández <ogonzalez@igalia.com>
      * @see Tree#onTreeDataChange
      */
     private class DeferredFiller {
 
         private Set<Task> pendingToAddChildren = new HashSet<>();
+
+        private Method setLoadedMethod = null;
 
         public void addParentOfPendingToAdd(Task parent) {
             pendingToAddChildren.add(parent);
@@ -285,6 +347,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
             if ( !pendingToAddChildren.contains(parent) ) {
                 return;
             }
+
             markLoaded(item);
             fillModel(parent, 0, parent.getTasks(), false);
             pendingToAddChildren.remove(parent);
@@ -299,49 +362,22 @@ public class LeftTasksTree extends HtmlMacroComponent {
             }
         }
 
-        private Method setLoadedMethod = null;
-
         private Method getSetLoadedMethod() {
             if ( setLoadedMethod != null ) {
                 return setLoadedMethod;
             }
+
             try {
                 Method method = Treeitem.class.getDeclaredMethod("setLoaded", Boolean.TYPE);
                 method.setAccessible(true);
+                setLoadedMethod = method;
 
-                return setLoadedMethod = method;
+                return setLoadedMethod;
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private final DeferredFiller deferredFiller = new DeferredFiller();
-
-    private final List<Task> tasks;
-
-    private MutableTreeModel<Task> tasksTreeModel;
-
-    private Tree tasksTree;
-
-    private CommandContextualized<?> goingDownInLastArrowCommand;
-
-    private final IDisabilityConfiguration disabilityConfiguration;
-
-    private FilterAndParentExpandedPredicates predicate;
-
-    private final List<Task> visibleTasks = new ArrayList<>();
-
-    private Planner planner;
-
-    public LeftTasksTree(IDisabilityConfiguration disabilityConfiguration,
-                         Planner planner,
-                         FilterAndParentExpandedPredicates predicate) {
-
-        this.disabilityConfiguration = disabilityConfiguration;
-        this.tasks = planner.getTaskList().getAllTasks();
-        this.predicate = predicate;
-        this.planner = planner;
     }
 
     private void fillModel(Collection<? extends Task> tasks, boolean firstTime) {
@@ -352,6 +388,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
                            Integer insertionPosition,
                            Collection<? extends Task> children,
                            final boolean firstTime) {
+
         if ( predicate.isFilterContainers() ) {
             parent = this.tasksTreeModel.getRoot();
         }
@@ -366,6 +403,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
                         this.tasksTreeModel.add(parent, node);
                         visibleTasks.add(node);
                     }
+
                 } else {
 
                     if ( visibleTasks.contains(node) ) {
@@ -393,8 +431,8 @@ public class LeftTasksTree extends HtmlMacroComponent {
                     }
                 }
             }
-            // the node must be added after, so the multistepTreeFiller is
-            // ready
+
+            // The node must be added after, so the multistepTreeFiller is ready
             for (Task node : children) {
 
                 if ( predicate.accpetsFilterPredicateAndContainers(node) ) {
@@ -403,6 +441,7 @@ public class LeftTasksTree extends HtmlMacroComponent {
                         this.tasksTreeModel.add(parent, insertionPosition, Collections.singletonList(node));
                         visibleTasks.add(node);
                     }
+
                 } else {
                     if (visibleTasks.contains(node)) {
                         this.tasksTreeModel.remove(node);
@@ -433,19 +472,6 @@ public class LeftTasksTree extends HtmlMacroComponent {
 
     public void taskRemoved(Task taskRemoved) {
         tasksTreeModel.remove(taskRemoved);
-    }
-
-    @Override
-    public void afterCompose() {
-        setClass("listdetails");
-        super.afterCompose();
-        tasksTree = (Tree) getFellow("tasksTree");
-        tasksTreeModel = MutableTreeModel.create(Task.class);
-        fillModel(tasks, true);
-        tasksTree.setModel(tasksTreeModel);
-        tasksTree.setItemRenderer(new TaskBeanRenderer());
-        //TODO Waiting for answer from ZK Sales about PE & EE
-        tasksTree.onInitRender();
     }
 
     void addTask(Position position, Task task) {

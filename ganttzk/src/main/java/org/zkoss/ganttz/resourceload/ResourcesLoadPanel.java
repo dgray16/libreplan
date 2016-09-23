@@ -50,6 +50,7 @@ import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.South;
+import org.zkoss.zul.Div;
 
 public class ResourcesLoadPanel extends HtmlMacroComponent {
 
@@ -86,6 +87,8 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     private final String FILTER_CRITERIA = _("Generic allocation criteria");
 
+    private final String FILTER_BY_NAME_COMBO_COMPONENT = "filterByNameCombo";
+
     private String feedBackMessage;
 
     private Boolean filterbyResources;
@@ -115,6 +118,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     private Component firstOptionalFilter;
 
     private Component secondOptionalFilter;
+
 
     public ResourcesLoadPanel(List<LoadTimeLine> groups,
                               TimeTracker timeTracker,
@@ -347,8 +351,10 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         getFellow("insertionPointLeftPanel").appendChild(leftPane);
         leftPane.afterCompose();
 
-        getFellow("insertionPointRightPanel").appendChild(timeTrackerComponent);
-        getFellow("insertionPointRightPanel").appendChild(resourceLoadList);
+        Div insertionPointRightPanel = (Div) getFellow("insertionPointRightPanel");
+        insertionPointRightPanel.appendChild(timeTrackerComponent);
+        insertionPointRightPanel.appendChild(resourceLoadList);
+
         TimeTrackerComponent timeTrackerHeader = createTimeTrackerHeader();
         getFellow("insertionPointTimetracker").appendChild(timeTrackerHeader);
 
@@ -372,7 +378,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
             setupNameFilter();
         }
         else if ( paginationType == PaginationType.NONE ) {
-            getFellow("filterByNameCombo").setVisible(false);
+            getFellow(FILTER_BY_NAME_COMBO_COMPONENT).setVisible(false);
             getFellow("filterByNameLabel").setVisible(false);
         }
 
@@ -431,7 +437,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     private void setupNameFilter() {
-        Combobox filterByNameCombo = (Combobox) getFellow("filterByNameCombo");
+        Combobox filterByNameCombo = (Combobox) getFellow(FILTER_BY_NAME_COMBO_COMPONENT);
         filterByNameCombo.getChildren().clear();
         int size = groups.size();
 
@@ -535,7 +541,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     public void setInternalPaginationDisabled(boolean disabled) {
-        Combobox combo = (Combobox) getFellow("filterByNameCombo");
+        Combobox combo = (Combobox) getFellow(FILTER_BY_NAME_COMBO_COMPONENT);
         if ( combo != null && combo.isDisabled() != disabled ) {
             filterByNamePosition = disabled? -1 : (Integer) combo.getSelectedItem().getValue();
             combo.setDisabled(disabled);
@@ -546,7 +552,9 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         nameFilterListener.addListener(iFilterChangedListener);
     }
 
-    /* It should be public! */
+    /**
+     * It should be public!
+     */
     public void changeChartVisibility(boolean visible) {
         visibleChart = visible;
         chartVisibilityListeners.fireEvent(listener -> listener.chartVisibilityChanged(visibleChart));
@@ -570,7 +578,7 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     public Combobox getPaginationFilterCombobox() {
         return paginationType == PaginationType.EXTERNAL_PAGINATION
-                ? (Combobox) getFellow("filterByNameCombo")
+                ? (Combobox) getFellow(FILTER_BY_NAME_COMBO_COMPONENT)
                 : null;
     }
 
