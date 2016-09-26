@@ -189,17 +189,16 @@ public abstract class ResourceAllocation<T extends DayAssignment>
     }
 
     private static Comparator<ResourceAllocation<?>> byStartDateComparator() {
-        return new Comparator<ResourceAllocation<?>>() {
-            @Override
-            public int compare(ResourceAllocation<?> o1, ResourceAllocation<?> o2) {
-                if ( o1.getIntraDayStartDate() == null ) {
-                    return -1;
-                }
-                if ( o2.getIntraDayStartDate() == null ) {
-                    return 1;
-                }
-                return o1.getIntraDayStartDate().compareTo(o2.getIntraDayStartDate());
+        return (o1, o2) -> {
+            if ( o1.getIntraDayStartDate() == null ) {
+                return -1;
             }
+
+            if ( o2.getIntraDayStartDate() == null ) {
+                return 1;
+            }
+
+            return o1.getIntraDayStartDate().compareTo(o2.getIntraDayStartDate());
         };
     }
 
@@ -355,10 +354,7 @@ public abstract class ResourceAllocation<T extends DayAssignment>
         }
 
         private static INotFulfilledReceiver doNothing() {
-            return new INotFulfilledReceiver() {
-                @Override
-                public void cantFulfill(ResourcesPerDayModification allocationAttempt, CapacityResult capacityResult) {}
-            };
+            return (allocationAttempt, capacityResult) -> {};
         }
 
         public IntraDayDate untilAllocating(EffortDuration effort, final INotFulfilledReceiver receiver) {
@@ -381,10 +377,17 @@ public abstract class ResourceAllocation<T extends DayAssignment>
 
                     Task task = AllocationsSpecified.this.task;
                     allocation.setIntendedResourcesPerDay(resourcesPerDay);
+
                     if ( isForwardScheduling() ) {
-                        allocation.resetAllAllocationAssignmentsTo(dayAssignments, task.getIntraDayStartDate(), resultDate);
+
+                        allocation.resetAllAllocationAssignmentsTo(
+                                dayAssignments, task.getIntraDayStartDate(), resultDate);
+
                     } else {
-                        allocation.resetAllAllocationAssignmentsTo(dayAssignments, resultDate, task.getIntraDayEndDate());
+
+                        allocation.resetAllAllocationAssignmentsTo(
+                                dayAssignments, resultDate, task.getIntraDayEndDate());
+
                     }
                     allocation.updateResourcesPerDay();
                 }
@@ -423,6 +426,7 @@ public abstract class ResourceAllocation<T extends DayAssignment>
 
             };
             IntraDayDate result = allocator.untilAllocating(toAllocate);
+
             if (result == null) {
                 // Allocation could not be done
                 return direction == Direction.FORWARD ? task.getIntraDayEndDate() : task.getIntraDayStartDate();
@@ -578,16 +582,12 @@ public abstract class ResourceAllocation<T extends DayAssignment>
 
     private ResourcesPerDay getReassignationResourcesPerDay() {
         ResourcesPerDay intended = getIntendedResourcesPerDay();
-        if ( intended != null ) {
-            return intended;
-        }
-        return getResourcesPerDay();
+
+        return intended != null ? intended : getResourcesPerDay();
     }
 
     public boolean areIntendedResourcesPerDaySatisfied() {
-        CalculatedValue calculatedValue = getTask().getCalculatedValue();
-
-        return calculatedValue == CalculatedValue.RESOURCES_PER_DAY ||
+        return getTask().getCalculatedValue() == CalculatedValue.RESOURCES_PER_DAY ||
                 Objects.equals(getNonConsolidatedResourcePerDay(), getIntendedResourcesPerDay());
     }
 
@@ -656,7 +656,9 @@ public abstract class ResourceAllocation<T extends DayAssignment>
         throw new RuntimeException("can't handle: " + allocation.getClass());
     }
 
-    /* This method is in use */
+    /**
+     * This method is in use.
+     */
     public abstract ResourcesPerDayModification withDesiredResourcesPerDay(ResourcesPerDay resourcesPerDay);
 
     public final ResourcesPerDayModification asResourcesPerDayModification() {
@@ -680,7 +682,7 @@ public abstract class ResourceAllocation<T extends DayAssignment>
         });
     }
 
-    public final EffortModification asHoursModification(){
+    public final EffortModification asHoursModification() {
         return visit(this, new IVisitor<EffortModification>() {
 
             @Override
@@ -1271,7 +1273,9 @@ public abstract class ResourceAllocation<T extends DayAssignment>
 
     protected abstract ICalendar getCalendarGivenTaskCalendar(ICalendar taskCalendar);
 
-    /* This method is in use */
+    /**
+     * This method is in use.
+     */
     protected abstract Class<T> getDayAssignmentType();
 
     public ResourceAllocation<T> copy(Scenario scenario) {
@@ -1335,6 +1339,7 @@ public abstract class ResourceAllocation<T extends DayAssignment>
      */
     public void setAssignmentFunctionAndApplyIfNotFlat(AssignmentFunction assignmentFunction) {
         this.assignmentFunction = assignmentFunction;
+
         if ( this.assignmentFunction != null ) {
             this.assignmentFunction.applyTo(this);
         }
@@ -1695,8 +1700,10 @@ public abstract class ResourceAllocation<T extends DayAssignment>
         return calculateResourcesPerDayFromAssignments(getConsolidatedAssignments());
     }
 
-    // Just called for validation purposes.
-    // It must be public, otherwise if it's a proxy the call is not intercepted.
+    /**
+     * Just called for validation purposes.
+     * It must be public, otherwise if it's a proxy the call is not intercepted.
+     */
     @NotNull
     public ResourcesPerDay getRawResourcesPerDay() {
         return resourcesPerDay;
@@ -1811,6 +1818,7 @@ public abstract class ResourceAllocation<T extends DayAssignment>
 
     private List<DayAssignment> getAssingments(
             final Resource resource, LocalDate startInclusive, LocalDate endExclusive) {
+
         return filter(
                 getAssignments(startInclusive, endExclusive), dayAssignment -> dayAssignment.isAssignedTo(resource));
     }
