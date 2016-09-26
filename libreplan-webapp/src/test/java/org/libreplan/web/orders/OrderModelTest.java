@@ -78,6 +78,9 @@ import org.libreplan.web.calendars.BaseCalendarModel;
 import org.libreplan.web.planner.order.PlanningStateCreator;
 import org.libreplan.web.planner.order.PlanningStateCreator.PlanningState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -95,6 +98,14 @@ import org.zkoss.zk.ui.Desktop;
         WEBAPP_SPRING_CONFIG_FILE, WEBAPP_SPRING_CONFIG_TEST_FILE,
         WEBAPP_SPRING_SECURITY_CONFIG_FILE,
         WEBAPP_SPRING_SECURITY_CONFIG_TEST_FILE })
+/**
+ * This annotation drops context and force it to reload.
+ * Action described above prevents tests from falling
+ * due to "Row was updated or deleted by another transaction" exception.
+ * Also this trick clears cache and that's why there is no troubles with commands caching
+ * in the PlanningState.getSaveCommand() method.
+ */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OrderModelTest {
 
     public static OrderVersion setupVersionUsing(IScenarioManager scenarioManager, Order order) {
@@ -221,7 +232,6 @@ public class OrderModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void testCreation() throws ValidationException {
         Order order = createValidOrder();
         order.setCustomer(createValidExternalCompany());
@@ -249,7 +259,6 @@ public class OrderModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void testCreationUsingPrepareForCreate() {
         Order order = givenOrderFromPrepareForCreate();
         orderModel.save();
@@ -258,7 +267,6 @@ public class OrderModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void createOrderWithScheduledOrderLine() {
         Order order = givenOrderFromPrepareForCreate();
         OrderElement line = OrderLine.createOrderLineWithUnfixedPercentage(20);
@@ -285,22 +293,17 @@ public class OrderModelTest {
         assertTrue(order.getSchedulingState().isSomewhatScheduled());
     }
 
-    @Ignore("Test ignored until having the possibility to have a user " +
-            "session from tests")
     @Test
     @Transactional
     public void testListing() {
-        List<Order> list = orderModel.getOrders();
-        Order order = createValidOrder();
-        order.setCustomer(createValidExternalCompany());
-        orderModel.setPlanningState(createPlanningStateFor(order));
-        orderModel.save();
-        assertThat(orderModel.getOrders().size(), equalTo(list.size() + 1));
+        List<Order> orderList = orderDAO.getOrders();
+        Order newOrder = createValidOrder();
+        orderDAO.save(newOrder);
+        assertThat(orderDAO.getOrders().size(), equalTo(orderList.size() + 1));
     }
 
     @Test
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void testRemove() {
         Order order = createValidOrder();
         orderModel.setPlanningState(createPlanningStateFor(order));
@@ -312,7 +315,6 @@ public class OrderModelTest {
 
     @Test(expected = ValidationException.class)
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void shouldSendValidationExceptionIfEndDateIsBeforeThanStartingDate() throws ValidationException {
         Order order = createValidOrder();
         order.setDeadline(year(0));
@@ -322,7 +324,6 @@ public class OrderModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void testFind() throws InstanceNotFoundException {
         Order order = createValidOrder();
         orderModel.setPlanningState(createPlanningStateFor(order));
@@ -331,7 +332,7 @@ public class OrderModelTest {
     }
 
     @Test
-    @Ignore("FIXME pending review after rename to libreplan")
+    @Transactional
     public void testOrderPreserved() throws ValidationException, InstanceNotFoundException {
         final Order order = createValidOrder();
         orderModel.setPlanningState(createPlanningStateFor(order));
@@ -414,8 +415,12 @@ public class OrderModelTest {
     }
 
     @Test
-    @Ignore("FIXME pending review after rename to libreplan")
     public void testAddingOrderElement() {
+
+        defaultAdvanceTypesBootstrapListener.loadRequiredData();
+        configurationBootstrap.loadRequiredData();
+        scenariosBootstrap.loadRequiredData();
+
         final Order order = createValidOrder();
         orderModel.setPlanningState(createPlanningStateFor(order));
         OrderLineGroup container = adHocTransaction
@@ -463,7 +468,7 @@ public class OrderModelTest {
     }
 
     @Test
-    @Ignore("FIXME pending review after rename to libreplan")
+    @Transactional
     public void testManyToManyHoursGroupCriterionMapping() {
         givenCriterion();
         final Order order = createValidOrder();
@@ -550,7 +555,6 @@ public class OrderModelTest {
 
     @Test(expected = ValidationException.class)
     @Transactional
-    @Ignore("FIXME pending review after rename to libreplan")
     public void testAtLeastOneHoursGroup() {
         Order order = createValidOrder();
         orderModel.setPlanningState(createPlanningStateFor(order));

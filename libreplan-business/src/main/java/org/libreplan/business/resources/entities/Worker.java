@@ -110,7 +110,9 @@ public class Worker extends Resource {
         this.nif = nif;
     }
 
-    //This method is needed by autocomplete component on _machineConfigurationUnits.zul
+    /**
+     * This method is needed by autocomplete component on _machineConfigurationUnits.zul
+     */
     @Override
     public String toString () {
         return this.getName() + " - " + this.getNif();

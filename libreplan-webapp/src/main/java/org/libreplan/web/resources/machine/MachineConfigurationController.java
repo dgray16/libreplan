@@ -23,7 +23,8 @@ package org.libreplan.web.resources.machine;
 import static org.libreplan.web.I18nHelper._;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,17 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Constraint;
+import org.zkoss.zul.Datebox;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listitem;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.Rows;
+import org.zkoss.zul.Bandbox;
+import org.zkoss.zul.ListModelList;
+
 
 /**
  *
@@ -116,12 +127,8 @@ public class MachineConfigurationController extends GenericForwardComposer {
         Autocomplete a = (Autocomplete) c.getPreviousSibling();
         Worker worker = (Worker) a.getItemByText(a.getValue());
         if (worker == null) {
-//        Combobox workerCombobox = (Combobox) c.getPreviousSibling();
-//        Comboitem selectedItem = workerCombobox.getSelectedItem();
-//        if (selectedItem == null) {
             messages.showMessage(Level.ERROR, _("No worker selected"));
         } else {
-//            Worker worker = selectedItem.getValue();
             machineModel.addWorkerAssigmentToConfigurationUnit(unit, worker);
             Util.reloadBindings(c.getNextSibling());
         }
@@ -217,21 +224,21 @@ public class MachineConfigurationController extends GenericForwardComposer {
         }
     }
 
-    /*
-    Need to get the worker list on _machineConfigurationUnits.zul page
+    /**
+     * Need to get the worker list on _machineConfigurationUnits.zul page
      */
     public ListModelList<Worker> getAllWorkers() {
-        ListModelList <Worker> modellist = new ListModelList<>();
-        modellist.addAll(machineModel.getWorkers());
-        return modellist;
+        ListModelList <Worker> modelList = new ListModelList<>();
+        modelList.addAll(machineModel.getWorkers());
+
+        return modelList;
     }
 
-    /*
-    Need to redraw configurationUnitsGrid after "Save" and "Save & Continue" events on
-    _machineConfigurationUnits.zul page
+    /**
+     * Need to redraw configurationUnitsGrid after "Save" and "Save & Continue" events on
+     * _machineConfigurationUnits.zul page
      */
-    public void redrawConfigurationUnitsGrid ()
-    {
+    public void redrawConfigurationUnitsGrid () {
         configurationUnitsGrid.invalidate();
     }
 
