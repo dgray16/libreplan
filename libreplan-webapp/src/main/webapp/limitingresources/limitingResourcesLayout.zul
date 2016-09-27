@@ -85,7 +85,7 @@
 
         <!-- List of queues -->
         <center border="0">
-            <borderlayout sclass="resources-load limitingresources">
+            <borderlayout sclass="resources-load limiting-resources">
                 <west width="250px" vflex="1" collapsible="true" splittable="true" autoscroll="true">
 
                     <borderlayout >
