@@ -23,9 +23,9 @@
     use="org.libreplan.web.common.CustomMenuController">
 
 <zscript>
-<![CDATA[
-    contextPath = Executions.getCurrent().getContextPath();
-]]>
+    <![CDATA[
+        contextPath = Executions.getCurrent().getContextPath();
+    ]]>
 </zscript>
 
     <menubar id="menubar" top="0px" left="0px"
@@ -36,6 +36,7 @@
                 <menupopup sclass="submenu">
                     <menuitem forEach="${each.children}" label="${i18n:_(each.name)}"
                               href='${each.url}' visible="${each.hasNotChildren}" />
+
                     <menu forEach="${each.children}" label="${i18n:_(each.name)}" visible="${each.hasChildren}" >
                         <menupopup>
                             <menuitem forEach="${forEachStatus.each.children}"
@@ -100,9 +101,10 @@
     <zscript>
         <![CDATA[
             i18nHelpLink = org.libreplan.web.HelpLinkUtil.checkUrlPath(
-            "/help/" + org.libreplan.web.I18nHelper._("en") + "/" + menuContainer.getHelpLink());
+                "/help/" + org.libreplan.web.I18nHelper._("en") + "/" + menuContainer.getHelpLink());
+
             i18nAboutLink = org.libreplan.web.HelpLinkUtil.checkUrlPath(
-            "/help/" + org.libreplan.web.I18nHelper._("en") + "/20-acerca-de.html");
+                "/help/" + org.libreplan.web.I18nHelper._("en") + "/20-acerca-de.html");
         ]]>
     </zscript>
 

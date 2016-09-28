@@ -24,15 +24,15 @@
                      model="@{assignedMaterialsController.assignedMaterials}">
 
     <columns width="100%">
-        <newdatasortablecolumn label="${i18n:_('Code')}" width="11%"/>
-        <newdatasortablecolumn label="${i18n:_('Name')}" width="48%"/>
-        <newdatasortablecolumn label="${i18n:_('Reception date')}" align="center" width="7%"/>
-        <newdatasortablecolumn label="${i18n:_('Units')}" align="center" width="6%"/>
-        <newdatasortablecolumn label="${i18n:_('Unit type')}" align="center" width="4%"/>
-        <newdatasortablecolumn label="${i18n:_('Unit price')}" align="center" width="6%"/>
-        <newdatasortablecolumn label="${i18n:_('Total price')}" align="center" width="6%"/>
-        <newdatasortablecolumn label="${i18n:_('Status')}" align="center" width="7%"/>
-        <newdatasortablecolumn label="${i18n:_('Op.')}" width="5%"/>
+        <newdatasortablecolumn label="${i18n:_('Code')}" width="20%"/>
+        <newdatasortablecolumn label="${i18n:_('Name')}" width="15%"/>
+        <newdatasortablecolumn label="${i18n:_('Reception date')}" align="center" width="14%"/>
+        <newdatasortablecolumn label="${i18n:_('Units')}" align="center" width="11%"/>
+        <newdatasortablecolumn label="${i18n:_('Unit type')}" align="center" width="7%"/>
+        <newdatasortablecolumn label="${i18n:_('Unit price')}" align="center" width="11%"/>
+        <newdatasortablecolumn label="${i18n:_('Total price')}" align="center" width="11%" />
+        <newdatasortablecolumn label="${i18n:_('Status')}" align="center" width="13%" />
+        <newdatasortablecolumn label="${i18n:_('Op.')}" width="10%"/>
     </columns>
 
     <rows>
