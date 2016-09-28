@@ -29,6 +29,7 @@
     <separator spacing="15px"/>
 
     <listbox id="filesList"
+             emptyMessage="${i18n:_('No files')"
              width="99%"
              visible="@{orderFilesController.isRepositoryExists}"
              itemRenderer="@{orderFilesController.filesRenderer}">

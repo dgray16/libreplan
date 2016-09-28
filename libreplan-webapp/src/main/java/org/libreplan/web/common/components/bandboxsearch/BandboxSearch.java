@@ -54,6 +54,8 @@ import org.zkoss.zul.Listbox;
 @SuppressWarnings("serial")
 public class BandboxSearch extends HtmlMacroComponent {
 
+    private final String SELECTED_ELEMENT_ATTRIBUTE = "selectedElement";
+
     private Listbox listbox;
 
     private Listhead listhead;
@@ -68,23 +70,7 @@ public class BandboxSearch extends HtmlMacroComponent {
 
     private List<? extends BaseEntity> model;
 
-    public static BandboxSearch create(String finderClassName, List<? extends BaseEntity> model) {
-        BandboxSearch bandboxSearch = new BandboxSearch();
-        bandboxSearch.setFinder(finderClassName);
-        bandboxSearch.afterCompose();
-        bandboxSearch.setModel(model);
-
-        return bandboxSearch;
-    }
-
-    public static BandboxSearch create(String finderClassName) {
-        BandboxSearch bandboxSearch = new BandboxSearch();
-        bandboxSearch.setFinder(finderClassName);
-        bandboxSearch.afterCompose();
-
-        return bandboxSearch;
-    }
-
+    @Override
     public void afterCompose() {
         super.afterCompose();
         listbox = (Listbox) getFellowIfAny("listbox");
@@ -94,6 +80,7 @@ public class BandboxSearch extends HtmlMacroComponent {
         } else {
             listbox.setModel(finder.getModel());
         }
+
         listbox.setItemRenderer(finder.getItemRenderer());
 
         listhead = (Listhead) listbox.getFellowIfAny("listhead");
@@ -110,6 +97,7 @@ public class BandboxSearch extends HtmlMacroComponent {
         });
 
         bandbox.setCtrlKeys("#down");
+
         bandbox.addEventListener(Events.ON_CTRL_KEY, event -> {
             int selectedItemIndex = listbox.getSelectedIndex();
             if ( selectedItemIndex != -1 ) {
@@ -141,11 +129,28 @@ public class BandboxSearch extends HtmlMacroComponent {
         updateWidth();
     }
 
+    public static BandboxSearch create(String finderClassName, List<? extends BaseEntity> model) {
+        BandboxSearch bandboxSearch = new BandboxSearch();
+        bandboxSearch.setFinder(finderClassName);
+        bandboxSearch.afterCompose();
+        bandboxSearch.setModel(model);
+
+        return bandboxSearch;
+    }
+
+    public static BandboxSearch create(String finderClassName) {
+        BandboxSearch bandboxSearch = new BandboxSearch();
+        bandboxSearch.setFinder(finderClassName);
+        bandboxSearch.afterCompose();
+
+        return bandboxSearch;
+    }
+
     public void pickElementFromList() {
         final Object object = getSelectedItem().getValue();
         bandbox.setValue(finder.objectToString(object));
         setSelectedElement(object);
-        Util.getBinder(this).saveAttribute(this, "selectedElement");
+        Util.getBinder(this).saveAttribute(this, SELECTED_ELEMENT_ATTRIBUTE);
     }
 
     private void clearSelectedElement() {
@@ -153,7 +158,7 @@ public class BandboxSearch extends HtmlMacroComponent {
     }
 
     public void setSelectedElement(Object obj) {
-        bandbox.setAttribute("selectedElement", obj, true);
+        bandbox.setAttribute(SELECTED_ELEMENT_ATTRIBUTE, obj, true);
 
         if ( obj != null ) {
             bandbox.setValue(finder.objectToString(obj));
@@ -161,15 +166,16 @@ public class BandboxSearch extends HtmlMacroComponent {
             bandbox.setValue("");
         }
 
+        /* TODO resolve deprecated */
         DataBinder binder = Util.getBinder(this);
 
         if (binder != null) {
-            binder.saveAttribute(this, "selectedElement");
+            binder.saveAttribute(this, SELECTED_ELEMENT_ATTRIBUTE);
         }
     }
 
     public Object getSelectedElement() {
-        return bandbox.getAttribute("selectedElement", true);
+        return bandbox.getAttribute(SELECTED_ELEMENT_ATTRIBUTE, true);
     }
 
     /**
@@ -192,7 +198,7 @@ public class BandboxSearch extends HtmlMacroComponent {
     }
 
     /**
-     * Append headers to listbox header list
+     * Append headers to listbox header list.
      */
     @SuppressWarnings("unchecked")
     private void addHeaders() {

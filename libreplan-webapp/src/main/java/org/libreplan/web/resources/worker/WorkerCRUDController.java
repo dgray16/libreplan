@@ -89,9 +89,11 @@ import org.zkoss.zul.Caption;
 import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Window;
+import org.zkoss.zul.Bandbox;
 
 /**
- * Controller for {@link Worker} resource <br />
+ * Controller for {@link Worker} resource.
+ * <br />
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
@@ -188,7 +190,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         }
 
         /**
-         * Helper function to mark text to be translated
+         * Helper function to mark text to be translated.
          */
         private static String _(String text) {
             return text;
@@ -274,10 +276,8 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
                 baseCalendarEditionController.save();
             }
 
-            if (criterionsController != null) {
-                if (!criterionsController.validate()) {
-                    return false;
-                }
+            if ( criterionsController != null && !criterionsController.validate() ) {
+                return false;
             }
 
             if (workerModel.getCalendar() == null) {
@@ -486,6 +486,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         setupFilterLimitingResourceListbox();
         initializeTabs();
         initUserBindingComponents();
+        setWidthOfUserBandBoxSearch();
 
         final EntryPointsHandler<IWorkerCRUDControllerEntryPoints> handler =
                 URLHandlerRegistry.getRedirectorFor(IWorkerCRUDControllerEntryPoints.class);
@@ -517,6 +518,15 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             }
             userBindingRadiogroup.appendChild(radio);
         }
+    }
+
+    private void setWidthOfUserBandBoxSearch() {
+        Bandbox userBandboxComponent = (Bandbox) this.userBandbox.getChildren().get(1);
+        userBandboxComponent.setWidth("300px");
+
+        Listbox userListbox = (Listbox)
+                userBandbox.getChildren().get(1).getChildren().get(0).getChildren().get(0).getChildren().get(0);
+        userListbox.setWidth("300px");
     }
 
     private void initializeTabs() {
@@ -855,7 +865,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         }
 
         public static LimitingResourceEnum valueOf(Boolean isLimitingResource) {
-            return (Boolean.TRUE.equals(isLimitingResource)) ? LIMITING_RESOURCE : NON_LIMITING_RESOURCE;
+            return Boolean.TRUE.equals(isLimitingResource) ? LIMITING_RESOURCE : NON_LIMITING_RESOURCE;
         }
 
         public static Boolean valueOf(LimitingResourceEnum option) {
@@ -969,8 +979,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
                     removeBoundUser ? _("Worker and bound user deleted") : _("Worker deleted"));
             goToList();
         } catch (InstanceNotFoundException e) {
-            messages.showMessage(
-                    Level.INFO, _("This worker was already removed by other user"));
+            messages.showMessage(Level.INFO, _("This worker was already removed by other user"));
         }
     }
 
@@ -985,7 +994,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
             row.appendChild(new Label(worker.getFirstName()));
             row.appendChild(new Label(worker.getNif()));
             row.appendChild(new Label(worker.getCode()));
-            row.appendChild(new Label((Boolean.TRUE.equals(worker.isLimitingResource())) ? _("yes") : _("no")));
+            row.appendChild(new Label(Boolean.TRUE.equals(worker.isLimitingResource()) ? _("yes") : _("no")));
 
             Hbox hbox = new Hbox();
             hbox.appendChild(Util.createEditButton(event -> goToEditForm(worker)));
@@ -1109,11 +1118,7 @@ public class WorkerCRUDController extends GenericForwardComposer implements IWor
         Limits resourcesTypeLimit = limitsModel.getResourcesType();
         Integer resourcesCount = resourceDAO.getRowCount().intValue();
 
-        if (resourcesTypeLimit != null)
-            if (resourcesCount >= resourcesTypeLimit.getValue())
-                return true;
-
-        return false;
+        return resourcesTypeLimit != null && resourcesCount >= resourcesTypeLimit.getValue();
     }
 
     public String getShowCreateFormLabel() {
