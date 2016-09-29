@@ -27,7 +27,8 @@
     <button label="${i18n:_('Add new configuration unit')}" sclass="add-button"
             onClick="configurationController.addConfigurationUnit();" />
 
-    <grid model="@{configurationController.configurationUnits}" id="configurationUnitsGrid" sclass="remove-detailrow-background" width="1870px">
+    <grid model="@{configurationController.configurationUnits}" id="configurationUnitsGrid"
+          sclass="remove-detailrow-background" width="1870px">
         <columns>
             <column width="31px"/>
             <column label="${i18n:_('Name')}"
@@ -40,6 +41,7 @@
             <column label="${i18n:_('Operations')}"
                     width="552px"/>
         </columns>
+
         <rows>
             <!-- To iterate on workersConfiguration Units -->
             <row self="@{each='configurationUnit'}" value="@{configurationUnit}">
@@ -49,14 +51,16 @@
                         <panelchildren style="padding:10px;">
 
                             <!--
-                            Here finder was deleted because when autocomplete value was changing,
+                            Model was added because when autocomplete value was changing,
                             then all autocomplete's values where changed too.
-                            Due to the problem described above finder was replaced with model.
                             -->
 
-                            <autocomplete model="@{configurationController.allWorkers}" buttonVisible="true" width="300px" style="padding-bottom:10px;margin-top:10px;" />
+                            <autocomplete finder="WorkerFinder" model="@{configurationController.allWorkers}"
+                                          buttonVisible="true" width="300px"
+                                          style="padding-bottom:10px;margin-top:10px;" />
+
                             <button label="${i18n:_('Add new worker assignment')}" sclass="add-button"
-                            onClick="configurationController.addWorkerAssignment(self.parent.parent.parent.parent.value,self)"/>
+                                    onClick="configurationController.addWorkerAssignment(self.parent.parent.parent.parent.value,self)"/>
 
                             <grid model="@{configurationUnit.workerAssignments}" span="true">
                                 <columns >
@@ -67,14 +71,16 @@
                                 </columns>
                                 <rows>
                                     <row self="@{each='workerAssignment'}" value="@{workerAssignment}">
-                                        <label
-                                            value="@{workerAssignment.worker.name}" />
+                                        <label value="@{workerAssignment.worker.name}" />
+
                                         <datebox value="@{workerAssignment.startDate}"
                                                  constraint="no empty"
                                                  style="margin-bottom:3px;"/>
+
                                         <datebox value="@{workerAssignment.finishDate}"
-                                                constraint="@{configurationController.validateEndDate}"
-                                                style="margin-bottom:3px;"/>
+                                                 constraint="@{configurationController.validateEndDate}"
+                                                 style="margin-bottom:3px;"/>
+
                                         <button sclass="icono"
                                                 image="/common/img/ico_borrar1.png"
                                                 hoverImage="/common/img/ico_borrar.png"
@@ -88,30 +94,35 @@
                         </panelchildren>
                     </panel>
 
+
                     <!-- Assigned criteria -->
                     <textbox value="@{configurationUnit.id}" visible="false" />
-                    <panel title="${i18n:_('Criterion requirements')}" border="normal" style="margin-top:10px; margin-bottom:15px;">
-                        <panelchildren style="padding:10px;">
-                    <textbox value="@{configurationUnit.id}" visible="false" />
-                    <bandbox width="300px">
-                        <bandpopup>
-                                <listbox width="500px" height="150px" sizedByContent="true"
-                                         model="@{assignedCriterionsController.criterionWorkersWithItsTypes}"
-                                         onSelect="configurationController.selectCriterionRequirement(self.selectedItem,self.parent.parent)">
-                                <listhead>
-                                    <listheader label="Type" />
-                                    <listheader label="Criterion" />
-                                </listhead>
-                                <listitem self="@{each='criterionWithItsType'}" value="@{criterionWithItsType}">
-                                    <listcell label="@{criterionWithItsType.type.name}" />
-                                    <listcell label="@{criterionWithItsType.nameHierarchy}" />
-                                </listitem>
-                             </listbox>
-                        </bandpopup>
-                    </bandbox>
+                    <panel title="${i18n:_('Criterion requirements')}" border="normal"
+                           style="margin-top:10px; margin-bottom:15px;">
 
-                    <button label="${i18n:_('Add new criterion requirement')}" sclass="add-button"
-                            onClick="configurationController.addCriterionRequirement(self.parent.parent.parent.parent.value,self)" />
+                        <panelchildren style="padding:10px;">
+                            <textbox value="@{configurationUnit.id}" visible="false" />
+
+                            <bandbox width="300px">
+                                <bandpopup>
+                                    <listbox width="500px" height="150px" sizedByContent="true"
+                                             model="@{assignedCriterionsController.criterionWorkersWithItsTypes}"
+                                             onSelect="configurationController.selectCriterionRequirement(self.selectedItem,self.parent.parent)">
+                                        <listhead>
+                                            <listheader label="Type" />
+                                            <listheader label="Criterion" />
+                                        </listhead>
+
+                                        <listitem self="@{each='criterionWithItsType'}" value="@{criterionWithItsType}">
+                                            <listcell label="@{criterionWithItsType.type.name}" />
+                                            <listcell label="@{criterionWithItsType.nameHierarchy}" />
+                                        </listitem>
+                                    </listbox>
+                                </bandpopup>
+                            </bandbox>
+
+                            <button label="${i18n:_('Add new criterion requirement')}" sclass="add-button"
+                                    onClick="configurationController.addCriterionRequirement(self.parent.parent.parent.parent.value,self)" />
 
                             <grid sizedByContent="true"
                                   model="@{configurationUnit.requiredCriterions}" style="margin-top:10px;">
@@ -135,14 +146,14 @@
                     </panel>
 
                   </detailrow>
-                <textbox value="@{configurationUnit.name}"
-                         constraint="no empty:${i18n:_('cannot be empty')}" />
+                <textbox value="@{configurationUnit.name}" constraint="no empty:${i18n:_('cannot be empty')}" />
+
                 <textbox value="@{configurationUnit.alpha}"
                          constraint="no zero,no empty,/[0-9][0-9]*(\.[0-9][0-9]?)?/:${i18n:_('must be a real positive number')}" />
-                <button sclass="icono" image="/common/img/ico_borrar1.png"
-                        hoverImage="/common/img/ico_borrar.png" tooltiptext="${i18n:_('Delete')}"
-                        onClick="configurationController.deleteConfigurationUnit(self.parent)">
-                </button>
+
+                <button sclass="icono" image="/common/img/ico_borrar1.png" hoverImage="/common/img/ico_borrar.png"
+                        tooltiptext="${i18n:_('Delete')}"
+                        onClick="configurationController.deleteConfigurationUnit(self.parent)"/>
             </row>
         </rows>
     </grid>

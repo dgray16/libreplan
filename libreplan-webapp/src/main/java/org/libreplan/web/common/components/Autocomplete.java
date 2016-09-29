@@ -36,15 +36,10 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 
 /**
- * Autocomplete component
+ * Autocomplete component.
  *
  * Extends a {@link Combobox} component providing extra functionality for
  * filling the list of elements with entries, thanks to a class implementing {@link IFinder}.
- *
- * FIXME:
- * Typing <shift> in a ComboBox causes the text to be automatically autocompleted,
- * even when autocomplete is set to false.
- * This implies that is not possible to type major letters inside ComboBox.
  *
  * @author Diego Pino García <dpino@igalia.com>
  */
@@ -87,13 +82,13 @@ public class Autocomplete extends Combobox {
      * Searches for text among list of items, and returns item.value that matches.
      *
      * @param text
-     * @return
+     * @return {@link Object}
      */
     public Object getItemByText(String text) {
         final List<Comboitem> items = this.getItems();
         for (Comboitem item: items) {
             final String itemtext = finder._toString(item.getValue());
-            if ( itemtext.toLowerCase().equals(text.toLowerCase()) ) {
+            if ( itemtext.equalsIgnoreCase(text) ) {
                 return item.getValue();
             }
         }
