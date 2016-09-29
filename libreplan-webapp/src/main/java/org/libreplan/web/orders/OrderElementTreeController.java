@@ -87,6 +87,7 @@ import org.zkoss.zul.impl.InputElement;
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Susana Montes Pedreira <smontes@wirelessgalicia.com>
  * @author Diego Pino García <dpino@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class OrderElementTreeController extends TreeController<OrderElement> {
 
@@ -490,29 +491,40 @@ public class OrderElementTreeController extends TreeController<OrderElement> {
         }
 
         void addInitDateCell(final OrderElement currentOrderElement) {
-            DynamicDatebox dinamicDatebox = new DynamicDatebox(
+            DynamicDatebox dynamicDatebox = new DynamicDatebox(
                     () -> currentOrderElement.getInitDate(), value -> currentOrderElement.setInitDate(value));
 
             if ( readOnly ) {
-                dinamicDatebox.setDisabled(true);
+                dynamicDatebox.setDisabled(true);
             }
-            addDateCell("init-date-cell", dinamicDatebox);
-            putInitDateDynamicDatebox(currentOrderElement, dinamicDatebox);
+            addDateCell("init-date-cell", dynamicDatebox);
+            putInitDateDynamicDatebox(currentOrderElement, dynamicDatebox);
+            reduceWidthOfDateBoxes(dynamicDatebox);
         }
 
         void addEndDateCell(final OrderElement currentOrderElement) {
-            DynamicDatebox dinamicDatebox = new DynamicDatebox(
+            DynamicDatebox dynamicDatebox = new DynamicDatebox(
                     () -> currentOrderElement.getDeadline(), value -> currentOrderElement.setDeadline(value));
 
             if ( readOnly ||
                     (currentOrderElement.getTaskSource() != null &&
                     currentOrderElement.getTaskSource().getTask().isSubcontracted()) ) {
 
-                dinamicDatebox.setDisabled(true);
+                dynamicDatebox.setDisabled(true);
             }
 
-            addDateCell("end-date-cell", dinamicDatebox);
-            putEndDateDynamicDatebox(currentOrderElement, dinamicDatebox);
+            addDateCell("end-date-cell", dynamicDatebox);
+            putEndDateDynamicDatebox(currentOrderElement, dynamicDatebox);
+            reduceWidthOfDateBoxes(dynamicDatebox);
+        }
+
+        /**
+         * Decrease width of components in ZK8.
+         */
+        private void reduceWidthOfDateBoxes(DynamicDatebox dynamicDatebox) {
+            Textbox textbox = dynamicDatebox.getDateTextBox();
+            String[] strings = textbox.getWidth().split("px");
+            textbox.setWidth( Integer.toString(Integer.valueOf(strings[0]) - 10) );
         }
 
         @Override
