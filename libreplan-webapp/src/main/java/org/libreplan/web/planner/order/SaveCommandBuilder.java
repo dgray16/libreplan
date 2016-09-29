@@ -113,7 +113,8 @@ import static org.libreplan.web.I18nHelper._;
 
 /**
  * Builds a command that saves the changes in the taskElements.
- * It can be considered the final step in the conversation <br />
+ * It can be considered the final step in the conversation.
+ * <br />
  *
  * In the save operation it is also kept the consistency of the
  * LimitingResourceQueueDependencies with the Dependecies between the task of the planning gantt.
@@ -301,29 +302,31 @@ public class SaveCommandBuilder {
                     fireAfterSave();
                     if ( afterSaveActions != null )
                         afterSaveActions.doActions();
-
                 }
+
             } catch (ValidationException validationException) {
                 if ( Executions.getCurrent() == null )
                     throw validationException;
 
-
-                String message = "";
+                StringBuilder message = new StringBuilder();
 
                 LabelCreatorForInvalidValues labelCreator = new LabelCreatorForInvalidValues();
 
                 for (InvalidValue invalidValue : validationException.getInvalidValues()) {
-                    message += "* " + ((Label) labelCreator.createLabelFor(invalidValue)).getValue() + "\n";
+                    message
+                            .append("* ")
+                            .append(((Label) labelCreator.createLabelFor(invalidValue)).getValue())
+                            .append("\n");
                 }
 
                 if ( validationException.getInvalidValues().isEmpty() ) {
-                    message += validationException.getMessage();
+                    message.append(validationException.getMessage()) ;
                 }
 
                 LOG.warn("Error saving the project", validationException);
 
                 Messagebox.show(
-                        _("Error saving the project\n{0}", message),
+                        _("Error saving the project\n{0}", message.toString()),
                         _("Error"), Messagebox.OK, Messagebox.ERROR);
 
             }
@@ -338,7 +341,7 @@ public class SaveCommandBuilder {
 
         private void notifyUserThatSavingIsDone() {
             if ( Executions.getCurrent() == null ) {
-                // test environment
+                // Test environment
                 return;
             }
 
@@ -371,14 +374,13 @@ public class SaveCommandBuilder {
                 // This reattachment is needed to ensure that the root task in
                 // the state is the one associated to the transaction's session.
                 // Otherwise if some order element has been removed, when doing
-                // the deletes on cascade a new root task is fetched causing a
-                // NonUniqueObjectException later
+                // the deletes on cascade a new root task is fetched causing a NonUniqueObjectException later.
                 taskElementDAO.reattach(rootTask);
             }
             orderDAO.save(order);
 
             saveDerivedScenarios(order);
-            deleteOrderElementWithoutParent(order);
+            deleteOrderElementWithoutParent();
             deleteUnboundedDependencies();
 
             updateTasksRelatedData();
@@ -413,7 +415,7 @@ public class SaveCommandBuilder {
                     }
 
                     LOG.info("TaskElement removed because of TaskSource was null. " + taskElement);
-                } catch (InstanceNotFoundException e) {
+                } catch (InstanceNotFoundException ignored) {
                     // Do nothing
                     // Maybe it was already removed before reaching this point
                     // so if it's not in the database there isn't any problem
@@ -471,7 +473,7 @@ public class SaveCommandBuilder {
             } catch (DuplicateValueTrueReportGlobalAdvanceException e) {
                 // This shouldn't happen
                 throw new RuntimeException(e);
-            } catch (DuplicateAdvanceAssignmentForOrderElementException e) {
+            } catch (DuplicateAdvanceAssignmentForOrderElementException ignored) {
                 // Do nothing.
                 // This means that some parent has already defined an advance
                 // percentage so we don't need to create it at this point
@@ -499,8 +501,8 @@ public class SaveCommandBuilder {
             repeatedOrder = Registry.getOrderElementDAO().findRepeatedOrderCodeInDB(order);
 
             if (repeatedOrder != null)
-                throw new ValidationException(_("Repeated Project code {0} in Project {1}", repeatedOrder.getCode(),
-                        repeatedOrder.getName()));
+                throw new ValidationException(_(
+                        "Repeated Project code {0} in Project {1}", repeatedOrder.getCode(), repeatedOrder.getName()));
 
         }
 
@@ -513,7 +515,8 @@ public class SaveCommandBuilder {
                 if (repeatedHoursGroup != null)
                     throw new ValidationException(_(
                             "Repeated Hours Group code {0} in Project {1}",
-                            repeatedHoursGroup.getCode(), repeatedHoursGroup.getParentOrderLine().getName()));
+                            repeatedHoursGroup.getCode(),
+                            repeatedHoursGroup.getParentOrderLine().getName()));
 
             }
 
@@ -522,7 +525,8 @@ public class SaveCommandBuilder {
             if (repeatedHoursGroup != null)
                 throw new ValidationException(_(
                         "Repeated Hours Group code {0} in Project {1}",
-                        repeatedHoursGroup.getCode(), repeatedHoursGroup.getParentOrderLine().getName()));
+                        repeatedHoursGroup.getCode(),
+                        repeatedHoursGroup.getParentOrderLine().getName()));
 
         }
 
@@ -533,7 +537,7 @@ public class SaveCommandBuilder {
             }
         }
 
-        private void deleteOrderElementWithoutParent(Order order) throws ValidationException {
+        private void deleteOrderElementWithoutParent() throws ValidationException {
             List<OrderElement> listToBeRemoved = orderElementDAO.findWithoutParent();
             for (OrderElement orderElement : listToBeRemoved) {
 
@@ -566,8 +570,7 @@ public class SaveCommandBuilder {
         private void removeTasksToRemove() {
             for (TaskElement taskElement : state.getToRemove()) {
                 if (taskElementDAO.exists(taskElement.getId())) {
-                    // it might have already been saved in a previous save
-                    // action
+                    // It might have already been saved in a previous save action
                     try {
                         taskElementDAO.remove(taskElement.getId());
                     } catch (InstanceNotFoundException e) {
@@ -818,7 +821,9 @@ public class SaveCommandBuilder {
             }
         }
 
-        // Avoid LazyInitializationException when forcing the don't pose as transient
+        /**
+         * Avoid LazyInitializationException when forcing the don't pose as transient.
+         */
         private void loadDependenciesCollectionsForTaskRoot(TaskElement taskElement) {
             taskElement.getDependenciesWithThisOrigin().size();
             taskElement.getDependenciesWithThisDestination().size();
@@ -849,7 +854,7 @@ public class SaveCommandBuilder {
                     _("Confirm creating a new project version for this scenario and derived. Are you sure?"),
                     _("New project version"), Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
 
-            return (Messagebox.OK == status);
+            return Messagebox.OK == status;
         }
 
         private void dontPoseAsTransientObjectAnymore(OrderElement orderElement) {
@@ -940,11 +945,11 @@ public class SaveCommandBuilder {
 
         private void dontPoseAsTransient(SubcontractedTaskData subcontractedTaskData) {
             if (subcontractedTaskData != null) {
-                //dontPoseAsTransient - subcontratedTaskData
+                // dontPoseAsTransient - subcontratedTaskData
                 subcontractedTaskData.dontPoseAsTransientObjectAnymore();
 
                 for (SubcontractorDeliverDate subDeliverDate : subcontractedTaskData.getRequiredDeliveringDates()) {
-                    //dontPoseAsTransient - DeliverDate
+                    // dontPoseAsTransient - DeliverDate
                     subDeliverDate.dontPoseAsTransientObjectAnymore();
                 }
             }

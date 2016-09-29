@@ -34,13 +34,15 @@ import org.springframework.dao.OptimisticLockingFailureException;
 
 /**
  * Responsible of handling {@link OptimisticLockingFailureException} on Spring beans
- * marked with {@link OnConcurrentModification}
+ * marked with {@link OnConcurrentModification}.
  *
  * @author Óscar González Fernández <ogonzalez@igalia.com>
  */
 @Aspect
 @Order(0)
 public class ConcurrentModificationHandling {
+
+    public ConcurrentModificationHandling() {}
 
     public static <T> T addHandling(final String goToPage, Class<T> interfaceKlass, T toBeWraped) {
         Class<?>[] classesToProxy = { interfaceKlass };
@@ -69,27 +71,23 @@ public class ConcurrentModificationHandling {
         };
     }
 
-    public ConcurrentModificationHandling() {
-    }
-
     @SuppressWarnings("unused")
     @Pointcut(value = "@within(onConcurrentModification))")
     private void methodWithinConcurrentModificationMarkedType(OnConcurrentModification onConcurrentModification) {
     }
 
     /**
-     * It intercepts the calls to public methods of Spring beans marked with
-     * {@link OnConcurrentModification}. When an
-     * {@link OptimisticLockingFailureException} happens the page for concurrent
-     * modification is shown and the user is returned to the page specified by
-     * {@link OnConcurrentModification}
+     * It intercepts the calls to public methods of Spring beans marked with {@link OnConcurrentModification}.
+     *
+     * When an {@link OptimisticLockingFailureException} happens the page for concurrent
+     * modification is shown and the user is returned to the page specified by {@link OnConcurrentModification}.
+     *
      * @param jointPoint
      * @param onConcurrentModification
      *            the annotation applied to object's type
      * @return the object that would be originally returned
      */
-    @Around("methodWithinConcurrentModificationMarkedType(onConcurrentModification)"
-            + " && execution(public * * (..))")
+    @Around("methodWithinConcurrentModificationMarkedType(onConcurrentModification) && execution(public * * (..))")
     public Object whenConcurrentModification(ProceedingJoinPoint jointPoint,
                                              OnConcurrentModification onConcurrentModification) throws Throwable {
 
