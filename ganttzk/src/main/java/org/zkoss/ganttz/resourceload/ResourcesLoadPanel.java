@@ -119,6 +119,8 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
 
     private Component secondOptionalFilter;
 
+    private Combobox filterByNameCombo;
+
 
     public ResourcesLoadPanel(List<LoadTimeLine> groups,
                               TimeTracker timeTracker,
@@ -374,6 +376,9 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         Listbox listZoomLevels = (Listbox) getFellow("listZoomLevels");
         listZoomLevels.setSelectedIndex(timeTracker.getDetailLevel().ordinal());
 
+        filterByNameCombo = (Combobox) getFellow(FILTER_BY_NAME_COMBO_COMPONENT);
+        filterByNameCombo.setWidth("85px");
+
         if ( paginationType == PaginationType.INTERNAL_PAGINATION && refreshNameFilter ) {
             setupNameFilter();
         }
@@ -437,7 +442,6 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
     }
 
     private void setupNameFilter() {
-        Combobox filterByNameCombo = (Combobox) getFellow(FILTER_BY_NAME_COMBO_COMPONENT);
         filterByNameCombo.getChildren().clear();
         int size = groups.size();
 
@@ -489,6 +493,10 @@ public class ResourcesLoadPanel extends HtmlMacroComponent {
         return groups.subList(filterByNamePosition, endPosition);
     }
 
+    /**
+     * Should be public!
+     * Used in resourcesLoadLayout.zul
+     */
     public void onSelectFilterByName(Combobox comboByName) {
         if ( comboByName.getSelectedItem() == null ) {
             resetComboByName(comboByName);

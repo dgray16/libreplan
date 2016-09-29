@@ -49,8 +49,7 @@
 
                <label id="filterByNameLabel">${ganttzk_i18n:_('Page')}:</label>
 
-               <combobox id="filterByNameCombo" width="62px"
-                         onChange="resourcesLoadPanel.onSelectFilterByName(self)" />
+               <combobox id="filterByNameCombo" width="62px" onChange="resourcesLoadPanel.onSelectFilterByName(self)" />
 
                <separator/>
 
