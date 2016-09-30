@@ -1215,6 +1215,18 @@ public class BaseCalendar extends IntegrationEntity implements ICalendar, IHuman
         return lastSequenceCode;
     }
 
+    @AssertTrue(message = "calendars with zero hours are not allowed")
+    public boolean isZeroHoursConstraint() {
+        if ((calendarDataVersions != null) && (!calendarDataVersions.isEmpty())) {
+            for (CalendarData each : calendarDataVersions) {
+                if (!each.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public String getHumanId() {
         return name;

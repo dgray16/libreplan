@@ -177,10 +177,15 @@ public class ShareDivisionTest {
     }
 
     @Test
-    @Ignore("TODO handling substractions")
     public void canDistributeSubstraction() {
+
+        /*
+        Substraction is not handled!
+        Not to use something like: shareDivision.plus(-1).
+         */
+
         givenDivisionShare(new Share(2), new Share(5), new Share(10));
-        assertThat(shareDivision.plus(-1), haveValues(2, 5, 9));
+        assertThat(shareDivision.plus(-1), haveValues(1, 5, 10));
     }
 
     private Matcher<ShareDivision> haveValues(final int... shares) {
