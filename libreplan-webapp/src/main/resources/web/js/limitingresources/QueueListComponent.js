@@ -35,7 +35,7 @@ limitingresources.QueueListComponent = zk.$extends(
 
         adjustTimeTrackerSize: function() {
 
-            /* After ZK migrated from 5 to 8, this.$n() started to return undefined.
+            /* After ZK migrated from ZK5 to ZK8, this.$n() started to return undefined.
              * Possible reason: not enough time to load library.
              */
             if ( typeof this.$n() !== "undefined" ) {

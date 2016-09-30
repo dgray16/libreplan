@@ -45,6 +45,28 @@ import org.libreplan.business.util.deepcopy.Strategy;
  */
 public class TaskSource extends BaseEntity {
 
+    @NotNull
+    private TaskElement task;
+
+    private SchedulingDataForVersion schedulingData;
+
+    @OnCopy(Strategy.SHARE_COLLECTION_ELEMENTS)
+    private Set<HoursGroup> hoursGroups = new HashSet<>();
+
+    public TaskSource() {}
+
+    public TaskSource(SchedulingDataForVersion schedulingState) {
+        Validate.notNull(schedulingState);
+        Validate.notNull(schedulingState.getOrderElement());
+        this.schedulingData = schedulingState;
+        OrderElement orderElement = schedulingState.getOrderElement();
+        Type orderElementType = orderElement.getSchedulingState().getType();
+
+        if (orderElementType == SchedulingState.Type.SCHEDULING_POINT) {
+            this.setHoursGroups(new HashSet<>(orderElement.getHoursGroups()));
+        }
+    }
+
     public static TaskSource create(SchedulingDataForVersion schedulingState, List<HoursGroup> hoursGroups) {
         TaskSource result = create(new TaskSource(schedulingState));
         result.setHoursGroups(new HashSet<>(hoursGroups));
@@ -83,6 +105,7 @@ public class TaskSource extends BaseEntity {
 
     public static TaskSourceSynchronization mustAddGroup(TaskSource taskSource,
                                                          List<TaskSourceSynchronization> childrenOfGroup) {
+
         return new TaskGroupMustBeAdded(taskSource, childrenOfGroup);
     }
 
@@ -97,8 +120,7 @@ public class TaskSource extends BaseEntity {
         void remove(TaskSource taskSource);
     }
 
-    public static IOptionalPersistence persistTaskSources(
-            ITaskSourceDAO taskSourceDAO) {
+    public static IOptionalPersistence persistTaskSources(ITaskSourceDAO taskSourceDAO) {
         return new RealPersistence(taskSourceDAO, true);
     }
 
@@ -137,29 +159,20 @@ public class TaskSource extends BaseEntity {
             } catch (InstanceNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            // Flushing is required in order to avoid violation of
-            // unique
-            // constraint. If flush is not done and there is a task
-            // source
-            // that must be removed and another is created for the same
-            // order element the unique constraint
-            // "tasksource_orderelement_key" would be violated by
-            // hibernate
+            // Flushing is required in order to avoid violation of unique constraint.
+            // If flush is not done and there is a task source that must be removed and another is created for the same
+            // order element the unique constraint "tasksource_orderelement_key" would be violated by Hibernate.
             taskSourceDAO.flush();
         }
 
     }
 
     private static class NoPersistence implements IOptionalPersistence {
+        @Override
+        public void save(TaskSource taskSource) {}
 
         @Override
-        public void save(TaskSource taskSource) {
-        }
-
-        @Override
-        public void remove(TaskSource taskSource) {
-        }
-
+        public void remove(TaskSource taskSource) {}
     }
 
     public static abstract class TaskSourceSynchronization {
@@ -180,6 +193,7 @@ public class TaskSource extends BaseEntity {
             Task result = Task.createTask(taskSource);
             taskSource.setTask(result);
             persistence.save(taskSource);
+
             return result;
         }
     }
@@ -197,6 +211,7 @@ public class TaskSource extends BaseEntity {
             updateTaskWithOrderElement(taskSource.getTask(), taskSource.getOrderElement());
             updatePositionRestrictions();
             persistence.save(taskSource);
+
             return taskSource.getTask();
         }
 
@@ -204,25 +219,22 @@ public class TaskSource extends BaseEntity {
             if (hasSomeAllocationDone(taskSource.getTask())) {
                 return;
             }
-            taskSource.getOrderElement().updatePositionConstraintOf(
-                    (Task) taskSource.getTask());
+            taskSource.getOrderElement().updatePositionConstraintOf((Task) taskSource.getTask());
         }
 
-
-    }
-
-    private static boolean hasSomeAllocationDone(TaskElement taskElement) {
-        return !taskElement.getAllResourceAllocations().isEmpty();
+        private static boolean hasSomeAllocationDone(TaskElement taskElement) {
+            return !taskElement.getAllResourceAllocations().isEmpty();
+        }
     }
 
     /**
-     * This method updates the task with a name and a start date. The start date
-     * and end date should never be null, unless it's legacy data
+     * This method updates the task with a name and a start date.
+     * The start date and end date should never be null, unless it's legacy data.
+     *
      * @param task
      * @param orderElement
      */
-    private static void updateTaskWithOrderElement(TaskElement task,
-            OrderElement orderElement) {
+    private static void updateTaskWithOrderElement(TaskElement task, OrderElement orderElement) {
         task.setName(orderElement.getName());
         Date orderInitDate = orderElement.getOrder().getInitDate();
         if (task.getIntraDayStartDate() == null && orderInitDate != null) {
@@ -279,14 +291,14 @@ public class TaskSource extends BaseEntity {
         }
 
         @Override
-        protected TaskElement apply(List<TaskElement> children,
-                IOptionalPersistence persistence) {
+        protected TaskElement apply(List<TaskElement> children, IOptionalPersistence persistence) {
             TaskGroup result = TaskGroup.create(taskSource);
             for (TaskElement taskElement : children) {
                 result.addTaskElement(taskElement);
             }
             taskSource.setTask(result);
             persistence.save(taskSource);
+
             return result;
         }
 
@@ -333,29 +345,6 @@ public class TaskSource extends BaseEntity {
 
     public static TaskSource createForGroup(SchedulingDataForVersion schedulingState) {
         return create(new TaskSource(schedulingState));
-    }
-
-    @NotNull
-    private TaskElement task;
-
-    private SchedulingDataForVersion schedulingData;
-
-    @OnCopy(Strategy.SHARE_COLLECTION_ELEMENTS)
-    private Set<HoursGroup> hoursGroups = new HashSet<>();
-
-    public TaskSource() {
-    }
-
-    public TaskSource(SchedulingDataForVersion schedulingState) {
-        Validate.notNull(schedulingState);
-        Validate.notNull(schedulingState.getOrderElement());
-        this.schedulingData = schedulingState;
-        OrderElement orderElement = schedulingState.getOrderElement();
-        Type orderElementType = orderElement.getSchedulingState().getType();
-
-        if (orderElementType == SchedulingState.Type.SCHEDULING_POINT) {
-            this.setHoursGroups(new HashSet<>(orderElement.getHoursGroups()));
-        }
     }
 
     public TaskSourceSynchronization withCurrentHoursGroup(List<HoursGroup> hoursGroups) {

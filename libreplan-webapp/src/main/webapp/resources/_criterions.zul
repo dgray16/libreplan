@@ -35,7 +35,8 @@
             <div align="right" style="padding-top: 4px;">
                 <label sclass="subtitulo" value="${i18n:_('Show only current satisfied criteria')}" />
 
-                <checkbox id="criterionFilterCheckbox" onCheck="assignedCriterionsController.reload();" sclass="checkbox-margin" />
+                <checkbox id="criterionFilterCheckbox" onCheck="assignedCriterionsController.reload();"
+                          sclass="checkbox-margin" />
             </div>
         </hbox>
 
@@ -43,10 +44,17 @@
                              mold="paging" pageSize="10" fixedLayout="true"
                              model="@{assignedCriterionsController.criterionSatisfactionDTOs}">
             <columns>
-                <newdatasortablecolumn label="${i18n:_('Criterion name')}" sort="auto(lower(criterionAndType))" sortDirection="ascending"/>
-                <newdatasortablecolumn label="${i18n:_('Starting date')}" sort="auto(startDate)" width="200px" align="center"/>
-                <newdatasortablecolumn label="${i18n:_('Ending date')}" sort="auto(endDate)" width="200px" align="center"/>
+                <newdatasortablecolumn label="${i18n:_('Criterion name')}" sort="auto(lower(criterionAndType))"
+                                       sortDirection="ascending"/>
+
+                <newdatasortablecolumn label="${i18n:_('Starting date')}" sort="auto(startDate)" width="200px"
+                                       align="center"/>
+
+                <newdatasortablecolumn label="${i18n:_('Ending date')}" sort="auto(endDate)" width="200px"
+                                       align="center"/>
+
                 <newdatasortablecolumn label="${i18n:_('Current')}" sort="auto(current)" width="70px" align="center"/>
+
                 <newdatasortablecolumn label="${i18n:_('Operations')}" width="70px" align="center"/>
             </columns>
 
@@ -57,8 +65,8 @@
                         <bandbox onChanging = "assignedCriterionsController.onChangingText(event);"
                                  constraint="no empty"
                                  width="400px"
-                                 visible ="@{criterionSatisfactionDTO.newObject}"
-                                 value = "@{criterionSatisfactionDTO.criterionAndType}"
+                                 visible="@{criterionSatisfactionDTO.newObject}"
+                                 value="@{criterionSatisfactionDTO.criterionAndType}"
                                  ctrlKeys="#down"
                                  onCtrlKey="assignedCriterionsController.onCtrlKey(event);">
                             <bandpopup>
@@ -67,20 +75,22 @@
                                          height="150px"
                                          fixedLayout="true"
                                          model="@{assignedCriterionsController.criterionWithItsTypes}"
-                                         onSelect="assignedCriterionsController.selectCriterionAndType(self.selectedItem,
-                                         self.parent.parent,self.parent.parent.parent.parent.value);"
+                                         onSelect="assignedCriterionsController.selectCriterionAndType(self.selectedItem, self.parent.parent,self.parent.parent.parent.parent.value);"
                                          onOk="assignedCriterionsController.onOK(event);">
                                     <listhead>
                                         <listheader label="Type" />
                                         <listheader label="Criterion" />
                                     </listhead>
+
                                     <listitem self="@{each='criterionWithItsType'}"
                                               value="@{criterionWithItsType}"
                                               onClick="assignedCriterionsController.onClick(event);">
+
                                         <listcell label="@{criterionWithItsType.type.name}" />
                                         <listcell label="@{criterionWithItsType.nameHierarchy}" />
                                     </listitem>
                                 </listbox>
+
                             </bandpopup>
                         </bandbox>
                         <label visible="@{criterionSatisfactionDTO.oldObject}"

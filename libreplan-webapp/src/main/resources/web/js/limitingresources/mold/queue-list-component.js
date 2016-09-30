@@ -1,6 +1,7 @@
 function(out) {
 
-    /* After ZK migrated from 5 to 8, this.domAttrs_() started to return NaN.
+    /* 
+     * After ZK migrated from ZK5 to ZK8, this.domAttrs_() started to return NaN.
      * Possible reason: not enough time to load library. 
      */
     if ( !isNaN(this.domAttrs_()) ) {
@@ -18,8 +19,9 @@ function(out) {
             '>');
     }
     
-        for (var w = this.firstChild; w; w = w.nextSibling)
+        for (var w = this.firstChild; w; w = w.nextSibling) {
             w.redraw(out);
+        }
     
     out.push('</div>');
 }

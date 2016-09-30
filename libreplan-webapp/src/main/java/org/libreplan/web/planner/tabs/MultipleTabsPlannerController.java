@@ -599,6 +599,7 @@ public class MultipleTabsPlannerController implements Composer, IGlobalViewEntry
     }
 
     private IBeforeShowAction changeModeTo(final Order order) {
+        /* Makes possible to show Risk/Issue Logs only for specific Order */
         LogsController.goToOrderMode(order);
 
         return () -> mode.goToOrderMode(order);

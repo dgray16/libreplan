@@ -32,11 +32,9 @@ import static org.libreplan.web.I18nHelper._;
 
 /**
  * Sends E-mail to users with data that storing in notification_queue table
- * and that are treat to incoming EmailNotification
+ * and that are treat to incoming {@link EmailNotification}.
  *
- * Created by
- * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
- * on 20.01.2016.
+ * @author Created by Vova Perebykivskyi <vova@libreplan-enterprise.com> on 20.01.2016.
  */
 
 @Component
@@ -97,12 +95,12 @@ public class ComposeMessage {
             final String password = psswrd;
 
             // It is very important to use Session.getInstance instead of Session.getDefaultInstance
-            Session mailSession = Session.getInstance(properties,
-                    new javax.mail.Authenticator() {
-                        protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(username, password);
-                        }
-                    });
+            Session mailSession = Session.getInstance(properties, new javax.mail.Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password);
+                }
+            });
 
             // Send message
             try {
@@ -124,7 +122,9 @@ public class ComposeMessage {
                 throw new RuntimeException(e);
             } catch (NullPointerException e) {
                 if (receiver == null) {
-                    Messagebox.show(_(currentWorker.getUser().getLoginName() + " - this user have not filled E-mail"), _("Error"),
+                    Messagebox.show(
+                            _(currentWorker.getUser().getLoginName() + " - this user have not filled E-mail"),
+                            _("Error"),
                             Messagebox.OK, Messagebox.ERROR);
                 }
             }
@@ -134,9 +134,12 @@ public class ComposeMessage {
 
     private Worker getCurrentWorker(Long resourceID){
         List<Worker> workerList = workerModel.getWorkers();
-        for (Worker aWorkerList : workerList)
-            if (aWorkerList.getId().equals(resourceID))
+
+        for (Worker aWorkerList : workerList) {
+            if (aWorkerList.getId().equals(resourceID)) {
                 return aWorkerList;
+            }
+        }
 
         return null;
     }
@@ -144,66 +147,74 @@ public class ComposeMessage {
     private EmailTemplate findCurrentEmailTemplate(EmailTemplateEnum templateEnum, Locale locale){
         List<EmailTemplate> emailTemplates;
         emailTemplates = emailTemplateModel.getAll();
-        for (EmailTemplate item : emailTemplates)
-            if ( item.getType().equals(templateEnum) && item.getLanguage().getLocale().equals(locale) )
+
+        for (EmailTemplate item : emailTemplates) {
+            if ( item.getType().equals(templateEnum) && item.getLanguage().getLocale().equals(locale) ) {
                 return item;
+            }
+
+        }
 
         return null;
     }
 
-    private String replaceKeywords(String text, Worker currentWorker, EmailNotification notification){
-        if ( notification.getType().equals(EmailTemplateEnum.TEMPLATE_ENTER_DATA_IN_TIMESHEET) ){
+    private String replaceKeywords(String text, Worker currentWorker, EmailNotification notification) {
+        String newText = text;
+
+        if ( notification.getType().equals(EmailTemplateEnum.TEMPLATE_ENTER_DATA_IN_TIMESHEET) ) {
             // It is because there is no other data for
             // EmailNotification of TEMPLATE_ENTER_DATA_IN_TIMESHEET notification type
-            text = text.replaceAll("\\{resource\\}", notification.getResource().getName());
+            newText = newText.replaceAll("\\{resource\\}", notification.getResource().getName());
         }
         else {
-            text = text.replaceAll("\\{username\\}", currentWorker.getUser().getLoginName());
-            text = text.replaceAll("\\{firstname\\}", currentWorker.getUser().getFirstName());
-            text = text.replaceAll("\\{lastname\\}", currentWorker.getUser().getLastName());
-            text = text.replaceAll("\\{project\\}", notification.getProject().getName());
-            text = text.replaceAll("\\{resource\\}", notification.getResource().getName());
-            text = text.replaceAll("\\{task\\}", notification.getTask().getName());
-            text = text.replaceAll("\\{url\\}", MultipleTabsPlannerController.WELCOME_URL);
+            newText = newText.replaceAll("\\{username\\}", currentWorker.getUser().getLoginName());
+            newText = newText.replaceAll("\\{firstname\\}", currentWorker.getUser().getFirstName());
+            newText = newText.replaceAll("\\{lastname\\}", currentWorker.getUser().getLastName());
+            newText = newText.replaceAll("\\{project\\}", notification.getProject().getName());
+            newText = newText.replaceAll("\\{resource\\}", notification.getResource().getName());
+            newText = newText.replaceAll("\\{task\\}", notification.getTask().getName());
+            newText = newText.replaceAll("\\{url\\}", MultipleTabsPlannerController.WELCOME_URL);
         }
-        return text;
+        return newText;
     }
 
-    private void setupConnectionProperties(){
+    private void setupConnectionProperties() {
         List<ConnectorProperty> emailConnectorProperties = emailConnectionValidator.getEmailConnectorProperties();
 
-        for (int i = 0; i < emailConnectorProperties.size(); i++){
-            switch (i){
-                case 1: {
+        for (int i = 0; i < emailConnectorProperties.size(); i++) {
+            switch (i) {
+                case 1:
                     protocol = emailConnectorProperties.get(1).getValue();
                     break;
-                }
-                case 2: {
+
+                case 2:
                     host = emailConnectorProperties.get(2).getValue();
                     break;
-                }
-                case 3: {
+
+                case 3:
                     port = emailConnectorProperties.get(3).getValue();
                     break;
-                }
-                case 4: {
+
+                case 4:
                     sender = emailConnectorProperties.get(4).getValue();
                     break;
-                }
-                case 5: {
+
+                case 5:
                     usrnme = emailConnectorProperties.get(5).getValue();
                     break;
-                }
-                case 6: {
+
+                case 6:
                     psswrd = emailConnectorProperties.get(6).getValue();
                     break;
-                }
+
+                default : break;
+
             }
         }
 
         properties = new Properties();
 
-        if ( protocol.equals("STARTTLS") ) {
+        if ( "STARTTLS".equals(protocol) ) {
             properties.put("mail.smtp.starttls.enable", "true");
             properties.put("mail.smtp.host", host);
             properties.put("mail.smtp.socketFactory.port", port);
@@ -211,28 +222,29 @@ public class ComposeMessage {
             properties.put("mail.smtp.auth", "true");
             properties.put("mail.smtp.port", port);
         }
-        else if ( protocol.equals("SMTP") ) {
+        else if ( "SMTP".equals(protocol) ) {
             properties.put("mail.smtp.host", host);
             properties.put("mail.smtp.port", port);
         }
     }
 
-    private UserRole getCurrentUserRole(EmailTemplateEnum type){
-        switch (type){
-            case TEMPLATE_TASK_ASSIGNED_TO_RESOURCE: return UserRole.ROLE_EMAIL_TASK_ASSIGNED_TO_RESOURCE;
+    private UserRole getCurrentUserRole(EmailTemplateEnum type) {
+        switch (type) {
 
-            case TEMPLATE_RESOURCE_REMOVED_FROM_TASK: return UserRole.ROLE_EMAIL_RESOURCE_REMOVED_FROM_TASK;
+            case TEMPLATE_TASK_ASSIGNED_TO_RESOURCE : return UserRole.ROLE_EMAIL_TASK_ASSIGNED_TO_RESOURCE;
 
-            case TEMPLATE_MILESTONE_REACHED: return UserRole.ROLE_EMAIL_MILESTONE_REACHED;
+            case TEMPLATE_RESOURCE_REMOVED_FROM_TASK : return UserRole.ROLE_EMAIL_RESOURCE_REMOVED_FROM_TASK;
 
-            case TEMPLATE_TODAY_TASK_SHOULD_START: return UserRole.ROLE_EMAIL_TASK_SHOULD_START;
+            case TEMPLATE_MILESTONE_REACHED : return UserRole.ROLE_EMAIL_MILESTONE_REACHED;
 
-            case TEMPLATE_TODAY_TASK_SHOULD_FINISH: return UserRole.ROLE_EMAIL_TASK_SHOULD_FINISH;
+            case TEMPLATE_TODAY_TASK_SHOULD_START : return UserRole.ROLE_EMAIL_TASK_SHOULD_START;
 
-            case TEMPLATE_ENTER_DATA_IN_TIMESHEET: return UserRole.ROLE_EMAIL_TIMESHEET_DATA_MISSING;
+            case TEMPLATE_TODAY_TASK_SHOULD_FINISH : return UserRole.ROLE_EMAIL_TASK_SHOULD_FINISH;
+
+            case TEMPLATE_ENTER_DATA_IN_TIMESHEET : return UserRole.ROLE_EMAIL_TIMESHEET_DATA_MISSING;
+
+            default : return null;
         }
-
-        return null;
     }
 
 }

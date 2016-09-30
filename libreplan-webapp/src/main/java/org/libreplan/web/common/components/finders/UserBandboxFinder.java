@@ -22,16 +22,12 @@ package org.libreplan.web.common.components.finders;
 import org.apache.commons.lang3.StringUtils;
 import org.libreplan.business.users.daos.IUserDAO;
 import org.libreplan.business.users.entities.User;
-import org.libreplan.web.resources.worker.WorkerCRUDController;
-import org.libreplan.web.workreports.WorkReportCRUDController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.zkoss.lang.Strings;
-import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Bandbox;
 import org.zkoss.zul.Listcell;
-import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
 
 import java.util.List;
@@ -49,8 +45,17 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
 
     private final String headers[] = { _("Username"), _("Full name") };
 
+    private final ListitemRenderer usersRenderer = (item, data, i) -> {
+        User user = (User) data;
+
+        item.setValue(data);
+
+        item.appendChild(new Listcell(user.getLoginName()));
+        item.appendChild(new Listcell(user.getFullName()));
+    };
+
     /**
-     * Forces to mark the string as needing translation
+     * Forces to mark the string as needing translation.
      */
     private static String _(String string) {
         return string;
@@ -97,13 +102,4 @@ public class UserBandboxFinder extends BandboxFinder implements IBandboxFinder {
     public ListitemRenderer getItemRenderer() {
         return usersRenderer;
     }
-
-    private final ListitemRenderer usersRenderer = (item, data, i) -> {
-        User user = (User) data;
-
-        item.setValue(data);
-
-        item.appendChild(new Listcell(user.getLoginName()));
-        item.appendChild(new Listcell(user.getFullName()));
-    };
 }

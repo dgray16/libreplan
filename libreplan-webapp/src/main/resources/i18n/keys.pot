@@ -9422,3 +9422,7 @@ msgstr ""
 #: libreplan-webapp/src/main/webapp/orders/_list.zul:24
 msgid "No projects"
 msgstr ""
+
+#: libreplan-webapp/src/main/webapp/orders/_listOrderElementFiles.zul:32
+msgid "No files"
+msgstr ""

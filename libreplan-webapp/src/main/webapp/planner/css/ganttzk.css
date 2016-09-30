@@ -616,7 +616,7 @@ tr.z-vbox-separator {
     height: 10px;
     border: 1px;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     margin-top: 10px;
     border-bottom: 1px dotted #CCCCCC;
 }
@@ -782,6 +782,13 @@ tr.z-vbox-separator {
 }
 
 /* ---------- Start Limiting resources --------------- */
+.limitingresources-list {
+    margin-top: -13px;
+}
+
+.limitingresources-list .row_resourceload {
+    height: 24px;
+}
 
 .limiting-resources .z-tree-line {
     display: none;

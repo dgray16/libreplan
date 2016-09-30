@@ -132,8 +132,8 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
             }
 
             private void reloadInTransaction() {
-                // FIXME: Temporary fix, it seems the page was already rendered,
-                // so clear it all as it's going to be rendered again
+                // FIXME: Temporary fix.
+                // It seems the page was already rendered, so clear it all as it's going to be rendered again
                 self.getChildren().clear();
 
                 limitingResourceQueueModel.initGlobalView();
@@ -253,7 +253,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
     }
 
     /**
-     * DTO for list of unassigned {@link LimitingResourceQueueElement}
+     * DTO for list of unassigned {@link LimitingResourceQueueElement}.
      *
      * Note: this class has a natural ordering that is inconsistent with equals.
      *
@@ -494,7 +494,7 @@ public class LimitingResourcesController extends GenericForwardComposer<org.zkos
                 return;
             }
 
-            limitingResourcesPanel.refreshQueues((LimitingResourceQueue.queuesOf(inserted)));
+            limitingResourcesPanel.refreshQueues(LimitingResourceQueue.queuesOf(inserted));
             reloadUnassignedLimitingResourceQueueElements();
         }
 
