@@ -213,6 +213,7 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
                 ZoomLevel.DETAIL_THREE,
                 ZoomLevel.DETAIL_FOUR,
                 ZoomLevel.DETAIL_FIVE,
+                ZoomLevel.DETAIL_SIX
         };
 
         return new SimpleListModel<>(selectableZoomlevels);
@@ -508,6 +509,9 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
 
                 case DETAIL_FIVE:
                     return Period.weeks(12);
+
+                case DETAIL_SIX:
+                    return Period.weeks(3);
 
                 default: // Default month
                     return Period.years(2);

@@ -130,6 +130,11 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
         };
     }
 
+    @Override
+    protected Iterator<DateTime> getPeriodsSecondLevelGenerator(DateTime start) {
+        return null;
+    }
+
     private int getDaysUntilFirstDayNextWeek(LocalDate date) {
         return 8 - date.getDayOfWeek();
     }

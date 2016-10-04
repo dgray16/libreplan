@@ -38,12 +38,14 @@ import org.joda.time.Months;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
+import org.joda.time.Hours;
 import org.joda.time.base.BaseSingleFieldPeriod;
 import org.zkoss.ganttz.util.Interval;
 
 /**
- * @author Francisco Javier Moran Rúa <jmoran@igalia.com>
- * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
+ * @author Francisco Javier Moran Rua <jmoran@igalia.com>
+ * @author Lorenzo Tilve Alvaro <ltilve@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public abstract class TimeTrackerState {
 
@@ -174,6 +176,23 @@ public abstract class TimeTrackerState {
         return result;
     }
 
+    private Collection<DetailItem> createDetailsForHours(Interval interval,
+                                                         Iterator<DateTime> datesGenerator,
+                                                         IDetailItemCreator detailItemCreator) {
+
+        List<DetailItem> result = new ArrayList<>();
+        DateTime current = interval.getStart().toDateTimeAtStartOfDay();
+        DateTime end = interval.getFinish().toDateTimeAtStartOfDay();
+
+        while (current.isBefore(end)) {
+            result.add(detailItemCreator.create(current));
+            assert datesGenerator.hasNext();
+            current = datesGenerator.next();
+        }
+
+        return result;
+    }
+
     private final Collection<DetailItem> createDetailsForFirstLevel(Interval interval) {
         Interval realInterval = getRealIntervalFor(interval);
 
@@ -188,13 +207,22 @@ public abstract class TimeTrackerState {
     private final Collection<DetailItem> createDetailsForSecondLevel(Interval interval) {
         Interval realInterval = getRealIntervalFor(interval);
 
-        return createDetails(
-                realInterval,
-                getPeriodsSecondLevelGenerator(realInterval.getStart()),
-                getDetailItemCreatorSecondLevel());
+        if ( getZoomLevel().equals(ZoomLevel.DETAIL_SIX) ) {
+            return createDetailsForHours(
+                    realInterval,
+                    getPeriodsSecondLevelGenerator(realInterval.getStart().toDateTimeAtStartOfDay()),
+                    getDetailItemCreatorSecondLevel());
+        } else {
+            return createDetails(
+                    realInterval,
+                    getPeriodsSecondLevelGenerator(realInterval.getStart()),
+                    getDetailItemCreatorSecondLevel());
+        }
     }
 
     protected abstract Iterator<LocalDate> getPeriodsSecondLevelGenerator(LocalDate start);
+
+    protected abstract Iterator<DateTime> getPeriodsSecondLevelGenerator(DateTime start);
 
     protected abstract IDetailItemCreator getDetailItemCreatorFirstLevel();
 
@@ -249,6 +277,18 @@ public abstract class TimeTrackerState {
             public Days differenceBetween(LocalDate start, LocalDate end) {
                 return Days.daysBetween(start, end);
             }
+        },
+
+        HOURS {
+            @Override
+            public ReadablePeriod toPeriod(int amount) {
+                return Hours.hours(amount);
+            }
+
+            @Override
+            public Hours differenceBetween(LocalDate start, LocalDate end) {
+                return Hours.hoursBetween(start, end);
+            }
         };
 
         public abstract ReadablePeriod toPeriod(int amount);
@@ -277,7 +317,8 @@ public abstract class TimeTrackerState {
         }
 
         BaseSingleFieldPeriod asPeriod(Interval interval) {
-            return type.differenceBetween(interval.getStart(), interval.getFinish());
+            return type.differenceBetween(interval.getStart(),
+                    interval.getFinish());
         }
     }
 
