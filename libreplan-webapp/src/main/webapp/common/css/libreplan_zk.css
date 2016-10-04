@@ -156,7 +156,7 @@ body .advanced-allocation-layout .icono .z-button-cm {
 .global-action.z-button:focus {
     margin-right: 10px;
     border-bottom: 0;
-    border-right: 0;
+    /* Do not optimize it */
     background-color: #C3EAAF;
     background-repeat: no-repeat;
 }
@@ -1152,12 +1152,6 @@ span.z-dottree-line {
     border-color:transparent;
 }
 
-.toolbar-box .z-button:hover  {
-    background-image: none;
-    background-color: #E6F2F9;
-    border-color:#006699 #DFF5FE #DFF5FE #006699;
-}
-
 .toolbar-box .z-button.z-button-disd .z-button {
     background-color: transparent;
     border-color: transparent;
@@ -1351,10 +1345,6 @@ tr.z-treerow-over input {
 
 .advanced-allocation-layout #timeTracker .z-vbox {
     position:relative;
-}
-
-.z-button-disd {
-    opacity:0.3;
 }
 
 .advanced-allocation-layout #timeTracker {
@@ -2216,6 +2206,7 @@ textarea {
 
 .z-button[disabled] {
     background: none;
+    opacity: 0.3;
 }
 
 .queue-element-information {
@@ -2243,7 +2234,6 @@ textarea {
 .timetrackergap .z-grid {
     height: 16px;
 }
-
 
 /* For correct display button icon when it clicked and unclicked */
 .planner-command:focus {
