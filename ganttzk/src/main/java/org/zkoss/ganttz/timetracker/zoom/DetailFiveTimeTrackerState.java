@@ -45,6 +45,7 @@ public class DetailFiveTimeTrackerState extends TimeTrackerStateWithSubintervals
         super(firstLevelModificator, secondLevelModificator);
     }
 
+    @Override
     public final double daysPerPixel() {
         return (double) 1 / SECOND_LEVEL_SIZE;
     }
@@ -61,7 +62,10 @@ public class DetailFiveTimeTrackerState extends TimeTrackerStateWithSubintervals
     @Override
     protected IDetailItemCreator getDetailItemCreatorSecondLevel() {
         return dateTime -> new DetailItem(
-                SECOND_LEVEL_SIZE, Integer.toString(dateTime.getDayOfMonth()), dateTime, dateTime.plusDays(1));
+                SECOND_LEVEL_SIZE,
+                Integer.toString(dateTime.getDayOfMonth()),
+                dateTime,
+                dateTime.plusDays(1));
     }
 
     @Override

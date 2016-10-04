@@ -49,11 +49,11 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
     }
 
     public final double pixelPerDay() {
-        return (SECOND_LEVEL_SIZE / (double) 7);
+        return SECOND_LEVEL_SIZE / (double) 7;
     }
 
     public final double daysPerPixel() {
-        return ((double) 7 / SECOND_LEVEL_SIZE);
+        return (double) 7 / SECOND_LEVEL_SIZE;
     }
 
     @Override
@@ -66,11 +66,11 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
     protected IDetailItemCreator getDetailItemCreatorSecondLevel() {
         return dateTime ->  {
             int daysUntilFirstDayNextWeek = getDaysUntilFirstDayNextWeek(dateTime.toLocalDate());
-            int sizeWeek = new BigDecimal(pixelPerDay() * daysUntilFirstDayNextWeek).intValue();
+            int sizeWeek = BigDecimal.valueOf(pixelPerDay() * daysUntilFirstDayNextWeek).intValue();
 
             return new DetailItem(
                     sizeWeek,
-                    dateTime.getWeekOfWeekyear() + "",
+                    Integer.toString(dateTime.getWeekOfWeekyear()),
                     dateTime,
                     dateTime.plusDays(daysUntilFirstDayNextWeek));
         };
@@ -107,13 +107,12 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
         // Get the number of days in that month
         int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        return new BigDecimal(pixelPerDay() * days).intValue();
+        return BigDecimal.valueOf(pixelPerDay() * days).intValue();
     }
 
     @Override
     protected Iterator<LocalDate> getPeriodsFirstLevelGenerator(LocalDate start) {
         return new LazyGenerator<LocalDate>(start) {
-
             @Override
             protected LocalDate next(LocalDate last) {
                 return last.plus(Months.ONE);
@@ -124,7 +123,6 @@ public class DetailFourTimeTrackerState extends TimeTrackerState {
     @Override
     protected Iterator<LocalDate> getPeriodsSecondLevelGenerator(LocalDate start) {
         return new LazyGenerator<LocalDate>(start) {
-
             @Override
             protected LocalDate next(LocalDate last) {
                 return last.getDayOfWeek() != 1 ? last.plusDays(getDaysUntilFirstDayNextWeek(last)) : last.plusWeeks(1);

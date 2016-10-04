@@ -119,10 +119,10 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
     }
 
     /**
-     * Returns the closest upper {@link LimitingResourcesPanel} instance going all the way up from comp
+     * Returns the closest upper {@link LimitingResourcesPanel} instance going all the way up from comp.
      *
      * @param comp
-     * @return
+     * @return {@link LimitingResourcesPanel}
      */
     public static LimitingResourcesPanel getLimitingResourcesPanel(Component comp) {
         if (comp == null) {
@@ -213,7 +213,6 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
                 ZoomLevel.DETAIL_THREE,
                 ZoomLevel.DETAIL_FOUR,
                 ZoomLevel.DETAIL_FIVE,
-                ZoomLevel.DETAIL_SIX
         };
 
         return new SimpleListModel<>(selectableZoomlevels);
@@ -261,13 +260,10 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
 
     @SuppressWarnings("unchecked")
     private Separator getSeparator() {
-        List<Component> children = getToolbar().getChildren();
-
-        return ComponentsFinder.findComponentsOfType(Separator.class, children).get(0);
+        return ComponentsFinder.findComponentsOfType(Separator.class, getToolbar().getChildren()).get(0);
     }
 
     private Component getToolbar() {
-
         return getFellow("toolbar");
     }
 
@@ -511,14 +507,12 @@ public class LimitingResourcesPanel extends HtmlMacroComponent {
                     return Period.months(12);
 
                 case DETAIL_FIVE:
-                case DETAIL_SIX:
                     return Period.weeks(12);
 
-                default:
-                    break;
+                default: // Default month
+                    return Period.years(2);
             }
-            // Default month
-            return Period.years(2);
+
         }
 
         public void setInterval(Interval realInterval) {

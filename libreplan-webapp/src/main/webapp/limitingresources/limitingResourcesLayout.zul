@@ -74,7 +74,7 @@
                         onClick="limitingResourcesPanel.paginationDown();" />
 
                 <listbox id="horizontalPagination" mold="select" rows="1" visible="true"
-                        onSelect="limitingResourcesPanel.goToSelectedHorizontalPage();" />
+                         onSelect="limitingResourcesPanel.goToSelectedHorizontalPage();" />
 
                 <button id="paginationUpButton" tooltiptext="${i18n:_('Page up')}"
                         image="/common/img/ico_right.png"

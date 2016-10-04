@@ -38,16 +38,16 @@ public class DetailTwoTimeTrackerState extends TimeTrackerStateWithSubintervalsF
 
     private static final int SECOND_LEVEL_ITEM_SIZE = 100;
 
-    protected DetailTwoTimeTrackerState(
-            IDetailItemModificator firstLevelModificator,
-            IDetailItemModificator secondLevelModificator) {
+    protected DetailTwoTimeTrackerState(IDetailItemModificator firstLevelModificator,
+                                        IDetailItemModificator secondLevelModificator) {
 
         super(firstLevelModificator, secondLevelModificator);
     }
 
     @Override
     protected IDetailItemCreator getDetailItemCreatorFirstLevel() {
-        return dateTime -> new DetailItem(FIRST_LEVEL_ITEM_SIZE, Integer.toString(dateTime.getYear()), dateTime, dateTime);
+        return dateTime ->
+                new DetailItem(FIRST_LEVEL_ITEM_SIZE, Integer.toString(dateTime.getYear()), dateTime, dateTime);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class DetailTwoTimeTrackerState extends TimeTrackerStateWithSubintervalsF
 
     @Override
     protected Period getMinimumPeriod() {
-        return DetailOneTimeTrackerState.MINIMUN_PERIOD;
+        return DetailOneTimeTrackerState.MINIMUM_PERIOD;
     }
 
     @Override

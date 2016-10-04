@@ -99,20 +99,6 @@ public enum ZoomLevel {
         public boolean isSuitableFor(int days) {
             return true;
         }
-    },
-
-    DETAIL_SIX(_("Hour")) {
-        @Override
-        public TimeTrackerState getTimeTrackerState(
-                IDetailItemModificator firstLevel, IDetailItemModificator secondLevel) {
-
-            return new DetailSixTimeTrackerState(firstLevel, secondLevel);
-        }
-
-        @Override
-        public boolean isSuitableFor(int days) {
-            return true;
-        }
     };
 
     private String internalName;
@@ -137,20 +123,15 @@ public enum ZoomLevel {
      */
     public ZoomLevel next() {
         final int next = ordinal() + 1;
-        if (next == ZoomLevel.values().length) {
-            return this;
-        }
-        return ZoomLevel.values()[next];
+
+        return next == ZoomLevel.values().length ? this : ZoomLevel.values()[next];
     }
 
     /**
      * @return if there is no previous, returns <code>this</code>. Otherwise returns the previous one.
      */
     public ZoomLevel previous() {
-        if (ordinal() == 0) {
-            return this;
-        }
-        return ZoomLevel.values()[ordinal() - 1];
+        return ordinal() == 0 ? this : ZoomLevel.values()[ordinal() - 1];
     }
 
     public abstract TimeTrackerState getTimeTrackerState(

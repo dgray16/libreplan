@@ -36,14 +36,14 @@ import org.joda.time.Years;
  */
 public class DetailOneTimeTrackerState extends TimeTrackerStateWithSubintervalsFitting {
 
-    static final Period MINIMUN_PERIOD = PeriodType.YEARS.amount(6);
+    static final Period MINIMUM_PERIOD = PeriodType.YEARS.amount(6);
 
     private static final int FIRST_LEVEL_ITEM_SIZE = 200;
 
     private static final int SECOND_LEVEL_ITEM_SIZE = 100;
 
     public final double daysPerPixel() {
-        return ((double) 365 / FIRST_LEVEL_ITEM_SIZE);
+        return (double) 365 / FIRST_LEVEL_ITEM_SIZE;
     }
 
     DetailOneTimeTrackerState(
@@ -68,7 +68,7 @@ public class DetailOneTimeTrackerState extends TimeTrackerStateWithSubintervalsF
             int year = start.getYear();
             DateTime end = new LocalDate(year + 1, 1, 1).toDateTimeAtStartOfDay();
 
-            return new DetailItem(FIRST_LEVEL_ITEM_SIZE, start.getYear() + "", start, end);
+            return new DetailItem(FIRST_LEVEL_ITEM_SIZE, Integer.toString(start.getYear()), start, end);
         };
     }
 
@@ -94,12 +94,12 @@ public class DetailOneTimeTrackerState extends TimeTrackerStateWithSubintervalsF
     }
 
     public static LocalDate doYearRound(LocalDate date, boolean down) {
-        return new LocalDate(date.getYear() + (down?0:1), 1, 1);
+        return new LocalDate(date.getYear() + (down ? 0 : 1), 1, 1);
     }
 
     @Override
     protected Period getMinimumPeriod() {
-        return MINIMUN_PERIOD;
+        return MINIMUM_PERIOD;
     }
 
 }
