@@ -92,8 +92,7 @@ public class WorkerModelTest {
         workerModel.save();
     }
 
-    @Ignore
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ValidationException.class)
     @Transactional
     public void testWorkerInvalid() throws ValidationException, InstanceNotFoundException, IllegalStateException {
 

@@ -188,7 +188,6 @@ public class ScenarioModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME: test was causing problems in Debian Wheezy")
     public void testCreateAndSaveScenarioWithoutOrders() {
         int previous = scenarioModel.getScenarios().size();
 
@@ -206,7 +205,6 @@ public class ScenarioModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME: test was causing problems in Debian Wheezy")
     public void testCreateAndSaveScenarioWithOrders() {
         Order order = givenStoredOrderInDefaultScenario();
 
@@ -257,7 +255,6 @@ public class ScenarioModelTest {
 
     @Test
     @Transactional
-    @Ignore("FIXME: test was causing problems in Debian Wheezy")
     public void testRemoveScenarioWithOrders() throws InstanceNotFoundException {
         Order order = givenStoredOrderInDefaultScenario();
         Scenario scenario = givenStoredScenario();
