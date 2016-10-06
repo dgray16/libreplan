@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.libreplan.business.orders.entities.OrderElement;
+import org.libreplan.business.resources.entities.Resource;
 import org.libreplan.business.users.entities.UserRole;
 import org.libreplan.business.workingday.EffortDuration;
 import org.libreplan.web.common.IMessagesForUser;
@@ -571,10 +572,12 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
                     (IPersonalTimesheetController) SpringUtil.getBean("personalTimesheetController");
         }
     }
-
+    /**
+     * Hack to reduce frozen scroll area.
+     * Timeout needed because of ZK 8 timings.
+     */
     private void adjustFrozenWidth() {
-        // Hack to reduce frozen scroll area
-        Clients.evalJavaScript("jq('.z-frozen-inner div').width(jq('.totals-column').offset().left);");
+        Clients.evalJavaScript("setTimeout(function(){jq('.z-frozen-inner div').width(jq('.totals-column').offset().left);}, 1);");
     }
 
     private void checkUserComesFromEntryPointsOrSendForbiddenCode() {
@@ -615,8 +618,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
     }
 
     @Override
-    public void goToCreateOrEditFormForResource(LocalDate date,
-                                                org.libreplan.business.resources.entities.Resource resource) {
+    public void goToCreateOrEditFormForResource(LocalDate date, Resource resource) {
 
         if ( !SecurityUtils.isSuperuserOrUserInRoles(UserRole.ROLE_TIMESHEETS) ) {
             Util.sendForbiddenStatusCodeInHttpServletResponse();
@@ -636,6 +638,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         Frozen frozen = new Frozen();
         frozen.setColumns(2);
         timesheet.appendChild(frozen);
+        timesheet.invalidate();
 
         adjustFrozenWidth();
     }
@@ -754,7 +757,10 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
         Executions.getCurrent().sendRedirect(url);
     }
 
-    /* Should be public! */
+    /**
+     * Should be public!
+     * Used in personalTimesheet.zul
+     */
     public void addOrderElement() {
         OrderElement orderElement = (OrderElement) orderElementBandboxSearch.getSelectedElement();
         if ( orderElement != null ) {
@@ -857,7 +863,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
         String decimalSeparator = Character.toString(
                 ((DecimalFormat) DecimalFormat.getInstance(Locales.getCurrent()))
-                .getDecimalFormatSymbols().getDecimalSeparator());
+                        .getDecimalFormatSymbols().getDecimalSeparator());
 
         if ( effort.contains(decimalSeparator) || effort.contains(".") ) {
             try {
@@ -918,9 +924,7 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
 
 /**
  * Simple class to represent the the rows in the personal timesheet grid.
- *
  * <br />
- *
  * This is used to mark the special rows like capacity and total.
  */
 class PersonalTimesheetRow {
@@ -930,7 +934,7 @@ class PersonalTimesheetRow {
         OTHER,
         CAPACITY,
         TOTAL,
-        EXTRA;
+        EXTRA
     }
 
     private PersonalTimesheetRowType type;
