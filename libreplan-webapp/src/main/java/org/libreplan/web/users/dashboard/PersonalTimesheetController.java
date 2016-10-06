@@ -73,7 +73,7 @@ import org.zkoss.zul.Grid;
 import org.zkoss.zul.Popup;
 
 /**
- * Controller for creation/edition of a personal timesheet
+ * Controller for creation/edition of a personal timesheet.
  *
  * @author Manuel Rego Casasnovas <mrego@igalia.com>
  * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
@@ -577,7 +577,8 @@ public class PersonalTimesheetController extends GenericForwardComposer implemen
      * Timeout needed because of ZK 8 timings.
      */
     private void adjustFrozenWidth() {
-        Clients.evalJavaScript("setTimeout(function(){jq('.z-frozen-inner div').width(jq('.totals-column').offset().left);}, 1);");
+        Clients.evalJavaScript(
+                "setTimeout(function(){jq('.z-frozen-inner div').width(jq('.totals-column').offset().left);}, 1);");
     }
 
     private void checkUserComesFromEntryPointsOrSendForbiddenCode() {

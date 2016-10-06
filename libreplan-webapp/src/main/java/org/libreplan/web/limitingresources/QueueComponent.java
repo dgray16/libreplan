@@ -62,6 +62,7 @@ import org.zkoss.zul.impl.XulElement;
  * This class wraps ResourceLoad data inside an specific HTML Div component.
  *
  * @author Lorenzo Tilve Álvaro <ltilve@igalia.com>
+ * @author Vova Perebykivskyi <vova@libreplan-enterprise.com>
  */
 public class QueueComponent extends XulElement implements AfterCompose {
 
@@ -152,6 +153,13 @@ public class QueueComponent extends XulElement implements AfterCompose {
 
     private void appendQueueTask(QueueTask queueTask) {
         queueTasks.add(queueTask);
+
+        /*
+         * In this case after we migrated from ZK5 to ZK8, ZK was appending div to QueueComponent,
+         * on every allocation it was creating new QueueComponents, but DOM tree was still the same.
+         */
+        getLimitingResourcesPanel().getFellow("insertionPointRightPanel").invalidate();
+
         appendChild(queueTask);
     }
 
